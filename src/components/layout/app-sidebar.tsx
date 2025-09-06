@@ -50,7 +50,6 @@ export function AppSidebar() {
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton asChild tooltip={item.label}>
                 <Link href={item.href}>
-                  <item.icon />
                   <span>{item.label}</span>
                 </Link>
               </SidebarMenuButton>
@@ -64,7 +63,6 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Logout">
                 <Link href="/login">
-                  <LogOut />
                   <span>Logout</span>
                 </Link>
               </SidebarMenuButton>
