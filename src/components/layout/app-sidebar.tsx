@@ -17,7 +17,7 @@ import {
   SidebarContent,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { EduCloudLogo } from "@/components/icons";
+import { SyncSentaLogo } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { mockUsers } from "@/lib/mock-data";
@@ -38,9 +38,9 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <EduCloudLogo className="w-8 h-8 text-primary" />
+          <SyncSentaLogo className="w-8 h-8 text-primary" />
           <div className="flex flex-col">
-            <h2 className="font-headline text-lg font-semibold tracking-tight">EduCloud Kenya</h2>
+            <h2 className="font-headline text-lg font-semibold tracking-tight">SyncSenta</h2>
           </div>
         </div>
       </SidebarHeader>
@@ -62,12 +62,12 @@ export function AppSidebar() {
         <Separator />
          <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Logout">
-                   <Link href="/login">
-                    <LogOut />
-                    <span>Logout</span>
-                   </Link>
-                </SidebarMenuButton>
+              <SidebarMenuButton asChild tooltip="Logout">
+                <Link href="/login">
+                  <LogOut />
+                  <span>Logout</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
         <Separator />

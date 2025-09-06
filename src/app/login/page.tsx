@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EduCloudLogo } from "@/components/icons";
+import { SyncSentaLogo } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 
@@ -29,9 +29,9 @@ export default function LoginPage() {
             <Card className="w-full max-w-sm">
                 <CardHeader className="text-center">
                     <div className="flex justify-center mb-4">
-                        <EduCloudLogo className="w-12 h-12 text-primary" />
+                        <SyncSentaLogo className="w-12 h-12 text-primary" />
                     </div>
-                    <CardTitle className="font-headline text-2xl">Welcome Back to EduCloud Kenya</CardTitle>
+                    <CardTitle className="font-headline text-2xl">Welcome Back to SyncSenta</CardTitle>
                     <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { RoleProvider } from '@/components/providers/role-provider';
 
 export const metadata: Metadata = {
-  title: 'EduCloud Kenya',
+  title: 'SyncSenta',
   description: 'AI-powered Kenyan education ecosystem',
 };
 

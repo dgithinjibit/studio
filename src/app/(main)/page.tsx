@@ -18,7 +18,7 @@ export default function DashboardPage() {
       case 'teacher': return "Welcome, Teacher!";
       case 'school_head': return "School Administration Dashboard";
       case 'county_officer': return "County Education Overview";
-      default: return "Welcome to EduCloud Kenya";
+      default: return "Welcome to SyncSenta";
     }
   };
 
@@ -107,7 +107,7 @@ export default function DashboardPage() {
                     <CardDescription>Our strategy for low-bandwidth environments.</CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm space-y-2">
-                    <p>EduCloud Kenya is designed for reliability, even with intermittent internet. Data like attendance, lesson plans, and drafts are saved locally in your browser.</p>
+                    <p>SyncSenta is designed for reliability, even with intermittent internet. Data like attendance, lesson plans, and drafts are saved locally in your browser.</p>
                     <p>When you're back online, the app automatically syncs your data with Cloud Storage. We use smart conflict resolution to ensure data integrity. This process is optimized to use minimal bandwidth, making it ideal for the Kenyan context.</p>
                     <p className="font-bold text-muted-foreground text-xs pt-2">TECHNICAL NOTE: This is achieved using Service Workers for background sync and IndexedDB/localStorage for client-side storage.</p>
                 </CardContent>
