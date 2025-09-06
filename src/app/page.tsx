@@ -11,17 +11,19 @@ export default function WelcomePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 max-w-3xl">
             <SyncSentaLogo className="w-24 h-24 text-primary mx-auto mb-4" />
-            <h1 className="font-headline text-5xl font-bold">Welcome to SyncSenta</h1>
-            <p className="text-muted-foreground text-xl mt-2">Your Personal AI Learning Companion</p>
+            <h1 className="font-headline text-5xl font-bold">🎉 Karibu! Welcome to SyncSenta!</h1>
+            <p className="text-muted-foreground text-xl mt-4">
+              I’m Mwalimu AI — your friendly Socratic Mentor. 🦉 I'm here to guide you through learning by asking questions that spark your curiosity and help you discover answers on your own.
+            </p>
         </div>
 
         <Card className="w-full max-w-4xl">
             <CardHeader>
-                <CardTitle className="text-2xl text-center">Who are you?</CardTitle>
+                <CardTitle className="text-2xl text-center">To begin, who are you?</CardTitle>
                 <CardDescription className="text-center">
-                    Please select your role to get started. This will tailor the experience for you.
+                    Please select your role to personalize your journey.
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
