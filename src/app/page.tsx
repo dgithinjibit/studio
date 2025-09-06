@@ -17,7 +17,7 @@ export default function WelcomePage() {
             <p className="text-muted-foreground text-xl mt-2">Your Personal AI Learning Companion</p>
         </div>
 
-        <Card className="w-full max-w-2xl">
+        <Card className="w-full max-w-4xl">
             <CardHeader>
                 <CardTitle className="text-2xl text-center">Who are you?</CardTitle>
                 <CardDescription className="text-center">
@@ -44,6 +44,28 @@ export default function WelcomePage() {
                         </div>
                         <Button variant="ghost" className="mt-4 w-full">
                            Get Started <ArrowRight className="ml-2"/>
+                        </Button>
+                    </Card>
+                </Link>
+                <Link href="/signup?role=school_head" passHref>
+                    <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
+                        <div>
+                            <h3 className="font-bold text-xl mb-2">I'm a School Head</h3>
+                            <p className="text-muted-foreground">I manage a school and need to track teacher and student progress.</p>
+                        </div>
+                        <Button variant="ghost" className="mt-4 w-full">
+                           Manage School <ArrowRight className="ml-2"/>
+                        </Button>
+                    </Card>
+                </Link>
+                <Link href="/signup?role=county_officer" passHref>
+                    <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
+                        <div>
+                            <h3 className="font-bold text-xl mb-2">I'm a County Officer</h3>
+                            <p className="text-muted-foreground">I oversee schools in a county and need to view performance data.</p>
+                        </div>
+                        <Button variant="ghost" className="mt-4 w-full">
+                           View Reports <ArrowRight className="ml-2"/>
                         </Button>
                     </Card>
                 </Link>

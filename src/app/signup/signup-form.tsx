@@ -10,23 +10,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
+const roleDisplayNames: { [key: string]: string } = {
+    student: 'Student',
+    teacher: 'Teacher',
+    school_head: 'School Head',
+    county_officer: 'County Officer',
+};
+
 export default function SignupForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { toast } = useToast();
     
     const role = useMemo(() => searchParams.get('role') || 'student', [searchParams]);
+    const roleName = useMemo(() => roleDisplayNames[role] || 'User', [role]);
 
     const handleSignup = (e: React.FormEvent) => {
         e.preventDefault();
         toast({
             title: "Account Created!",
-            description: "Let's personalize your learning experience.",
+            description: "Let's personalize your experience.",
         });
         if (role === 'student') {
             router.push('/student/journey/level');
         } else {
-            // Redirect teachers to their dashboard for now
+            // Redirect other roles to their dashboard for now
             router.push('/dashboard');
         }
     };
@@ -35,7 +43,7 @@ export default function SignupForm() {
         <div className="flex items-center justify-center min-h-screen bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <CardTitle className="font-headline text-2xl">Create Your {role === 'student' ? 'Student' : 'Teacher'} Account</CardTitle>
+                    <CardTitle className="font-headline text-2xl">Create Your {roleName} Account</CardTitle>
                     <CardDescription>Join the AI-powered education ecosystem for Kenya.</CardDescription>
                 </CardHeader>
                 <CardContent>
