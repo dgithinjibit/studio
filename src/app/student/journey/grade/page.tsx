@@ -2,12 +2,12 @@
 "use client";
 
 import { Suspense } from 'react';
-import SignupForm from './signup-form';
+import GradeSelector from './grade-selector';
 
-export default function SignupPage() {
+export default function SelectGradePage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <SignupForm />
+            <GradeSelector />
         </Suspense>
     )
 }

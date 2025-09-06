@@ -2,12 +2,12 @@
 "use client";
 
 import { Suspense } from 'react';
-import SignupForm from './signup-form';
+import SubLevelSelector from './sub-level-selector';
 
-export default function SignupPage() {
+export default function SelectSubLevelPage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <SignupForm />
+            <SubLevelSelector />
         </Suspense>
     )
 }

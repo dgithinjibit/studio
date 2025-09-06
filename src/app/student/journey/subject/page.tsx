@@ -2,12 +2,12 @@
 "use client";
 
 import { Suspense } from 'react';
-import SignupForm from './signup-form';
+import SubjectSelector from './subject-selector';
 
-export default function SignupPage() {
+export default function SelectSubjectPage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <SignupForm />
+            <SubjectSelector />
         </Suspense>
     )
 }

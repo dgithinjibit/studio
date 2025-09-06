@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,11 +15,13 @@ export default function LoginPage() {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
+        // In a real application, you would handle authentication here.
+        // For this prototype, we'll simulate a successful login and redirect.
         toast({
             title: "Login Successful",
-            description: "You have been successfully logged in (simulated).",
+            description: "Welcome back! Redirecting you to your dashboard.",
         });
-        router.push('/');
+        router.push('/dashboard');
     };
 
     return (
@@ -48,8 +49,8 @@ export default function LoginPage() {
                 <CardFooter className="flex flex-col gap-4">
                     <p className="text-xs text-muted-foreground">
                         Don't have an account?{' '}
-                        <Link href="/signup" className="underline font-medium hover:text-primary">
-                            Sign Up
+                        <Link href="/" className="underline font-medium hover:text-primary">
+                            Choose a role
                         </Link>
                     </p>
                 </CardFooter>
