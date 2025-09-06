@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { SyncSentaLogo } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -63,7 +63,6 @@ export function AppSidebar() {
         <Separator />
          <div className="flex items-center gap-3 p-2">
             <Avatar className="h-10 w-10">
-                <AvatarImage src="https://i.pravatar.cc/150?u=a0" alt="User" />
                 <AvatarFallback>U</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">

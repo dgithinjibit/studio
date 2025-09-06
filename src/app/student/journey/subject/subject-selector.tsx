@@ -11,6 +11,7 @@ import type { LucideIcon } from 'lucide-react';
 
 const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
     g7: [
+        { name: 'English', icon: Book },
         { name: 'Creative Arts', icon: Palette },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: Book },
