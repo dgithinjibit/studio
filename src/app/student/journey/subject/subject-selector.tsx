@@ -6,18 +6,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Book, Calculator, TestTube, Globe, PencilRuler, Briefcase } from 'lucide-react';
+import { Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
     g7: [
-        { name: 'Mathematics', icon: Calculator },
-        { name: 'English', icon: Book },
-        { name: 'Kiswahili', icon: Book },
-        { name: 'Integrated Science', icon: TestTube },
-        { name: 'Social Studies', icon: Globe },
-        { name: 'Business Studies', icon: Briefcase },
-        { name: 'Creative Arts', icon: PencilRuler },
+        { name: 'Creative Arts', icon: Palette },
+        { name: 'Indigenous Language', icon: Languages },
+        { name: 'Kiswahili/Sign Language', icon: Book },
+        { name: 'Religious Education', icon: Church },
+        { name: 'Environmental Activities', icon: Leaf },
+        { name: 'Creative Activities', icon: Wind },
+        { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
     ],
     // Define subjects for other grades as needed
 };
