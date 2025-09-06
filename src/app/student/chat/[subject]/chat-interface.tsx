@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mwalimuAiTutor, MwalimuAiTutorInput } from '@/ai/flows/mwalimu-ai-flow';
+import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
+import type { MwalimuAiTutorInput } from '@/ai/flows/mwalimu-ai-types';
 import { Loader2, Send } from 'lucide-react';
 import Link from 'next/link';
 
@@ -128,4 +129,3 @@ export default function ChatInterface({ subject }: { subject: string }) {
         </div>
     );
 }
-

@@ -1,0 +1,32 @@
+/**
+ * @fileOverview Types and schemas for the Mwalimu AI tutor flow.
+ */
+
+import {z} from 'genkit';
+
+export const MwalimuAiTutorInputSchema = z.object({
+  grade: z
+    .string()
+    .describe("The student's grade level (e.g., Grade 1, Grade 7)."),
+  subject: z
+    .string()
+    .describe(
+      "The subject the student wants to discuss (e.g., Integrated Science)."
+    ),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'model']),
+        content: z.string(),
+      })
+    )
+    .describe('The history of the conversation so far.'),
+});
+export type MwalimuAiTutorInput = z.infer<typeof MwalimuAiTutorInputSchema>;
+
+export const MwalimuAiTutorOutputSchema = z.object({
+  response: z
+    .string()
+    .describe("Mwalimu AI's Socratic response to the student."),
+});
+export type MwalimuAiTutorOutput = z.infer<typeof MwalimuAiTutorOutputSchema>;
