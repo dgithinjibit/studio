@@ -117,4 +117,13 @@ export const mockSchools: School[] = [
     { id: 'sch_2', name: 'Alliance High School', countyId: 'county_22' },
     { id: 'sch_3', name: 'Shimo La Tewa High School', countyId: 'county_1' },
     { id: 'sch_4', name: 'Kisumu Boys High School', countyId: 'county_42' },
+    { id: 'sch_5', name: 'Miiri Primary School', countyId: 'county_19' },
+    { id: 'sch_6', name: 'Kiamucheru Primary School', countyId: 'county_19' },
+    { id: 'sch_7', name: 'Gatura Primary School', countyId: 'county_19' },
+    { id: 'sch_8', name: 'Mathaithi Primary School', countyId: 'county_19' },
+    { id: 'sch_9', name: 'Kiamwangi Primary School', countyId: 'county_19' },
+    { id: 'sch_10', name: 'Future Leaders Academy', countyId: 'county_19' },
+    { id: 'sch_11', name: 'Ngari Junior Academy', countyId: 'county_19' },
+    { id: 'sch_12', name: 'Ngunguru Primary School', countyId: 'county_19' },
+    { id: 'sch_13', name: 'Archbishop Kirima Primary School', countyId: 'county_19' },
 ];
