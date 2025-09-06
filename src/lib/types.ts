@@ -44,4 +44,6 @@ export type School = {
   id: string;
   name: string;
   countyId: string;
+  latitude: number;
+  longitude: number;
 };

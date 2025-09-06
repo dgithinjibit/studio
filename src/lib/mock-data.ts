@@ -1,12 +1,12 @@
 import type { User, CurriculumDoc, Assignment, Report, County, School } from './types';
 
 export const mockUsers: User[] = [
-  { id: 'usr_1', name: 'Asha Juma', email: 'asha.juma@example.com', role: 'student', avatar: 'https://i.pravatar.cc/150?u=usr_1', schoolId: 'sch_1' },
-  { id: 'usr_2', name: 'Benson Kariuki', email: 'benson.kariuki@example.com', role: 'student', avatar: 'https://i.pravatar.cc/150?u=usr_2', schoolId: 'sch_1' },
-  { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'chidinma.okoro@example.com', role: 'teacher', avatar: 'https://i.pravatar.cc/150?u=usr_3', schoolId: 'sch_1' },
-  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'david.mwangi@example.com', role: 'teacher', avatar: 'https://i.pravatar.cc/150?u=usr_4', schoolId: 'sch_2' },
-  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'evelyn.wanjala@example.com', role: 'school_head', avatar: 'https://i.pravatar.cc/150?u=usr_5', schoolId: 'sch_1' },
-  { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'felix.omondi@example.com', role: 'county_officer', avatar: 'https://i.pravatar.cc/150?u=usr_6' },
+  { id: 'usr_1', name: 'Asha Juma', email: 'asha.juma@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_2', name: 'Benson Kariuki', email: 'benson.kariuki@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'chidinma.okoro@example.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'david.mwangi@example.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_2' },
+  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'evelyn.wanjala@example.com', role: 'school_head', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'felix.omondi@example.com', role: 'county_officer', avatar: '/avatar-placeholder.svg' },
 ];
 
 export const mockCurriculumDocs: CurriculumDoc[] = [
@@ -82,7 +82,7 @@ export const mockCounties: County[] = [
     { id: 'county_17', name: 'Makueni' },
     { id: 'county_18', name: 'Nyandarua' },
     { id: 'county_19', name: 'Nyeri' },
-    { id: 'county_20', name: 'Kirinyaga' },
+    { id: 'county_20', 'name': 'Kirinyaga' },
     { id: 'county_21', name: 'Murang\'a' },
     { id: 'county_22', name: 'Kiambu' },
     { id: 'county_23', name: 'Turkana' },
@@ -113,17 +113,17 @@ export const mockCounties: County[] = [
 ];
 
 export const mockSchools: School[] = [
-    { id: 'sch_1', name: 'Moi Nyeri Complex Primary School', countyId: 'county_19' },
-    { id: 'sch_2', name: 'Airstrip Primary School', countyId: 'county_19' },
-    { id: 'sch_3', name: 'Aguthi Primary School', countyId: 'county_19' },
-    { id: 'sch_4', name: 'Kiamwangi Primary School', countyId: 'county_19' },
-    { id: 'sch_5', name: 'Ragati Primary School', countyId: 'county_19' },
-    { id: 'sch_6', name: 'Nyeri Good Shepherd Academy', countyId: 'county_19' },
-    { id: 'sch_7', name: 'Mount Kenya Academy', countyId: 'county_19' },
-    { id: 'sch_8', name: 'Ngari Junior Academy', countyId: 'county_19' },
-    { id: 'sch_9', name: 'Gachugu Academy', countyId: 'county_19' },
-    { id: 'sch_10', name: 'Kiangengi Primary School', countyId: 'county_19' },
-    { id: 'sch_11', name: 'Ngunguru Primary School', countyId: 'county_19' },
-    { id: 'sch_12', name: 'Alliance High School', countyId: 'county_22' },
-    { id: 'sch_13', name: 'Nairobi School', countyId: 'county_47' },
+    { id: 'sch_1', name: 'Moi Nyeri Complex Primary School', countyId: 'county_19', latitude: -0.4134, longitude: 36.9463 },
+    { id: 'sch_2', name: 'Airstrip Primary School', countyId: 'county_19', latitude: -0.4455, longitude: 36.9587 },
+    { id: 'sch_3', name: 'Aguthi Primary School', countyId: 'county_19', latitude: -0.4012, longitude: 36.8842 },
+    { id: 'sch_4', name: 'Kiamwangi Primary School', countyId: 'county_19', latitude: -0.3789, longitude: 36.9811 },
+    { id: 'sch_5', name: 'Ragati Primary School', countyId: 'county_19', latitude: -0.4633, longitude: 37.0544 },
+    { id: 'sch_6', name: 'Nyeri Good Shepherd Academy', countyId: 'county_19', latitude: -0.4201, longitude: 36.9532 },
+    { id: 'sch_7', name: 'Mount Kenya Academy', countyId: 'county_19', latitude: -0.3958, longitude: 37.0129 },
+    { id: 'sch_8', name: 'Ngari Junior Academy', countyId: 'county_19', latitude: -0.4321, longitude: 36.9321 },
+    { id: 'sch_9', name: 'Gachugu Academy', countyId: 'county_19', latitude: -0.3888, longitude: 36.9188 },
+    { id: 'sch_10', name: 'Kiangengi Primary School', countyId: 'county_19', latitude: -0.4511, longitude: 36.9011 },
+    { id: 'sch_11', name: 'Ngunguru Primary School', countyId: 'county_19', latitude: -0.4777, longitude: 36.9657 },
+    { id: 'sch_12', name: 'Alliance High School', countyId: 'county_22', latitude: -1.2263, longitude: 36.7214 },
+    { id: 'sch_13', name: 'Nairobi School', countyId: 'county_47', latitude: -1.2662, longitude: 36.7845 },
 ];
