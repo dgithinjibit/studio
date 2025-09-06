@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SyncSentaLogo } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
 import type { UserRole } from "@/lib/types";
 import { mockCounties, mockSchools } from '@/lib/mock-data';
@@ -50,9 +49,6 @@ export default function SignupPage() {
         <div className="flex items-center justify-center min-h-screen bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <div className="flex justify-center mb-4">
-                        <SyncSentaLogo className="w-12 h-12 text-primary" />
-                    </div>
                     <CardTitle className="font-headline text-2xl">Create Your SyncSenta Account</CardTitle>
                     <CardDescription>Join the AI-powered education ecosystem for Kenya.</CardDescription>
                 </CardHeader>
