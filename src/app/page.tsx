@@ -13,7 +13,7 @@ export default function WelcomePage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
         <div className="text-center mb-12 max-w-3xl">
             <SyncSentaLogo className="w-24 h-24 text-primary mx-auto mb-4" />
-            <h1 className="font-headline text-5xl font-bold">🎉 Karibu! Welcome to SyncSenta!</h1>
+            <h1 className="font-headline text-5xl font-bold">Karibu! Welcome to SyncSenta!</h1>
             <p className="text-muted-foreground text-xl mt-4">
               I’m Mwalimu AI — your friendly Socratic Mentor. 🦉 I'm here to guide you through learning by asking questions that spark your curiosity and help you discover answers on your own.
             </p>
