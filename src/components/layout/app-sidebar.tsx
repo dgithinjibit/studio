@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Users,
   BarChart3,
+  LogOut,
 } from "lucide-react";
 
 import {
@@ -58,6 +59,17 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
+        <Separator />
+         <SidebarMenu>
+            <SidebarMenuItem>
+                 <Link href="/login" legacyBehavior passHref>
+                    <SidebarMenuButton tooltip="Logout">
+                      <LogOut />
+                      <span>Logout</span>
+                    </SidebarMenuButton>
+                 </Link>
+            </SidebarMenuItem>
+        </SidebarMenu>
         <Separator />
          <div className="flex items-center gap-3 p-2">
             <Avatar className="h-10 w-10">
