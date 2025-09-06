@@ -6,6 +6,7 @@ export type User = {
   email: string;
   role: UserRole;
   avatar: string;
+  schoolId?: string; 
 };
 
 export type CurriculumDoc = {
@@ -27,9 +28,20 @@ export type Assignment = {
 };
 
 export type Report = {
-  id: string;
+  id:string;
   title: string;
   description: string;
   generatedFor: UserRole[];
   createdAt: Date;
+};
+
+export type County = {
+  id: string;
+  name: string;
+};
+
+export type School = {
+  id: string;
+  name: string;
+  countyId: string;
 };

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SyncSentaLogo } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
 import type { UserRole } from "@/lib/types";
+import { mockCounties, mockSchools } from '@/lib/mock-data';
+import type { County, School } from '@/lib/types';
 
 const roles: { value: UserRole; label: string }[] = [
     { value: 'student', label: 'Student' },
@@ -24,8 +26,15 @@ export default function SignupPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [role, setRole] = useState<UserRole | ''>('');
-    const [step, setStep] = useState(1);
+    const [selectedCounty, setSelectedCounty] = useState<string>('');
+    const [schoolsInCounty, setSchoolsInCounty] = useState<School[]>([]);
 
+    const handleCountyChange = (countyId: string) => {
+        setSelectedCounty(countyId);
+        const filteredSchools = mockSchools.filter(school => school.countyId === countyId);
+        setSchoolsInCounty(filteredSchools);
+    };
+    
     const handleSignup = (e: React.FormEvent) => {
         e.preventDefault();
         toast({
@@ -35,8 +44,10 @@ export default function SignupPage() {
         router.push('/login');
     };
 
+    const isSchoolRole = role === 'student' || role === 'teacher' || role === 'school_head';
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex items-center justify-center min-h-screen bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
                     <div className="flex justify-center mb-4">
@@ -73,19 +84,49 @@ export default function SignupPage() {
                             </Select>
                         </div>
                         
-                        {role === 'school_head' && (
+                        {(isSchoolRole || role === 'county_officer') && (
+                            <div className="space-y-2 animate-in fade-in-50">
+                                <Label htmlFor="county">County</Label>
+                                <Select onValueChange={handleCountyChange} required>
+                                    <SelectTrigger id="county">
+                                        <SelectValue placeholder="Select your county" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {mockCounties.map(c => (
+                                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+                        
+                        {isSchoolRole && selectedCounty && (
                              <div className="space-y-2 animate-in fade-in-50">
                                 <Label htmlFor="school">School</Label>
-                                <Input id="school" placeholder="e.g., Nairobi School" required />
-                                <p className="text-xs text-muted-foreground">Your role will be verified by an administrator.</p>
+                                {schoolsInCounty.length > 0 ? (
+                                    <Select required>
+                                        <SelectTrigger id="school">
+                                            <SelectValue placeholder="Select your school" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {schoolsInCounty.map(s => (
+                                                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <>
+                                        <Input id="school" placeholder="e.g., Nairobi School" required />
+                                        <p className="text-xs text-muted-foreground">You seem to be the first from your county! Please enter your school name to add it.</p>
+                                    </>
+                                )}
+                                {(role === 'school_head') && <p className="text-xs text-muted-foreground">Your role will be verified by an administrator.</p>}
                             </div>
                         )}
 
                         {role === 'county_officer' && (
                             <div className="space-y-2 animate-in fade-in-50">
-                                <Label htmlFor="county">County</Label>
-                                <Input id="county" placeholder="e.g., Nairobi County" required />
-                                <p className="text-xs text-muted-foreground">Your role will be verified by a super-administrator.</p>
+                                <p className="text-xs text-muted-foreground">Your role as a County Officer will be verified by a super-administrator.</p>
                             </div>
                         )}
 

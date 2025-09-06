@@ -1,11 +1,11 @@
-import type { User, CurriculumDoc, Assignment, Report, UserRole } from './types';
+import type { User, CurriculumDoc, Assignment, Report, County, School } from './types';
 
 export const mockUsers: User[] = [
-  { id: 'usr_1', name: 'Asha Juma', email: 'asha.juma@example.com', role: 'student', avatar: 'https://i.pravatar.cc/150?u=usr_1' },
-  { id: 'usr_2', name: 'Benson Kariuki', email: 'benson.kariuki@example.com', role: 'student', avatar: 'https://i.pravatar.cc/150?u=usr_2' },
-  { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'chidinma.okoro@example.com', role: 'teacher', avatar: 'https://i.pravatar.cc/150?u=usr_3' },
-  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'david.mwangi@example.com', role: 'teacher', avatar: 'https://i.pravatar.cc/150?u=usr_4' },
-  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'evelyn.wanjala@example.com', role: 'school_head', avatar: 'https://i.pravatar.cc/150?u=usr_5' },
+  { id: 'usr_1', name: 'Asha Juma', email: 'asha.juma@example.com', role: 'student', avatar: 'https://i.pravatar.cc/150?u=usr_1', schoolId: 'sch_1' },
+  { id: 'usr_2', name: 'Benson Kariuki', email: 'benson.kariuki@example.com', role: 'student', avatar: 'https://i.pravatar.cc/150?u=usr_2', schoolId: 'sch_1' },
+  { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'chidinma.okoro@example.com', role: 'teacher', avatar: 'https://i.pravatar.cc/150?u=usr_3', schoolId: 'sch_1' },
+  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'david.mwangi@example.com', role: 'teacher', avatar: 'https://i.pravatar.cc/150?u=usr_4', schoolId: 'sch_2' },
+  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'evelyn.wanjala@example.com', role: 'school_head', avatar: 'https://i.pravatar.cc/150?u=usr_5', schoolId: 'sch_1' },
   { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'felix.omondi@example.com', role: 'county_officer', avatar: 'https://i.pravatar.cc/150?u=usr_6' },
 ];
 
@@ -59,4 +59,20 @@ export const mockReports: Report[] = [
     generatedFor: ['teacher', 'school_head'],
     createdAt: new Date('2023-10-21T09:00:00Z'),
   },
+];
+
+
+export const mockCounties: County[] = [
+    { id: 'county_1', name: 'Nairobi' },
+    { id: 'county_2', name: 'Mombasa' },
+    { id: 'county_3', name: 'Kisumu' },
+    { id: 'county_4', name: 'Nakuru' },
+    { id: 'county_5', name: 'Uasin Gishu' },
+];
+
+export const mockSchools: School[] = [
+    { id: 'sch_1', name: 'Nairobi School', countyId: 'county_1' },
+    { id: 'sch_2', name: 'Alliance High School', countyId: 'county_1' },
+    { id: 'sch_3', name: 'Shimo La Tewa High School', countyId: 'county_2' },
+    { id: 'sch_4', name: 'Kisumu Boys High School', countyId: 'county_3' },
 ];
