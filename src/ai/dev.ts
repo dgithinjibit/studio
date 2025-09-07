@@ -33,3 +33,4 @@ import '@/curriculum/grade1-creative-activities.ts';
 import '@/curriculum/grade1-english-language-activities.ts';
 import '@/curriculum/grade1-indigenous-language.ts';
 import '@/curriculum/grade1-kiswahili-language-activities.ts';
+import '@/curriculum/grade1-mathematics-activities.ts';
