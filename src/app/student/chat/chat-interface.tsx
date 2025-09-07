@@ -70,8 +70,8 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
         if (!input.trim() || loading) return;
 
         const userMessage: Message = { role: 'user', content: input };
-        const historyForAI = [...messages, userMessage];
-        setMessages(historyForAI); // Show user message immediately
+        const newMessages = [...messages, userMessage];
+        setMessages(newMessages); // Show user message immediately
         const currentInput = input;
         setInput('');
         setLoading(true);
@@ -81,7 +81,7 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
             if (tutorMode === 'compass' && teacherContext) {
                  result = await classroomCompass({
                     teacherContext,
-                    history: messages, // Pass history *before* new user message
+                    history: newMessages,
                 });
             } else {
                  result = await mwalimuAiTutor({
@@ -91,10 +91,10 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
                     history: messages // Pass history *before* new user message
                 });
             }
-            setMessages([...historyForAI, { role: 'model', content: result.response }]);
+            setMessages([...newMessages, { role: 'model', content: result.response }]);
         } catch (error) {
             console.error("Error calling AI tutor:", error);
-            setMessages([...historyForAI, { role: 'model', content: "I'm sorry, I encountered an error. Could you please rephrase your question?" }]);
+            setMessages([...newMessages, { role: 'model', content: "I'm sorry, I encountered an error. Could you please rephrase your question?" }]);
         } finally {
             setLoading(false);
         }
