@@ -5,11 +5,12 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Leaf, HeartHandshake, LogOut, ArrowLeft, User, Palette, Languages, BookOpen, Church } from 'lucide-react';
+import { ArrowRight, Leaf, HeartHandshake, LogOut, ArrowLeft, User, Palette, Languages, BookOpen, Church, BrainCircuit } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import ChatInterface from '../chat/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
+import { BlockchainCurriculumDisplay } from '@/components/blockchain-curriculum-display';
 
 
 // Mock user data for personalization
@@ -18,7 +19,7 @@ const mockUser = {
 };
 const studentFirstName = mockUser.fullName.split(' ')[0];
 
-type Step = 'level' | 'sub-level' | 'grade' | 'subject' | 'chat';
+type Step = 'level' | 'sub-level' | 'grade' | 'subject' | 'chat' | 'content';
 
 const levels = [
     { id: 'ms', name: 'Middle School' },
@@ -51,6 +52,8 @@ type Subject = {
     icon: LucideIcon | string;
 };
 
+const aiAndBlockchainSubject: Subject = { name: 'AI & Blockchain', icon: BrainCircuit };
+
 const commonSubjects: Subject[] = [
     { name: 'English', icon: '/assets/english-icon.png' },
     { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
@@ -67,12 +70,12 @@ const pastoralInstruction = { name: 'Pastoral Instruction Programme', icon: Hear
 
 
 const subjectsMap: { [key: string]: Subject[] } = {
-    g4: commonSubjects,
-    g5: commonSubjects,
-    g6: commonSubjects,
-    g7: [...commonSubjects, pastoralInstruction],
-    g8: [...commonSubjects, pastoralInstruction],
-    g9: [...commonSubjects, pastoralInstruction],
+    g4: [...commonSubjects, aiAndBlockchainSubject],
+    g5: [...commonSubjects, aiAndBlockchainSubject],
+    g6: [...commonSubjects, aiAndBlockchainSubject],
+    g7: [...commonSubjects, pastoralInstruction, aiAndBlockchainSubject],
+    g8: [...commonSubjects, pastoralInstruction, aiAndBlockchainSubject],
+    g9: [...commonSubjects, pastoralInstruction, aiAndBlockchainSubject],
 };
 
 const levelColors = ["bg-teal-500", "bg-amber-500"];
@@ -109,11 +112,15 @@ export default function StudentJourneyPage() {
     
     const handleSubjectSelect = useCallback((subjectName: string) => {
         setSelectedSubject(subjectName);
-        setStep('chat');
+        if (subjectName === 'AI & Blockchain') {
+            setStep('content');
+        } else {
+            setStep('chat');
+        }
     }, []);
 
     const handleGoBack = useCallback(() => {
-        if (step === 'chat') {
+        if (step === 'chat' || step === 'content') {
             setSelectedSubject(null);
             setStep('subject');
         } else if (step === 'subject') {
@@ -148,6 +155,8 @@ export default function StudentJourneyPage() {
 
     const renderContent = () => {
         switch (step) {
+            case 'content':
+                return <BlockchainCurriculumDisplay onBack={handleGoBack} />;
             case 'chat':
                 if (selectedSubject && selectedGrade) {
                     return <ChatInterface subject={selectedSubject} grade={selectedGrade} onBack={handleGoBack} />;
@@ -249,10 +258,11 @@ export default function StudentJourneyPage() {
     
     const showHeader = step !== 'chat';
 
-    if (step === 'chat') {
+    if (step === 'chat' || step === 'content') {
         return (
              <div className="flex flex-col w-full h-screen sm:h-[95vh] max-w-4xl mx-auto overflow-hidden">
-                <ChatInterface subject={selectedSubject!} grade={selectedGrade!} onBack={handleGoBack} />
+                {step === 'chat' && <ChatInterface subject={selectedSubject!} grade={selectedGrade!} onBack={handleGoBack} />}
+                {step === 'content' && <BlockchainCurriculumDisplay onBack={handleGoBack} />}
              </div>
         )
     }
