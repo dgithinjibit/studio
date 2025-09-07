@@ -11,11 +11,18 @@ import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
 import type { MwalimuAiTutorInput } from '@/ai/flows/mwalimu-ai-types';
 import { Loader2, Send, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { StudentHeader } from '@/components/layout/student-header';
 
 type Message = {
     role: 'user' | 'model';
     content: string;
 };
+
+// Mock user data for personalization
+const mockUser = {
+    fullName: 'Asha Juma'
+};
+const studentFirstName = mockUser.fullName.split(' ')[0];
 
 export default function ChatInterface({ subject }: { subject: string }) {
     const searchParams = useSearchParams();
@@ -79,18 +86,19 @@ export default function ChatInterface({ subject }: { subject: string }) {
     };
 
     return (
-        <div className="flex h-screen w-full items-center justify-center bg-muted/40">
-            <Card className="w-full max-w-2xl h-[90vh] flex flex-col">
-                <CardHeader className='border-b flex flex-row items-center justify-between'>
-                     <Button variant="ghost" onClick={() => router.back()}>
-                        <ArrowLeft className="mr-2"/> Back
-                    </Button>
-                    <div className="text-center">
+        <div className="flex h-screen w-full items-center justify-center bg-muted/40 p-4">
+            <Card className="w-full max-w-2xl h-[95vh] flex flex-col">
+                <CardHeader className='border-b'>
+                     <StudentHeader 
+                        showBackButton={true} 
+                        onBack={() => router.back()} 
+                        studentFirstName={studentFirstName} 
+                     />
+                     <div className="text-center pt-2">
                         <CardTitle className="font-headline text-2xl">
                             Mwalimu AI: {subject} ({gradeName})
                         </CardTitle>
                     </div>
-                    <div className="w-20"></div> {/* Spacer to balance title */}
                 </CardHeader>
                 <CardContent className="flex-1 overflow-hidden p-0">
                     <ScrollArea className="h-full" ref={scrollAreaRef}>

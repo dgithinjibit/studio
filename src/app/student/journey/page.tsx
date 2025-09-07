@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake, User } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
+import { StudentHeader } from '@/components/layout/student-header';
 
 type Step = 'level' | 'sub-level' | 'grade' | 'subject';
 
@@ -151,6 +152,8 @@ export default function StudentJourneyPage() {
             setStep('level');
         }
     };
+    
+    const showBackButton = step !== 'level';
 
     const renderStep = () => {
         switch (step) {
@@ -175,15 +178,9 @@ export default function StudentJourneyPage() {
                 const subLevels = selectedLevel ? subLevelsMap[selectedLevel] : [];
                 return (
                      <Card className="w-full">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                             <Button variant="ghost" onClick={goBack}>
-                                <ArrowLeft className="mr-2"/> Back 
-                            </Button>
-                            <div className="text-center">
-                                <CardTitle>Step 2: Narrow It Down</CardTitle>
-                                 <CardDescription>Let's get more specific.</CardDescription>
-                             </div>
-                             <div className="w-20"></div> {/* Spacer */}
+                        <CardHeader>
+                             <CardTitle>Step 2: Narrow It Down</CardTitle>
+                             <CardDescription>Let's get more specific.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {subLevels.map((sub) => (
@@ -199,15 +196,9 @@ export default function StudentJourneyPage() {
                 const grades = selectedSubLevel ? gradesMap[selectedSubLevel] : [];
                 return (
                     <Card className="w-full">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <Button variant="ghost" onClick={goBack}>
-                                <ArrowLeft className="mr-2"/> Back 
-                            </Button>
-                             <div className="text-center">
-                                <CardTitle>Step 3: Pick Your Grade</CardTitle>
-                                 <CardDescription>Almost there! Which grade are you in?</CardDescription>
-                            </div>
-                            <div className="w-20"></div> {/* Spacer */}
+                        <CardHeader>
+                            <CardTitle>Step 3: Pick Your Grade</CardTitle>
+                            <CardDescription>Almost there! Which grade are you in?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             {grades.map((grade) => (
@@ -223,15 +214,9 @@ export default function StudentJourneyPage() {
                  const gradeName = `Grade ${selectedGrade?.replace('g', '')}`
                 return (
                     <Card className="w-full">
-                         <CardHeader className="flex flex-row items-center justify-between">
-                           <Button variant="ghost" onClick={goBack}>
-                                <ArrowLeft className="mr-2"/> Back 
-                            </Button>
-                             <div className="text-center">
-                                <CardTitle>Step 4: Choose Your Subject</CardTitle>
-                                <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
-                            </div>
-                            <div className="w-20"></div> {/* Spacer */}
+                         <CardHeader>
+                            <CardTitle>Step 4: Choose Your Subject</CardTitle>
+                            <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                            {subjects.map((subject) => (
@@ -253,18 +238,11 @@ export default function StudentJourneyPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
             <div className="w-full max-w-4xl">
-                 <div className="text-center mb-8 relative">
-                    <h1 className="font-headline text-4xl font-bold">Karibu, {studentFirstName}!</h1>
-                    <p className="text-muted-foreground text-lg mt-2">
-                        I’m Mwalimu AI, your friendly Socratic Mentor. I'm here to guide you through learning by asking questions that spark your curiosity and help you discover answers on your own.
-                    </p>
-                    <Button variant="outline" asChild className="absolute top-0 right-0">
-                        <Link href="/student/profile">
-                            <User className="mr-2" />
-                            Profile
-                        </Link>
-                    </Button>
-                </div>
+                 <StudentHeader 
+                    showBackButton={showBackButton} 
+                    onBack={goBack} 
+                    studentFirstName={studentFirstName} 
+                 />
                 {renderStep()}
             </div>
         </div>

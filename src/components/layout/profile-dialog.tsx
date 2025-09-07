@@ -1,13 +1,19 @@
 
 "use client";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Mock user data for personalization
@@ -19,8 +25,7 @@ const mockUser = {
 };
 
 
-export default function ProfilePage() {
-    const router = useRouter();
+export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
     const { toast } = useToast();
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -30,34 +35,29 @@ export default function ProfilePage() {
             title: "Profile Updated",
             description: "Your changes have been saved successfully.",
         });
+        onOpenChange(false); // Close dialog on save
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-            <Card className="w-full max-w-2xl">
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                         <Button variant="ghost" size="icon" onClick={() => router.back()}>
-                            <ArrowLeft />
-                        </Button>
-                        <CardTitle className="font-headline text-2xl">Your Profile</CardTitle>
-                        <div className="w-10"></div> {/* Spacer */}
-                    </div>
-                    <CardDescription className="text-center pt-2">
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle className="font-headline text-2xl text-center">Your Profile</DialogTitle>
+                    <DialogDescription className="text-center">
                         View and edit your personal information.
-                    </CardDescription>
-                </CardHeader>
+                    </DialogDescription>
+                </DialogHeader>
                 <form onSubmit={handleSubmit}>
-                    <CardContent className="space-y-6">
+                    <div className="space-y-6 py-4">
                         <div className="flex flex-col items-center space-y-4">
                              <Avatar className="h-24 w-24">
                                 <AvatarImage src={mockUser.avatar} alt={mockUser.fullName} />
                                 <AvatarFallback>{mockUser.fullName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                             <Button variant="outline" size="sm">Change Picture</Button>
+                             <Button variant="outline" size="sm" type="button">Change Picture</Button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4 px-4">
                              <div className="space-y-2">
                                 <Label htmlFor="fullName">Full Name</Label>
                                 <Input id="fullName" defaultValue={mockUser.fullName} />
@@ -71,13 +71,12 @@ export default function ProfilePage() {
                                 <Input id="school" defaultValue={mockUser.school} />
                             </div>
                         </div>
-
-                    </CardContent>
-                    <CardFooter>
+                    </div>
+                    <DialogFooter>
                         <Button type="submit" className="w-full">Save Changes</Button>
-                    </CardFooter>
+                    </DialogFooter>
                 </form>
-            </Card>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 }
