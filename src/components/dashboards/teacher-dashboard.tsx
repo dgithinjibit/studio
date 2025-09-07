@@ -1,6 +1,6 @@
 
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, ClipboardList, CalendarDays, HelpCircle, GraduationCap, Mail, Library, CopySlash } from "lucide-react";
@@ -84,6 +84,10 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
+
+    useEffect(() => {
+        setTeacher(initialTeacher);
+    }, [initialTeacher]);
 
     const chartData = teacher.classes.map(c => ({ 
         name: c.name.replace(' English', '').replace(' Literature', ''), 
