@@ -108,11 +108,17 @@ function SignupFormComponent() {
                         </Button>
                     </form>
                 </CardContent>
-                 <CardFooter className="flex flex-col gap-4">
+                 <CardFooter className="flex flex-col gap-4 text-center">
                     <p className="text-xs text-muted-foreground">
                         Already have an account?{' '}
                         <Link href="/login" className="underline font-medium hover:text-primary">
                             Sign In
+                        </Link>
+                    </p>
+                     <p className="text-xs text-muted-foreground">
+                        Changed your mind?{' '}
+                        <Link href="/signup" className="underline font-medium hover:text-primary">
+                            Go back to role selection
                         </Link>
                     </p>
                 </CardFooter>
