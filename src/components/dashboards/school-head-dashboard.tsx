@@ -137,6 +137,7 @@ export function SchoolHeadDashboard() {
                 <TabsList className="mb-4">
                     <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
                     <TabsTrigger value="resources">Resource Management</TabsTrigger>
+                    <TabsTrigger value="staff">Staff Management</TabsTrigger>
                     <TabsTrigger value="communications">Communications</TabsTrigger>
                 </TabsList>
                 <TabsContent value="dashboard" className="space-y-6">
@@ -246,8 +247,12 @@ export function SchoolHeadDashboard() {
                             ))}
                         </CardContent>
                     </Card>
-
-                     <Card>
+                </TabsContent>
+                 <TabsContent value="resources">
+                    <MyResources />
+                </TabsContent>
+                <TabsContent value="staff">
+                    <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Briefcase className="text-primary w-6 h-6"/>
@@ -265,9 +270,6 @@ export function SchoolHeadDashboard() {
                             </Button>
                         </CardContent>
                     </Card>
-                </TabsContent>
-                 <TabsContent value="resources">
-                    <MyResources />
                 </TabsContent>
                  <TabsContent value="communications">
                     <Card>
@@ -305,3 +307,5 @@ export function SchoolHeadDashboard() {
         </>
     );
 }
+
+    

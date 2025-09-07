@@ -38,7 +38,7 @@ export function AppSidebar() {
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
     { href: "/dashboard/tools", icon: Bot, label: "Teacher Tools", roles: ["teacher"] },
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab", roles: ["teacher"] },
-    { href: "/dashboard/resources", icon: Library, label: "My Resources", roles: ["teacher", "school_head"] },
+    { href: "/dashboard/resources", icon: Library, label: "My Resources", roles: ["teacher"] },
     { href: "/dashboard/staff", icon: Briefcase, label: "Staff", roles: ["school_head"] },
     { href: "/dashboard/communications", icon: Megaphone, label: "Communications", roles: ["school_head"] },
     { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["school_head", "county_officer"] },
@@ -51,7 +51,7 @@ export function AppSidebar() {
         return navItems.filter(item => ['Dashboard', 'Teacher Tools', 'Learning Lab', 'My Resources'].includes(item.label));
     }
     if (role === 'school_head') {
-        return navItems.filter(item => ['Dashboard', 'Staff', 'My Resources', 'Communications', 'Reports'].includes(item.label));
+        return navItems.filter(item => ['Dashboard', 'Staff', 'Communications', 'Reports'].includes(item.label));
     }
      if (role === 'county_officer') {
         return navItems.filter(item => ['Dashboard', 'Reports', 'Schools'].includes(item.label));
@@ -101,3 +101,5 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
+    
