@@ -29,7 +29,7 @@ export const curriculumStructure: MajorLevel[] = [
                     {
                         name: 'PP1',
                         subjects: [
-                            { name: 'CRE', type: 'Core' },
+                            { name: 'Christian Religious Education', type: 'Core' },
                             { name: 'Creative Arts', type: 'Core' },
                             { name: 'Environmental Activities', type: 'Core' },
                             { name: 'Language Activities', type: 'Core' },
@@ -39,7 +39,7 @@ export const curriculumStructure: MajorLevel[] = [
                     {
                         name: 'PP2',
                         subjects: [
-                            { name: 'CRE', type: 'Core' },
+                            { name: 'Christian Religious Education', type: 'Core' },
                             { name: 'Creative Arts', type: 'Core' },
                             { name: 'Environmental Activities', type: 'Core' },
                             { name: 'Language Activities', type: 'Core' },
