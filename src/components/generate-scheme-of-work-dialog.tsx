@@ -27,6 +27,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { Input } from "./ui/input";
 import { grade6SocialStudiesCurriculum } from "@/curriculum/grade6-social-studies";
 import { pp1CreCurriculum } from "@/curriculum/pp1-cre";
+import { pp2CreCurriculum } from "@/curriculum/pp2-cre";
 import { pp1CreativeArtsCurriculum } from "@/curriculum/pp1-creative-arts";
 import { pp1EnvironmentalActivitiesCurriculum } from "@/curriculum/pp1-environmental-activities";
 import { pp1LanguageActivitiesCurriculum } from "@/curriculum/pp1-language-activities";
@@ -77,6 +78,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }
     if (selectedGrade === "PP1" && selectedSubject === "Christian Religious Education") {
       return pp1CreCurriculum;
+    }
+     if (selectedGrade === "PP2" && selectedSubject === "Christian Religious Education") {
+      return pp2CreCurriculum;
     }
     if (selectedGrade === "PP1" && selectedSubject === "Creative Activities") {
       return pp1CreativeArtsCurriculum;
