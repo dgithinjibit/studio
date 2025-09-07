@@ -21,6 +21,9 @@ import '@/ai/flows/school-head-consultant-types.ts';
 import '@/ai/flows/generate-county-summary.ts';
 import '@/ai/flows/generate-county-summary-types.ts';
 import '@/ai/flows/ingest-curriculum.ts';
+import '@/curriculum/pp1-mathematics-activities.ts';
+import '@/curriculum/pp1-language-activities.ts';
+
 
 
 

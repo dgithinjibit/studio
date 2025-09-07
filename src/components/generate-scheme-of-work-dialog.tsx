@@ -29,6 +29,8 @@ import { grade6SocialStudiesCurriculum } from "@/curriculum/grade6-social-studie
 import { pp1CreCurriculum } from "@/curriculum/pp1-cre";
 import { pp1CreativeArtsCurriculum } from "@/curriculum/pp1-creative-arts";
 import { pp1EnvironmentalActivitiesCurriculum } from "@/curriculum/pp1-environmental-activities";
+import { pp1LanguageActivitiesCurriculum } from "@/curriculum/pp1-language-activities";
+import { pp1MathematicsActivitiesCurriculum } from "@/curriculum/pp1-mathematics-activities";
 import { curriculumStructure } from "@/lib/curriculum-structure";
 
 
@@ -81,6 +83,12 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }
     if (selectedGrade === "PP1" && selectedSubject === "Environmental Activities") {
       return pp1EnvironmentalActivitiesCurriculum;
+    }
+    if (selectedGrade === "PP1" && selectedSubject === "Language Activities") {
+      return pp1LanguageActivitiesCurriculum;
+    }
+    if (selectedGrade === "PP1" && selectedSubject === "Mathematical Activities") {
+        return pp1MathematicsActivitiesCurriculum;
     }
     return null;
   }, [selectedGrade, selectedSubject]);

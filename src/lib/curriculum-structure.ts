@@ -33,7 +33,7 @@ export const curriculumStructure: MajorLevel[] = [
                             { name: 'Creative Activities', type: 'Core' },
                             { name: 'Environmental Activities', type: 'Core' },
                             { name: 'Language Activities', type: 'Core' },
-                            { name: 'Mathematics Activities', type: 'Core' },
+                            { name: 'Mathematical Activities', type: 'Core' },
                         ]
                     },
                     {
@@ -43,7 +43,7 @@ export const curriculumStructure: MajorLevel[] = [
                             { name: 'Creative Activities', type: 'Core' },
                             { name: 'Environmental Activities', type: 'Core' },
                             { name: 'Language Activities', type: 'Core' },
-                            { name: 'Mathematics Activities', type: 'Core' },
+                            { name: 'Mathematical Activities', type: 'Core' },
                         ]
                     }
                 ]
