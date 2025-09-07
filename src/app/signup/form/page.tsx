@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { mockCounties } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
+import { ArrowLeft } from 'lucide-react';
 
 function SignupFormComponent() {
     const router = useRouter();
@@ -67,8 +68,14 @@ function SignupFormComponent() {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-background">
-            <Card className="w-full max-w-lg">
-                <CardHeader className="text-center">
+            <Card className="w-full max-w-lg relative">
+                 <Link href="/signup" passHref>
+                    <Button variant="ghost" size="icon" className="absolute top-3 left-3">
+                        <ArrowLeft className="h-5 w-5" />
+                         <span className="sr-only">Back to role selection</span>
+                    </Button>
+                </Link>
+                <CardHeader className="text-center pt-12">
                     <CardTitle className="font-headline text-2xl">{getTitle()}</CardTitle>
                     <CardDescription>Join SyncSenta to revolutionize your learning and teaching.</CardDescription>
                 </CardHeader>
@@ -113,12 +120,6 @@ function SignupFormComponent() {
                         Already have an account?{' '}
                         <Link href="/login" className="underline font-medium hover:text-primary">
                             Sign In
-                        </Link>
-                    </p>
-                     <p className="text-xs text-muted-foreground">
-                        Changed your mind?{' '}
-                        <Link href="/signup" className="underline font-medium hover:text-primary">
-                            Go back to role selection
                         </Link>
                     </p>
                 </CardFooter>
