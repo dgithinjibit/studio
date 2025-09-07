@@ -58,7 +58,7 @@ export function AppSidebar() {
           {filteredNavItems.map((item) => (
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton asChild tooltip={item.label}>
-                <Link href={item.href}>
+                <Link href={item.href} prefetch={true}>
                   <item.icon />
                   <span>{item.label}</span>
                 </Link>
@@ -72,7 +72,7 @@ export function AppSidebar() {
         <SidebarMenu>
             <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="Teacher Guide">
-                    <Link href="/dashboard/guide">
+                    <Link href="/dashboard/guide" prefetch={true}>
                         <HelpCircle />
                         <span>Teacher Guide</span>
                     </Link>
