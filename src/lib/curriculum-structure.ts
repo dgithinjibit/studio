@@ -214,5 +214,3 @@ export const curriculumStructure: MajorLevel[] = [
         ]
     }
 ];
-
-    
