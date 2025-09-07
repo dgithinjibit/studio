@@ -1,4 +1,3 @@
-
 /**
  * @fileOverview Curriculum data for Grade 3 Mathematical Activities.
  * 
@@ -27,7 +26,7 @@ export const grade3MathematicsActivitiesCurriculum = {
             "name the position of an object from a reference point using 1st, 2nd up to 20th",
             "in groups of 20, race for a distance and assign each other the correct position using the words first, second up to twentieth position depending on when they finish the race. Write their positions in the race in symbols and in words",
             "in pairs/groups, relate numbers 1 to 20 to positions first, second up to 20th and relate to real life situations. For example, birth order in a family; 1st born, 2nd born",
-            "play games involving position 1 to 20 using digital devices and other resources",
+            "play games involving position 1 to 20 using digital devices or other resources",
           ],
           key_inquiry_questions: [
             "How do we tell our positions in a competition?",
@@ -53,10 +52,8 @@ export const grade3MathematicsActivitiesCurriculum = {
             "in pairs or groups, create number patterns up to 1000 and share with other groups",
             "play games involving whole numbers up to 1000 using digital devices and other resources",
           ],
-          key_inquiry_questions: [
-            "How would you get the total number of people in a group?",
-            "How do you tell the place value of a digit in a number?",
-          ],
+          key_inquiry_questions: ["How would you get the total number of people in a group?",
+            "How do you tell the place value of a digit in a number?",],
         },
         {
           title: "1.3 Addition",
@@ -315,9 +312,7 @@ export const grade3MathematicsActivitiesCurriculum = {
             "in pairs or groups, play games involving moving along a straight line and turning left or right",
             "play digital games involving movement on straight lines and turning to the left and right",
           ],
-          key_inquiry_questions: [
-            "What is the importance of directions in real life situations?",
-          ],
+          key_inquiry_questions: ["What is the importance of directions in real life situations?"],
         },
         {
           title: "3.2 Shapes",
