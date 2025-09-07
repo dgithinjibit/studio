@@ -72,6 +72,7 @@ export const curriculumStructure: MajorLevel[] = [
                            { name: 'Environmental Activities', type: 'Core' },
                            { name: 'Movement and Creative Activities', type: 'Core' },
                            { name: 'Christian Religious Education', type: 'Core' },
+                           { name: 'Indigenous Language Activities', type: 'Core' },
                         ]
                     },
                      {

@@ -39,6 +39,8 @@ import '@/curriculum/grade1-cre.ts';
 import '@/curriculum/grade2-environmental-activities.ts';
 import '@/curriculum/grade2-cre.ts';
 import '@/curriculum/grade2-creative-activities.ts';
+import '@/curriculum/grade2-english-language-activities.ts';
+import '@/curriculum/grade2-indigenous-language.ts';
 
 
 
