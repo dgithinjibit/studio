@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, Copy } from "lucide-react";
 import { generateSchemeOfWork, GenerateSchemeOfWorkInput } from "@/ai/flows/generate-scheme-of-work";
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
 
 interface GenerateSchemeOfWorkDialogProps {
@@ -169,7 +170,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 )}
                 {generatedScheme && (
                     <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 overflow-auto h-[500px] border rounded-md p-2">
-                        <ReactMarkdown>{generatedScheme}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{generatedScheme}</ReactMarkdown>
                     </div>
                 )}
                  {!loading && !generatedScheme && (
