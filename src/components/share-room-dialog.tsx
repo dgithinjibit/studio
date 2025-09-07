@@ -31,16 +31,6 @@ export function ShareRoomDialog({ open, onOpenChange, joinCode, onDialogClose }:
             });
         });
     };
-    
-    const handleCopyLink = () => {
-        const joinUrl = `${window.location.origin}/student/journey`;
-         navigator.clipboard.writeText(joinUrl).then(() => {
-            toast({
-                title: "Join Link Copied!",
-                description: "Share this link with your students. They will need to enter the code.",
-            });
-        });
-    }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -51,7 +41,7 @@ export function ShareRoomDialog({ open, onOpenChange, joinCode, onDialogClose }:
         <div className="py-4 space-y-6 text-center">
             
             <div className="flex flex-col items-center justify-center bg-muted/50 p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">Students can visit your school's student portal and enter the code below.</p>
+                <p className="text-sm text-muted-foreground">Students can visit the student portal and enter the code below.</p>
                 <div className="my-4 flex items-center gap-2">
                     <pre className="text-2xl font-bold text-primary bg-background p-3 rounded-lg">{joinCode}</pre>
                     <Button variant="ghost" size="icon" onClick={handleCopyCode}>
