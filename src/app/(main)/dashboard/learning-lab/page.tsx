@@ -12,6 +12,15 @@ import type { TeacherResource } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { ShareRoomDialog } from "@/components/share-room-dialog";
 
+function generateJoinCode(length: number) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
 export default function LearningLabPage() {
     const [loading, setLoading] = useState(false);
     const [context, setContext] = useState("");
@@ -39,7 +48,7 @@ export default function LearningLabPage() {
 
         setLoading(true);
 
-        const resourceId = `studytour_${Date.now()}`;
+        const resourceId = generateJoinCode(7);
 
         const newResource: TeacherResource = {
           id: resourceId,
