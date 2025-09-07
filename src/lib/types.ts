@@ -72,7 +72,7 @@ export type School = {
 export type TeacherResource = {
   id: string;
   title: string;
-  content: string;
+  url: string;
   createdAt: string;
   type: 'Lesson Plan' | 'Scheme of Work' | 'Rubric' | 'Worksheet' | 'Differentiated Worksheet' | 'AI Tutor Context' | 'Other';
 };
@@ -82,7 +82,7 @@ export type Communication = {
   title: string;
   content: string;
   recipient: string;
-  date: Date;
+  date: string;
   acknowledged: boolean;
   sender?: string;
 };

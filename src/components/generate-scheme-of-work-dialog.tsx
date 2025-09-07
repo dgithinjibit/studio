@@ -22,6 +22,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { storage, db } from '@/lib/firebase';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
+
 
 interface GenerateSchemeOfWorkDialogProps {
     open: boolean;
@@ -63,27 +67,44 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!generatedScheme) return;
     
-    const newResource: TeacherResource = {
-      id: `scheme_${Date.now()}`,
-      title: `${currentSubStrand} - Scheme of Work`,
-      content: generatedScheme,
-      createdAt: new Date().toISOString(),
-      type: 'Scheme of Work'
-    };
+    setLoading(true);
 
-    const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-    localStorage.setItem("teacherResources", JSON.stringify([newResource, ...existingResources]));
-    
-    toast({
-      title: "Scheme of Work Saved!",
-      description: `"${newResource.title}" has been added to your resources.`,
-    });
+    try {
+        const fileName = `schemes_of_work/${Date.now()}_${currentSubStrand.replace(/\s+/g, '_')}.md`;
+        const storageRef = ref(storage, fileName);
+        
+        await uploadString(storageRef, generatedScheme, 'raw', { contentType: 'text/markdown' });
+        const downloadURL = await getDownloadURL(storageRef);
 
-    onOpenChange(false);
-    onResourceSaved();
+        const newResource: Omit<TeacherResource, 'id'> = {
+          title: `${currentSubStrand} - Scheme of Work`,
+          url: downloadURL,
+          createdAt: new Date().toISOString(),
+          type: 'Scheme of Work'
+        };
+
+        await addDoc(collection(db, "teacherResources"), newResource);
+        
+        toast({
+          title: "Scheme of Work Saved!",
+          description: `"${newResource.title}" has been added to your library.`,
+        });
+
+        onOpenChange(false);
+        onResourceSaved();
+    } catch (error) {
+        console.error("Error saving scheme of work:", error);
+        toast({
+            variant: "destructive",
+            title: "Error Saving Scheme",
+            description: "Could not save the scheme of work to the cloud. Please try again."
+        });
+    } finally {
+        setLoading(false);
+    }
   };
 
 
@@ -193,8 +214,8 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                             <Button variant="ghost" size="icon" onClick={handleCopy}>
                                 <Copy className="h-4 w-4" />
                             </Button>
-                             <Button onClick={handleSave}>
-                                <Save className="mr-2 h-4 w-4" />
+                             <Button onClick={handleSave} disabled={loading}>
+                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 Save
                             </Button>
                         </div>

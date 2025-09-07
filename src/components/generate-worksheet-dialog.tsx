@@ -22,6 +22,9 @@ import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Slider } from "./ui/slider";
+import { storage, db } from '@/lib/firebase';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
 
 interface GenerateWorksheetDialogProps {
     open: boolean;
@@ -44,27 +47,43 @@ export function GenerateWorksheetDialog({ open, onOpenChange, onResourceSaved }:
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!generatedWorksheet) return;
-    
-    const newResource: TeacherResource = {
-      id: `worksheet_${Date.now()}`,
-      title: `${currentTopic || 'Untitled Worksheet'}`,
-      content: generatedWorksheet,
-      createdAt: new Date().toISOString(),
-      type: 'Worksheet'
-    };
+    setLoading(true);
 
-    const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-    localStorage.setItem("teacherResources", JSON.stringify([newResource, ...existingResources]));
-    
-    toast({
-      title: "Worksheet Saved!",
-      description: `"${newResource.title}" has been added to your resources.`,
-    });
+    try {
+        const fileName = `worksheets/${Date.now()}_${currentTopic.replace(/\s+/g, '_')}.md`;
+        const storageRef = ref(storage, fileName);
 
-    onOpenChange(false);
-    onResourceSaved();
+        await uploadString(storageRef, generatedWorksheet, 'raw', { contentType: 'text/markdown' });
+        const downloadURL = await getDownloadURL(storageRef);
+
+        const newResource: Omit<TeacherResource, 'id'> = {
+          title: `${currentTopic || 'Untitled Worksheet'}`,
+          url: downloadURL,
+          createdAt: new Date().toISOString(),
+          type: 'Worksheet'
+        };
+        
+        await addDoc(collection(db, "teacherResources"), newResource);
+        
+        toast({
+          title: "Worksheet Saved!",
+          description: `"${newResource.title}" has been added to your library.`,
+        });
+
+        onOpenChange(false);
+        onResourceSaved();
+    } catch (error) {
+        console.error("Error saving worksheet:", error);
+        toast({
+            variant: "destructive",
+            title: "Error Saving Worksheet",
+            description: "Could not save the worksheet to the cloud. Please try again."
+        });
+    } finally {
+        setLoading(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -156,8 +175,8 @@ export function GenerateWorksheetDialog({ open, onOpenChange, onResourceSaved }:
                             <Button variant="ghost" size="icon" onClick={handleCopy}>
                                 <Copy className="h-4 w-4" />
                             </Button>
-                             <Button onClick={handleSave}>
-                                <Save className="mr-2 h-4 w-4" />
+                             <Button onClick={handleSave} disabled={loading}>
+                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 Save
                             </Button>
                         </div>

@@ -23,6 +23,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { storage, db } from '@/lib/firebase';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
 
 interface GenerateRubricDialogProps {
     open: boolean;
@@ -46,27 +49,43 @@ export function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: Ge
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!generatedRubric) return;
+    setLoading(true);
     
-    const newResource: TeacherResource = {
-      id: `rubric_${Date.now()}`,
-      title: `${currentAssignment || 'Untitled Rubric'}`,
-      content: generatedRubric,
-      createdAt: new Date().toISOString(),
-      type: 'Rubric'
-    };
+    try {
+        const fileName = `rubrics/${Date.now()}_${currentAssignment.replace(/\s+/g, '_')}.md`;
+        const storageRef = ref(storage, fileName);
+        
+        await uploadString(storageRef, generatedRubric, 'raw', { contentType: 'text/markdown' });
+        const downloadURL = await getDownloadURL(storageRef);
 
-    const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-    localStorage.setItem("teacherResources", JSON.stringify([newResource, ...existingResources]));
-    
-    toast({
-      title: "Rubric Saved!",
-      description: `"${newResource.title}" has been added to your resources.`,
-    });
+        const newResource: Omit<TeacherResource, 'id'> = {
+          title: `${currentAssignment || 'Untitled Rubric'}`,
+          url: downloadURL,
+          createdAt: new Date().toISOString(),
+          type: 'Rubric'
+        };
+        
+        await addDoc(collection(db, "teacherResources"), newResource);
+        
+        toast({
+          title: "Rubric Saved!",
+          description: `"${newResource.title}" has been added to your library.`,
+        });
 
-    onOpenChange(false);
-    onResourceSaved();
+        onOpenChange(false);
+        onResourceSaved();
+    } catch (error) {
+        console.error("Error saving rubric:", error);
+        toast({
+            variant: "destructive",
+            title: "Error Saving Rubric",
+            description: "Could not save the rubric to the cloud. Please try again."
+        })
+    } finally {
+        setLoading(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -173,8 +192,8 @@ export function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: Ge
                             <Button variant="ghost" size="icon" onClick={handleCopy}>
                                 <Copy className="h-4 w-4" />
                             </Button>
-                             <Button onClick={handleSave}>
-                                <Save className="mr-2 h-4 w-4" />
+                             <Button onClick={handleSave} disabled={loading}>
+                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 Save
                             </Button>
                         </div>

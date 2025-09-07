@@ -21,6 +21,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { storage, db } from '@/lib/firebase';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
 
 
 const differentiationLevels = [
@@ -55,32 +58,48 @@ export function DifferentiateWorksheetDialog({ open, onOpenChange, onResourceSav
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (generatedContent.length === 0) return;
+    setLoading(true);
     
     const contentToSave = [
       { level: "Original", content: originalContent },
       ...generatedContent
     ].map(item => `## ${item.level}\n\n${item.content}`).join("\n\n---\n\n");
 
-    const newResource: TeacherResource = {
-      id: `diff_${Date.now()}`,
-      title: `Differentiated - ${currentTopic}`,
-      content: contentToSave,
-      createdAt: new Date().toISOString(),
-      type: 'Differentiated Worksheet'
-    };
+    try {
+        const fileName = `differentiated_worksheets/${Date.now()}_${currentTopic.replace(/\s+/g, '_')}.md`;
+        const storageRef = ref(storage, fileName);
+        
+        await uploadString(storageRef, contentToSave, 'raw', { contentType: 'text/markdown' });
+        const downloadURL = await getDownloadURL(storageRef);
 
-    const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-    localStorage.setItem("teacherResources", JSON.stringify([newResource, ...existingResources]));
-    
-    toast({
-      title: "Worksheet Saved!",
-      description: `"${newResource.title}" has been added to your resources.`,
-    });
+        const newResource: Omit<TeacherResource, 'id'> = {
+          title: `Differentiated - ${currentTopic}`,
+          url: downloadURL,
+          createdAt: new Date().toISOString(),
+          type: 'Differentiated Worksheet'
+        };
 
-    onOpenChange(false);
-    onResourceSaved();
+        await addDoc(collection(db, "teacherResources"), newResource);
+        
+        toast({
+          title: "Worksheet Saved!",
+          description: `"${newResource.title}" has been added to your library.`,
+        });
+
+        onOpenChange(false);
+        onResourceSaved();
+    } catch (error) {
+        console.error("Error saving differentiated worksheet:", error);
+        toast({
+            variant: "destructive",
+            title: "Error Saving Worksheet",
+            description: "Could not save the worksheet to the cloud. Please try again."
+        });
+    } finally {
+        setLoading(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -196,8 +215,8 @@ export function DifferentiateWorksheetDialog({ open, onOpenChange, onResourceSav
                  <div className="flex justify-between items-center mb-2">
                     <h3 className="font-bold">Generated Versions:</h3>
                     {generatedContent.length > 0 && (
-                        <Button onClick={handleSave} size="sm">
-                            <Save className="mr-2 h-4 w-4" />
+                        <Button onClick={handleSave} size="sm" disabled={loading}>
+                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                             Save All
                         </Button>
                     )}

@@ -20,6 +20,10 @@ import { Loader2, Copy, Save, Sparkles, Send } from "lucide-react";
 import { generateLessonPlan, GenerateLessonPlanInput } from "@/ai/flows/generate-lesson-plan";
 import { improveLessonPlan } from "@/ai/flows/improve-lesson-plan";
 import type { TeacherResource } from "@/lib/types";
+import { storage, db } from '@/lib/firebase';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
+
 
 interface GenerateLessonPlanDialogProps {
     open: boolean;
@@ -44,27 +48,43 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
     });
   };
   
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!generatedPlan) return;
     
-    const newPlan: TeacherResource = {
-      id: `lesson_${Date.now()}`,
-      title: currentTopic || "Untitled Lesson Plan",
-      content: generatedPlan,
-      createdAt: new Date().toISOString(),
-      type: 'Lesson Plan'
-    };
+    setLoading(true);
+    try {
+        const fileName = `lesson_plans/${Date.now()}_${currentTopic.replace(/\s+/g, '_')}.txt`;
+        const storageRef = ref(storage, fileName);
+        
+        await uploadString(storageRef, generatedPlan, 'raw');
+        const downloadURL = await getDownloadURL(storageRef);
 
-    const existingResources = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-    localStorage.setItem("teacherResources", JSON.stringify([newPlan, ...existingResources]));
-    
-    toast({
-      title: "Lesson Plan Saved!",
-      description: `"${newPlan.title}" has been added to your resources.`,
-    });
+        const newPlan: Omit<TeacherResource, 'id'> = {
+            title: currentTopic || "Untitled Lesson Plan",
+            url: downloadURL,
+            createdAt: new Date().toISOString(),
+            type: 'Lesson Plan'
+        };
 
-    onOpenChange(false);
-    onResourceSaved(); // Notify parent to switch tabs
+        await addDoc(collection(db, "teacherResources"), newPlan);
+
+        toast({
+          title: "Lesson Plan Saved!",
+          description: `"${newPlan.title}" has been saved to your library.`,
+        });
+
+        onOpenChange(false);
+        onResourceSaved();
+    } catch (error) {
+        console.error("Error saving lesson plan:", error);
+        toast({
+            variant: "destructive",
+            title: "Error Saving Plan",
+            description: "Could not save the lesson plan to the cloud. Please try again."
+        })
+    } finally {
+        setLoading(false);
+    }
   };
 
   const handleInitialSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -182,7 +202,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
 
         {(loading || generatedPlan) && (
              <div className="flex-1 flex flex-col min-h-0 border-t pt-4">
-                {loading && (
+                {loading && !generatedPlan && (
                     <div className="flex-1 flex items-center justify-center">
                         <Loader2 className="h-10 w-10 animate-spin text-primary" />
                     </div>
@@ -196,8 +216,8 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
                             <Button variant="ghost" size="sm" onClick={handleCopy} title="Copy plan">
                                 <Copy className="h-4 w-4" /> Copy
                             </Button>
-                            <Button onClick={handleSave} title="Save to resources">
-                                <Save className="mr-2 h-4 w-4" />
+                            <Button onClick={handleSave} title="Save to resources" disabled={loading}>
+                                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 Save & Close
                             </Button>
                         </div>

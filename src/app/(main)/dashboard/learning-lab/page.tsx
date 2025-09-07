@@ -11,9 +11,13 @@ import { Loader2, Save, FlaskConical } from "lucide-react";
 import type { TeacherResource } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { ShareRoomDialog } from "@/components/share-room-dialog";
+import { storage, db } from '@/lib/firebase';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
+
 
 function generateJoinCode(length: number) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -35,7 +39,7 @@ export default function LearningLabPage() {
         window.dispatchEvent(new CustomEvent('resource-update'));
     }
 
-    const handleSaveToRoom = () => {
+    const handleSaveToRoom = async () => {
         if (!context.trim()) {
             toast({
                 variant: "destructive",
@@ -47,29 +51,44 @@ export default function LearningLabPage() {
 
         setLoading(true);
 
-        const resourceId = generateJoinCode(7);
+        try {
+            const resourceId = generateJoinCode(7);
+            const fileName = `ai_tutor_contexts/${resourceId}.txt`;
+            const storageRef = ref(storage, fileName);
 
-        const newResource: TeacherResource = {
-          id: resourceId,
-          title: `Study Bot - ${new Date().toLocaleString()}`,
-          content: context,
-          createdAt: new Date().toISOString(),
-          type: 'AI Tutor Context'
-        };
+            await uploadString(storageRef, context, 'raw');
+            const downloadURL = await getDownloadURL(storageRef);
 
-        const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-        
-        localStorage.setItem("teacherResources", JSON.stringify([newResource, ...existingResources]));
-        
-        toast({
-          title: "Study Bot Room Saved!",
-          description: "Your new learning room is ready to be shared.",
-        });
+            const newResource: Omit<TeacherResource, 'id'> & {joinCode: string, originalContent: string} = {
+              title: `Study Bot - ${new Date().toLocaleString()}`,
+              url: downloadURL,
+              createdAt: new Date().toISOString(),
+              type: 'AI Tutor Context',
+              joinCode: resourceId,
+              originalContent: context
+            };
+            
+            await addDoc(collection(db, "teacherResources"), newResource);
+            
+            toast({
+              title: "Study Bot Room Saved!",
+              description: "Your new learning room is ready to be shared.",
+            });
 
-        setShareCode(resourceId);
-        setShareDialogOpen(true);
-        setLoading(false);
-        onResourceSaved();
+            setShareCode(resourceId);
+            setShareDialogOpen(true);
+            onResourceSaved();
+
+        } catch (error) {
+            console.error("Error saving AI Tutor context:", error);
+            toast({
+                variant: "destructive",
+                title: "Error Saving Room",
+                description: "Could not save the room to the cloud. Please try again."
+            })
+        } finally {
+            setLoading(false);
+        }
     };
     
     const handleDialogClose = () => {
