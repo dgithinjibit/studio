@@ -21,7 +21,7 @@ export default function StudentChatPage() {
 
     useEffect(() => {
         // This effect runs on the client side to retrieve all necessary data from localStorage.
-        const subject = (params.subject as string) || 'General';
+        const subject = decodeURIComponent((params.subject as string) || 'General');
         const grade = localStorage.getItem('studentGrade') || 'g4';
         const studentFirstName = (localStorage.getItem('studentName') || 'Student').split(' ')[0];
         
