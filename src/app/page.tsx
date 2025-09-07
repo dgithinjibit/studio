@@ -22,7 +22,7 @@ export default function HomePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-            <Button onClick={() => router.push('/signup/form?role=teacher')} size="lg" className="w-full">
+            <Button onClick={() => router.push('/signup')} size="lg" className="w-full">
                 Create a Free Account
                 <ArrowRight className="ml-2" />
             </Button>
