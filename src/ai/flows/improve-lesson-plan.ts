@@ -5,23 +5,16 @@
  * @fileOverview AI agent to improve an existing lesson plan based on user feedback.
  *
  * - improveLessonPlan - A function that handles the lesson plan improvement process.
- * - ImproveLessonPlanInput - The input type for the improveLessonPlan function.
- * - ImproveLessonPlanOutput - The return type for the improveLessonPlan function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+  ImproveLessonPlanInput,
+  ImproveLessonPlanInputSchema,
+  ImproveLessonPlanOutput,
+  ImproveLessonPlanOutputSchema,
+} from './improve-lesson-plan-types';
 
-export const ImproveLessonPlanInputSchema = z.object({
-  lessonPlan: z.string().describe('The current version of the lesson plan to be improved.'),
-  request: z.string().describe("The user's request for how to improve the lesson plan (e.g., 'make it more interactive', 'add a section for special needs students')."),
-});
-export type ImproveLessonPlanInput = z.infer<typeof ImproveLessonPlanInputSchema>;
-
-export const ImproveLessonPlanOutputSchema = z.object({
-  revisedLessonPlan: z.string().describe('The newly revised lesson plan based on the user request.'),
-});
-export type ImproveLessonPlanOutput = z.infer<typeof ImproveLessonPlanOutputSchema>;
 
 export async function improveLessonPlan(
   input: ImproveLessonPlanInput
@@ -60,4 +53,5 @@ const improveLessonPlanFlow = ai.defineFlow(
     return { revisedLessonPlan: output!.revisedLessonPlan };
   }
 );
+
 
