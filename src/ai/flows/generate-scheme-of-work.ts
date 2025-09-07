@@ -59,37 +59,22 @@ You MUST use the following curriculum details as the primary source of truth for
 **CRITICAL INSTRUCTIONS FOR LEARNING ACTIVITIES:**
 When generating the "Learning Activities", you MUST structure them according to the three CBC domains of learning. Use the following framework as your guide. Be creative and specific.
 
-1.  **Knowledge (Cognitive Domain):** Focus on intellectual skills. What will learners *know* or *understand*?
-    -   **Remembering:** Learners list, define, recite, recall, identify, name.
-    -   **Understanding:** Learners describe, explain, summarize, interpret, discuss.
-    -   **Applying:** Learners apply, use, demonstrate, solve, model, present.
-    -   **Analyzing:** Learners classify, break down, compare, contrast, examine, simplify.
-    -   **Evaluating:** Learners choose, support, judge, argue, justify, convince, evaluate.
-    -   **Creating:** Learners design, formulate, build, invent, generate, modify, develop.
+1.  **Knowledge (Cognitive Domain):** Focus on intellectual skills. What will learners *know* or *understand*? Use verbs like: Remember (list, define, recite), Understand (describe, explain, summarize), Apply (apply, use, demonstrate), Analyze (classify, break down, compare), Evaluate (judge, argue, justify), Create (design, formulate, build).
     *(Example: "Learners brainstorm and list the language groups in Eastern Africa (Remembering). Learners discuss the reasons for migration (Understanding).")*
 
-2.  **Skills (Psychomotor Domain):** Focus on physical skills and performing tasks. What will learners be able to *do*?
-    -   **Basic Movement:** Learners perform simple actions like running, throwing, drawing.
-    -   **Perceptual Abilities:** Learners use sensory cues to guide activity (e.g., using a map, judging distance).
-    -   **Skilled Movements:** Learners adapt movement to achieve goals (e.g., performing a strategic game, creating a dance).
-    -   **Communication:** Learners express themselves through purposeful movement (e.g., role-playing, performing a skit, presenting a project).
+2.  **Skills (Psychomotor Domain):** Focus on physical skills and performing tasks. What will learners be able to *do*? Use verbs like: Basic Movement (perform, run, draw), Perceptual Abilities (use a map, judge distance), Skilled Movements (perform a strategic game, create a dance), Communication (role-play, perform a skit, present).
     *(Example: "Learners draw the movement routes on a map (Perceptual). Learners perform a cultural dance from one of the groups (Skilled).")*
 
-3.  **Attitude (Affective Domain):** Focus on values, interests, and appreciation. What values or feelings will be developed?
-    -   **Receiving:** Learners listen respectfully to others.
-    -   **Responding:** Learners participate in discussions, answer questions, present work.
-    -   **Valuing:** Learners express their own opinions, show appreciation for diversity.
-    -   **Organization:** Learners work in groups, compare different perspectives.
-    -   **Characterization:** Learners demonstrate teamwork, integrity, and responsibility in a group project.
+3.  **Attitude (Affective Domain):** Focus on values, interests, and appreciation. What values or feelings will be developed? Use verbs like: Receiving (listen respectfully), Responding (participate, answer questions), Valuing (express opinions, show appreciation), Organization (work in groups, compare perspectives), Characterization (demonstrate teamwork, integrity).
     *(Example: "Learners work in groups to appreciate the unity and diversity of language groups (Organization). Learners respectfully listen to other groups' presentations (Receiving).")*
 
 The scheme of work must be a Markdown table with the following columns:
 - **Week**: The week number.
 - **Lesson**: The lesson number within the week.
 - **Topic/Sub-Topic**: The specific topic for the lesson, derived from the Sub-Strand.
-- **Learning Outcomes**: Must begin with the exact phrase "By the end of the lesson, the learner should be able to:" followed by a lettered list (e.g., a. b. c.) of specific outcomes. These outcomes must be directly derived from the `schemeOfWorkContext` if provided.
-- **Learning Activities**: Specific learning experiences structured around the CBC pillars (Knowledge, skill, attitude). These activities must be directly derived from the `schemeOfWorkContext` if provided.
-- **Key Inquiry Question(s)**: Socratic questions to provoke critical thinking. These questions must be directly derived from the `schemeOfWorkContext` if provided.
+- **Learning Outcomes**: Must begin with the exact phrase "By the end of the lesson, the learner should be able to:" followed by a lettered list (e.g., a. b. c.) of specific outcomes. These outcomes must be directly derived from the \`schemeOfWorkContext\` if provided.
+- **Learning Activities**: Specific learning experiences structured around the CBC pillars (Knowledge, skill, attitude). These activities must be directly derived from the \`schemeOfWorkContext\` if provided.
+- **Key Inquiry Question(s)**: Socratic questions to provoke critical thinking. These questions must be directly derived from the \`schemeOfWorkContext\` if provided.
 - **Resources**: Learning resources required for the lesson.
 - **Assessment**: The method of assessment to be used (e.g., Oral questions, Observation, Project).
 
