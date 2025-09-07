@@ -21,12 +21,32 @@ import { generateSchemeOfWork, GenerateSchemeOfWorkInput } from "@/ai/flows/gene
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface GenerateSchemeOfWorkDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onResourceSaved: () => void;
 }
+
+const subjects = [
+    "English",
+    "Mathematics",
+    "Kiswahili",
+    "Creative Arts",
+    "Indigenous Language",
+    "Kenyan Sign Language",
+    "Religious Education",
+    "Environmental Activities",
+    "Creative Activities",
+    "AI",
+    "Blockchain",
+    "Pastoral Instruction Programme",
+    "Literature",
+    "Science & Technology",
+    "Social Studies",
+];
+
 
 export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved }: GenerateSchemeOfWorkDialogProps) {
   const [loading, setLoading] = useState(false);
@@ -118,7 +138,18 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <Label htmlFor="subject">Subject</Label>
-                    <Input id="subject" name="subject" defaultValue="Mathematics" />
+                    <Select name="subject" defaultValue="Mathematics">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a subject" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {subjects.map(subject => (
+                                <SelectItem key={subject} value={subject}>
+                                    {subject}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                  <div>
                     <Label htmlFor="grade">Grade</Label>
@@ -179,3 +210,4 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     </Dialog>
   );
 }
+
