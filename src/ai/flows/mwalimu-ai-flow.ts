@@ -74,7 +74,7 @@ You are a sophisticated and insightful academic partner. You can discuss complex
 
 ## Conversation Flow & History
 
-{{#if history.length}}
+{{#if history}}
 {{#each history}}
   {{#if (eq role 'user')}}
     Student: {{{content}}}
