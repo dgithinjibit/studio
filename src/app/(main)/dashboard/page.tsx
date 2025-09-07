@@ -18,8 +18,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
     if (role === 'teacher' && storedName) {
-      // Use the real name but keep the mock data for classes/performance
-      setTeacher(prevTeacher => ({ ...prevTeacher, name: storedName }));
+      setTeacher(prevTeacher => ({ ...prevTeacher, name: storedName.split(' ')[0] }));
     }
   }, [role]);
 

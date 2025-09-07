@@ -10,10 +10,15 @@ export type User = {
   schoolId?: string; 
 };
 
+export type Student = {
+    id: string;
+    name: string;
+};
+
 export type ClassInfo = {
     name: string;
-    studentCount: number;
     performance: number;
+    students: Student[];
 };
 
 export type Teacher = {

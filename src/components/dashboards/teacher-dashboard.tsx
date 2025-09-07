@@ -15,9 +15,10 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import type { Teacher } from '@/lib/types';
+import type { Teacher, ClassInfo } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MyResources } from '@/components/my-resources';
+import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 
 
 interface TeacherDashboardProps {
@@ -73,6 +74,8 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
     const [isLessonPlanDialogOpen, setLessonPlanDialogOpen] = useState(false);
     const [isSchemeOfWorkDialogOpen, setSchemeOfWorkDialogOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("dashboard");
+    const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
+    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(teacher.classes[0]);
 
     const chartData = teacher.classes.map(c => ({ 
         name: c.name.replace(' English', '').replace(' Literature', ''), 
@@ -87,6 +90,11 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
         }
     };
     
+    const handleClassSelect = (classInfo: ClassInfo) => {
+        setSelectedClass(classInfo);
+        setAttendanceDialogOpen(true);
+    };
+
     const onLessonPlanSaved = () => {
         // Switch to the resources tab to show the newly saved plan
         setActiveTab("resources");
@@ -135,17 +143,17 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                                             </Avatar>
                                             <div>
                                                 <p className="font-bold">{c.name}</p>
-                                                <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.studentCount} students</p>
+                                                <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="icon">
+                                        <Button variant="ghost" size="icon" onClick={() => handleClassSelect(c)}>
                                             <ChevronRight className="w-5 h-5" />
                                         </Button>
                                     </div>
                                 ))}
                             </CardContent>
                              <CardFooter>
-                                <Button variant="outline" className="w-full">
+                                <Button variant="outline" className="w-full" onClick={() => handleClassSelect(teacher.classes[0])}>
                                     Digital Attendance Register
                                 </Button>
                             </CardFooter>
@@ -226,6 +234,13 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                 onLessonPlanSaved={onLessonPlanSaved}
              />
              <GenerateSchemeOfWorkDialog open={isSchemeOfWorkDialogOpen} onOpenChange={setSchemeOfWorkDialogOpen} />
+             {selectedClass && (
+                 <DigitalAttendanceRegister 
+                    open={isAttendanceDialogOpen}
+                    onOpenChange={setAttendanceDialogOpen}
+                    classInfo={selectedClass}
+                 />
+             )}
         </>
     );
 }

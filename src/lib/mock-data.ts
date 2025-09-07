@@ -1,5 +1,5 @@
 
-import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher } from './types';
+import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student } from './types';
 
 export const mockUsers: User[] = [
   { id: 'usr_1', name: 'Asha Juma', email: 'asha.juma@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
@@ -10,15 +10,37 @@ export const mockUsers: User[] = [
   { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'felix.omondi@example.com', role: 'county_officer', avatar: '/avatar-placeholder.svg' },
 ];
 
+const form1Students: Student[] = [
+    { id: 'stud_101', name: 'Asha Juma' },
+    { id: 'stud_102', name: 'Benson Kariuki' },
+    { id: 'stud_103', name: 'Charity Wanjiru' },
+    { id: 'stud_104', name: 'David Omondi' },
+    { id: 'stud_105', name: 'Esther Chebet' },
+];
+
+const form2EnglishStudents: Student[] = [
+    { id: 'stud_201', name: 'Faith Mwende' },
+    { id: 'stud_202', name: 'George Kimani' },
+    { id: 'stud_203', name: 'Hellen Atieno' },
+    { id: 'stud_204', name: 'Isaac Njoroge' },
+];
+
+const form2LitStudents: Student[] = [
+    { id: 'stud_301', name: 'Jane Doe' },
+    { id: 'stud_302', name: 'John Smith' },
+    { id: 'stud_303', name: 'Kevin Otieno' },
+];
+
+
 export const mockTeacher: Teacher = {
     id: 'usr_3',
-    name: 'Ms. Okoro',
+    name: 'Okoro',
     classes: [
-        { name: 'Form 1 English', studentCount: 42, performance: 75 },
-        { name: 'Form 2 English', studentCount: 38, performance: 82 },
-        { name: 'Form 2 Literature', studentCount: 35, performance: 78 },
+        { name: 'Form 1 English', performance: 75, students: form1Students },
+        { name: 'Form 2 English', performance: 82, students: form2EnglishStudents },
+        { name: 'Form 2 Literature', performance: 78, students: form2LitStudents },
     ],
-    totalStudents: 115,
+    totalStudents: 12,
 };
 
 
