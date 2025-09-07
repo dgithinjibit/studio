@@ -49,6 +49,9 @@ function SignupFormComponent() {
         // Persist user's details for personalization
         localStorage.setItem('userName', fullName);
         localStorage.setItem('userEmail', email);
+        if (role) {
+            localStorage.setItem('userRole', role);
+        }
         if (role === 'student') {
             localStorage.setItem('studentName', fullName);
         }
