@@ -16,6 +16,7 @@ import '@/ai/flows/improve-lesson-plan.ts';
 import '@/ai/flows/improve-lesson-plan-types.ts';
 import '@/ai/flows/generate-dashboard-summary.ts';
 import '@/ai/flows/generate-dashboard-summary-types.ts';
+import '@/ai/flows/school-head-consultant.ts';
 
 
 
