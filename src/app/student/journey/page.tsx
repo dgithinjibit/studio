@@ -40,7 +40,7 @@ const gradesMap: { [key: string]: { id: string; name: string }[] } = {
     js: [
         { id: 'g7', name: 'Grade 7' },
         { id: 'g8', name: 'Grade 8' },
-        { id: 'g9', name: 'Grade 9' },
+        { id: 'g9', 'name': 'Grade 9' },
     ],
 };
 
