@@ -15,6 +15,17 @@ import { db, storage } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
+const grade9Subjects = [
+    "Social Studies",
+    "Pre-Technical Studies",
+    "Mathematics",
+    "Kiswahili",
+    "Integrated Science",
+    "English",
+    "CRE",
+    "Agriculture and Nutrition",
+    "Creative Arts and Sports",
+];
 
 export default function CurriculumIngestorPage() {
     const [loading, setLoading] = useState(false);
@@ -118,7 +129,7 @@ export default function CurriculumIngestorPage() {
                          <div className="grid md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="grade">Grade Level</Label>
-                                <Select name="grade" required defaultValue="Grade 4">
+                                <Select name="grade" required defaultValue="Grade 9">
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a grade" />
                                     </SelectTrigger>
@@ -131,7 +142,16 @@ export default function CurriculumIngestorPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="subject">Subject</Label>
-                                <Input id="subject" name="subject" placeholder="e.g., Agriculture and Nutrition" required />
+                                <Select name="subject" required>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a subject" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {grade9Subjects.map(subject => (
+                                            <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
                          <div className="space-y-2">
