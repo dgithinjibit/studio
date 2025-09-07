@@ -5,9 +5,9 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Leaf, HeartHandshake, LogOut, ArrowLeft, User } from 'lucide-react';
+import { ArrowRight, Leaf, HeartHandshake, LogOut, ArrowLeft, User, Palette, Languages, BookOpen, Church } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import ChatInterface from '../chat/[subject]/chat-interface';
+import ChatInterface from '../chat/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
 
@@ -62,6 +62,7 @@ const commonSubjects: Subject[] = [
     { name: 'Creative Activities', icon: '/assets/creative_act.png' },
 ];
 
+
 const pastoralInstruction = { name: 'Pastoral Instruction Programme', icon: HeartHandshake };
 
 
@@ -73,6 +74,10 @@ const subjectsMap: { [key: string]: Subject[] } = {
     g8: [...commonSubjects, pastoralInstruction],
     g9: [...commonSubjects, pastoralInstruction],
 };
+
+const levelColors = ["bg-teal-500", "bg-amber-500"];
+const subLevelColors = ["bg-blue-500", "bg-green-500"];
+const gradeColors = ["bg-orange-500", "bg-lime-600", "bg-cyan-500", "bg-rose-500", "bg-indigo-500", "bg-pink-500"];
 
 
 export default function StudentJourneyPage() {
@@ -165,9 +170,9 @@ export default function StudentJourneyPage() {
                                     onClick={() => handleSubjectSelect(subject.name)}
                                 >
                                     {renderIcon(subject.icon, subject.name)}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                                        <h3 className="font-bold text-lg opacity-80 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
+                                        <h3 className="font-bold text-lg opacity-50 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
                                     </div>
                                 </Card>
                             ))}
@@ -183,8 +188,12 @@ export default function StudentJourneyPage() {
                             <CardDescription className="text-stone-600">Almost there! Which grade are you in?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {grades.map((grade) => (
-                                <Button key={grade.id} variant="outline" className="h-20 text-lg bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800" onClick={() => handleGradeSelect(grade.id)}>
+                            {grades.map((grade, index) => (
+                                <Button 
+                                    key={grade.id} 
+                                    className={`h-20 text-lg text-white font-bold text-shadow-sm shadow-lg transform transition-transform hover:scale-105 focus:scale-105 ${gradeColors[index % gradeColors.length]}`}
+                                    onClick={() => handleGradeSelect(grade.id)}
+                                >
                                     {grade.name}
                                 </Button>
                             ))}
@@ -200,8 +209,12 @@ export default function StudentJourneyPage() {
                              <CardDescription className="text-stone-600">Let's get more specific.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {subLevels.map((sub) => (
-                                <Button key={sub.id} variant="outline" className="w-full justify-between h-14 text-lg bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800" onClick={() => handleSubLevelSelect(sub.id)}>
+                            {subLevels.map((sub, index) => (
+                                <Button 
+                                    key={sub.id} 
+                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus:scale-105 ${subLevelColors[index % subLevelColors.length]}`}
+                                    onClick={() => handleSubLevelSelect(sub.id)}
+                                >
                                     {sub.name}
                                     <ArrowRight />
                                 </Button>
@@ -218,8 +231,12 @@ export default function StudentJourneyPage() {
                             <CardDescription className="text-stone-600">Where are you in your learning journey?</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {levels.map((level) => (
-                                <Button key={level.id} variant="outline" className="w-full justify-between h-14 text-lg bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800" onClick={() => handleLevelSelect(level.id)}>
+                            {levels.map((level, index) => (
+                                <Button 
+                                    key={level.id} 
+                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus:scale-105 ${levelColors[index % levelColors.length]}`}
+                                    onClick={() => handleLevelSelect(level.id)}
+                                >
                                     {level.name}
                                     <ArrowRight />
                                 </Button>
