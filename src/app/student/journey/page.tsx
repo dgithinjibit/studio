@@ -246,3 +246,5 @@ export default function StudentJourneyPage() {
         </div>
     );
 }
+
+    
