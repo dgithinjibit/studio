@@ -61,3 +61,5 @@ export type School = {
   latitude: number;
   longitude: number;
 };
+
+    

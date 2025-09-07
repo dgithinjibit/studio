@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Leaf, HeartHandshake, LogOut, ArrowLeft, User, Palette, Languages, BookOpen, Church, BrainCircuit } from 'lucide-react';
+import { ArrowRight, BrainCircuit, HeartHandshake } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import ChatInterface from '../chat/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
@@ -159,7 +159,7 @@ export default function StudentJourneyPage() {
                 return <BlockchainCurriculumDisplay onBack={handleGoBack} />;
             case 'chat':
                 if (selectedSubject && selectedGrade) {
-                    return <ChatInterface subject={selectedSubject} grade={selectedGrade} onBack={handleGoBack} />;
+                    return <ChatInterface subject={selectedSubject} grade={selectedGrade} onBack={handleGoBack} studentFirstName={studentFirstName} />;
                 }
                 return null;
             case 'subject':
@@ -256,12 +256,10 @@ export default function StudentJourneyPage() {
         }
     };
     
-    const showHeader = step !== 'chat';
-
     if (step === 'chat' || step === 'content') {
         return (
              <div className="flex flex-col w-full h-screen sm:h-[95vh] max-w-4xl mx-auto overflow-hidden">
-                {step === 'chat' && <ChatInterface subject={selectedSubject!} grade={selectedGrade!} onBack={handleGoBack} />}
+                {step === 'chat' && <ChatInterface subject={selectedSubject!} grade={selectedGrade!} onBack={handleGoBack} studentFirstName={studentFirstName} />}
                 {step === 'content' && <BlockchainCurriculumDisplay onBack={handleGoBack} />}
              </div>
         )
@@ -269,12 +267,12 @@ export default function StudentJourneyPage() {
 
     return (
         <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-[#F5F5DC] sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
-             {showHeader && (
-                 <StudentHeader showBackButton={step !== 'level'} onBack={handleGoBack} studentFirstName={studentFirstName} />
-             )}
+             <StudentHeader showBackButton={step !== 'level'} onBack={handleGoBack} studentFirstName={studentFirstName} />
             <main className="flex-grow overflow-y-auto p-6">
                 {renderContent()}
             </main>
         </div>
     );
 }
+
+    

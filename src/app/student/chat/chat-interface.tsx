@@ -15,21 +15,22 @@ type Message = {
     content: string;
 };
 
-export default function ChatInterface({ subject, grade, onBack }: { subject: string, grade: string, onBack?: () => void }) {
+interface ChatInterfaceProps {
+    subject: string;
+    grade: string;
+    studentFirstName: string;
+    onBack?: () => void;
+}
+
+export default function ChatInterface({ subject, grade, onBack, studentFirstName }: ChatInterfaceProps) {
     const gradeName = `Grade ${grade.replace('g', '')}`
     
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(true);
-    const [studentFirstName, setStudentFirstName] = useState('Student');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const name = localStorage.getItem('studentName');
-        if (name) {
-            setStudentFirstName(name.split(' ')[0]);
-        }
-
         // Initial message from Mwalimu AI
         const getInitialMessage = async () => {
             setLoading(true);
@@ -148,3 +149,5 @@ export default function ChatInterface({ subject, grade, onBack }: { subject: str
         </div>
     );
 }
+
+    
