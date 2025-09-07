@@ -78,11 +78,7 @@ Base your Socratic questions and answers on the "Context from Teacher's Material
 
 ## Conversation History:
 {{#each history}}
-  {{#if (eq this.role 'user')}}
-    Student: {{{this.content}}}
-  {{else}}
-    Mwalimu AI: {{{this.content}}}
-  {{/if}}
+  Student: {{{this.content}}}
 {{/each}}
 
 Based on the subject, conversation history, and your instructions for the relevant persona, provide your next response as Mwalimu AI.
