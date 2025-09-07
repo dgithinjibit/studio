@@ -30,3 +30,4 @@ import '@/curriculum/grade6-social-studies.ts';
 import '@/curriculum/pp2-language-activities.ts';
 import '@/curriculum/pp2-mathematics-activities.ts';
 import '@/curriculum/grade1-creative-activities.ts';
+import '@/curriculum/grade1-english-language-activities.ts';
