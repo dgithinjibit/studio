@@ -3,11 +3,12 @@
 
 import { useEffect, useState } from 'react';
 import ChatInterface from '../chat-interface';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 
 export default function StudentChatPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const params = useParams();
     
     // We need to manage state for all the possible parameters.
     // This allows the ChatInterface to be rendered dynamically based on what's available.
@@ -20,7 +21,7 @@ export default function StudentChatPage() {
 
     useEffect(() => {
         // This effect runs on the client side to retrieve all necessary data from localStorage.
-        const subject = searchParams.get('subject') || 'General';
+        const subject = (params.subject as string) || 'General';
         const grade = localStorage.getItem('studentGrade') || 'g4';
         const studentFirstName = (localStorage.getItem('studentName') || 'Student').split(' ')[0];
         
@@ -39,7 +40,7 @@ export default function StudentChatPage() {
             localStorage.removeItem('ai_tutor_context_to_load');
         }
 
-    }, [searchParams]);
+    }, [params.subject, searchParams]);
 
     const handleBack = () => {
         router.push('/student/journey');
