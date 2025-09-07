@@ -20,7 +20,7 @@ export default function DashboardPage() {
     if (role === 'teacher' && storedName) {
       setTeacher(prevTeacher => ({ ...prevTeacher, name: storedName.split(' ')[0] }));
     }
-  }, [role]);
+  }, [role, teacher]);
 
   const renderDashboard = () => {
     switch (role) {
