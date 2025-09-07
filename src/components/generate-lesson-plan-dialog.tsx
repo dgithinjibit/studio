@@ -16,8 +16,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Copy, Save } from "lucide-react";
+import { Loader2, Copy, Save, Sparkles, Send } from "lucide-react";
 import { generateLessonPlan, GenerateLessonPlanInput } from "@/ai/flows/generate-lesson-plan";
+import { improveLessonPlan } from "@/ai/flows/improve-lesson-plan";
 import type { TeacherResource } from "@/lib/types";
 
 interface GenerateLessonPlanDialogProps {
@@ -28,8 +29,10 @@ interface GenerateLessonPlanDialogProps {
 
 export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }: GenerateLessonPlanDialogProps) {
   const [loading, setLoading] = useState(false);
+  const [improving, setImproving] = useState(false);
   const [generatedPlan, setGeneratedPlan] = useState("");
   const [currentTopic, setCurrentTopic] = useState("");
+  const [improvementRequest, setImprovementRequest] = useState("");
   const { toast } = useToast();
 
   const handleCopy = () => {
@@ -64,7 +67,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
     onResourceSaved(); // Notify parent to switch tabs
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleInitialSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setGeneratedPlan("");
@@ -96,6 +99,33 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
     }
   };
 
+  const handleImprovementSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!improvementRequest.trim()) return;
+
+    setImproving(true);
+    try {
+      const result = await improveLessonPlan({
+        lessonPlan: generatedPlan,
+        request: improvementRequest,
+      });
+      if (result.revisedLessonPlan) {
+        setGeneratedPlan(result.revisedLessonPlan);
+      }
+      setImprovementRequest(""); // Clear input after submission
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Error improving lesson plan",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    } finally {
+      setImproving(false);
+    }
+  };
+
+
   return (
     <Dialog open={open} onOpenChange={(isOpen) => {
         onOpenChange(isOpen);
@@ -103,15 +133,15 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
             setGeneratedPlan(""); // Reset on close
         }
     }}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="font-headline">Generate Lesson Plan</DialogTitle>
+          <DialogTitle className="font-headline">Lesson Plan Generator</DialogTitle>
           <DialogDescription>
-            Use AI to generate a draft lesson plan. You can edit the result before saving.
+            {generatedPlan ? "Review your lesson plan and use the chat to make improvements." : "Use AI to generate a draft lesson plan. You can refine it with AI afterwards."}
           </DialogDescription>
         </DialogHeader>
-        {!generatedPlan ? (
-            <form onSubmit={handleSubmit}>
+        {!generatedPlan && !loading ? (
+            <form onSubmit={handleInitialSubmit}>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="subject" className="text-right">Subject</Label>
@@ -144,36 +174,64 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
               <DialogFooter>
                 <Button type="submit" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Generate
+                  <Sparkles className="mr-2 h-4 w-4" /> Generate
                 </Button>
               </DialogFooter>
             </form>
-        ) : (
-             <div className="mt-4 border-t pt-4 space-y-4">
-                <div>
-                    <div className="flex justify-between items-center mb-2">
+        ) : null}
+
+        {(loading || generatedPlan) && (
+             <div className="flex-1 flex flex-col min-h-0 border-t pt-4">
+                {loading && (
+                    <div className="flex-1 flex items-center justify-center">
+                        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                    </div>
+                )}
+                
+                {generatedPlan && (
+                  <>
+                     <div className="flex justify-between items-center mb-2 flex-shrink-0">
                         <h3 className="font-bold text-lg">Generated Plan: <span className="text-muted-foreground font-normal">{currentTopic}</span></h3>
                         <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="icon" onClick={handleCopy} title="Copy plan">
-                                <Copy className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" onClick={handleCopy} title="Copy plan">
+                                <Copy className="h-4 w-4" /> Copy
                             </Button>
                             <Button onClick={handleSave} title="Save to resources">
                                 <Save className="mr-2 h-4 w-4" />
-                                Save
+                                Save & Close
                             </Button>
                         </div>
                     </div>
                     <Textarea 
                         value={generatedPlan}
                         onChange={(e) => setGeneratedPlan(e.target.value)}
-                        className="text-sm bg-muted whitespace-pre-wrap font-body h-64"
+                        className="text-sm bg-muted whitespace-pre-wrap font-body flex-1"
+                        readOnly={improving}
                     />
-                </div>
-                <DialogFooter>
-                    <Button onClick={() => setGeneratedPlan("")} variant="outline">
-                        Start Over
-                    </Button>
-                </DialogFooter>
+
+                    <form onSubmit={handleImprovementSubmit} className="mt-4 flex-shrink-0">
+                       <Label htmlFor="improvementRequest" className="font-bold text-base flex items-center gap-2 mb-2">
+                          <Sparkles className="text-accent h-5 w-5" />
+                          Improve Your Lesson Plan
+                       </Label>
+                       <div className="flex items-center space-x-2">
+                           <Input
+                              id="improvementRequest"
+                              name="improvementRequest"
+                              placeholder="e.g., 'Add an activity for visual learners' or 'Make the introduction more engaging...'"
+                              value={improvementRequest}
+                              onChange={(e) => setImprovementRequest(e.target.value)}
+                              disabled={improving}
+                              className="flex-1"
+                           />
+                           <Button type="submit" disabled={improving || !improvementRequest.trim()}>
+                             {improving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                             {improving ? 'Improving...' : 'Send'}
+                           </Button>
+                       </div>
+                    </form>
+                  </>
+                )}
             </div>
         )}
       </DialogContent>

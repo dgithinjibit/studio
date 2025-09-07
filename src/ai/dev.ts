@@ -12,6 +12,8 @@ import '@/ai/flows/classroom-compass-flow.ts';
 import '@/ai/flows/classroom-compass-types.ts';
 import '@/ai/flows/generate-worksheet.ts';
 import '@/ai/flows/differentiate-worksheet.ts';
+import '@/ai/flows/improve-lesson-plan.ts';
+
 
 
 
