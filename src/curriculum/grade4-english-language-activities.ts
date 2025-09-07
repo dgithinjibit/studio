@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Curriculum data for Grade 4 English Language Activities.
  * 
@@ -272,31 +273,31 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
       ],
     },
     {
-      title: "4.0 ACCIDENTS: FIRST AID",
-      sub_strands: [
-        {
-          title: "4.1.1 Pronunciation and Vocabulary: Word Stress",
-          learning_outcomes: [
-            "pronounce words related to the theme using the correct stress for effective communication,",
-            "use vocabulary related to the theme in a variety of contexts for speech clarity,",
-            "promote the use of stress in a variety of contexts for communication.",
-          ],
-          suggested_activities: [
-            "listen to and recite short rhythmic poems.",
-            "say tongue twisters to practise the sounds /ɒ/ eɪ/ /aɪ/ and the consonant clusters ‘sn’ ‘tr’ ‘st’ collaboratively,",
-            "identify words containing the sounds /ɒ/ eɪ//aɪ/ and the consonant clusters ‘sn’ ‘tr’ ‘st’ ,",
-            "say words related to the theme using the correct stress with peers, (’object, ob’ject)",
-            "construct sentences with words whose meaning may be distinguished through word stress,",
-            "construct sentences using vocabulary related to the theme collaboratively,",
-            "listen to the correct pronunciation of words whose meaning is contrasted by stress from an audio or phone recordings,",
-            "record themselves practising word stress and present the recording to the whole class.",
-          ],
-          key_inquiry_questions: [
-            "Why should we learn new words?",
-            "How can we say sounds and words correctly?",
-          ],
-        },
-        {
+        title: "4.0 ACCIDENTS: FIRST AID",
+        sub_strands: [
+          {
+            title: "4.1.1 Pronunciation and Vocabulary: Word Stress",
+            learning_outcomes: [
+              "pronounce words related to the theme using the correct stress for effective communication,",
+              "use vocabulary related to the theme in a variety of contexts for speech clarity,",
+              "promote the use of stress in a variety of contexts for communication.",
+            ],
+            suggested_activities: [
+              "listen to and recite short rhythmic poems.",
+              "say tongue twisters to practise the sounds /ɒ/ eɪ/ /aɪ/ and the consonant clusters ‘sn’ ‘tr’ ‘st’ collaboratively,",
+              "identify words containing the sounds /ɒ/ eɪ//aɪ/ and the consonant clusters ‘sn’ ‘tr’ ‘st’ ,",
+              "say words related to the theme using the correct stress with peers, (’object, ob’ject)",
+              "construct sentences with words whose meaning may be distinguished through word stress,",
+              "construct sentences using vocabulary related to the theme collaboratively,",
+              "listen to the correct pronunciation of words whose meaning is contrasted by stress from an audio or phone recordings,",
+              "record themselves practising word stress and present the recording to the whole class.",
+            ],
+            key_inquiry_questions: [
+              "Why should we learn new words?",
+              "How can we say sounds and words correctly?",
+            ],
+          },
+          {
             title: "4.2.1 Intensive Reading: Visuals",
             learning_outcomes: [
               "read visuals in print and digital formats for information,",
@@ -317,8 +318,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "How do visuals like photos and videos enhance our understanding of a text?",
               "What information do we obtain from visual media such as photos and videos?",
             ],
-        },
-        {
+          },
+          {
             title: "4.3.1 Pronouns: Personal and Possessive pronouns",
             learning_outcomes: [
               "identify personal and possessive pronouns used as subjects and objects for communication,",
@@ -337,8 +338,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Which words replace names of people or things in sentences?",
               "Which words do we use to show that something belongs to us?",
             ],
-        },
-        {
+          },
+          {
             title: "4.4.1 Guided Composition: Friendly Letter/SMS",
             learning_outcomes: [
               "identify the key parts of a friendly letter in preparation for writing,",
@@ -357,36 +358,36 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "How do you pass information to your friends?",
               "What kind of information do you give to your friends?",
             ],
-        }
-      ],
-    },
-    {
-      title: "5.0 NUTRITION – BALANCED DIET",
-      sub_strands: [
-        {
-          title: "5.1.1 Pronunciation and Vocabulary: Listening Comprehension/ Pattern (noun phrase + would like to be …)",
-          learning_outcomes: [
-            "listen actively to a variety of texts to gain information,",
-            "apply vocabulary related to the theme in a variety of contexts for effective communication,",
-            "use the language pattern correctly for effective oral communication,",
-            "promote listening to a variety of texts for information and enjoyment.",
-          ],
-          suggested_activities: [
-            "listen to audio-visual recordings of songs, stories and passages featuring the sounds /ʊ/ /uː/ /æ/ /f/ /v/,",
-            "respond to questions from Listening comprehension,",
-            "construct sentences related to a story or listening comprehension using the language pattern,",
-            "(noun phrase + would like to be …)",
-            "retell a story he or she has listened to accurately,",
-            "respond correctly to questions based on the text,",
-            "dramatise sections of a story in groups for comprehension,",
-            "discuss with peers the lesson learnt from a story.",
-          ],
-          key_inquiry_questions: [
-            "Why should we listen carefully?",
-            "How can we improve our pronunciation?",
-          ],
-        },
-        {
+          }
+        ],
+      },
+      {
+        title: "5.0 NUTRITION – BALANCED DIET",
+        sub_strands: [
+          {
+            title: "5.1.1 Pronunciation and Vocabulary: Listening Comprehension/ Pattern (noun phrase + would like to be …)",
+            learning_outcomes: [
+              "listen actively to a variety of texts to gain information,",
+              "apply vocabulary related to the theme in a variety of contexts for effective communication,",
+              "use the language pattern correctly for effective oral communication,",
+              "promote listening to a variety of texts for information and enjoyment.",
+            ],
+            suggested_activities: [
+              "listen to audio-visual recordings of songs, stories and passages featuring the sounds /ʊ/ /uː/ /æ/ /f/ /v/,",
+              "respond to questions from Listening comprehension,",
+              "construct sentences related to a story or listening comprehension using the language pattern,",
+              "(noun phrase + would like to be …)",
+              "retell a story he or she has listened to accurately,",
+              "respond correctly to questions based on the text,",
+              "dramatise sections of a story in groups for comprehension,",
+              "discuss with peers the lesson learnt from a story.",
+            ],
+            key_inquiry_questions: [
+              "Why should we listen carefully?",
+              "How can we improve our pronunciation?",
+            ],
+          },
+          {
             title: "5.2.1 Extensive Reading: Independent Reading",
             learning_outcomes: [
               "select appropriate reading materials for lifelong learning,",
@@ -405,8 +406,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why should we read widely?",
               "What materials do you enjoy reading?",
             ],
-        },
-        {
+          },
+          {
             title: "5.3.1 Word Class: Regular and Irregular Adjectives",
             learning_outcomes: [
               "describe items using comparative forms of both regular and irregular adjectives for effective communication,",
@@ -427,8 +428,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Which are some of the words you use to talk about how someone feels or looks?",
               "How do we describe things?",
             ],
-        },
-        {
+          },
+          {
             title: "5.4.1 Creative Writing: Narrative Compositions",
             learning_outcomes: [
               "describe the parts of a narrative composition in preparation for writing,",
@@ -451,35 +452,34 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why is it important to plan our composition?",
               "How can you write an interesting composition?",
             ],
-        }
-      ],
-    },
-    {
-      title: "6.0 INTERNET-Email",
-      sub_strands: [
-        {
-          title: "6.1.1 Pronunciation and Vocabulary: Stress and Intonation",
-          learning_outcomes: [
-            "identify correct stress and intonation in ‘WH’ questions, other questions and statements for clarity in speech,",
-            "use correct stress and intonation in questions and statements to communicate clearly,",
-            "use vocabulary related to the theme in a variety of contexts for effective oral communication,",
-            "adopt the use of varying intonation for effective communication.",
-          ],
-          suggested_activities: [
-            "listen to an audio-visual recording of words featuring the sounds /ʊ/",
-            "/uː/ /f/ /v/",
-            "listen to correct stress in words such as address, increase among others (whether noun or verb),",
-            "listen to correct intonation in questions and statements to identify a speaker’s feelings,",
-            "recite a poem featuring ‘WH’ questions and declaratives collaboratively,",
-            "vary intonation when uttering questions and statements. construct sentences orally with peers using vocabulary related to the theme.",
-          ],
-          key_inquiry_questions: [
-            "Why do we vary our voice when asking questions?",
-            "How does good pronunciation of words and sounds help us?",
-            "How do we find out what we do not know?",
-          ],
-        },
-        {
+          }
+        ],
+      },
+      {
+        title: "6.0 INTERNET-Email",
+        sub_strands: [
+          {
+            title: "6.1.1 Pronunciation and Vocabulary: Stress and Intonation",
+            learning_outcomes: [
+              "identify correct stress and intonation in ‘WH’ questions, other questions and statements for clarity in speech,",
+              "use correct stress and intonation in questions and statements to communicate clearly,",
+              "use vocabulary related to the theme in a variety of contexts for effective oral communication,",
+              "adopt the use of varying intonation for effective communication.",
+            ],
+            suggested_activities: [
+              "listen to an audio-visual recording of words featuring the sounds /ʊ/ /uː/ /f/ /v/",
+              "listen to correct stress in words such as address, increase among others (whether noun or verb),",
+              "listen to correct intonation in questions and statements to identify a speaker’s feelings,",
+              "recite a poem featuring ‘WH’ questions and declaratives collaboratively,",
+              "vary intonation when uttering questions and statements. construct sentences orally with peers using vocabulary related to the theme.",
+            ],
+            key_inquiry_questions: [
+              "Why do we vary our voice when asking questions?",
+              "How does good pronunciation of words and sounds help us?",
+              "How do we find out what we do not know?",
+            ],
+          },
+          {
             title: "6.2.1 Intensive Reading: Dialogue",
             learning_outcomes: [
               "read a variety of dialogues related to email and the internet for comprehension,",
@@ -496,8 +496,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "How can we obtain information from texts?",
               "What stories or books have you read?",
             ],
-        },
-        {
+          },
+          {
             title: "6.3.1 Word Class: Quantifiers",
             learning_outcomes: [
               "identify quantifiers and nouns used with them appropriate for effective communication,",
@@ -515,8 +515,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
             key_inquiry_questions: [
               "How can we quantify nouns we cannot count?",
             ],
-        },
-        {
+          },
+          {
             title: "6.4.1 Creativity Writing : Pictorial Compositions",
             learning_outcomes: [
               "organise pictures in a logical sequence to write pictorial compositions of about 60-80 on the theme,",
@@ -533,36 +533,36 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
             key_inquiry_questions: [
               "How do pictures make you feel?",
             ],
-        }
-      ],
-    },
-     {
-      title: "7.0 TECHNOLOGY- CYBER SAFETY",
-      sub_strands: [
-        {
-          title: "7.1.1 Pronunciation and Vocabulary: Interactive Listening",
-          learning_outcomes: [
-            "participate actively in a two-way conversation (turn taking) in various settings for self-expression,",
-            "apply vocabulary related to the theme in different settings for clarity of speech,",
-            "use the present and past tense correctly in a two way dialogue for communication,",
-            "realise the importance of turn taking in oral communication.",
-          ],
-          suggested_activities: [
-            "listen for the sounds /ɛə/ /j/ /ʤ//ʒ/ from an audio text and then say them aloud,",
-            "act out a dialogue featuring vocabulary with the sounds /ɛə/ /j/ /ʤ//ʒ/ collaboratively,",
-            "apply facial expressions and gestures appropriately while reciting choral verses with peers,",
-            "record one another when performing a choral verse or short dialogues,",
-            "watch audio-visual recordings of short interviews and then conduct a role play with others,",
-            "take turns during an oral interview, discussion or debate,",
-            "participate in a debate, interview or discussion on social media",
-          ],
-          key_inquiry_questions: [
-            "Why should you listen to others when they are speaking?",
-            "Why should we wait for our turn to speak?",
-            "How do we show when an action took place?",
-          ],
-        },
-        {
+          }
+        ],
+      },
+      {
+        title: "7.0 TECHNOLOGY- CYBER SAFETY",
+        sub_strands: [
+          {
+            title: "7.1.1 Pronunciation and Vocabulary: Interactive Listening",
+            learning_outcomes: [
+              "participate actively in a two-way conversation (turn taking) in various settings for self-expression,",
+              "apply vocabulary related to the theme in different settings for clarity of speech,",
+              "use the present and past tense correctly in a two way dialogue for communication,",
+              "realise the importance of turn taking in oral communication.",
+            ],
+            suggested_activities: [
+              "listen for the sounds /ɛə/ /j/ /ʤ//ʒ/ from an audio text and then say them aloud,",
+              "act out a dialogue featuring vocabulary with the sounds /ɛə/ /j/ /ʤ//ʒ/ collaboratively,",
+              "apply facial expressions and gestures appropriately while reciting choral verses with peers,",
+              "record one another when performing a choral verse or short dialogues,",
+              "watch audio-visual recordings of short interviews and then conduct a role play with others,",
+              "take turns during an oral interview, discussion or debate,",
+              "participate in a debate, interview or discussion on social media",
+            ],
+            key_inquiry_questions: [
+              "Why should you listen to others when they are speaking?",
+              "Why should we wait for our turn to speak?",
+              "How do we show when an action took place?",
+            ],
+          },
+          {
             title: "7.2.1 Extensive Reading: Narratives/Poems",
             learning_outcomes: [
               "read a variety of materials (narratives, poems, graded readers) for lifelong learning,",
@@ -581,12 +581,12 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "What kind of materials do you enjoy reading?",
               "What can you do to remember what you read?",
             ],
-        },
-        {
+          },
+          {
             title: "7.3.1 Tense: Present and Past progressive Aspect",
             learning_outcomes: [
               "identify the present and past progressive forms of the verb in oral and written texts for communication,",
-              "use the present and past progressive aspect correctly in oral and written contexts for selfexpression,",
+              "use the present and past progressive aspect correctly in oral and written contexts for self-expression,",
               "adopt the use of the present and past progressive aspect in communication.",
             ],
             suggested_activities: [
@@ -601,8 +601,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why is it important to show when something happened?",
               "How do we tell an action is or was happening?",
             ],
-        },
-        {
+          },
+          {
             title: "7.4.1 Punctuation: Full Stop/Capital Letters",
             learning_outcomes: [
               "identify commonly used punctuation marks in written texts for effective communication,",
@@ -623,35 +623,35 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why do you use punctuation marks?",
               "Which punctuation marks do you use when writing?",
             ],
-        }
-      ],
-    },
-    {
-      title: "8.0 THE FARM",
-      sub_strands: [
-        {
-          title: "8.1.1 Pronunciation and Vocabulary: Tongue Twisters",
-          learning_outcomes: [
-            "articulate sounds accurately for clarity of speech.",
-            "select sounds correctly from a language sample to improve listening comprehension.",
-            "use vocabulary items related to the theme in a variety of contexts for effective communication.",
-            "realise the role of correct pronunciation in speech for communication clarity.",
-          ],
-          suggested_activities: [
-            "recognise the vowels sounds and diphthongs (sounds /ʊə/ /v/ /w/ /s//ʧ/) from audio materials.",
-            "articulate vowels and consonants as the teacher models,",
-            "create a tongue twister using words with the target sounds in small groups,",
-            "say tongue twisters with the (words containing the sounds /ʊə/ /v/ /w/ /s//ʧ/) individually and collaboratively,",
-            "select words containing vowels and diphthongs and consonants from a tongue twister, passage, a poem, a song or a story,",
-            "practise clear pronunciation by listening to a video, online dictionaries and recordings,",
-            "say vocabulary items correctly and match them with their meanings.",
-          ],
-          key_inquiry_questions: [
-            "Why should you say words clearly?",
-            "What should you do to say words correctly?",
-          ],
-        },
-        {
+          }
+        ],
+      },
+      {
+        title: "8.0 THE FARM",
+        sub_strands: [
+          {
+            title: "8.1.1 Pronunciation and Vocabulary: Tongue Twisters",
+            learning_outcomes: [
+              "articulate sounds accurately for clarity of speech.",
+              "select sounds correctly from a language sample to improve listening comprehension.",
+              "use vocabulary items related to the theme in a variety of contexts for effective communication.",
+              "realise the role of correct pronunciation in speech for communication clarity.",
+            ],
+            suggested_activities: [
+              "recognise the vowels sounds and diphthongs (sounds /ʊə/ /v/ /w/ /s//ʧ/) from audio materials.",
+              "articulate vowels and consonants as the teacher models,",
+              "create a tongue twister using words with the target sounds in small groups,",
+              "say tongue twisters with the (words containing the sounds /ʊə/ /v/ /w/ /s//ʧ/) individually and collaboratively,",
+              "select words containing vowels and diphthongs and consonants from a tongue twister, passage, a poem, a song or a story,",
+              "practise clear pronunciation by listening to a video, online dictionaries and recordings,",
+              "say vocabulary items correctly and match them with their meanings.",
+            ],
+            key_inquiry_questions: [
+              "Why should you say words clearly?",
+              "What should you do to say words correctly?",
+            ],
+          },
+          {
             title: "8.2.1 Reading Fluency",
             learning_outcomes: [
               "read a text of about 300 words accurately, at the right speed and with expression for effective communication,",
@@ -671,8 +671,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why is it important to read at a reasonable speed?",
               "How can you read a text fast?",
             ],
-        },
-        {
+          },
+          {
             title: "8.3.1 Word Class: Contracted Verb Forms / Positive/Negative Statements",
             learning_outcomes: [
               "use contracted forms of verbs correctly for effective communication,",
@@ -691,8 +691,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
             key_inquiry_questions: [
               "Why do we shorten words like cannot to can’t?",
             ],
-        },
-        {
+          },
+          {
             title: "8.4.1 Creative Writing: Narrative Compositions",
             learning_outcomes: [
               "describe the parts of a narrative composition in preparation for writing,",
@@ -705,7 +705,7 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "listen to a narrative on radio and rewrite it in their own words.",
               "plan a narrative composition collaboratively,",
               "use similes to make the narrative interesting,",
-              "Write a narrative composition for selfexpression,",
+              "Write a narrative composition for self-expression,",
               "watch and dramatise a story from a digital device.",
               "visit a farm and write a narrative composition about their experience.",
             ],
@@ -713,34 +713,34 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why do you enjoy listening to and reading stories?",
               "How do you make a story interesting?",
             ],
-        }
-      ],
-    },
-    {
-      title: "9. 0 HIV AND AIDS",
-      sub_strands: [
-        {
-          title: "9.1.1 Pronunciation and Vocabulary: Speaking Fluency",
-          learning_outcomes: [
-            "speak fluently and confidently on a given topic to enhance oral skills,",
-            "articulate sounds accurately for effective communication,",
-            "promote the importance speaking at a reasonable speed and without hesitation in daily life.",
-          ],
-          suggested_activities: [
-            "listen to oral presentations such as poems and topical issues from audio recordings with words containing the sounds /s/ /z/ /h/ /f/ and digraph ‘gh’ and pick out the words with sounds /s/ /z/ /h/ /f/ in ‘gh’ from the text,",
-            "repeat words with target sounds /s/ /z/ /h/ /f/ and digraph ‘gh’ from the teacher or an audio recording accurately,",
-            "speak expressively on a on a familiar text within a specified time,",
-            "recite poems related to the theme at an appropriate pace,",
-            "fill gaps in sentences using the vocabulary learnt.",
-            "repeat oral texts without hesitation and at a reasonable speed.",
-            "use nonverbal cues when speaking.",
-          ],
-          key_inquiry_questions: [
-            "Why should you speak accurately?",
-            "How can you speak without unnecessary pauses?",
-          ],
-        },
-        {
+          }
+        ],
+      },
+      {
+        title: "9. 0 HIV AND AIDS",
+        sub_strands: [
+          {
+            title: "9.1.1 Pronunciation and Vocabulary: Speaking Fluency",
+            learning_outcomes: [
+              "speak fluently and confidently on a given topic to enhance oral skills,",
+              "articulate sounds accurately for effective communication,",
+              "promote the importance speaking at a reasonable speed and without hesitation in daily life.",
+            ],
+            suggested_activities: [
+              "listen to oral presentations such as poems and topical issues from audio recordings with words containing the sounds /s/ /z/ /h/ /f/ and digraph ‘gh’ and pick out the words with sounds /s/ /z/ /h/ /f/ in ‘gh’ from the text,",
+              "repeat words with target sounds /s/ /z/ /h/ /f/ and digraph ‘gh’ from the teacher or an audio recording accurately,",
+              "speak expressively on a on a familiar text within a specified time,",
+              "recite poems related to the theme at an appropriate pace,",
+              "fill gaps in sentences using the vocabulary learnt.",
+              "repeat oral texts without hesitation and at a reasonable speed.",
+              "use nonverbal cues when speaking.",
+            ],
+            key_inquiry_questions: [
+              "Why should you speak accurately?",
+              "How can you speak without unnecessary pauses?",
+            ],
+          },
+          {
             title: "9.2.1 Intensive Reading: Narratives",
             learning_outcomes: [
               "read a short narrative of about 320 words for comprehension,",
@@ -758,8 +758,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why do we read narratives?",
               "What makes you enjoy reading a narrative?",
             ],
-        },
-        {
+          },
+          {
             title: "9.3.1 Word Class: Adverbs",
             learning_outcomes: [
               "distinguish adverbs of manner, time and place for effective communication,",
@@ -778,8 +778,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "How do you do your work?",
               "When do we come to school?",
             ],
-        },
-        {
+          },
+          {
             title: "9.4.1 Punctuation: Comma, Question Marks",
             learning_outcomes: [
               "identify commonly used punctuation marks in written texts for effective communication,",
@@ -798,37 +798,37 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why should we punctuate written work?",
               "How do we use these punctuation marks: comma and full stop?",
             ],
-        }
-      ],
-    },
-    {
-      title: "10.0 HYGIENE AND SANITATION",
-      sub_strands: [
-        {
-          title: "10.1.1 Pronunciation and Vocabulary: Interactive Listening/Turn Taking/Riddles",
-          learning_outcomes: [
-            "articulate sounds accurately for effective communication,",
-            "interact with a speaker actively during an oral presentation, speech or narration for listening fluency,",
-            "interrupt a speaker appropriately for politeness in conversation,",
-            "use vocabulary related to the theme in a variety of contexts for self-expression,",
-            "promote the importance of turn taking in oral interviews or debates for effective oral communication.",
-          ],
-          suggested_activities: [
-            "repeat words with the sounds /ɪ/, /iː/, /s/, /ʃ/ and /əʊ/ after the teacher or audio recordings accurately,",
-            "tell riddles with words containing the sounds /ɪ/, /iː/, /s/, /ʃ/ and /əʊ/ with peers,",
-            "interact with a speaker or presenter through verbal and nonverbal cues,",
-            "engage the audience when making an oral presentation,",
-            "watch a video recorded riddling session or listen to an audio recording,",
-            "interview one another on a topical issue,",
-            "listen to a poem, a story or a song based on the theme and answer questions orally,",
-            "use digital devices to record solo or choral poetry performances.",
-          ],
-          key_inquiry_questions: [
-            "Why should we listen to others?",
-            "What do you do when you want to talk and your friend is still talking?",
-          ],
-        },
-        {
+          }
+        ],
+      },
+      {
+        title: "10.0 HYGIENE AND SANITATION",
+        sub_strands: [
+          {
+            title: "10.1.1 Pronunciation and Vocabulary: Interactive Listening/Turn Taking/Riddles",
+            learning_outcomes: [
+              "articulate sounds accurately for effective communication,",
+              "interact with a speaker actively during an oral presentation, speech or narration for listening fluency,",
+              "interrupt a speaker appropriately for politeness in conversation,",
+              "use vocabulary related to the theme in a variety of contexts for self-expression,",
+              "promote the importance of turn taking in oral interviews or debates for effective oral communication.",
+            ],
+            suggested_activities: [
+              "repeat words with the sounds /ɪ/, /iː/, /s/, /ʃ/ and /əʊ/ after the teacher or audio recordings accurately,",
+              "tell riddles with words containing the sounds /ɪ/, /iː/, /s/, /ʃ/ and /əʊ/ with peers,",
+              "interact with a speaker or presenter through verbal and nonverbal cues,",
+              "engage the audience when making an oral presentation,",
+              "watch a video recorded riddling session or listen to an audio recording,",
+              "interview one another on a topical issue,",
+              "listen to a poem, a story or a song based on the theme and answer questions orally,",
+              "use digital devices to record solo or choral poetry performances.",
+            ],
+            key_inquiry_questions: [
+              "Why should we listen to others?",
+              "What do you do when you want to talk and your friend is still talking?",
+            ],
+          },
+          {
             title: "10.2.1 Intensive Reading: Factual Texts",
             learning_outcomes: [
               "read factual texts of about 320 words related to the theme for comprehension,",
@@ -847,8 +847,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why should we read at the right speed?",
               "What should we do to remember what we read?",
             ],
-        },
-        {
+          },
+          {
             title: "10.3.1 Word Class: Conjunctions",
             learning_outcomes: [
               "identify conjunctions correctly in oral and written texts for fluency of speech,",
@@ -866,8 +866,8 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why do we join sentences?",
               "Which words do we use to join sentences?",
             ],
-        },
-        {
+          },
+          {
             title: "10.4.1 Creative Writing: Descriptive Compositions",
             learning_outcomes: [
               "describe the parts of a descriptive composition for self-expression,",
@@ -887,269 +887,269 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "Why should you organise your thoughts in clear sentences and paragraphs?",
               "How can you tell others about yourself?",
             ],
-        }
-      ],
-    },
-    {
+          }
+        ],
+      },
+      {
         title: "11.0 SPORTS: MY FAVOURITE GAME",
         sub_strands: [
-            {
-                title: "11.1.1 Pronunciation and Vocabulary: Listening Fluency",
-                learning_outcomes: [
-                    "listen to short speeches related to the theme for listening fluency, apply vocabulary related to the theme in a variety of contexts for self-expression,",
-                    "distinguish sounds and words from an oral text for listening fluency,",
-                    "articulate sounds accurately for effective communication,",
-                    "interpret nonverbal cues correctly for listening fluency,",
-                    "realise the importance of listening fluency in oral comprehension.",
-                ],
-                suggested_activities: [
-                    "listen attentively to an audio recordings with the sounds /aʊ/ /ð/ /θ/ and consonant cluster ‘sk’,",
-                    "repeat words with the sounds /aʊ/ /ð/ /θ/ and consonant cluster ‘sk’ after the teacher or audio recordings accurately,",
-                    "make a three-minute speech using vocabulary related to the theme,",
-                    "recite poems about games,",
-                    "watch a video on speeches related to sports and then make similar speeches collaboratively with peers,",
-                    "use and interpret nonverbal cues in oral contexts correctly.",
-                ],
-                key_inquiry_questions: [
-                    "How do facial expressions and gestures help us to communicate well?",
-                    "Why should we listen actively to what others are saying?",
-                    "What should we do to make people enjoy listening to us?",
-                ],
-            },
-            {
-                title: "11.2.1 Intensive Reading: Reading with Technology",
-                learning_outcomes: [
-                    "read grade appropriate digital poems and narratives of about 300-320 words interpretively for comprehension,",
-                    "access grade appropriate online materials of about 300-320 words for lifelong learning,",
-                    "promote reading digital resources for information.",
-                ],
-                suggested_activities: [
-                    "read animated stories, comics and cartoons interpretively individually and collaboratively with peers,",
-                    "watch videos or mimes and answer questions,",
-                    "interpret visual representations such as mind maps,",
-                    "carry out simple online research on topics related to the theme,",
-                    "create simple crossword puzzles based on animated stories,",
-                    "read a poem or story expressively to bring out varying emotions, (Learner could take cues from the teacher or an audio visual presentation of such stories or poems).",
-                ],
-                key_inquiry_questions: [
-                    "Why should we read using technology?",
-                    "How do you search for information using technology?",
-                ],
-            },
-            {
-                title: "11.3.1 Language Patterns: Interrogatives",
-                learning_outcomes: [
-                    "identify interrogatives in a variety of texts for communication clarity,",
-                    "use interrogatives in a variety of contexts for effective communication,",
-                    "respond to a variety of questions based on interrogatives for effective communication,",
-                    "realise the importance of interrogatives in communication.",
-                ],
-                suggested_activities: [
-                    "answer questions based on interrogatives (when, where, whose, who and what),",
-                    "identify the interrogatives when, where, whose, who and what in a variety of texts,",
-                    "construct sentences with interrogatives (when, where, whose, who and what) with peers,",
-                    "view videos, cartoons or pictures and ask one another questions,",
-                    "read a newspaper, magazine, brochures or any other authentic texts and identify the interrogative (when, where, whose, who and what) sentences. They could also write them in their exercise books or type key them in on a word processor collaboratively.",
-                ],
-                key_inquiry_questions: [
-                    "Why do we ask questions?",
-                    "Which words do we use to ask questions?",
-                ],
-            },
-            {
-                title: "11.4.1 Spelling: Commonly Misspelt Words",
-                learning_outcomes: [
-                    "identify commonly misspelt words in oral and written contexts,",
-                    "write commonly misspelt words correctly for communication clarity,",
-                    "adopt the skill of writing words clearly and correctly in communication.",
-                ],
-                suggested_activities: [
-                    "listen to and write commonly misspelt words,",
-                    "listen to a dictation and spell selected words and sentences,",
-                    "search for commonly misspelt words and create a word puzzle with peers,",
-                    "copy the words correctly in their vocabulary book,",
-                    "construct sentences using commonly misspelt words,",
-                    "form commonly misspelt words from jumbled up letters.",
-                ],
-                key_inquiry_questions: [
-                    "Why is it difficult to spell some words correctly?",
-                    "How can we become better at spelling words?",
-                ],
-            }
+          {
+            title: "11.1.1 Pronunciation and Vocabulary: Listening Fluency",
+            learning_outcomes: [
+              "listen to short speeches related to the theme for listening fluency, apply vocabulary related to the theme in a variety of contexts for self-expression,",
+              "distinguish sounds and words from an oral text for listening fluency,",
+              "articulate sounds accurately for effective communication,",
+              "interpret nonverbal cues correctly for listening fluency,",
+              "realise the importance of listening fluency in oral comprehension.",
+            ],
+            suggested_activities: [
+              "listen attentively to an audio recordings with the sounds /aʊ/ /ð/ /θ/ and consonant cluster ‘sk’,",
+              "repeat words with the sounds /aʊ/ /ð/ /θ/ and consonant cluster ‘sk’ after the teacher or audio recordings accurately,",
+              "make a three-minute speech using vocabulary related to the theme,",
+              "recite poems about games,",
+              "watch a video on speeches related to sports and then make similar speeches collaboratively with peers,",
+              "use and interpret nonverbal cues in oral contexts correctly.",
+            ],
+            key_inquiry_questions: [
+              "How do facial expressions and gestures help us to communicate well?",
+              "Why should we listen actively to what others are saying?",
+              "What should we do to make people enjoy listening to us?",
+            ],
+          },
+          {
+            title: "11.2.1 Intensive Reading: Reading with Technology",
+            learning_outcomes: [
+              "read grade appropriate digital poems and narratives of about 300-320 words interpretively for comprehension,",
+              "access grade appropriate online materials of about 300-320 words for lifelong learning,",
+              "promote reading digital resources for information.",
+            ],
+            suggested_activities: [
+              "read animated stories, comics and cartoons interpretively individually and collaboratively with peers,",
+              "watch videos or mimes and answer questions,",
+              "interpret visual representations such as mind maps,",
+              "carry out simple online research on topics related to the theme,",
+              "create simple crossword puzzles based on animated stories,",
+              "read a poem or story expressively to bring out varying emotions, (Learner could take cues from the teacher or an audio visual presentation of such stories or poems).",
+            ],
+            key_inquiry_questions: [
+              "Why should we read using technology?",
+              "How do you search for information using technology?",
+            ],
+          },
+          {
+            title: "11.3.1 Language Patterns: Interrogatives",
+            learning_outcomes: [
+              "identify interrogatives in a variety of texts for communication clarity,",
+              "use interrogatives in a variety of contexts for effective communication,",
+              "respond to a variety of questions based on interrogatives for effective communication,",
+              "realise the importance of interrogatives in communication.",
+            ],
+            suggested_activities: [
+              "answer questions based on interrogatives (when, where, whose, who and what),",
+              "identify the interrogatives when, where, whose, who and what in a variety of texts,",
+              "construct sentences with interrogatives (when, where, whose, who and what) with peers,",
+              "view videos, cartoons or pictures and ask one another questions,",
+              "read a newspaper, magazine, brochures or any other authentic texts and identify the interrogative (when, where, whose, who and what) sentences. They could also write them in their exercise books or type key them in on a word processor collaboratively.",
+            ],
+            key_inquiry_questions: [
+              "Why do we ask questions?",
+              "Which words do we use to ask questions?",
+            ],
+          },
+          {
+            title: "11.4.1 Spelling: Commonly Misspelt Words",
+            learning_outcomes: [
+              "identify commonly misspelt words in oral and written contexts,",
+              "write commonly misspelt words correctly for communication clarity,",
+              "adopt the skill of writing words clearly and correctly in communication.",
+            ],
+            suggested_activities: [
+              "listen to and write commonly misspelt words,",
+              "listen to a dictation and spell selected words and sentences,",
+              "search for commonly misspelt words and create a word puzzle with peers,",
+              "copy the words correctly in their vocabulary book,",
+              "construct sentences using commonly misspelt words,",
+              "form commonly misspelt words from jumbled up letters.",
+            ],
+            key_inquiry_questions: [
+              "Why is it difficult to spell some words correctly?",
+              "How can we become better at spelling words?",
+            ],
+          }
         ],
-    },
-     {
-      title: "12.0 CLEAN ENVIRONMENT",
-      sub_strands: [
-        {
-          title: "12.1.1 Pronunciation and Vocabulary: Speaking Fluency",
-          learning_outcomes: [
-            "speak accurately, with expression and at the right speed (minimal hesitation) for fluency,",
-            "use nonverbal cues appropriately for self-expression,",
-            "use vocabulary related to the theme in a variety of contexts for effective communication,",
-            "promote the importance of fluency in speech.",
-          ],
-          suggested_activities: [
-            "say words containing the sounds /ʌ/ /ɔː/ and the consonant clusters ‘br’ ‘sw’ ‘pr’ ‘cl’ ‘gr’ correctly,",
-            "select words with the the sounds /ʌ/ /ɔː/ and the consonant clusters ‘br’ ‘sw’ ‘pr’ ‘cl’ ‘gr’ from an oral text,",
-            "construct sentences that require a yes or no response using the vocabulary,",
-            "repeat oral texts from the teacher or an audio recording without hesitations,",
-            "make short speeches accurately on the environment, at the right speed and with expression,",
-            "recite poems related to the theme collaboratively with peers.",
-          ],
-          key_inquiry_questions: [
-            "Why should you speak at the right speed?",
-            "How can you make others feel what you are saying?",
-          ],
-        },
-        {
+      },
+      {
+        title: "12.0 CLEAN ENVIRONMENT",
+        sub_strands: [
+          {
+            title: "12.1.1 Pronunciation and Vocabulary: Speaking Fluency",
+            learning_outcomes: [
+              "speak accurately, with expression and at the right speed (minimal hesitation) for fluency,",
+              "use nonverbal cues appropriately for self-expression,",
+              "use vocabulary related to the theme in a variety of contexts for effective communication,",
+              "promote the importance of fluency in speech.",
+            ],
+            suggested_activities: [
+              "say words containing the sounds /ʌ/ /ɔː/ and the consonant clusters ‘br’ ‘sw’ ‘pr’ ‘cl’ ‘gr’ correctly,",
+              "select words with the the sounds /ʌ/ /ɔː/ and the consonant clusters ‘br’ ‘sw’ ‘pr’ ‘cl’ ‘gr’ from an oral text,",
+              "construct sentences that require a yes or no response using the vocabulary,",
+              "repeat oral texts from the teacher or an audio recording without hesitations,",
+              "make short speeches accurately on the environment, at the right speed and with expression,",
+              "recite poems related to the theme collaboratively with peers.",
+            ],
+            key_inquiry_questions: [
+              "Why should you speak at the right speed?",
+              "How can you make others feel what you are saying?",
+            ],
+          },
+          {
             title: "12.2.1 Intensive Reading: Poem/Song/Proverbs",
             learning_outcomes: [
-                "read a poem, song or passage containing proverbs with expression for effective communication,",
-                "apply basic stress and rhythm when reading a poem, song or passage containing proverbs for self-expression,",
-                "respond to questions based on a poem, song or passage containing proverbs for comprehension,",
-                "adopt intensive reading in day-to-day communication.",
+              "read a poem, song or passage containing proverbs with expression for effective communication,",
+              "apply basic stress and rhythm when reading a poem, song or passage containing proverbs for self-expression,",
+              "respond to questions based on a poem, song or passage containing proverbs for comprehension,",
+              "adopt intensive reading in day-to-day communication.",
             ],
             suggested_activities: [
-                "read a poem, song or passage that incorporates proverbs related to the theme and answer questions,",
-                "apply stress and rhythm when reciting a poem, passage that incorporates proverbs or singing a song,",
-                "answer factual and inferential questions from a given poem, song or passage,",
-                "discuss and role play events in a passage containing proverbs, poem or a song based on the theme,",
-                "watch a recitation of a poem on video and identify specific details,",
-                "identify proverbs used in a passage.",
+              "read a poem, song or passage that incorporates proverbs related to the theme and answer questions,",
+              "apply stress and rhythm when reciting a poem, passage that incorporates proverbs or singing a song,",
+              "answer factual and inferential questions from a given poem, song or passage,",
+              "discuss and role play events in a passage containing proverbs, poem or a song based on the theme,",
+              "watch a recitation of a poem on video and identify specific details,",
+              "identify proverbs used in a passage.",
             ],
             key_inquiry_questions: [
-                "Why do we enjoy reading poems?",
-                "How are poems different from stories?",
+              "Why do we enjoy reading poems?",
+              "How are poems different from stories?",
             ],
-        },
-        {
+          },
+          {
             title: "12.3.1 Aspect: Present and Past Perfect",
             learning_outcomes: [
-                "identify the present and past perfect aspect in varied texts for effective communication,",
-                "use the present perfect and past perfect aspect to form correct sentences for effective communication,",
-                "realise the importance of proper aspect in everyday communication.",
+              "identify the present and past perfect aspect in varied texts for effective communication,",
+              "use the present perfect and past perfect aspect to form correct sentences for effective communication,",
+              "realise the importance of proper aspect in everyday communication.",
             ],
             suggested_activities: [
-                "respond to questions on activities they have just completed depicting the present and past perfect aspects with peers,",
-                "identify present perfect and past perfect aspect in sentences,",
-                "use games to form sentences in the present perfect and past perfect with given verbs,",
-                "repeat sentences containing present perfect and past perfect aspect from a story or poem heard,",
-                "create a list of sentences in the present perfect and past perfect on a computer or tablet,",
-                "sing songs containing the present perfect and past perfect aspect.",
+              "respond to questions on activities they have just completed depicting the present and past perfect aspects with peers,",
+              "identify present perfect and past perfect aspect in sentences,",
+              "use games to form sentences in the present perfect and past perfect with given verbs,",
+              "repeat sentences containing present perfect and past perfect aspect from a story or poem heard,",
+              "create a list of sentences in the present perfect and past perfect on a computer or tablet,",
+              "sing songs containing the present perfect and past perfect aspect.",
             ],
             key_inquiry_questions: [
-                "How do we show the time an action has just taken place?",
-                "How do we show that an action has been completed?",
+              "How do we show the time an action has just taken place?",
+              "How do we show that an action has been completed?",
             ],
-        },
-        {
+          },
+          {
             title: "12.4.1 Guided Composition: Personal Diary",
             learning_outcomes: [
-                "identify the components of a personal diary for effective writing,",
-                "write a personal diary in the right format for effective communication,",
-                "adopt the use of diaries in our day today life.",
+              "identify the components of a personal diary for effective writing,",
+              "write a personal diary in the right format for effective communication,",
+              "adopt the use of diaries in our day today life.",
             ],
             suggested_activities: [
-                "identify components of a diary individually,",
-                "view samples of diaries and discuss them with peers,",
-                "search for information on how to write personal diaries from electronic devices or printed sources,",
-                "write a diary with peers and display it to the rest of the class members.",
+              "identify components of a diary individually,",
+              "view samples of diaries and discuss them with peers,",
+              "search for information on how to write personal diaries from electronic devices or printed sources,",
+              "write a diary with peers and display it to the rest of the class members.",
             ],
             key_inquiry_questions: [
-                "Why should we keep a record of what we do?",
-                "What information do we record?",
+              "Why should we keep a record of what we do?",
+              "What information do we record?",
             ],
-        }
-      ],
-    },
-    {
-      title: "13.0 MONEY",
-      sub_strands: [
-        {
-          title: "13.1.1 Pronunciation and Listening Vocabulary: Intensive Listening Pattern/Riddles/Tongue Twisters",
-          learning_outcomes: [
-            "listen intensively for specific sounds, words, phrases or sentences for fluency,",
-            "select silent letters in words from an oral text for listening fluency,",
-            "use the language pattern ‘very…but…’ correctly for effective oral communication,",
-            "use vocabulary to construct sentences for effective communication,",
-            "promote the skill of listening intensively to a variety of texts for information and enjoyment.",
-          ],
-          suggested_activities: [
-            "identify the sounds /k/ in letter x as well as the sounds /m/ /n/ /ŋ// from an oral text,",
-            "identify the silent letters in words such as honest, park, debt among others,",
-            "listen to stories related to the theme from a teacher or audio recordings,",
-            "listen to three words, phrases among others and filling in the blanks on an exercise book or a worksheet,",
-            "play the telephone game with peers.",
-          ],
-          key_inquiry_questions: [
-            "Why should we listen the carefully?",
-            "How can we learn a new word?",
-          ],
-        },
-        {
+          }
+        ],
+      },
+      {
+        title: "13.0 MONEY",
+        sub_strands: [
+          {
+            title: "13.1.1 Pronunciation and Vocabulary: Intensive Listening Pattern/Riddles/Tongue Twisters",
+            learning_outcomes: [
+              "listen intensively for specific sounds, words, phrases or sentences for fluency,",
+              "select silent letters in words from an oral text for listening fluency,",
+              "use the language pattern ‘very…but…’ correctly for effective oral communication,",
+              "use vocabulary to construct sentences for effective communication,",
+              "promote the skill of listening intensively to a variety of texts for information and enjoyment.",
+            ],
+            suggested_activities: [
+              "identify the sounds /k/ in letter x as well as the sounds /m/ /n/ /ŋ// from an oral text,",
+              "identify the silent letters in words such as honest, park, debt among others,",
+              "listen to stories related to the theme from a teacher or audio recordings,",
+              "listen to three words, phrases among others and filling in the blanks on an exercise book or a worksheet,",
+              "play the telephone game with peers.",
+            ],
+            key_inquiry_questions: [
+              "Why should we listen the carefully?",
+              "How can we learn a new word?",
+            ],
+          },
+          {
             title: "13.2.1 Extensive Reading: Newspapers/Magazines",
             learning_outcomes: [
-                "read a variety of grade-appropriate digital and print texts such as newspapers and magazines for lifelong learning,",
-                "demonstrate independent reading of grade appropriate digital and print texts such as newspapers, magazines and articles for information and enjoyment,",
-                "adopt independent reading in lifelong learning.",
+              "read a variety of grade-appropriate digital and print texts such as newspapers and magazines for lifelong learning,",
+              "demonstrate independent reading of grade appropriate digital and print texts such as newspapers, magazines and articles for information and enjoyment,",
+              "adopt independent reading in lifelong learning.",
             ],
             suggested_activities: [
-                "read newspapers, magazines and articles,",
-                "select and read age appropriate and high- interest materials from print and electronic sources related to the theme,",
-                "infer the meaning of words related to the theme,",
-                "retell the stories they have read in groups,",
-                "share opinions and reflect on the materials they have read,",
-                "set up an after school club offline or online where they meet on a regular basis to read books and do extensive reading activities.",
+              "read newspapers, magazines and articles,",
+              "select and read age appropriate and high- interest materials from print and electronic sources related to the theme,",
+              "infer the meaning of words related to the theme,",
+              "retell the stories they have read in groups,",
+              "share opinions and reflect on the materials they have read,",
+              "set up an after school club offline or online where they meet on a regular basis to read books and do extensive reading activities.",
             ],
             key_inquiry_questions: [
-                "Why is it important to read newspapers and magazines?",
-                "How do we choose the materials we read?",
-                "When do we read?",
+              "Why is it important to read newspapers and magazines?",
+              "How do we choose the materials we read?",
+              "When do we read?",
             ],
-        },
-        {
+          },
+          {
             title: "13.3.1 Word Class: Prepositions",
             learning_outcomes: [
-                "identify prepositions of position and direction in sentences for comprehension,",
-                "use prepositions correctly in oral and written contexts for effective communication,",
-                "promote the use of prepositions for clarity in communication.",
+              "identify prepositions of position and direction in sentences for comprehension,",
+              "use prepositions correctly in oral and written contexts for effective communication,",
+              "promote the use of prepositions for clarity in communication.",
             ],
             suggested_activities: [
-                "identify prepositions in samples of oral or written texts sentences,",
-                "play grade appropriate preposition games online or offline,",
-                "construct sentences using prepositions,",
-                "complete gaps in sentences, matching prepositions with pictures,",
-                "complete substitution exercises on various prepositions,",
-                "watch videos, visit web pages and other online resources and pick out prepositions collaboratively,",
-                "create and display preposition charts.",
+              "identify prepositions in samples of oral or written texts sentences,",
+              "play grade appropriate preposition games online or offline,",
+              "construct sentences using prepositions,",
+              "complete gaps in sentences, matching prepositions with pictures,",
+              "complete substitution exercises on various prepositions,",
+              "watch videos, visit web pages and other online resources and pick out prepositions collaboratively,",
+              "create and display preposition charts.",
             ],
             key_inquiry_questions: [
-                "Why should we tell others exactly where people and things are?",
-                "How do we show the position of people and things?",
+              "Why should we tell others exactly where people and things are?",
+              "How do we show the position of people and things?",
             ],
-        },
-        {
+          },
+          {
             title: "13.4.1 Spelling: Double Word Consonants",
             learning_outcomes: [
-                "spell words with double consonants correctly for clarity of writing,",
-                "construct correct sentences using words with double consonants for cohesive writing,",
-                "realise the importance of writing words clearly and correctly in communication.",
+              "spell words with double consonants correctly for clarity of writing,",
+              "construct correct sentences using words with double consonants for cohesive writing,",
+              "realise the importance of writing words clearly and correctly in communication.",
             ],
             suggested_activities: [
-                "listen to the teacher or an audio recording and write words with double consonants,",
-                "construct sentences using words with double consonants,",
-                "watch a video and write various words with peers,",
-                "use jigsaw puzzle to form words with double consonants,",
-                "make words with double consonants from jumbled up letters,",
-                "write words and sentences as dictated by a peer.",
+              "listen to the teacher or an audio recording and write words with double consonants,",
+              "construct sentences using words with double consonants,",
+              "watch a video and write various words with peers,",
+              "use jigsaw puzzle to form words with double consonants,",
+              "make words with double consonants from jumbled up letters,",
+              "write words and sentences as dictated by a peer.",
             ],
             key_inquiry_questions: [
-                "Why is it important to write words correctly?",
-                "How can we improve our spelling?",
+              "Why is it important to write words correctly?",
+              "How can we improve our spelling?",
             ],
-        }
-      ],
-    }
-  ]
-};
+          }
+        ],
+      }
+    ]
+  };

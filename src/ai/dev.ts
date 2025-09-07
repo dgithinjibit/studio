@@ -53,5 +53,4 @@ import '@/curriculum/grade3-environmental-activities.ts';
 import '@/curriculum/grade3-indigenous-language.ts';
 import '@/curriculum/grade3-kiswahili-language-activities.ts';
 import '@/curriculum/grade3-mathematics-activities.ts';
-import '@/curriculum/grade4-english-language-activities.ts';
-import '@/curriculum/grade4-indigenous-language.ts';
+import '@/curriculum/grade4-english
