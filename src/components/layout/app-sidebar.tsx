@@ -35,7 +35,6 @@ export function AppSidebar() {
     { href: "/dashboard/curriculum", icon: FileText, label: "Curriculum", roles: ["teacher"] },
     { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["teacher", "school_head", "county_officer"] },
     { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["school_head", "county_officer"] },
-    { href: "/student/journey", icon: User, label: "Student View", roles: ["teacher", "school_head", "county_officer"] },
   ];
 
   const filteredNavItems = navItems.filter(item => item.roles.includes(role));
