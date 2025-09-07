@@ -1,15 +1,16 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import type { Teacher } from '@/lib/types';
+import { mockTeacher } from '@/lib/mock-data';
+import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
+import { SchoolHeadDashboard } from '@/components/dashboards/school-head-dashboard';
+import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-dashboard';
+import { useRole } from '@/hooks/use-role';
 
-export default function DashboardRedirect() {
-    // This is now a placeholder. The main dashboard content is determined by role.
-    // In a real app you might have a generic welcome or instructions here.
-    return (
-        <div>
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">Please select an option from the sidebar.</p>
-        </div>
-    )
+export default function DashboardPage() {
+    // For now, we will default to the teacher dashboard for a streamlined experience.
+    // The role-based logic can be re-introduced later.
+    return <TeacherDashboard teacher={mockTeacher} />;
 }
