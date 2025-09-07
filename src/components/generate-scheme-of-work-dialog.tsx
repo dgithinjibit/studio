@@ -60,6 +60,7 @@ import { grade4AgricultureAndNutritionCurriculum } from "@/curriculum/grade4-agr
 import { grade4CreCurriculum } from "@/curriculum/grade4-cre";
 import { grade4CreativeArtsCurriculum } from "@/curriculum/grade4-creative-arts";
 import { grade4EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade4-english-language-activities";
+import { grade4IndigenousLanguageCurriculum } from "@/curriculum/grade4-indigenous-language";
 
 
 // Grade 6
@@ -155,6 +156,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     if (selectedGrade === "Grade 4" && selectedSubject === "Christian Religious Education") return grade4CreCurriculum;
     if (selectedGrade === "Grade 4" && selectedSubject === "Creative Arts") return grade4CreativeArtsCurriculum;
     if (selectedGrade === "Grade 4" && selectedSubject === "English") return grade4EnglishLanguageActivitiesCurriculum;
+    if (selectedGrade === "Grade 4" && selectedSubject === "Indigenous Languages") return grade4IndigenousLanguageCurriculum;
 
     // Grade 6
     if (selectedGrade === "Grade 6" && selectedSubject === "Social Studies") return grade6SocialStudiesCurriculum;
