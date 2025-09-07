@@ -85,10 +85,12 @@ export default function ChatInterface({ subject }: { subject: string }) {
                      <Button variant="ghost" onClick={() => router.back()}>
                         <ArrowLeft className="mr-2"/> Back
                     </Button>
-                    <CardTitle className="font-headline text-2xl">
-                        Mwalimu AI: {subject} ({gradeName})
-                    </CardTitle>
-                    <div className="w-16"></div> {/* Spacer to balance title */}
+                    <div className="text-center">
+                        <CardTitle className="font-headline text-2xl">
+                            Mwalimu AI: {subject} ({gradeName})
+                        </CardTitle>
+                    </div>
+                    <div className="w-20"></div> {/* Spacer to balance title */}
                 </CardHeader>
                 <CardContent className="flex-1 overflow-hidden p-0">
                     <ScrollArea className="h-full" ref={scrollAreaRef}>
