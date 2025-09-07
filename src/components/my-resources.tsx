@@ -24,8 +24,9 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useRouter } from 'next/navigation';
 import { GenerateLessonPlanDialog } from './generate-lesson-plan-dialog';
-import { storage } from '@/lib/firebase';
-import { ref, getBytes } from 'firebase/storage';
+import { storage, db } from '@/lib/firebase';
+import { ref, getBytes, deleteObject } from 'firebase/storage';
+import { doc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 
 export function MyResources() {
@@ -63,23 +64,38 @@ export function MyResources() {
     const otherResources = allResources.filter(r => r.type !== 'AI Tutor Context');
 
 
-    const handleDelete = (id: string, type: 'resource' | 'communication', event: React.MouseEvent) => {
+    const handleDelete = async (resource: TeacherResource, event: React.MouseEvent) => {
         event.stopPropagation();
-        if (type === 'resource') {
-            const updatedResources = allResources.filter(p => p.id !== id);
+        try {
+            // Delete from Firestore
+            const q = query(collection(db, "teacherResources"), where("url", "==", resource.url));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach(async (document) => {
+                await deleteDoc(doc(db, "teacherResources", document.id));
+            });
+
+            // Delete from Storage
+            const storageRef = ref(storage, resource.url);
+            await deleteObject(storageRef);
+
+            // Update local state
+            const updatedResources = allResources.filter(p => p.id !== resource.id);
             setAllResources(updatedResources);
             localStorage.setItem("teacherResources", JSON.stringify(updatedResources));
-        } else {
-             const updatedComms = communications.filter(p => p.id !== id);
-            setCommunications(updatedComms);
-            localStorage.setItem("mockCommunications", JSON.stringify(updatedComms));
+            
+            toast({
+                title: "Item Deleted",
+                description: "The item has been removed from your library.",
+                variant: "destructive"
+            });
+        } catch(error) {
+            console.error("Error deleting resource: ", error);
+             toast({
+                title: "Error Deleting",
+                description: "Could not delete the resource. Please try again.",
+                variant: "destructive"
+            });
         }
-        
-        toast({
-            title: "Item Deleted",
-            description: "The item has been removed from your library.",
-            variant: "destructive"
-        });
     };
     
     const handleCopy = (content: string, event: React.MouseEvent) => {
@@ -229,7 +245,7 @@ export function MyResources() {
                                     <TableCell><Badge variant="outline" className="font-mono">{lab.id}</Badge></TableCell>
                                     <TableCell>{format(new Date(lab.createdAt), 'PP p')}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" onClick={(e) => handleDelete(lab.id, 'resource', e)}>
+                                        <Button variant="ghost" size="icon" onClick={(e) => handleDelete(lab, e)}>
                                             <Trash2 className="h-4 w-4 text-destructive" />
                                         </Button>
                                     </TableCell>
@@ -279,7 +295,7 @@ export function MyResources() {
                                                     Generate Lesson Plan
                                                 </Button>
                                             )}
-                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource.id, 'resource', e)}>
+                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource, e)}>
                                                 <Trash2 className="mr-2 h-4 w-4"/>
                                                 Delete
                                             </Button>
@@ -320,7 +336,17 @@ export function MyResources() {
                                         </div>
                                          <div className="text-xs text-muted-foreground pt-2 mt-2 border-t">Recipient: {comm.recipient}</div>
                                         <div className="flex items-center justify-end gap-2 pt-2 mt-2">
-                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(comm.id, 'communication', e)}>
+                                            <Button variant="destructive" size="sm" onClick={(e) => {
+                                                e.stopPropagation();
+                                                const updatedComms = communications.filter(p => p.id !== comm.id);
+                                                setCommunications(updatedComms);
+                                                localStorage.setItem("mockCommunications", JSON.stringify(updatedComms));
+                                                toast({
+                                                    title: "Item Deleted",
+                                                    description: "The item has been removed from your library.",
+                                                    variant: "destructive"
+                                                });
+                                            }}>
                                                 <Trash2 className="mr-2 h-4 w-4"/>
                                                 Delete
                                             </Button>
