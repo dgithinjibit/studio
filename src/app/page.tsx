@@ -2,7 +2,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SyncSentaLogo } from "@/components/icons";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -11,68 +10,21 @@ export default function WelcomePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <div className="text-center mb-12 max-w-3xl">
-            <SyncSentaLogo className="w-24 h-24 text-primary mx-auto mb-4" />
-            <h1 className="font-headline text-5xl font-bold">Karibu! Welcome to SyncSenta!</h1>
-            <p className="text-muted-foreground text-xl mt-4">
-              The AI-powered ecosystem for Kenyan education. Empowering students, teachers, and administrators with the tools they need to succeed.
+        <div className="text-center max-w-3xl">
+            <SyncSentaLogo className="w-24 h-24 text-primary mx-auto mb-6" />
+            <h1 className="font-headline text-5xl md:text-6xl font-bold">Welcome to <span className="text-primary">SyncSenta</span></h1>
+            <p className="text-muted-foreground text-lg md:text-xl mt-4">
+              Kenya&apos;s first AI-powered education platform that works offline. Personalized learning for students, powerful tools for teachers, and data-driven insights for administrators.
             </p>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                 <Button asChild size="lg" className="w-full sm:w-auto">
+                    <Link href="/signup">Get Started Free</Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                    <Link href="/login">Sign In</Link>
+                </Button>
+            </div>
         </div>
-
-        <Card className="w-full max-w-4xl">
-            <CardHeader>
-                <CardTitle className="text-2xl text-center">To begin, who are you?</CardTitle>
-                <CardDescription className="text-center">
-                    Please select your role to personalize your journey.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Link href="/signup?role=student" passHref>
-                   <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
-                       <div>
-                            <h3 className="font-bold text-xl mb-2">I'm a Student</h3>
-                            <p className="text-muted-foreground">I want to learn, get help with homework, and chat with an AI tutor.</p>
-                       </div>
-                        <Button variant="ghost" className="mt-4 w-full">
-                            Start Learning <ArrowRight className="ml-2"/>
-                        </Button>
-                   </Card>
-                </Link>
-                 <Link href="/signup?role=teacher" passHref>
-                    <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
-                        <div>
-                            <h3 className="font-bold text-xl mb-2">I'm a Teacher</h3>
-                            <p className="text-muted-foreground">I want to create lesson plans, manage classes, and access resources.</p>
-                        </div>
-                        <Button variant="ghost" className="mt-4 w-full">
-                           Get Started <ArrowRight className="ml-2"/>
-                        </Button>
-                    </Card>
-                </Link>
-                <Link href="/signup?role=school_head" passHref>
-                    <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
-                        <div>
-                            <h3 className="font-bold text-xl mb-2">I'm a School Head</h3>
-                            <p className="text-muted-foreground">I manage a school and need to track teacher and student progress.</p>
-                        </div>
-                        <Button variant="ghost" className="mt-4 w-full">
-                           Manage School <ArrowRight className="ml-2"/>
-                        </Button>
-                    </Card>
-                </Link>
-                <Link href="/signup?role=county_officer" passHref>
-                    <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
-                        <div>
-                            <h3 className="font-bold text-xl mb-2">I'm a County Officer</h3>
-                            <p className="text-muted-foreground">I oversee schools in a county and need to view performance data.</p>
-                        </div>
-                        <Button variant="ghost" className="mt-4 w-full">
-                           View Reports <ArrowRight className="ml-2"/>
-                        </Button>
-                    </Card>
-                </Link>
-            </CardContent>
-        </Card>
     </div>
   );
 }
