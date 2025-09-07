@@ -34,7 +34,7 @@ export default function SignupForm() {
             description: "Let's personalize your experience.",
         });
         if (role === 'student') {
-            router.push('/student/journey/level');
+            router.push('/student/journey');
         } else {
             // Redirect other roles to their dashboard for now
             router.push('/dashboard');

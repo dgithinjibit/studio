@@ -56,7 +56,7 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent className="flex-grow flex items-end">
                       <Button asChild>
-                          <Link href="/student/journey/level">Start Learning</Link>
+                          <Link href="/student/journey">Start Learning</Link>
                       </Button>
                   </CardContent>
               </Card>

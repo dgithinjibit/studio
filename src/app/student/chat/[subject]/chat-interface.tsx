@@ -84,7 +84,7 @@ export default function ChatInterface({ subject }: { subject: string }) {
                     <CardTitle className="font-headline text-2xl flex justify-between items-center">
                         <span>Mwalimu AI: {subject} ({gradeName})</span>
                         <Button variant="ghost" asChild>
-                            <Link href={`/student/journey/subject?grade=${grade}`}>End Chat</Link>
+                            <Link href={`/student/journey`}>End Chat</Link>
                         </Button>
                     </CardTitle>
                 </CardHeader>
