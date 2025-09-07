@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -16,10 +16,22 @@ export default function CommunicationsPage() {
     const [communications, setCommunications] = useState<Communication[]>(mockCommunications);
     const [isAddDialogOpen, setAddDialogOpen] = useState(false);
 
+     useEffect(() => {
+        const loadComms = () => {
+            const storedComms = localStorage.getItem("mockCommunications");
+            if (storedComms) {
+                setCommunications(JSON.parse(storedComms).map((c: any) => ({ ...c, date: new Date(c.date) })));
+            }
+        };
+        loadComms();
+    }, []);
+
     const handleAcknowledgementChange = (id: string, checked: boolean) => {
-        setCommunications(prev => 
-            prev.map(comm => comm.id === id ? { ...comm, acknowledged: checked } : comm)
+        const updatedComms = communications.map(comm => 
+            comm.id === id ? { ...comm, acknowledged: checked } : comm
         );
+        setCommunications(updatedComms);
+        localStorage.setItem("mockCommunications", JSON.stringify(updatedComms));
     };
 
     const handleAddCommunication = (newComm: Omit<Communication, 'id' | 'date' | 'acknowledged'>) => {
@@ -28,8 +40,11 @@ export default function CommunicationsPage() {
             id: `comm_${Date.now()}`,
             date: new Date(),
             acknowledged: false,
+            sender: 'School Head',
         };
-        setCommunications(prev => [newCommunication, ...prev]);
+        const updatedComms = [newCommunication, ...communications];
+        setCommunications(updatedComms);
+        localStorage.setItem("mockCommunications", JSON.stringify(updatedComms));
     };
 
 
@@ -44,7 +59,7 @@ export default function CommunicationsPage() {
                                 Communications Hub
                             </CardTitle>
                             <CardDescription>
-                                Manage and track official school-wide announcements. Check items to mark them as acknowledged or completed.
+                                Manage and track official school-wide announcements and teacher reports.
                             </CardDescription>
                         </div>
                         <Button onClick={() => setAddDialogOpen(true)}>
@@ -66,13 +81,20 @@ export default function CommunicationsPage() {
                                 />
                                 <div className="flex-1 grid gap-1">
                                     <div className="flex justify-between items-start">
-                                        <label htmlFor={`comm-${comm.id}`} className={`font-semibold cursor-pointer ${comm.acknowledged ? 'line-through' : ''}`}>
-                                            {comm.title}
-                                        </label>
+                                        <div className="grid gap-1">
+                                            <label htmlFor={`comm-${comm.id}`} className={`font-semibold cursor-pointer ${comm.acknowledged ? 'line-through' : ''}`}>
+                                                {comm.title}
+                                            </label>
+                                             {comm.sender && (
+                                                <Badge variant="outline" className="w-fit text-xs">
+                                                   From: {comm.sender}
+                                                </Badge>
+                                            )}
+                                        </div>
                                         <Badge variant="secondary">{comm.recipient}</Badge>
                                     </div>
                                     <p className="text-sm text-muted-foreground">{comm.content}</p>
-                                    <p className="text-xs text-muted-foreground pt-2">{format(new Date(comm.date), 'PPP')}</p>
+                                    <p className="text-xs text-muted-foreground pt-2">{format(new Date(comm.date), 'PPP p')}</p>
                                 </div>
                             </CardContent>
                         </Card>

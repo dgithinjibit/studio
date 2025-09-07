@@ -84,4 +84,5 @@ export type Communication = {
   recipient: string;
   date: Date;
   acknowledged: boolean;
+  sender?: string;
 };

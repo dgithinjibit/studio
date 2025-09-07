@@ -1,4 +1,5 @@
 
+
 import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication } from './types';
 
 export const mockUsers: User[] = [
@@ -171,6 +172,7 @@ export const mockCommunications: Communication[] = [
         recipient: 'All Staff',
         date: new Date('2024-07-29T08:00:00Z'),
         acknowledged: false,
+        sender: 'School Head',
     },
     {
         id: 'comm_2',
@@ -179,6 +181,7 @@ export const mockCommunications: Communication[] = [
         recipient: 'Grade 6 Teachers',
         date: new Date('2024-07-28T11:30:00Z'),
         acknowledged: true,
+        sender: 'School Head',
     },
     {
         id: 'comm_3',
@@ -187,5 +190,6 @@ export const mockCommunications: Communication[] = [
         recipient: 'All Teachers',
         date: new Date('2024-07-27T15:00:00Z'),
         acknowledged: false,
+        sender: 'School Head',
     }
 ];
