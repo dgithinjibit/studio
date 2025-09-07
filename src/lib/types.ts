@@ -75,4 +75,8 @@ export type TeacherResource = {
   createdAt: string;
   type: 'Lesson Plan' | 'Scheme of Work' | 'Rubric' | 'Other';
 };
+
+export type LessonPlan = TeacherResource & {
+    type: 'Lesson Plan';
+};
     

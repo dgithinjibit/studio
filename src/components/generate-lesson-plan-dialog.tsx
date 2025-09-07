@@ -52,8 +52,8 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
       type: 'Lesson Plan'
     };
 
-    const existingPlans: LessonPlan[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-    localStorage.setItem("teacherResources", JSON.stringify([newPlan, ...existingPlans]));
+    const existingResources = JSON.parse(localStorage.getItem("teacherResources") || "[]");
+    localStorage.setItem("teacherResources", JSON.stringify([newPlan, ...existingResources]));
     
     toast({
       title: "Lesson Plan Saved!",
@@ -153,9 +153,15 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
                 <div>
                     <div className="flex justify-between items-center mb-2">
                         <h3 className="font-bold text-lg">Generated Plan: <span className="text-muted-foreground font-normal">{currentTopic}</span></h3>
-                        <Button variant="ghost" size="icon" onClick={handleCopy}>
-                            <Copy className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon" onClick={handleCopy} title="Copy plan">
+                                <Copy className="h-4 w-4" />
+                            </Button>
+                            <Button onClick={handleSave} title="Save to resources">
+                                <Save className="mr-2 h-4 w-4" />
+                                Save
+                            </Button>
+                        </div>
                     </div>
                     <Textarea 
                         value={generatedPlan}
@@ -166,10 +172,6 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
                 <DialogFooter>
                     <Button onClick={() => setGeneratedPlan("")} variant="outline">
                         Start Over
-                    </Button>
-                    <Button onClick={handleSave}>
-                        <Save className="mr-2 h-4 w-4" />
-                        Save to My Resources
                     </Button>
                 </DialogFooter>
             </div>

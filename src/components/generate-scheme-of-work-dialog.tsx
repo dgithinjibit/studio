@@ -33,7 +33,6 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
   const [generatedScheme, setGeneratedScheme] = useState("");
   const [currentSubStrand, setCurrentSubStrand] = useState("");
   const { toast } = useToast();
-  const [weeks, setWeeks] = useState(6);
   const [lessonsPerWeek, setLessonsPerWeek] = useState(3);
 
   const handleCopy = () => {
@@ -49,7 +48,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     
     const newResource: TeacherResource = {
       id: `scheme_${Date.now()}`,
-      title: currentSubStrand || "Untitled Scheme of Work",
+      title: `${currentSubStrand} - Scheme of Work`,
       content: generatedScheme,
       createdAt: new Date().toISOString(),
       type: 'Scheme of Work'
@@ -79,7 +78,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
       grade: formData.get("grade") as string,
       subStrand: formData.get("subStrand") as string,
       availableResources: formData.get("availableResources") as string,
-      numberOfWeeks: weeks.toString(),
+      numberOfWeeks: "1",
       lessonsPerWeek: lessonsPerWeek.toString(),
     };
     setCurrentSubStrand(data.subStrand);
@@ -110,9 +109,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">Schemer: Schemes of Work Creator</DialogTitle>
+          <DialogTitle className="font-headline text-2xl">Schemer: Week Generator</DialogTitle>
           <DialogDescription>
-            Create CBC-compliant Schemes of Work in official table format. You can edit the generated content.
+            Create a one-week, CBC-compliant Scheme of Work in the official table format.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -129,10 +128,6 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                     <Label htmlFor="subStrand">Sub-Strand</Label>
                     <Input id="subStrand" name="subStrand" placeholder="e.g., Numbers, Grammar, Living Things" />
                 </div>
-                <div>
-                    <Label htmlFor="numberOfWeeks">Number of Weeks: {weeks}</Label>
-                    <Slider id="numberOfWeeks" name="numberOfWeeks" min={1} max={12} step={1} value={[weeks]} onValueChange={(value) => setWeeks(value[0])} />
-                </div>
                  <div>
                     <Label htmlFor="lessonsPerWeek">Lessons per Week: {lessonsPerWeek}</Label>
                     <Slider id="lessonsPerWeek" name="lessonsPerWeek" min={1} max={5} step={1} value={[lessonsPerWeek]} onValueChange={(value) => setLessonsPerWeek(value[0])} />
@@ -141,10 +136,10 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                     <Label htmlFor="availableResources">Available Resources</Label>
                     <Textarea id="availableResources" name="availableResources" defaultValue="Chalkboard, basic materials" />
                 </div>
-              <DialogFooter>
+              <DialogFooter className="pt-4">
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Generate Scheme of Work
+                  Generate Scheme for 1 Week
                 </Button>
               </DialogFooter>
             </form>
