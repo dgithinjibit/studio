@@ -31,23 +31,23 @@ export function StudentHeader({ showBackButton, onBack, studentFirstName }: Stud
 
   return (
     <>
-        <div className="relative flex items-center justify-center py-4">
+        <div className="relative flex items-center justify-center py-4 text-stone-800">
             {showBackButton && (
-                <Button variant="ghost" size="icon" onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2">
+                <Button variant="ghost" size="icon" onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 text-stone-600 hover:text-stone-800 hover:bg-stone-100">
                     <ArrowLeft />
                     <span className="sr-only">Back</span>
                 </Button>
             )}
             <div className="text-center">
                 <h1 className="font-headline text-4xl font-bold">Karibu, {studentFirstName}!</h1>
-                <p className="text-muted-foreground text-lg mt-2">
+                <p className="text-stone-600 text-lg mt-2">
                     I’m Mwalimu AI, your friendly Socratic Mentor.
                 </p>
             </div>
             <div className="absolute right-0 top-1/2 -translate-y-1/2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
+                        <Button variant="outline" className="text-stone-700 bg-white/80 border-stone-300 hover:bg-white hover:text-stone-900">
                             <User className="mr-2" />
                             Profile
                         </Button>

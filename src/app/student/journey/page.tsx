@@ -109,8 +109,8 @@ export default function StudentJourneyPage() {
 
     const handleGoBack = useCallback(() => {
         if (step === 'chat') {
-            setStep('subject');
             setSelectedSubject(null);
+            setStep('subject');
         } else if (step === 'subject') {
             setStep('grade');
             setSelectedSubject(null);
@@ -154,8 +154,8 @@ export default function StudentJourneyPage() {
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                          <CardHeader>
-                            <CardTitle>Step 4: Choose Your Subject</CardTitle>
-                            <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
+                            <CardTitle className="text-stone-800">Step 4: Choose Your Subject</CardTitle>
+                            <CardDescription className="text-stone-600">What would you like to learn about today in {gradeName}?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                            {subjects.map((subject) => (
@@ -165,9 +165,9 @@ export default function StudentJourneyPage() {
                                     onClick={() => handleSubjectSelect(subject.name)}
                                 >
                                     {renderIcon(subject.icon, subject.name)}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                                        <h3 className="font-bold text-lg opacity-50 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
+                                        <h3 className="font-bold text-lg opacity-80 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
                                     </div>
                                 </Card>
                             ))}
@@ -179,12 +179,12 @@ export default function StudentJourneyPage() {
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                            <CardTitle>Step 3: Pick Your Grade</CardTitle>
-                            <CardDescription>Almost there! Which grade are you in?</CardDescription>
+                            <CardTitle className="text-stone-800">Step 3: Pick Your Grade</CardTitle>
+                            <CardDescription className="text-stone-600">Almost there! Which grade are you in?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             {grades.map((grade) => (
-                                <Button key={grade.id} variant="outline" className="h-20 text-lg bg-card/80" onClick={() => handleGradeSelect(grade.id)}>
+                                <Button key={grade.id} variant="outline" className="h-20 text-lg bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800" onClick={() => handleGradeSelect(grade.id)}>
                                     {grade.name}
                                 </Button>
                             ))}
@@ -196,12 +196,12 @@ export default function StudentJourneyPage() {
                 return (
                      <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                             <CardTitle>Step 2: Narrow It Down</CardTitle>
-                             <CardDescription>Let's get more specific.</CardDescription>
+                             <CardTitle className="text-stone-800">Step 2: Narrow It Down</CardTitle>
+                             <CardDescription className="text-stone-600">Let's get more specific.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {subLevels.map((sub) => (
-                                <Button key={sub.id} variant="outline" className="w-full justify-between h-14 text-lg bg-card/80" onClick={() => handleSubLevelSelect(sub.id)}>
+                                <Button key={sub.id} variant="outline" className="w-full justify-between h-14 text-lg bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800" onClick={() => handleSubLevelSelect(sub.id)}>
                                     {sub.name}
                                     <ArrowRight />
                                 </Button>
@@ -214,12 +214,12 @@ export default function StudentJourneyPage() {
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                            <CardTitle>Step 1: Choose Your Education Level</CardTitle>
-                            <CardDescription>Where are you in your learning journey?</CardDescription>
+                            <CardTitle className="text-stone-800">Step 1: Choose Your Education Level</CardTitle>
+                            <CardDescription className="text-stone-600">Where are you in your learning journey?</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {levels.map((level) => (
-                                <Button key={level.id} variant="outline" className="w-full justify-between h-14 text-lg bg-card/80" onClick={() => handleLevelSelect(level.id)}>
+                                <Button key={level.id} variant="outline" className="w-full justify-between h-14 text-lg bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800" onClick={() => handleLevelSelect(level.id)}>
                                     {level.name}
                                     <ArrowRight />
                                 </Button>
@@ -241,7 +241,7 @@ export default function StudentJourneyPage() {
     }
 
     return (
-        <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-black/20 backdrop-blur-md sm:rounded-2xl shadow-2xl ring-1 ring-white/20">
+        <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-[#F5F5DC] sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
              {showHeader && (
                  <StudentHeader showBackButton={step !== 'level'} onBack={handleGoBack} studentFirstName={studentFirstName} />
              )}
@@ -251,5 +251,3 @@ export default function StudentJourneyPage() {
         </div>
     );
 }
-
-    
