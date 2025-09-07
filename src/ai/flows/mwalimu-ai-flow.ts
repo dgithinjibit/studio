@@ -78,7 +78,7 @@ Base your Socratic questions and answers on the "Context from Teacher's Material
 
 ## Conversation History:
 {{#each history}}
-  Student: {{{this.content}}}
+  Student: {{{content}}}
 {{/each}}
 
 Based on the subject, conversation history, and your instructions for the relevant persona, provide your next response as Mwalimu AI.
@@ -119,9 +119,28 @@ const mwalimuAiTutorFlow = ai.defineFlow(
         history: history,
     };
     
-    // If the subject is Indigenous Language, inject the categorized dictionary into the context.
-    if (flowInput.subject === 'Indigenous Language') {
-        flowInput.teacherContext = JSON.stringify(kikuyuDictionary, null, 2);
+    // CORRECTED LOGIC: Intelligently select context instead of dumping the whole dictionary.
+    if (flowInput.subject === 'Indigenous Language' && input.currentMessage) {
+      const categories = Object.keys(kikuyuDictionary) as Array<keyof typeof kikuyuDictionary>;
+      let foundCategory: keyof typeof kikuyuDictionary | null = null;
+      
+      // Find which category the user is asking about
+      for (const category of categories) {
+        // Look for the category name (e.g. 'body_parts' -> 'body parts') in the user's message
+        if (input.currentMessage.toLowerCase().includes(category.replace(/_/g, ' '))) {
+          foundCategory = category;
+          break;
+        }
+      }
+
+      if (foundCategory) {
+        // If a category is found, provide ONLY that category's data.
+        const categoryData = kikuyuDictionary[foundCategory];
+        flowInput.teacherContext = `The user is asking about the '${foundCategory}' category. Here is the relevant vocabulary:\n${JSON.stringify(categoryData, null, 2)}`;
+      } else {
+        // If no specific category is mentioned, provide the list of available categories to guide the user.
+        flowInput.teacherContext = `The user has not asked for a specific category. Let them know what categories are available to learn from: ${categories.map(c => c.replace(/_/g, ' ')).join(', ')}. Do not list any words yet.`;
+      }
     }
     
     const {output} = await tutorPrompt(flowInput);
