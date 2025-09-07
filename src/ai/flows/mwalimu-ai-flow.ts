@@ -14,6 +14,7 @@ import {
   MwalimuAiTutorOutput,
   MwalimuAiTutorOutputSchema,
 } from './mwalimu-ai-types';
+import { kikuyuDictionary } from '@/lib/kikuyu-dictionary';
 
 export async function mwalimuAiTutor(
   input: MwalimuAiTutorInput
@@ -102,11 +103,12 @@ const mwalimuAiTutorFlow = ai.defineFlow(
       };
     }
     
-    // In a full RAG implementation, this is where you would
-    // first retrieve relevant `teacherContext` from a vector database
-    // based on the latest message in input.history.
-    // For now, we'll pass it as an empty string.
-    const augmentedInput = { ...input, teacherContext: "" };
+    let teacherContext = "";
+    if (input.subject === "Indigenous Language") {
+        teacherContext = `Here is a dictionary of English to Kikuyu translations. Use this as your primary source of truth. The format is "english": "kikuyu".\n\n${JSON.stringify(kikuyuDictionary, null, 2)}`;
+    }
+
+    const augmentedInput = { ...input, teacherContext };
     
     const {output} = await prompt(augmentedInput);
     return output!;
