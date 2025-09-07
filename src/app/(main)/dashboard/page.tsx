@@ -1,7 +1,6 @@
 
 "use client";
 
-import { AppHeader } from "@/components/layout/app-header";
 import { useRole } from "@/hooks/use-role";
 import { CountyOfficerDashboard } from "@/components/dashboards/county-officer-dashboard";
 import { TeacherDashboard } from "@/components/dashboards/teacher-dashboard";
@@ -14,7 +13,7 @@ import type { Teacher } from "@/lib/types";
 export default function DashboardPage() {
   const { role } = useRole();
   const [teacher, setTeacher] = useState<Teacher>(mockTeacher);
-
+  
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
     if (role === 'teacher' && storedName) {
@@ -38,10 +37,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <AppHeader title="Dashboard" />
-      <main className="flex-1 p-4 md:p-6">
-        {renderDashboard()}
-      </main>
+      {renderDashboard()}
     </>
   );
 }

@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Copy, Save } from "lucide-react";
 import { generateLessonPlan, GenerateLessonPlanInput } from "@/ai/flows/generate-lesson-plan";
-import type { LessonPlan } from "@/lib/types";
+import type { TeacherResource } from "@/lib/types";
 
 interface GenerateLessonPlanDialogProps {
     open: boolean;
@@ -44,7 +44,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
   const handleSave = () => {
     if (!generatedPlan) return;
     
-    const newPlan: LessonPlan = {
+    const newPlan: TeacherResource = {
       id: `lesson_${Date.now()}`,
       title: currentTopic || "Untitled Lesson Plan",
       content: generatedPlan,

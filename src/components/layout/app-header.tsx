@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -17,11 +18,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings } from "lucide-react";
 import { ProfileDialog } from './profile-dialog';
 
+const getTitleFromPath = (path: string) => {
+    const segments = path.split('/').filter(Boolean);
+    if (segments.length === 0) return 'Welcome';
+    const lastSegment = segments[segments.length - 1];
+    
+    // Capitalize first letter and replace dashes with spaces
+    return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ');
+};
 
-export function AppHeader({ title }: { title: string }) {
+export function AppHeader() {
+  const pathname = usePathname();
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [userName, setUserName] = useState('User');
   const [userEmail, setUserEmail] = useState('user@example.com');
+  const [title, setTitle] = useState('Dashboard');
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
@@ -29,6 +40,10 @@ export function AppHeader({ title }: { title: string }) {
     if (storedName) setUserName(storedName);
     if (storedEmail) setUserEmail(storedEmail);
   }, []);
+  
+  useEffect(() => {
+      setTitle(getTitleFromPath(pathname));
+  }, [pathname]);
 
   return (
     <>

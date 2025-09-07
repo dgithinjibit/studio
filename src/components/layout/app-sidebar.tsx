@@ -10,6 +10,9 @@ import {
   FileText,
   School,
   GitGraph,
+  Library,
+  Settings,
+  Bot,
 } from "lucide-react";
 
 import {
@@ -40,6 +43,8 @@ export function AppSidebar() {
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
+    { href: "/dashboard/tools", icon: Bot, label: "Teacher Tools", roles: ["teacher"] },
+    { href: "/dashboard/resources", icon: Library, label: "My Resources", roles: ["teacher"] },
     { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["school_head", "county_officer"] },
     { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["school_head", "county_officer"] },
   ];
