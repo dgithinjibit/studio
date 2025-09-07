@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from '@/components/ui/label';
@@ -14,26 +14,38 @@ import { db, storage } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const grade1Subjects = [
-    "Environmental Activities",
-    "CRE",
-    "Creative Activities",
-    "English Language Activities",
-    "Indigenous Language",
-    "Kiswahili Language Activities",
-    "Mathematics Activities",
-];
+const curriculumMap = {
+    "Grade 1": [
+        "Environmental Activities",
+        "CRE",
+        "Creative Activities",
+        "English Language Activities",
+        "Indigenous Language",
+        "Kiswahili Language Activities",
+        "Mathematics Activities",
+    ],
+    "Grade 2": [
+        "Environmental Activities",
+        "CRE",
+        "Creative Activities",
+        "English Language Activities",
+        "Indigenous Language",
+        "Kiswahili",
+        "Mathematics Activities",
+    ]
+};
+
 
 export default function CurriculumIngestorPage() {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
+    const [selectedGrade, setSelectedGrade] = useState('');
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const formData = new FormData(event.currentTarget);
         const pdfFiles = (formData.get('pdfFiles') as FileList);
-        const documentText = ""; // This is now empty, will be replaced by PDF extraction later.
 
         if (pdfFiles.length === 0) {
             toast({
@@ -43,13 +55,11 @@ export default function CurriculumIngestorPage() {
             });
             return;
         }
-
-        // For now, we show a message that the text is needed.
-        // This will be removed once PDF parsing is implemented.
+        
          toast({
             variant: 'destructive',
             title: 'Feature Under Development',
-            description: 'Automatic text extraction from PDFs is not yet available. Please use the text pasting method for now.'
+            description: 'Automatic text extraction from PDFs is not yet available. This tool currently only backs up the selected files to the cloud.'
         });
         return;
 
@@ -60,26 +70,27 @@ export default function CurriculumIngestorPage() {
         const subject = formData.get('subject') as string;
 
         try {
-            // 1. Upload all the original PDFs for backup
             const uploadPromises = Array.from(pdfFiles).map(file => {
-                const storageRef = ref(storage, `curriculum_pdfs/${file.name}`);
+                const storageRef = ref(storage, `curriculum_pdfs/${grade}/${subject}/${file.name}`);
                 return uploadBytes(storageRef, file).then(snapshot => getDownloadURL(snapshot.ref));
             });
             
             const downloadURLs = await Promise.all(uploadPromises);
 
-            // 2. Process the text with the AI
+            // In the future, the extracted text from the PDF will be passed here.
+            // For now, it is empty.
+            const documentText = ""; 
+            
             const result = await ingestCurriculum({ documentText, grade, subject });
 
             if (result.parsedCurriculum && result.parsedCurriculum.length > 0) {
                 
-                // 3. Save the structured data AND the backup URLs to Firestore
                 const curriculumCollection = collection(db, "curriculumData");
                 await addDoc(curriculumCollection, {
                     grade,
                     subject,
                     createdAt: new Date().toISOString(),
-                    originalFileUrls: downloadURLs, // Save all URLs
+                    originalFileUrls: downloadURLs,
                     content: result.parsedCurriculum,
                 });
 
@@ -88,6 +99,7 @@ export default function CurriculumIngestorPage() {
                     description: `Successfully parsed ${result.parsedCurriculum.length} item(s) for ${grade} ${subject}. ${downloadURLs.length} PDF(s) backed up.`,
                 });
                 (event.target as HTMLFormElement).reset();
+                 setSelectedGrade('');
             } else {
                  toast({
                     variant: 'destructive',
@@ -106,6 +118,11 @@ export default function CurriculumIngestorPage() {
             setLoading(false);
         }
     }
+    
+    const availableSubjects = useMemo(() => {
+        if (!selectedGrade) return [];
+        return curriculumMap[selectedGrade as keyof typeof curriculumMap] || [];
+    }, [selectedGrade]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-background p-4">
@@ -116,43 +133,45 @@ export default function CurriculumIngestorPage() {
                         Curriculum Ingestor
                     </CardTitle>
                     <CardDescription>
-                        Upload your curriculum PDF documents. The AI will process them and store them in a structured format for other tools to use.
+                       Follow these steps to upload curriculum documents. The AI will process them and store them in a structured format for other tools to use.
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-6">
                          <div className="grid md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="grade">Grade Level</Label>
-                                <Select name="grade" required defaultValue="Grade 1">
+                                <Label htmlFor="grade">1. Select Grade Level</Label>
+                                <Select name="grade" required value={selectedGrade} onValueChange={setSelectedGrade}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a grade" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Array.from({ length: 12 }, (_, i) => (
-                                            <SelectItem key={i + 1} value={`Grade ${i + 1}`}>Grade {i + 1}</SelectItem>
+                                        {Object.keys(curriculumMap).map(grade => (
+                                            <SelectItem key={grade} value={grade}>{grade}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="subject">Subject</Label>
-                                <Select name="subject" required>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a subject" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {grade1Subjects.map(subject => (
-                                            <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                             {selectedGrade && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="subject">2. Select Subject</Label>
+                                    <Select name="subject" required>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a subject" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {availableSubjects.map(subject => (
+                                                <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
                         </div>
                          <div className="space-y-2">
-                            <Label htmlFor="pdfFiles">Curriculum PDF Document(s)</Label>
+                            <Label htmlFor="pdfFiles">3. Upload Curriculum PDF Document(s)</Label>
                             <Input id="pdfFiles" name="pdfFiles" type="file" accept=".pdf" required multiple />
-                             <p className="text-sm text-muted-foreground">Select one or more PDF files. The AI will process them to structure the curriculum data.</p>
+                             <p className="text-sm text-muted-foreground">Select one or more PDF files for the selected grade and subject.</p>
                         </div>
                     </CardContent>
                     <CardFooter>
