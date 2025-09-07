@@ -97,7 +97,7 @@ function SignupFormComponent() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+                            <Input id="email" name="email" type="email" placeholder="m@example.com" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address." />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
