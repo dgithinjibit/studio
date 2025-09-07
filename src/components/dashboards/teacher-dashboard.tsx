@@ -102,6 +102,9 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
     const onResourceSaved = () => {
         // Switch to the resources tab to show the newly saved plan
         setActiveTab("resources");
+        // We need to dispatch a custom event to tell the MyResources component to update
+        // because localStorage changes in the same window don't trigger the 'storage' event.
+        window.dispatchEvent(new CustomEvent('resource-update'));
     }
 
     return (
@@ -242,7 +245,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                 onOpenChange={setSchemeOfWorkDialogOpen}
                 onResourceSaved={onResourceSaved}
              />
-             <GenerateRubricDialog open={isRubricDialogOpen} onOpenChange={setRubricDialogOpen} />
+             <GenerateRubricDialog open={isRubricDialogOpen} onOpenChange={setRubricDialogOpen} onResourceSaved={onResourceSaved} />
              {selectedClass && (
                  <DigitalAttendanceRegister 
                     open={isAttendanceDialogOpen}

@@ -35,28 +35,36 @@ export function DigitalAttendanceRegister({ open, onOpenChange, classInfo }: Dig
     const [newStudentName, setNewStudentName] = useState('');
     const { toast } = useToast();
 
-    // Load attendance from localStorage when the component mounts
+    // Load attendance from localStorage when the component mounts or classInfo changes
     useEffect(() => {
-        const storedAttendance = localStorage.getItem(`attendance_${classInfo.name}`);
-        if (storedAttendance) {
-            setAttendance(JSON.parse(storedAttendance));
-        }
-        const storedStudents = localStorage.getItem(`students_${classInfo.name}`);
-        if (storedStudents) {
-            setStudents(JSON.parse(storedStudents));
-        } else {
-             setStudents(classInfo.students);
+        if (open) {
+            const storedAttendance = localStorage.getItem(`attendance_${classInfo.name}`);
+            if (storedAttendance) {
+                setAttendance(JSON.parse(storedAttendance));
+            } else {
+                setAttendance({});
+            }
+            const storedStudents = localStorage.getItem(`students_${classInfo.name}`);
+            if (storedStudents) {
+                setStudents(JSON.parse(storedStudents));
+            } else {
+                 setStudents(classInfo.students);
+            }
         }
     }, [classInfo.name, open]);
 
     // Save attendance to localStorage whenever it changes
     useEffect(() => {
-        localStorage.setItem(`attendance_${classInfo.name}`, JSON.stringify(attendance));
-    }, [attendance, classInfo.name]);
+        if(open) {
+            localStorage.setItem(`attendance_${classInfo.name}`, JSON.stringify(attendance));
+        }
+    }, [attendance, classInfo.name, open]);
     
     useEffect(() => {
-        localStorage.setItem(`students_${classInfo.name}`, JSON.stringify(students));
-    }, [students, classInfo.name]);
+        if(open) {
+            localStorage.setItem(`students_${classInfo.name}`, JSON.stringify(students));
+        }
+    }, [students, classInfo.name, open]);
 
     const handleAttendanceChange = (studentId: string, session: 'morning' | 'evening', checked: boolean) => {
         if (!selectedDate) return;

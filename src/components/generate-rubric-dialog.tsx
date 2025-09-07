@@ -17,16 +17,56 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy, Save } from "lucide-react";
 import { generateRubric, GenerateRubricInput } from "@/ai/flows/generate-rubric";
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { TeacherResource } from "@/lib/types";
 
-export function GenerateRubricDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
+interface GenerateRubricDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onResourceSaved: () => void;
+}
+
+export function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: GenerateRubricDialogProps) {
   const [loading, setLoading] = useState(false);
   const [generatedRubric, setGeneratedRubric] = useState("");
+  const [currentAssignment, setCurrentAssignment] = useState("");
   const { toast } = useToast();
   const [levels, setLevels] = useState(3);
   const [useWebSearch, setUseWebSearch] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generatedRubric).then(() => {
+        toast({
+            title: "Copied to Clipboard",
+        });
+    });
+  };
+
+  const handleSave = () => {
+    if (!generatedRubric) return;
+    
+    const newResource: TeacherResource = {
+      id: `rubric_${Date.now()}`,
+      title: `${currentAssignment || 'Untitled Rubric'}`,
+      content: generatedRubric,
+      createdAt: new Date().toISOString(),
+      type: 'Rubric'
+    };
+
+    const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
+    localStorage.setItem("teacherResources", JSON.stringify([newResource, ...existingResources]));
+    
+    toast({
+      title: "Rubric Saved!",
+      description: `"${newResource.title}" has been added to your resources.`,
+    });
+
+    onOpenChange(false);
+    onResourceSaved();
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,6 +84,8 @@ export function GenerateRubricDialog({ open, onOpenChange }: { open: boolean, on
       webSearch: useWebSearch,
     };
     
+    setCurrentAssignment(data.assignmentDescription);
+
     try {
         const result = await generateRubric(data);
         if (result.rubric) {
@@ -66,6 +108,7 @@ export function GenerateRubricDialog({ open, onOpenChange }: { open: boolean, on
         onOpenChange(isOpen);
         if (!isOpen) {
             setGeneratedRubric("");
+            setCurrentAssignment("");
         }
     }}>
       <DialogContent className="sm:max-w-4xl">
@@ -113,15 +156,28 @@ export function GenerateRubricDialog({ open, onOpenChange }: { open: boolean, on
               </DialogFooter>
             </form>
              <div className="border-l border-border pl-8">
-                <h3 className="font-bold mb-2">Generated Rubric:</h3>
+                 <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-bold">Generated Rubric:</h3>
+                    {generatedRubric && (
+                         <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon" onClick={handleCopy}>
+                                <Copy className="h-4 w-4" />
+                            </Button>
+                             <Button onClick={handleSave}>
+                                <Save className="mr-2 h-4 w-4" />
+                                Save
+                            </Button>
+                        </div>
+                    )}
+                </div>
                 {loading && (
                     <div className="flex items-center justify-center h-full">
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                     </div>
                 )}
                 {generatedRubric && (
-                    <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 overflow-auto h-[500px]">
-                        <ReactMarkdown>{generatedRubric}</ReactMarkdown>
+                    <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 overflow-auto h-[500px] border rounded-md p-2">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{generatedRubric}</ReactMarkdown>
                     </div>
                 )}
                  {!loading && !generatedRubric && (
