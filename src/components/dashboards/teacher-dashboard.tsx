@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, Plus, Bot } from "lucide-react";
+import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, Plus, Bot, Sparkles } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AddClassDialog } from '@/components/add-class-dialog';
 import {
@@ -27,60 +27,13 @@ interface TeacherDashboardProps {
     teacher: Teacher;
 }
 
-function AssistantWidget({ teacher }: { teacher: Teacher }) {
-    const [summary, setSummary] = useState('');
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchSummary = async () => {
-            const allResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-            const relevantResources = allResources.map(({ title, type }) => ({ title, type }));
-            const classes = teacher.classes.map(({ name }) => ({ name }));
-
-            try {
-                const result = await generateDashboardSummary({
-                    classes,
-                    resources: relevantResources
-                });
-                setSummary(result.summary);
-            } catch (error) {
-                console.error("Error generating dashboard summary:", error);
-                setSummary("Could not load AI suggestions. Please try again later.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSummary();
-    }, [teacher]);
-
-    return (
-        <Card className="flex flex-col">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Bot className="w-6 h-6 text-accent" /> AI Teaching Assistant
-                </CardTitle>
-                <CardDescription>Your AI-powered summary and suggestions.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow">
-                {loading ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-[80%]" />
-                    </div>
-                ) : (
-                    <p className="text-sm text-muted-foreground">{summary}</p>
-                )}
-            </CardContent>
-        </Card>
-    )
-}
-
 export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardProps) {
     const [teacher, setTeacher] = useState<Teacher>(initialTeacher);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
     const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
+    const [summary, setSummary] = useState('');
+    const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -146,9 +99,31 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     };
 
 
-    const onResourceSaved = () => {
-        window.dispatchEvent(new CustomEvent('resource-update'));
-    }
+    const handleGenerateSummary = async () => {
+        setIsSummaryLoading(true);
+        setSummary('');
+        const allResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
+        const relevantResources = allResources.map(({ title, type }) => ({ title, type }));
+        const classes = teacher.classes.map(({ name }) => ({ name }));
+
+        try {
+            const result = await generateDashboardSummary({
+                classes,
+                resources: relevantResources
+            });
+            setSummary(result.summary);
+        } catch (error) {
+            console.error("Error generating dashboard summary:", error);
+            toast({
+                variant: 'destructive',
+                title: "Error Generating Summary",
+                description: "Could not load AI suggestions. Please try again later.",
+            });
+        } finally {
+            setIsSummaryLoading(false);
+        }
+    };
+
 
     return (
         <>
@@ -157,10 +132,31 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                     <h1 className="font-headline text-3xl font-bold">Welcome, {teacher.name}!</h1>
                     <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
                 </div>
+                 <Button onClick={handleGenerateSummary} disabled={isSummaryLoading}>
+                    {isSummaryLoading ? (
+                        <Sparkles className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                         <Sparkles className="mr-2 h-4 w-4" />
+                    )}
+                    Generate Dashboard Summary
+                </Button>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 <div className="lg:col-span-2 grid gap-6 md:grid-cols-2">
+                    {summary && (
+                         <Card className="md:col-span-2">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Bot className="w-6 h-6 text-accent" /> AI Teaching Assistant
+                                </CardTitle>
+                                <CardDescription>Your AI-powered summary and suggestions.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-grow">
+                                <p className="text-sm text-muted-foreground">{summary}</p>
+                            </CardContent>
+                        </Card>
+                    )}
                     <Card className="md:col-span-2">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -181,7 +177,6 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                             </ChartContainer>
                         </CardContent>
                     </Card>
-                     <AssistantWidget teacher={teacher} />
                 </div>
                 
 
