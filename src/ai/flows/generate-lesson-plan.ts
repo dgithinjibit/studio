@@ -93,32 +93,32 @@ By the end of the lesson the learner should be able to:
 ---
 
 ## Learning Resources
-- [List relevant learning resources]
+- [List relevant learning resources based on the topic and activities]
 
 ---
 
 ## Organization of Learning
 
 ### Introduction (5 Minutes)
-- [Detail an engaging introduction. How will you link to the previous lesson?]
+- [Detail an engaging introduction. How will you link to the previous lesson? What is the hook?]
 
 ### Lesson Development (25 Minutes)
 **Step 1: [Activity Title] (10 mins)**
-- [Describe the first activity. What will the teacher do? What will the learners do? How does it align with the learning objectives?]
+- [Describe the first activity. What will the teacher do? What will the learners do? How does it align with the learning objectives? Be specific and learner-centered.]
 
 **Step 2: [Activity Title] (10 mins)**
-- [Describe the second activity. Focus on learner-centered participation.]
+- [Describe the second activity. Focus on learner-centered participation, collaboration, or a hands-on task.]
 
 **Step 3: [Activity Title] (5 mins)**
-- [Describe the third activity, possibly a group discussion or collaborative task.]
+- [Describe the third activity, possibly a group discussion, quick presentation, or review.]
 
 ### Conclusion (5 Minutes)
-- [How will you summarize the key points and assess understanding?]
+- [How will you summarize the key points and assess understanding? What is the key takeaway?]
 
 ---
 
 ## Assessment
-- [Describe the specific assessment method to be used (e.g., Observation, Checklist, Oral questions).]
+- [Describe the specific assessment method to be used (e.g., Observation, Checklist, Oral questions, Peer-assessment).]
 
 ---
 

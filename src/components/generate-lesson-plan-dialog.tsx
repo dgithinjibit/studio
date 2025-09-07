@@ -61,10 +61,10 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
     
     setLoading(true);
     try {
-        const fileName = `lesson_plans/${Date.now()}_${currentTopic.replace(/\s+/g, '_')}.txt`;
+        const fileName = `lesson_plans/${Date.now()}_${currentTopic.replace(/\s+/g, '_')}.md`;
         const storageRef = ref(storage, fileName);
         
-        await uploadString(storageRef, generatedPlan, 'raw');
+        await uploadString(storageRef, generatedPlan, 'raw', { contentType: 'text/markdown' });
         const downloadURL = await getDownloadURL(storageRef);
 
         const newPlan: Omit<TeacherResource, 'id'> = {
@@ -102,16 +102,23 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
     setGeneratedPlan("");
 
     let data: GenerateLessonPlanInput;
+    const teacherName = localStorage.getItem('userName') || 'Teacher';
 
     if (schemeContext) {
-        // If we have context, we can derive some details.
         // This is a simplified derivation for now.
         data = {
-            subject: "Derived from Scheme",
-            topic: "Lesson from Scheme",
-            gradeLevel: "Derived from Scheme",
-            learningObjectives: "Derived from Scheme's Learning Outcomes",
+            subject: "Social Studies",
+            topic: "Language groups in Eastern Africa",
+            gradeLevel: "Grade 5",
+            learningObjectives: "a) Describe the classification of communities in Eastern Africa according to language groups... e) appreciate unity of language groups in Eastern Africa.",
             schemeOfWorkContext: schemeContext,
+            teacherName,
+            school: "Sure Junior School",
+            term: "2",
+            year: new Date().getFullYear().toString(),
+            roll: "Boys: 20, Girls: 20",
+            strand: "2.0 People, Population and Social Organisations",
+            subStrand: "2.1 Language groups in Eastern Africa",
         };
         setCurrentTopic("Lesson Plan from Scheme");
     } else if (event) {
@@ -123,7 +130,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
             learningObjectives: formData.get("learningObjectives") as string,
             strand: formData.get("strand") as string,
             subStrand: formData.get("subStrand") as string,
-            teacherName: "Mwalimu Wetu", // Example, could be dynamic
+            teacherName,
             school: "Sure Junior School", // Example
             term: "2",
             year: new Date().getFullYear().toString(),
@@ -280,7 +287,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
                     <Textarea 
                         value={generatedPlan}
                         onChange={(e) => setGeneratedPlan(e.target.value)}
-                        className="text-sm bg-muted whitespace-pre-wrap font-body flex-1"
+                        className="text-sm bg-muted/50 whitespace-pre-wrap font-mono flex-1"
                         readOnly={improving}
                     />
 
