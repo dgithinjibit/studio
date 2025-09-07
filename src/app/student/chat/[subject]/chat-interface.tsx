@@ -98,7 +98,7 @@ export default function ChatInterface({ subject }: { subject: string }) {
                                     </div>
                                 </div>
                             ))}
-                             {loading && messages.length > 0 && (
+                             {loading && (
                                 <div className="flex justify-start">
                                     <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
                                         <Loader2 className="h-5 w-5 animate-spin" />
