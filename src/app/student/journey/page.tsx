@@ -51,64 +51,27 @@ type Subject = {
     icon: LucideIcon | string;
 };
 
+const commonSubjects = [
+    { name: 'English', icon: '/assets/english-icon.png' },
+    { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
+    { name: 'Indigenous Language', icon: '/assets/indig.png' },
+    { name: 'Kiswahili', icon: '/assets/kisw.png' },
+    { name: 'Kenyan Sign Language', icon: '/assets/ksl.png' },
+    { name: 'Religious Education', icon: '/assets/cre.png' },
+    { name: 'Environmental Activities', icon: '/assets/envr.png' },
+    { name: 'Creative Activities', icon: '/assets/creative_act.png' },
+];
+
+const pastoralInstruction = { name: 'Pastoral Instruction Programme', icon: HeartHandshake };
+
+
 const subjectsMap: { [key: string]: Subject[] } = {
-    g7: [
-        { name: 'English', icon: '/assets/english_icon.png' },
-        { name: 'Creative Arts', icon: '/assets/crative_Arts.png' },
-        { name: 'Indigenous Language', icon: '/assets/indig.png' },
-        { name: 'Kiswahili/Sign Language', icon: '/assets/ksl.png' },
-        { name: 'Religious Education', icon: Church },
-        { name: 'Environmental Activities', icon: '/assets/env.png' },
-        { name: 'Creative Activities', icon: '/assets/creative_act.png' },
-        { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
-    ],
-     g4: [
-        { name: 'English', icon: '/assets/english_icon.png' },
-        { name: 'Creative Arts', icon: '/assets/crative_Arts.png' },
-        { name: 'Indigenous Language', icon: '/assets/indig.png' },
-        { name: 'Kiswahili/Sign Language', icon: '/assets/ksl.png' },
-        { name: 'Religious Education', icon: Church },
-        { name: 'Environmental Activities', icon: '/assets/env.png' },
-        { name: 'Creative Activities', icon: '/assets/creative_act.png' },
-    ],
-     g5: [
-        { name: 'English', icon: '/assets/english_icon.png' },
-        { name: 'Creative Arts', icon: '/assets/crative_Arts.png' },
-        { name: 'Indigenous Language', icon: '/assets/indig.png' },
-        { name: 'Kiswahili/Sign Language', icon: '/assets/ksl.png' },
-        { name: 'Religious Education', icon: Church },
-        { name: 'Environmental Activities', icon: '/assets/env.png' },
-        { name: 'Creative Activities', icon: '/assets/creative_act.png' },
-    ],
-     g6: [
-        { name: 'English', icon: '/assets/english_icon.png' },
-        { name: 'Creative Arts', icon: '/assets/crative_Arts.png' },
-        { name: 'Indigenous Language', icon: '/assets/indig.png' },
-        { name: 'Kiswahili/Sign Language', icon: '/assets/ksl.png' },
-        { name: 'Religious Education', icon: Church },
-        { name: 'Environmental Activities', icon: '/assets/env.png' },
-        { name: 'Creative Activities', icon: '/assets/creative_act.png' },
-    ],
-    g8: [
-        { name: 'English', icon: '/assets/english_icon.png' },
-        { name: 'Creative Arts', icon: '/assets/crative_Arts.png' },
-        { name: 'Indigenous Language', icon: '/assets/indig.png' },
-        { name: 'Kiswahili/Sign Language', icon: '/assets/ksl.png' },
-        { name: 'Religious Education', icon: Church },
-        { name: 'Environmental Activities', icon: '/assets/env.png' },
-        { name: 'Creative Activities', icon: '/assets/creative_act.png' },
-        { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
-    ],
-    g9: [
-        { name: 'English', icon: '/assets/english_icon.png' },
-        { name: 'Creative Arts', icon: '/assets/crative_Arts.png' },
-        { name: 'Indigenous Language', icon: '/assets/indig.png' },
-        { name: 'Kiswahili/Sign Language', icon: '/assets/ksl.png' },
-        { name: 'Religious Education', icon: Church },
-        { name: 'Environmental Activities', icon: '/assets/env.png' },
-        { name: 'Creative Activities', icon: '/assets/creative_act.png' },
-        { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
-    ],
+    g4: commonSubjects,
+    g5: commonSubjects,
+    g6: commonSubjects,
+    g7: [...commonSubjects, pastoralInstruction],
+    g8: [...commonSubjects, pastoralInstruction],
+    g9: [...commonSubjects, pastoralInstruction],
 };
 
 
@@ -182,7 +145,7 @@ export default function StudentJourneyPage() {
                 }
                 return null;
             case 'subject':
-                 const subjects = selectedGrade ? (subjectsMap[selectedGrade] || subjectsMap['g7']) : [];
+                 const subjects = selectedGrade ? (subjectsMap[selectedGrade] || []) : [];
                  const gradeName = `Grade ${selectedGrade?.replace('g', '')}`
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
