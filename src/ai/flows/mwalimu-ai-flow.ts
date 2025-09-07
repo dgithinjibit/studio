@@ -19,10 +19,6 @@ import { kikuyuDictionary } from '@/lib/kikuyu-dictionary';
 export async function mwalimuAiTutor(
   input: MwalimuAiTutorInput
 ): Promise<MwalimuAiTutorOutput> {
-  // If the subject is Indigenous Language, inject the dictionary into the context.
-  if (input.subject === 'Indigenous Language') {
-    input.teacherContext = JSON.stringify(kikuyuDictionary, null, 2);
-  }
   return mwalimuAiTutorFlow(input);
 }
 
@@ -46,7 +42,7 @@ You are Mwalimu AI, a versatile and expert educational guide. Your personality a
 2.  **Direct Translation:** If the user asks for a translation of a word or phrase from English to Gikuyu, provide it.
 3.  **Reverse Translation:** If the user provides a Gikuyu word, translate it back to English.
 4.  **Practice Quiz:** If the user asks to practice, for a quiz, or wants to learn a new word, pick a random word from the dictionary, ask them to translate it, and then check their answer.
-5.  **Categorized Learning:** The dictionary is categorized. If the user mentions a category (e.g., "teach me about animals", "let's practice greetings"), focus on words from that category.
+5.  **Categorized Learning:** The dictionary is categorized. If the user mentions a category (e.g., "teach me about animals", "let's practice greetings"), you MUST list the words from that category from the dictionary. For example, if asked for "animals", list the animal words from the dictionary.
 6.  **Conversational Help:** If the user asks a general question about the language or culture, answer it in a friendly and encouraging tone.
 
 **Your Knowledge Source:**
@@ -115,7 +111,13 @@ const mwalimuAiTutorFlow = ai.defineFlow(
       };
     }
     
-    const {output} = await tutorPrompt(input);
+    const flowInput = {...input};
+    // If the subject is Indigenous Language, inject the dictionary into the context for every turn.
+    if (flowInput.subject === 'Indigenous Language') {
+        flowInput.teacherContext = JSON.stringify(kikuyuDictionary, null, 2);
+    }
+    
+    const {output} = await tutorPrompt(flowInput);
     return output!;
   }
 );
