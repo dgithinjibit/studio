@@ -2,7 +2,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,13 +12,14 @@ import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { mockCounties } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 function SignupFormComponent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { toast } = useToast();
     const role = searchParams.get('role') as UserRole | null;
+    const [loading, setLoading] = useState(false);
 
     const getTitle = () => {
         switch (role) {
@@ -39,6 +40,7 @@ function SignupFormComponent() {
 
     const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setLoading(true);
         
         const formData = new FormData(e.currentTarget);
         const fullName = formData.get('fullName') as string;
@@ -55,6 +57,8 @@ function SignupFormComponent() {
             title: "Account Created!",
             description: "Welcome! We're redirecting you now.",
         });
+        
+        // The router push will start the navigation. The loading state will remain until the new page loads.
         router.push(getRedirectPath());
     };
 
@@ -120,8 +124,9 @@ function SignupFormComponent() {
                             </div>
                         )}
                         
-                        <Button type="submit" className="w-full">
-                            Create Account
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {loading ? 'Creating Account...' : 'Create Account'}
                         </Button>
                     </form>
                 </CardContent>
