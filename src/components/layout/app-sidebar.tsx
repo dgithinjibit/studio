@@ -13,6 +13,7 @@ import {
   Settings,
   Bot,
   FlaskConical,
+  HelpCircle,
 } from "lucide-react";
 
 import {
@@ -22,21 +23,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarContent,
+  SidebarFooter,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { SyncSentaLogo } from "@/components/icons";
 import { useRole } from "@/hooks/use-role";
 
 export function AppSidebar() {
   const { role } = useRole();
-  const [userName, setUserName] = useState('User');
-  const [userEmail, setUserEmail] = useState('user@example.com');
-
-  useEffect(() => {
-    const storedName = localStorage.getItem('userName');
-    const storedEmail = localStorage.getItem('userEmail');
-    if (storedName) setUserName(storedName);
-    if (storedEmail) setUserEmail(storedEmail);
-  }, [role]); // Rerun if role changes, just in case
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
@@ -48,14 +42,6 @@ export function AppSidebar() {
   ];
 
   const filteredNavItems = navItems.filter(item => item.roles.includes(role));
-
-  const roleName: { [key: string]: string } = {
-    teacher: "Teacher",
-    school_head: "School Head",
-    county_officer: "County Officer",
-    student: "Student"
-  }
-
 
   return (
     <Sidebar>
@@ -81,6 +67,19 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarSeparator />
+        <SidebarMenu>
+            <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Teacher Guide">
+                    <Link href="/dashboard/guide">
+                        <HelpCircle />
+                        <span>Teacher Guide</span>
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }
