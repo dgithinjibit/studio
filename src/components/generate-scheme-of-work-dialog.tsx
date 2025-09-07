@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, Copy, ArrowRight } from "lucide-react";
+import { Loader2, Save, Copy } from "lucide-react";
 import { generateSchemeOfWork, GenerateSchemeOfWorkInput } from "@/ai/flows/generate-scheme-of-work";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -24,10 +24,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
-import { grade4AgricultureCurriculum } from "@/curriculum/grade4-agriculture";
+import { Input } from "./ui/input";
 
-// In a real app, you would have a system to import all curriculum files.
-const allCurricula = [grade4AgricultureCurriculum];
 
 interface GenerateSchemeOfWorkDialogProps {
     open: boolean;
@@ -41,31 +39,6 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
   const [currentSubStrand, setCurrentSubStrand] = useState("");
   const { toast } = useToast();
   const [lessonsPerWeek, setLessonsPerWeek] = useState(3);
-  
-  // State for the multi-step form
-  const [selectedGrade, setSelectedGrade] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedStrand, setSelectedStrand] = useState('');
-  const [selectedSubStrand, setSelectedSubStrand] = useState('');
-
-  const availableSubjects = useMemo(() => {
-    if (!selectedGrade) return [];
-    return [...new Set(allCurricula.filter(c => c.grade === selectedGrade).map(c => c.subject))];
-  }, [selectedGrade]);
-
-  const availableStrands = useMemo(() => {
-    if (!selectedSubject) return [];
-    const curriculum = allCurricula.find(c => c.grade === selectedGrade && c.subject === selectedSubject);
-    return curriculum ? curriculum.strands.map(s => s.title) : [];
-  }, [selectedSubject, selectedGrade]);
-
-  const availableSubStrands = useMemo(() => {
-    if (!selectedStrand) return [];
-    const curriculum = allCurricula.find(c => c.grade === selectedGrade && c.subject === selectedSubject);
-    const strand = curriculum?.strands.find(s => s.title === selectedStrand);
-    return strand ? strand.sub_strands.map(ss => ss.title) : [];
-  }, [selectedStrand, selectedSubject, selectedGrade]);
-
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedScheme).then(() => {
@@ -123,9 +96,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
 
     const formData = new FormData(event.currentTarget);
     const data: GenerateSchemeOfWorkInput = {
-      subject: selectedSubject,
-      grade: selectedGrade,
-      subStrand: selectedSubStrand,
+      subject: formData.get("subject") as string,
+      grade: formData.get("grade") as string,
+      subStrand: formData.get("subStrand") as string,
       availableResources: formData.get("availableResources") as string,
       numberOfWeeks: "1",
       lessonsPerWeek: lessonsPerWeek.toString(),
@@ -150,10 +123,6 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
   };
   
   const resetForm = () => {
-      setSelectedGrade('');
-      setSelectedSubject('');
-      setSelectedStrand('');
-      setSelectedSubStrand('');
       setGeneratedScheme('');
       setLoading(false);
   }
@@ -169,96 +138,56 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl">Schemer: Week Generator</DialogTitle>
           <DialogDescription>
-             Create a one-week, CBC-compliant Scheme of Work. Select the grade, subject, strand, and sub-strand to begin.
+             Create a one-week, CBC-compliant Scheme of Work by providing your own curriculum details.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <form onSubmit={handleSubmit} className="space-y-4">
                 
-                {/* Step 1: Grade */}
-                <div className="space-y-2">
-                    <Label htmlFor="grade">1. Select Grade</Label>
-                    <Select name="grade" value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger id="grade">
-                            <SelectValue placeholder="Choose a grade level..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {[...new Set(allCurricula.map(c => c.grade))].map(grade => (
-                                <SelectItem key={grade} value={grade}>{grade}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                <div className="grid grid-cols-2 gap-4">
+                     <div className="space-y-2">
+                        <Label htmlFor="grade">Grade Level</Label>
+                        <Select name="grade" defaultValue="Grade 4">
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a grade" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Array.from({ length: 12 }, (_, i) => (
+                                    <SelectItem key={i + 1} value={`Grade ${i + 1}`}>Grade {i + 1}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="subject">Subject</Label>
+                        <Input id="subject" name="subject" placeholder="e.g. Agriculture" required />
+                    </div>
                 </div>
 
-                {/* Step 2: Subject */}
-                {selectedGrade && (
-                     <div className="space-y-2">
-                        <Label htmlFor="subject">2. Select Subject</Label>
-                        <Select name="subject" value={selectedSubject} onValueChange={setSelectedSubject} disabled={!availableSubjects.length}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Choose a subject..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {availableSubjects.map(subject => (
-                                    <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                )}
+                <div className="space-y-2">
+                    <Label htmlFor="strand">Strand</Label>
+                    <Input id="strand" name="strand" placeholder="e.g. Conserving our Environment" required />
+                </div>
+
+                 <div className="space-y-2">
+                    <Label htmlFor="subStrand">Sub-Strand</Label>
+                    <Input id="subStrand" name="subStrand" placeholder="e.g. Water Conservation" required />
+                </div>
                 
-                {/* Step 3: Strand */}
-                 {selectedSubject && (
-                     <div className="space-y-2">
-                        <Label htmlFor="strand">3. Select Strand</Label>
-                        <Select name="strand" value={selectedStrand} onValueChange={setSelectedStrand} disabled={!availableStrands.length}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Choose a strand..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {availableStrands.map(strand => (
-                                    <SelectItem key={strand} value={strand}>{strand}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                )}
-
-                 {/* Step 4: Sub-Strand */}
-                 {selectedStrand && (
-                     <div className="space-y-2">
-                        <Label htmlFor="subStrand">4. Select Sub-Strand</Label>
-                        <Select name="subStrand" value={selectedSubStrand} onValueChange={setSelectedSubStrand} disabled={!availableSubStrands.length}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Choose a sub-strand..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {availableSubStrands.map(ss => (
-                                    <SelectItem key={ss} value={ss}>{ss}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                )}
-
-                {selectedSubStrand && (
-                    <>
-                         <div>
-                            <Label htmlFor="lessonsPerWeek">5. Lessons per Week: {lessonsPerWeek}</Label>
-                            <Slider id="lessonsPerWeek" name="lessonsPerWeek" min={1} max={5} step={1} value={[lessonsPerWeek]} onValueChange={(value) => setLessonsPerWeek(value[0])} />
-                        </div>
-                         <div>
-                            <Label htmlFor="availableResources">6. Available Resources</Label>
-                            <Textarea id="availableResources" name="availableResources" defaultValue="Chalkboard, textbooks, local environment" />
-                        </div>
-                        <DialogFooter className="pt-4">
-                            <Button type="submit" disabled={loading} className="w-full">
-                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Generate Scheme for 1 Week
-                            </Button>
-                        </DialogFooter>
-                    </>
-                )}
+                <div>
+                    <Label htmlFor="lessonsPerWeek">Lessons per Week: {lessonsPerWeek}</Label>
+                    <Slider id="lessonsPerWeek" name="lessonsPerWeek" min={1} max={5} step={1} value={[lessonsPerWeek]} onValueChange={(value) => setLessonsPerWeek(value[0])} />
+                </div>
+                 <div>
+                    <Label htmlFor="availableResources">Available Resources</Label>
+                    <Textarea id="availableResources" name="availableResources" defaultValue="Chalkboard, textbooks, local environment" />
+                </div>
+                <DialogFooter className="pt-4">
+                    <Button type="submit" disabled={loading} className="w-full">
+                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Generate Scheme for 1 Week
+                    </Button>
+                </DialogFooter>
             </form>
              <div className="border-l border-border pl-8">
                 <div className="flex justify-between items-center mb-2">
@@ -287,7 +216,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 )}
                  {!loading && !generatedScheme && (
                     <div className="flex items-center justify-center h-full text-muted-foreground text-center p-8 bg-muted/50 rounded-lg">
-                        <p>Your generated scheme of work will appear here once you've selected all the options.</p>
+                        <p>Your generated scheme of work will appear here once you fill out the details.</p>
                     </div>
                 )}
             </div>
