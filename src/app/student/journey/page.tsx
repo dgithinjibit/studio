@@ -9,6 +9,8 @@ import { ArrowRight, BookOpen, Leaf, Wind, Palette, Languages, Church, HeartHand
 import type { LucideIcon } from 'lucide-react';
 import ChatInterface from '../chat/[subject]/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
+import { EnglishIcon, CreativeArtsIcon } from '@/components/icons';
+
 
 // Mock user data for personalization
 const mockUser = {
@@ -46,8 +48,8 @@ const gradesMap: { [key: string]: { id: string; name: string }[] } = {
 
 const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
     g7: [
-        { name: 'English', icon: Languages },
-        { name: 'Creative Arts', icon: Wind },
+        { name: 'English', icon: EnglishIcon },
+        { name: 'Creative Arts', icon: CreativeArtsIcon },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -56,8 +58,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
     ],
      g4: [
-        { name: 'English', icon: Languages },
-        { name: 'Creative Arts', icon: Wind },
+        { name: 'English', icon: EnglishIcon },
+        { name: 'Creative Arts', icon: CreativeArtsIcon },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -65,8 +67,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Creative Activities', icon: Palette },
     ],
      g5: [
-        { name: 'English', icon: Languages },
-        { name: 'Creative Arts', icon: Wind },
+        { name: 'English', icon: EnglishIcon },
+        { name: 'Creative Arts', icon: CreativeArtsIcon },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -74,8 +76,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Creative Activities', icon: Palette },
     ],
      g6: [
-        { name: 'English', icon: Languages },
-        { name: 'Creative Arts', icon: Wind },
+        { name: 'English', icon: EnglishIcon },
+        { name: 'Creative Arts', icon: CreativeArtsIcon },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -83,8 +85,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Creative Activities', icon: Palette },
     ],
     g8: [
-        { name: 'English', icon: Languages },
-        { name: 'Creative Arts', icon: Wind },
+        { name: 'English', icon: EnglishIcon },
+        { name: 'Creative Arts', icon: CreativeArtsIcon },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -93,8 +95,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
     ],
     g9: [
-        { name: 'English', icon: Languages },
-        { name: 'Creative Arts', icon: Wind },
+        { name: 'English', icon: EnglishIcon },
+        { name: 'Creative Arts', icon: CreativeArtsIcon },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
