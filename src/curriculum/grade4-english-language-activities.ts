@@ -364,183 +364,183 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
       {
         title: "5.0 NUTRITION – BALANCED DIET",
         sub_strands: [
-          {
-            title: "5.1.1 Pronunciation and Vocabulary: Listening Comprehension/ Pattern (noun phrase + would like to be …)",
-            learning_outcomes: [
-              "listen actively to a variety of texts to gain information,",
-              "apply vocabulary related to the theme in a variety of contexts for effective communication,",
-              "use the language pattern correctly for effective oral communication,",
-              "promote listening to a variety of texts for information and enjoyment.",
-            ],
-            suggested_activities: [
-              "listen to audio-visual recordings of songs, stories and passages featuring the sounds /ʊ/ /uː/ /æ/ /f/ /v/,",
-              "respond to questions from Listening comprehension,",
-              "construct sentences related to a story or listening comprehension using the language pattern,",
-              "(noun phrase + would like to be …)",
-              "retell a story he or she has listened to accurately,",
-              "respond correctly to questions based on the text,",
-              "dramatise sections of a story in groups for comprehension,",
-              "discuss with peers the lesson learnt from a story.",
-            ],
-            key_inquiry_questions: [
-              "Why should we listen carefully?",
-              "How can we improve our pronunciation?",
-            ],
-          },
-          {
-            title: "5.2.1 Extensive Reading: Independent Reading",
-            learning_outcomes: [
-              "select appropriate reading materials for lifelong learning,",
-              "read a variety of familiar materials independently to build reading speed and fluency,",
-              "apply appropriate strategies to read independently for information and enjoyment,",
-              "realise the importance of independent reading in lifelong learning.",
-            ],
-            suggested_activities: [
-              "select age - appropriate and high- interest reading materials such as narratives, poems, newspapers and magazines in print or electronic format,",
-              "set up an after-school club where they meet on a regular basis and read varied texts,",
-              "retell the stories they have read collaboratively. Share opinions and reflections on the texts they have read,",
-              "use materials in the classroom to read extensively,",
-              "read texts quietly or silently for pleasure.",
-            ],
-            key_inquiry_questions: [
-              "Why should we read widely?",
-              "What materials do you enjoy reading?",
-            ],
-          },
-          {
-            title: "5.3.1 Word Class: Regular and Irregular Adjectives",
-            learning_outcomes: [
-              "describe items using comparative forms of both regular and irregular adjectives for effective communication,",
-              "use adjectives of size and shape in the right order for clarity of communication,",
-              "adopt the use of adjectives for effective communication.",
-            ],
-            suggested_activities: [
-              "identify adjectives from an audio or written text ,",
-              "collaboratively talk about various items in the classroom using adjectives,",
-              "describe items using the comparative forms of regular and irregular adjectives with peers,",
-              "use adjectives in the correct order in sentences collaboratively,",
-              "write correct sentences using comparative forms of adjectives in the right order,",
-              "write sentences on tablets, computers and other digital resources using adjectives,",
-              "use adjectives to talk about scenes, pictures or comics based on the themes with peers.",
-            ],
-            key_inquiry_questions: [
-              "Why should we say the correct shape and size of things?",
-              "Which are some of the words you use to talk about how someone feels or looks?",
-              "How do we describe things?",
-            ],
-          },
-          {
-            title: "5.4.1 Creative Writing: Narrative Compositions",
-            learning_outcomes: [
-              "describe the parts of a narrative composition in preparation for writing,",
-              "organise thoughts fluently, clearly and precisely in a coherent paragraph for self-expression,",
-              "create a narrative composition of about 60-80 words for self-expression,",
-              "promote the role of creativity in writing for different purposes.",
-            ],
-            suggested_activities: [
-              "plan a composition with peers, write a draft and present it to the whole class,",
-              "use similes to make their compositions interesting,",
-              "create their own similes and use them in their composition,",
-              "write a narrative composition of about 60-80 words and incorporate similes,",
-              "rearrange jumbled up sentences from an oral narrative into coherent paragraphs,",
-              "listen to a narrative on radio or television and rewrite it in their own words.",
-              "watch and dramatise a story related to the theme (could be from a digital device).",
-              "visit a supermarket, food store or grocery store in the school neighbourhood and write a narrative composition based on that experience.",
-            ],
-            key_inquiry_questions: [
-              "Why do you enjoy listening to stories?",
-              "Why is it important to plan our composition?",
-              "How can you write an interesting composition?",
-            ],
-          }
+            {
+                title: "5.1.1 Pronunciation and Vocabulary: Listening Comprehension/ Pattern (noun phrase + would like to be …)",
+                learning_outcomes: [
+                  "listen actively to a variety of texts to gain information,",
+                  "apply vocabulary related to the theme in a variety of contexts for effective communication,",
+                  "use the language pattern correctly for effective oral communication,",
+                  "promote listening to a variety of texts for information and enjoyment.",
+                ],
+                suggested_activities: [
+                  "listen to audio-visual recordings of songs, stories and passages featuring the sounds /ʊ/ /uː/ /æ/ /f/ /v/,",
+                  "respond to questions from Listening comprehension,",
+                  "construct sentences related to a story or listening comprehension using the language pattern,",
+                  "(noun phrase + would like to be …)",
+                  "retell a story he or she has listened to accurately,",
+                  "respond correctly to questions based on the text,",
+                  "dramatise sections of a story in groups for comprehension,",
+                  "discuss with peers the lesson learnt from a story.",
+                ],
+                key_inquiry_questions: [
+                  "Why should we listen carefully?",
+                  "How can we improve our pronunciation?",
+                ],
+            },
+            {
+                title: "5.2.1 Extensive Reading: Independent Reading",
+                learning_outcomes: [
+                  "select appropriate reading materials for lifelong learning,",
+                  "read a variety of familiar materials independently to build reading speed and fluency,",
+                  "apply appropriate strategies to read independently for information and enjoyment,",
+                  "realise the importance of independent reading in lifelong learning.",
+                ],
+                suggested_activities: [
+                  "select age - appropriate and high- interest reading materials such as narratives, poems, newspapers and magazines in print or electronic format,",
+                  "set up an after-school club where they meet on a regular basis and read varied texts,",
+                  "retell the stories they have read collaboratively. Share opinions and reflections on the texts they have read,",
+                  "use materials in the classroom to read extensively,",
+                  "read texts quietly or silently for pleasure.",
+                ],
+                key_inquiry_questions: [
+                  "Why should we read widely?",
+                  "What materials do you enjoy reading?",
+                ],
+            },
+            {
+                title: "5.3.1 Word Class: Regular and Irregular Adjectives",
+                learning_outcomes: [
+                  "describe items using comparative forms of both regular and irregular adjectives for effective communication,",
+                  "use adjectives of size and shape in the right order for clarity of communication,",
+                  "adopt the use of adjectives for effective communication.",
+                ],
+                suggested_activities: [
+                  "identify adjectives from an audio or written text ,",
+                  "collaboratively talk about various items in the classroom using adjectives,",
+                  "describe items using the comparative forms of regular and irregular adjectives with peers,",
+                  "use adjectives in the correct order in sentences collaboratively,",
+                  "write correct sentences using comparative forms of adjectives in the right order,",
+                  "write sentences on tablets, computers and other digital resources using adjectives,",
+                  "use adjectives to talk about scenes, pictures or comics based on the themes with peers.",
+                ],
+                key_inquiry_questions: [
+                  "Why should we say the correct shape and size of things?",
+                  "Which are some of the words you use to talk about how someone feels or looks?",
+                  "How do we describe things?",
+                ],
+            },
+            {
+                title: "5.4.1 Creative Writing: Narrative Compositions",
+                learning_outcomes: [
+                  "describe the parts of a narrative composition in preparation for writing,",
+                  "organise thoughts fluently, clearly and precisely in a coherent paragraph for self-expression,",
+                  "create a narrative composition of about 60-80 words for self-expression,",
+                  "promote the role of creativity in writing for different purposes.",
+                ],
+                suggested_activities: [
+                  "plan a composition with peers, write a draft and present it to the whole class,",
+                  "use similes to make their compositions interesting,",
+                  "create their own similes and use them in their composition,",
+                  "write a narrative composition of about 60-80 words and incorporate similes,",
+                  "rearrange jumbled up sentences from an oral narrative into coherent paragraphs,",
+                  "listen to a narrative on radio or television and rewrite it in their own words.",
+                  "watch and dramatise a story related to the theme (could be from a digital device).",
+                  "visit a supermarket, food store or grocery store in the school neighbourhood and write a narrative composition based on that experience.",
+                ],
+                key_inquiry_questions: [
+                  "Why do you enjoy listening to stories?",
+                  "Why is it important to plan our composition?",
+                  "How can you write an interesting composition?",
+                ],
+            }
         ],
       },
       {
         title: "6.0 INTERNET-Email",
         sub_strands: [
-          {
-            title: "6.1.1 Pronunciation and Vocabulary: Stress and Intonation",
-            learning_outcomes: [
-              "identify correct stress and intonation in ‘WH’ questions, other questions and statements for clarity in speech,",
-              "use correct stress and intonation in questions and statements to communicate clearly,",
-              "use vocabulary related to the theme in a variety of contexts for effective oral communication,",
-              "adopt the use of varying intonation for effective communication.",
-            ],
-            suggested_activities: [
-              "listen to an audio-visual recording of words featuring the sounds /ʊ/ /uː/ /f/ /v/",
-              "listen to correct stress in words such as address, increase among others (whether noun or verb),",
-              "listen to correct intonation in questions and statements to identify a speaker’s feelings,",
-              "recite a poem featuring ‘WH’ questions and declaratives collaboratively,",
-              "vary intonation when uttering questions and statements. construct sentences orally with peers using vocabulary related to the theme.",
-            ],
-            key_inquiry_questions: [
-              "Why do we vary our voice when asking questions?",
-              "How does good pronunciation of words and sounds help us?",
-              "How do we find out what we do not know?",
-            ],
-          },
-          {
-            title: "6.2.1 Intensive Reading: Dialogue",
-            learning_outcomes: [
-              "read a variety of dialogues related to email and the internet for comprehension,",
-              "apply appropriate intensive reading skills to obtain specific factual and inferential information for lifelong learning,",
-              "adopt reading for purposes of comprehension and information.",
-            ],
-            suggested_activities: [
-              "locate new words and sentence structures in a dialogue,",
-              "read a variety of dialogues related to the theme in print and non-print formats,",
-              "answer factual and inferential questions individually and collaboratively,",
-              "identify events in a dialogue for logical flow.",
-            ],
-            key_inquiry_questions: [
-              "How can we obtain information from texts?",
-              "What stories or books have you read?",
-            ],
-          },
-          {
-            title: "6.3.1 Word Class: Quantifiers",
-            learning_outcomes: [
-              "identify quantifiers and nouns used with them appropriate for effective communication,",
-              "use quantifiers in sentences correctly for communication clarity,",
-              "adopt the correct use of quantifiers in everyday communication.",
-            ],
-            suggested_activities: [
-              "select countable and uncountable nouns from a list provided by the teacher,",
-              "use the quantifiers (much, many, some and any) correctly with nouns and construct sentences with peers,",
-              "recite poems and rhymes containing the quantifiers (much, many, some and any) in small groups,",
-              "fill in blank spaces using correct quantifiers,",
-              "use digital devices to compose a short poem or a paragraph featuring the quantifiers (much, many, some and any),",
-              "use the quantifiers (much, many, some and any) in a role play or a dialogue with peers.",
-            ],
-            key_inquiry_questions: [
-              "How can we quantify nouns we cannot count?",
-            ],
-          },
-          {
-            title: "6.4.1 Creativity Writing : Pictorial Compositions",
-            learning_outcomes: [
-              "organise pictures in a logical sequence to write pictorial compositions of about 60-80 on the theme,",
-              "write a pictorial composition of about 60-80 words on the theme for effective communication,",
-              "adopt the use of a wide range of pictures to write pictorial compositions on different topics for communication.",
-            ],
-            suggested_activities: [
-              "identify pictures from online and offline sources collaboratively,",
-              "use pictures from online and offline sources to write a pictorial composition of 60-80 words based on the theme,",
-              "discuss pictures collaboratively and write pictorial compositions of about 60-80 words,",
-              "watch a variety of videos related to the theme and write pictorial compositions collaboratively,",
-              "generate a wide range of pictures from the internet and write pictorial composition together.",
-            ],
-            key_inquiry_questions: [
-              "How do pictures make you feel?",
-            ],
-          }
+            {
+                title: "6.1.1 Pronunciation and Vocabulary: Stress and Intonation",
+                learning_outcomes: [
+                  "identify correct stress and intonation in ‘WH’ questions, other questions and statements for clarity in speech,",
+                  "use correct stress and intonation in questions and statements to communicate clearly,",
+                  "use vocabulary related to the theme in a variety of contexts for effective oral communication,",
+                  "adopt the use of varying intonation for effective communication.",
+                ],
+                suggested_activities: [
+                  "listen to an audio-visual recording of words featuring the sounds /ʊ/ /uː/ /f/ /v/",
+                  "listen to correct stress in words such as address, increase among others (whether noun or verb),",
+                  "listen to correct intonation in questions and statements to identify a speaker’s feelings,",
+                  "recite a poem featuring ‘WH’ questions and declaratives collaboratively,",
+                  "vary intonation when uttering questions and statements. construct sentences orally with peers using vocabulary related to the theme.",
+                ],
+                key_inquiry_questions: [
+                  "Why do we vary our voice when asking questions?",
+                  "How does good pronunciation of words and sounds help us?",
+                  "How do we find out what we do not know?",
+                ],
+            },
+            {
+                title: "6.2.1 Intensive Reading: Dialogue",
+                learning_outcomes: [
+                  "read a variety of dialogues related to email and the internet for comprehension,",
+                  "apply appropriate intensive reading skills to obtain specific factual and inferential information for lifelong learning,",
+                  "adopt reading for purposes of comprehension and information.",
+                ],
+                suggested_activities: [
+                  "locate new words and sentence structures in a dialogue,",
+                  "read a variety of dialogues related to the theme in print and non-print formats,",
+                  "answer factual and inferential questions individually and collaboratively,",
+                  "identify events in a dialogue for logical flow.",
+                ],
+                key_inquiry_questions: [
+                  "How can we obtain information from texts?",
+                  "What stories or books have you read?",
+                ],
+            },
+            {
+                title: "6.3.1 Word Class: Quantifiers",
+                learning_outcomes: [
+                  "identify quantifiers and nouns used with them appropriate for effective communication,",
+                  "use quantifiers in sentences correctly for communication clarity,",
+                  "adopt the correct use of quantifiers in everyday communication.",
+                ],
+                suggested_activities: [
+                  "select countable and uncountable nouns from a list provided by the teacher,",
+                  "use the quantifiers (much, many, some and any) correctly with nouns and construct sentences with peers,",
+                  "recite poems and rhymes containing the quantifiers (much, many, some and any) in small groups,",
+                  "fill in blank spaces using correct quantifiers,",
+                  "use digital devices to compose a short poem or a paragraph featuring the quantifiers (much, many, some and any),",
+                  "use the quantifiers (much, many, some and any) in a role play or a dialogue with peers.",
+                ],
+                key_inquiry_questions: [
+                  "How can we quantify nouns we cannot count?",
+                ],
+            },
+            {
+                title: "6.4.1 Creativity Writing : Pictorial Compositions",
+                learning_outcomes: [
+                  "organise pictures in a logical sequence to write pictorial compositions of about 60-80 on the theme,",
+                  "write a pictorial composition of about 60-80 words on the theme for effective communication,",
+                  "adopt the use of a wide range of pictures to write pictorial compositions on different topics for communication.",
+                ],
+                suggested_activities: [
+                  "identify pictures from online and offline sources collaboratively,",
+                  "use pictures from online and offline sources to write a pictorial composition of 60-80 words based on the theme,",
+                  "discuss pictures collaboratively and write pictorial compositions of about 60-80 words,",
+                  "watch a variety of videos related to the theme and write pictorial compositions collaboratively,",
+                  "generate a wide range of pictures from the internet and write pictorial composition together.",
+                ],
+                key_inquiry_questions: [
+                  "How do pictures make you feel?",
+                ],
+            }
         ],
       },
       {
         title: "7.0 TECHNOLOGY- CYBER SAFETY",
         sub_strands: [
           {
-            title: "7.1.1 Pronunciation and Vocabulary: Interactive Listening",
+            title: "7.1.1 Pronunciation and Vocabulary: Interactive Listening/Turn Taking/Riddles",
             learning_outcomes: [
               "participate actively in a two-way conversation (turn taking) in various settings for self-expression,",
               "apply vocabulary related to the theme in different settings for clarity of speech,",
@@ -949,7 +949,7 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
               "identify the interrogatives when, where, whose, who and what in a variety of texts,",
               "construct sentences with interrogatives (when, where, whose, who and what) with peers,",
               "view videos, cartoons or pictures and ask one another questions,",
-              "read a newspaper, magazine, brochures or any other authentic texts and identify the interrogative (when, where, whose, who and what) sentences. They could also write them in their exercise books or type key them in on a word processor collaboratively.",
+              "read a newspaper, magazine, brochures or any other authentic texts and identify the interrogative (when, where, whose, who and what) sentences.",
             ],
             key_inquiry_questions: [
               "Why do we ask questions?",
@@ -1153,3 +1153,4 @@ export const grade4EnglishLanguageActivitiesCurriculum = {
       }
     ]
   };
+  
