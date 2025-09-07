@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -47,6 +48,7 @@ import { grade1CreCurriculum } from "@/curriculum/grade1-cre";
 import { grade2EnvironmentalActivitiesCurriculum } from "@/curriculum/grade2-environmental-activities";
 import { grade2CreCurriculum } from "@/curriculum/grade2-cre";
 import { grade2CreativeActivitiesCurriculum } from "@/curriculum/grade2-creative-activities";
+import { grade2EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade2-english-language-activities";
 
 
 interface GenerateSchemeOfWorkDialogProps {
@@ -116,6 +118,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }
     if (selectedGrade === "Grade 1" && selectedSubject === "English Language Activities") {
       return grade1EnglishLanguageActivitiesCurriculum;
+    }
+     if (selectedGrade === "Grade 2" && selectedSubject === "English Language Activities") {
+      return grade2EnglishLanguageActivitiesCurriculum;
     }
     if (selectedGrade === "Grade 1" && selectedSubject === "Indigenous Language Activities") {
       return grade1IndigenousLanguageCurriculum;
@@ -419,4 +424,5 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
   );
 }
 
+    
     
