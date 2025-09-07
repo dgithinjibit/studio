@@ -46,10 +46,8 @@ import { grade2MathematicsActivitiesCurriculum } from "@/curriculum/grade2-mathe
 
 // Grade 3
 import { grade3CreCurriculum } from "@/curriculum/grade3-cre";
-import { grade3CreativeActivitiesCurriculum } from "@/curriculum/grade3-creative-activities";
 import { grade3EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade3-english-language-activities";
 import { grade3EnvironmentalActivitiesCurriculum } from "@/curriculum/grade3-environmental-activities";
-import { grade3IndigenousLanguageCurriculum } from "@/curriculum/grade3-indigenous-language";
 import { grade3KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade3-kiswahili-language-activities";
 import { grade3MathematicsActivitiesCurriculum } from "@/curriculum/grade3-mathematics-activities";
 
@@ -59,7 +57,6 @@ import { grade4AgricultureAndNutritionCurriculum } from "@/curriculum/grade4-agr
 import { grade4CreCurriculum } from "@/curriculum/grade4-cre";
 import { grade4CreativeArtsCurriculum } from "@/curriculum/grade4-creative-arts";
 import { grade4EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade4-english-language-activities";
-import { grade4IndigenousLanguageCurriculum } from "@/curriculum/grade4-indigenous-language";
 
 
 // Grade 6
@@ -143,11 +140,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     
     // Grade 3
     if (selectedGrade === "Grade 3" && selectedSubject === "Christian Religious Education") return grade3CreCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "Movement and Creative Activities") return grade3CreativeActivitiesCurriculum;
     if (selectedGrade === "Grade 3" && selectedSubject === "English Language Activities") return grade3EnglishLanguageActivitiesCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "Indigenous Language Activities") return grade3IndigenousLanguageCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "Kiswahili Language Activities") return grade3KiswahiliLanguageActivitiesCurriculum;
     if (selectedGrade === "Grade 3" && selectedSubject === "Environmental Activities") return grade3EnvironmentalActivitiesCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "Kiswahili Language Activities") return grade3KiswahiliLanguageActivitiesCurriculum;
     if (selectedGrade === "Grade 3" && selectedSubject === "Mathematical Activities") return grade3MathematicsActivitiesCurriculum;
 
     // Grade 4
@@ -155,7 +150,6 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     if (selectedGrade === "Grade 4" && selectedSubject === "Christian Religious Education") return grade4CreCurriculum;
     if (selectedGrade === "Grade 4" && selectedSubject === "Creative Arts") return grade4CreativeArtsCurriculum;
     if (selectedGrade === "Grade 4" && selectedSubject === "English") return grade4EnglishLanguageActivitiesCurriculum;
-    if (selectedGrade === "Grade 4" && selectedSubject === "Indigenous Languages") return grade4IndigenousLanguageCurriculum;
 
     // Grade 6
     if (selectedGrade === "Grade 6" && selectedSubject === "Social Studies") return grade6SocialStudiesCurriculum;
@@ -433,12 +427,4 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 )}
                  {!loading && !generatedScheme && (
                     <div className="flex items-center justify-center h-full text-muted-foreground text-center p-8 bg-muted/50 rounded-lg">
-                        <p>Your generated scheme of work will appear here once you fill out the form and click "Generate".</p>
-                    </div>
-                )}
-            </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
+                        <p>Your generated scheme of work will appear here once you fill out the form and click "Generate".</p
