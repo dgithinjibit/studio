@@ -10,6 +10,11 @@ export const GenerateCountySummaryInputSchema = z.object({
   averagePerformance: z.number().describe("The county-wide average student performance percentage."),
   topPerformingSchool: z.string().describe("The name of the top-performing school."),
   lowestPerformingSchool: z.string().describe("The name of the lowest-performing school."),
+  resources: z.array(z.object({
+    resourceName: z.string(),
+    schoolName: z.string(),
+    quantity: z.number(),
+  })).optional().describe("A list of resources allocated to various schools in the county."),
 });
 export type GenerateCountySummaryInput = z.infer<typeof GenerateCountySummaryInputSchema>;
 

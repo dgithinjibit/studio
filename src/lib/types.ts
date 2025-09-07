@@ -86,3 +86,11 @@ export type Communication = {
   acknowledged: boolean;
   sender?: string;
 };
+
+export type SchoolResource = {
+  id: string;
+  schoolName: string;
+  resourceName: string;
+  quantity: number;
+  dateAllocated: string;
+};

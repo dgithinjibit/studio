@@ -38,9 +38,18 @@ const prompt = ai.definePrompt({
 - **Lowest Performing School:** {{lowestPerformingSchool}}
 ---
 
+{{#if resources}}
+**Allocated Resources:**
+---
+{{#each resources}}
+- **Resource:** {{resourceName}} | **School:** {{schoolName}} | **Quantity:** {{quantity}}
+{{/each}}
+---
+{{/if}}
+
 **Instructions:**
-1.  **Generate a Summary:** Write a 2-sentence summary of the county's current educational status based on the data. Be objective and data-focused.
-2.  **Provide a Suggestion:** Based on the data, provide one clear, strategic, and actionable suggestion for the County Director to consider. This could involve resource allocation, teacher training, or an intervention for the lowest-performing school.
+1.  **Generate a Summary:** Write a 2-sentence summary of the county's current educational status based on all the data. Be objective and data-focused.
+2.  **Provide a Suggestion:** Based on all the data, provide one clear, strategic, and actionable suggestion for the County Director to consider. This could involve resource allocation, teacher training, or an intervention for the lowest-performing school. If resource data is available, try to connect it to school performance in your suggestion.
 `,
 });
 

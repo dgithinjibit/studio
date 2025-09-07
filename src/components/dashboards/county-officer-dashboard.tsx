@@ -1,15 +1,17 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lightbulb, Building2, Bot, Sparkles, Send } from "lucide-react";
-import Link from 'next/link';
+import { Bot, Sparkles, Send } from "lucide-react";
 import SchoolMap from '@/components/school-map';
 import { mockSchools } from '@/lib/mock-data';
 import { generateCountySummary } from '@/ai/flows/generate-county-summary';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { CountyResourceAllocation } from './county-resource-allocation';
+import type { SchoolResource } from '@/lib/types';
 
 
 export function CountyOfficerDashboard() {
@@ -17,7 +19,26 @@ export function CountyOfficerDashboard() {
   const [summary, setSummary] = useState('');
   const [suggestion, setSuggestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [resources, setResources] = useState<SchoolResource[]>([]);
   const { toast } = useToast();
+
+   useEffect(() => {
+    const storedResources = localStorage.getItem('schoolResources');
+    if (storedResources) {
+      setResources(JSON.parse(storedResources));
+    }
+
+    const handleResourceUpdate = () => {
+        const updatedStoredResources = localStorage.getItem('schoolResources');
+        setResources(updatedStoredResources ? JSON.parse(updatedStoredResources) : []);
+    };
+    window.addEventListener('school-resource-update', handleResourceUpdate);
+
+    return () => {
+        window.removeEventListener('school-resource-update', handleResourceUpdate);
+    };
+
+  }, []);
 
   const handleGenerateSummary = async () => {
       setIsLoading(true);
@@ -30,7 +51,8 @@ export function CountyOfficerDashboard() {
               teacherCount: 250,
               averagePerformance: 78,
               topPerformingSchool: 'Alliance High School',
-              lowestPerformingSchool: 'Gachugu Academy'
+              lowestPerformingSchool: 'Gachugu Academy',
+              resources: resources
           });
           setSummary(result.summary);
           setSuggestion(result.suggestion);
@@ -62,106 +84,90 @@ export function CountyOfficerDashboard() {
             </Button>
           </div>
         </div>
-        
-        {view === 'map' ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>School Map</CardTitle>
-              <CardDescription>Visualizing all schools in the county.</CardDescription>
-            </CardHeader>
-            <CardContent>
-               <div className="h-[600px] w-full">
-                  <SchoolMap schools={mockSchools.filter(s => s.countyId === 'county_19' || s.countyId === 'county_22' || s.countyId === 'county_47')} />
-               </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                        <Bot className="w-6 h-6 text-primary" />
-                        AI County Analyst
-                    </CardTitle>
-                    <CardDescription>
-                        Generate a high-level summary and strategic suggestions based on the latest county-wide data.
-                    </CardDescription>
-                </CardHeader>
-                {(summary || suggestion) && !isLoading && (
-                    <CardContent className="space-y-4">
-                        {summary && (
-                             <Card className="bg-muted/50">
-                                <CardHeader>
-                                    <CardTitle className="text-lg">County-Wide Summary</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm">{summary}</p>
-                                </CardContent>
-                            </Card>
-                        )}
-                        {suggestion && (
-                             <Card className="bg-muted/50">
-                                <CardHeader>
-                                    <CardTitle className="text-lg">Strategic Suggestion</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm">{suggestion}</p>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </CardContent>
-                )}
-                 {isLoading && (
-                    <CardContent>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                            <Sparkles className="w-5 h-5 animate-pulse" />
-                            <p>Analyzing county data and generating insights...</p>
-                        </div>
-                    </CardContent>
-                )}
-                <CardFooter>
-                    <Button onClick={handleGenerateSummary} disabled={isLoading}>
-                        {isLoading ? (
-                            <>
-                                <Sparkles className="mr-2 h-4 w-4 animate-spin" />
-                                Generating...
-                            </>
-                        ) : (
-                             <>
-                                <Send className="mr-2 h-4 w-4" />
-                                Analyze County Performance
-                            </>
-                        )}
-                    </Button>
-                </CardFooter>
-            </Card>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                <Card className="flex flex-col">
+        <Tabs defaultValue="dashboard">
+            <TabsList className="mb-4">
+                <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                <TabsTrigger value="resources">Resource Allocation</TabsTrigger>
+            </TabsList>
+            <TabsContent value="dashboard">
+                 {view === 'map' ? (
+                  <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Building2 className="w-6 h-6 text-accent"/> School Reports
-                        </CardTitle>
-                        <CardDescription>View detailed reports and performance data for individual schools in your county.</CardDescription>
+                      <CardTitle>School Map</CardTitle>
+                      <CardDescription>Visualizing all schools in the county.</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-grow flex items-end">
-                        <Button>View School-Specific Reports</Button>
+                    <CardContent>
+                       <div className="h-[600px] w-full">
+                          <SchoolMap schools={mockSchools.filter(s => s.countyId === 'county_19' || s.countyId === 'county_22' || s.countyId === 'county_47')} />
+                       </div>
                     </CardContent>
-                </Card>
-                <Card className="flex flex-col">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Lightbulb className="w-6 h-6 text-accent"/> Resource Allocation
-                        </CardTitle>
-                        <CardDescription>Analyze resource distribution and needs across all schools.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-grow flex items-end">
-                        <Button>Analyze Resources</Button>
-                    </CardContent>
-                </Card>
-            </div>
-          </div>
-        )}
+                  </Card>
+                ) : (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-3">
+                                <Bot className="w-6 h-6 text-primary" />
+                                AI County Analyst
+                            </CardTitle>
+                            <CardDescription>
+                                Generate a high-level summary and strategic suggestions based on the latest county-wide data, including resource allocation.
+                            </CardDescription>
+                        </CardHeader>
+                        {(summary || suggestion) && !isLoading && (
+                            <CardContent className="space-y-4">
+                                {summary && (
+                                     <Card className="bg-muted/50">
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">County-Wide Summary</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm">{summary}</p>
+                                        </CardContent>
+                                    </Card>
+                                )}
+                                {suggestion && (
+                                     <Card className="bg-muted/50">
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">Strategic Suggestion</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm">{suggestion}</p>
+                                        </CardContent>
+                                    </Card>
+                                )}
+                            </CardContent>
+                        )}
+                         {isLoading && (
+                            <CardContent>
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                    <Sparkles className="w-5 h-5 animate-pulse" />
+                                    <p>Analyzing county data and generating insights...</p>
+                                </div>
+                            </CardContent>
+                        )}
+                        <CardFooter>
+                            <Button onClick={handleGenerateSummary} disabled={isLoading}>
+                                {isLoading ? (
+                                    <>
+                                        <Sparkles className="mr-2 h-4 w-4 animate-spin" />
+                                        Generating...
+                                    </>
+                                ) : (
+                                     <>
+                                        <Send className="mr-2 h-4 w-4" />
+                                        Analyze County Performance
+                                    </>
+                                )}
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                )}
+            </TabsContent>
+             <TabsContent value="resources">
+                <CountyResourceAllocation initialResources={resources} />
+            </TabsContent>
+        </Tabs>
     </>
   );
 }
