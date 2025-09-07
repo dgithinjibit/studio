@@ -4,11 +4,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, ChevronRight, Plus, Users, Bot, Send, UserCheck, Percent, Megaphone, Library, BrainCircuit, Briefcase } from "lucide-react";
+import { BookOpen, ChevronRight, Plus, Users, Bot, Send, UserCheck, Percent, Briefcase } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AddClassDialog } from '@/components/add-class-dialog';
-import type { Teacher, ClassInfo, Student, TeacherResource } from '@/lib/types';
-import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
+import type { Teacher, ClassInfo, TeacherResource } from '@/lib/types';
 import { mockTeacher } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
@@ -19,9 +18,7 @@ import Link from 'next/link';
 
 export function SchoolHeadDashboard() {
     const [schoolData, setSchoolData] = useState<Teacher>(mockTeacher);
-    const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
-    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
     const { toast } = useToast();
 
     // State for AI Consultant
@@ -39,35 +36,9 @@ export function SchoolHeadDashboard() {
         }
     }, []);
     
-    useEffect(() => {
-        if (schoolData.classes.length > 0 && !selectedClass) {
-            const currentSelectedClass = schoolData.classes.find(c => c.id === (selectedClass?.id || schoolData.classes[0].id));
-            setSelectedClass(currentSelectedClass || schoolData.classes[0]);
-        }
-    }, [schoolData.classes, selectedClass]);
-    
-    const handleClassSelect = (classInfo: ClassInfo) => {
-        setSelectedClass(classInfo);
-        setAttendanceDialogOpen(true);
-    };
-    
     const updateSchoolData = (newSchoolState: Teacher) => {
         setSchoolData(newSchoolState);
         localStorage.setItem('mockTeacher', JSON.stringify(newSchoolState));
-    };
-
-    const handleUpdateStudents = (classId: string, newStudents: Student[]) => {
-        const updatedClasses = schoolData.classes.map(c => 
-            c.id === classId ? { ...c, students: newStudents } : c
-        );
-        updateSchoolData({ ...schoolData, classes: updatedClasses });
-    };
-
-    const handleClassNameUpdate = (classId: string, newName: string) => {
-        const updatedClasses = schoolData.classes.map(c => 
-            c.id === classId ? { ...c, name: newName } : c
-        );
-        updateSchoolData({ ...schoolData, classes: updatedClasses });
     };
     
     const handleAddClass = (className: string) => {
@@ -174,7 +145,7 @@ export function SchoolHeadDashboard() {
                     <Card>
                          <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <BrainCircuit className="text-primary w-6 h-6"/>
+                                <Bot className="text-primary w-6 h-6"/>
                                 AI Operational Consultant
                             </CardTitle>
                             <CardDescription>Ask strategic questions about your school's data to get AI-powered insights.</CardDescription>
@@ -220,7 +191,7 @@ export function SchoolHeadDashboard() {
                                 <CardTitle className="flex items-center gap-2">
                                     <BookOpen className="w-6 h-6 text-accent" /> School Hub
                                 </CardTitle>
-                                <CardDescription>Manage all classes and take attendance.</CardDescription>
+                                <CardDescription>Manage all classes for the school.</CardDescription>
                             </div>
                             <Button variant="outline" size="sm" onClick={() => setAddClassDialogOpen(true)}>
                                 <Plus className="mr-2 h-4 w-4" />
@@ -229,7 +200,7 @@ export function SchoolHeadDashboard() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {schoolData.classes.map(c => (
-                                <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleClassSelect(c)}>
+                                <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
                                     <div className="flex items-center gap-4">
                                         <Avatar className="h-12 w-12 border-2 border-primary/20">
                                             <AvatarFallback className="bg-primary/10 text-primary font-bold">{c.name.charAt(0)}</AvatarFallback>
@@ -239,9 +210,7 @@ export function SchoolHeadDashboard() {
                                             <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
                                         </div>
                                     </div>
-                                    <Button variant="ghost" size="icon">
-                                        <ChevronRight className="w-5 h-5" />
-                                    </Button>
+                                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
                                 </div>
                             ))}
                         </CardContent>
@@ -274,17 +243,6 @@ export function SchoolHeadDashboard() {
              
              <AddClassDialog open={isAddClassDialogOpen} onOpenChange={setAddClassDialogOpen} onAddClass={handleAddClass} />
 
-             {selectedClass && (
-                 <DigitalAttendanceRegister 
-                    open={isAttendanceDialogOpen}
-                    onOpenChange={setAttendanceDialogOpen}
-                    classInfo={selectedClass}
-                    onClassNameUpdate={handleClassNameUpdate}
-                    onUpdateStudents={handleUpdateStudents}
-                 />
-             )}
         </>
     );
 }
-
-    
