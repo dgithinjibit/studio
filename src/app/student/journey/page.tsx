@@ -5,7 +5,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BookOpen, Leaf, Wind, Palette, Languages, Church, HeartHandshake, LogOut, ArrowLeft, User } from 'lucide-react';
+import { ArrowRight, Leaf, HeartHandshake, LogOut, ArrowLeft, User } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import ChatInterface from '../chat/[subject]/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
@@ -51,7 +51,7 @@ type Subject = {
     icon: LucideIcon | string;
 };
 
-const commonSubjects = [
+const commonSubjects: Subject[] = [
     { name: 'English', icon: '/assets/english-icon.png' },
     { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
     { name: 'Indigenous Language', icon: '/assets/indig.png' },
@@ -129,12 +129,16 @@ export default function StudentJourneyPage() {
         }
     }, [step, selectedLevel, router]);
     
-    const renderIcon = (icon: LucideIcon | string) => {
+    const renderIcon = (icon: LucideIcon | string, subjectName: string) => {
         if (typeof icon === 'string') {
-            return <Image src={icon} alt="" width={48} height={48} className="w-12 h-12 mb-4" />;
+            return <Image src={icon} alt={`${subjectName} icon`} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />;
         }
         const IconComponent = icon;
-        return <IconComponent className="w-12 h-12 text-primary mb-4" />;
+        return (
+            <div className="flex items-center justify-center w-full h-full bg-card">
+                 <IconComponent className="w-24 h-24 text-primary" />
+            </div>
+        )
     };
 
     const renderContent = () => {
@@ -157,11 +161,14 @@ export default function StudentJourneyPage() {
                            {subjects.map((subject) => (
                                 <Card 
                                     key={subject.name}
-                                    className="text-center p-6 bg-card/80 hover:bg-accent hover:border-primary transition-all cursor-pointer flex flex-col items-center justify-center aspect-square"
+                                    className="relative group overflow-hidden rounded-lg cursor-pointer aspect-square text-white"
                                     onClick={() => handleSubjectSelect(subject.name)}
                                 >
-                                    {renderIcon(subject.icon)}
-                                    <h3 className="font-bold text-lg">{subject.name}</h3>
+                                    {renderIcon(subject.icon, subject.name)}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                                        <h3 className="font-bold text-lg opacity-50 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
+                                    </div>
                                 </Card>
                             ))}
                         </CardContent>
