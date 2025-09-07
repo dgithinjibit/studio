@@ -1,14 +1,13 @@
-
 /**
- * @fileOverview Curriculum data for Grade 4 Christian Religious Education.
+ * @fileOverview Curriculum data for Grade 3 Christian Religious Education.
  * 
  * This file contains the structured curriculum content that will be used
  * by the AI to generate lesson plans, schemes of work, and other resources.
- * This data is extracted from the KICD Grade 4 CRE curriculum design document.
+ * This data is extracted from the KICD Grade 3 CRE curriculum design document.
  */
 
-export const grade4CreCurriculum = {
-  grade: "Grade 4",
+export const grade3CreCurriculum = {
+  grade: "Grade 3",
   subject: "Christian Religious Education",
   strands: [
     {
@@ -739,3 +738,4 @@ export const grade4CreCurriculum = {
     },
   ],
 };
+```
