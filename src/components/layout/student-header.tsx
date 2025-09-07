@@ -3,8 +3,17 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { User, ArrowLeft } from 'lucide-react';
+import { User, ArrowLeft, LogOut, Settings } from 'lucide-react';
 import { ProfileDialog } from './profile-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from 'next/link';
 
 interface StudentHeaderProps {
   showBackButton: boolean;
@@ -30,10 +39,30 @@ export function StudentHeader({ showBackButton, onBack, studentFirstName }: Stud
                     I’m Mwalimu AI, your friendly Socratic Mentor.
                 </p>
             </div>
-            <Button variant="outline" onClick={() => setProfileOpen(true)} className="absolute right-0 top-1/2 -translate-y-1/2">
-                <User className="mr-2" />
-                Profile
-            </Button>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline">
+                            <User className="mr-2" />
+                            Profile
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                         <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setProfileOpen(true)}>
+                            <Settings className="mr-2 h-4 w-4" />
+                            <span>Profile Settings</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/login">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>Log out</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </div>
         <ProfileDialog open={isProfileOpen} onOpenChange={setProfileOpen} />
     </>
