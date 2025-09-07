@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { User, ArrowLeft, LogOut, Settings } from 'lucide-react';
 import { ProfileDialog } from './profile-dialog';
@@ -13,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from 'next/link';
 
 interface StudentHeaderProps {
   showBackButton: boolean;
@@ -23,6 +23,11 @@ interface StudentHeaderProps {
 
 export function StudentHeader({ showBackButton, onBack, studentFirstName }: StudentHeaderProps) {
   const [isProfileOpen, setProfileOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push('/login');
+  };
 
   return (
     <>
@@ -54,11 +59,9 @@ export function StudentHeader({ showBackButton, onBack, studentFirstName }: Stud
                             <Settings className="mr-2 h-4 w-4" />
                             <span>Profile Settings</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/login">
-                                <LogOut className="mr-2 h-4 w-4" />
-                                <span>Log out</span>
-                            </Link>
+                        <DropdownMenuItem onClick={handleLogout}>
+                           <LogOut className="mr-2 h-4 w-4" />
+                           <span>Log out</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
