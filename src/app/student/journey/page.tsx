@@ -5,11 +5,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BrainCircuit, HeartHandshake, KeyRound, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
-import { AiIcon } from '@/components/icons';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import type { TeacherResource } from '@/lib/types';
@@ -48,8 +47,8 @@ type Subject = {
     icon: LucideIcon | string;
 };
 
-const aiSubject: Subject = { name: 'AI', icon: AiIcon };
-const blockchainSubject: Subject = { name: 'Blockchain', icon: BrainCircuit };
+const aiSubject: Subject = { name: 'AI', icon: '/assets/ai.png' };
+const blockchainSubject: Subject = { name: 'Blockchain', icon: '/assets/bc.png' };
 
 const commonSubjects: Subject[] = [
     { name: 'English', icon: '/assets/english-icon.png' },
@@ -62,7 +61,7 @@ const commonSubjects: Subject[] = [
     { name: 'Creative Activities', icon: '/assets/creative_act.png' },
 ];
 
-const pastoralInstruction = { name: 'Pastoral Instruction Programme', icon: HeartHandshake };
+const pastoralInstruction = { name: 'Pastoral Instruction Programme', icon: '/assets/pastoral.png' };
 
 const subjectsMap: { [key: string]: Subject[] } = {
     g4: [...commonSubjects, aiSubject, blockchainSubject],
@@ -126,10 +125,10 @@ export default function StudentJourneyPage() {
         setIsSubmittingCode(true);
 
         const allResources: TeacherResource[] = JSON.parse(localStorage.getItem('teacherResources') || '[]');
-        const tutorContext = allResources.find(r => r.id === teacherCode.trim() && r.type === 'AI Tutor Context');
+        const tutorContextResource = allResources.find(r => r.id === teacherCode.trim() && r.type === 'AI Tutor Context');
 
-        if (tutorContext) {
-            localStorage.setItem('ai_tutor_context_to_load', tutorContext.content);
+        if (tutorContextResource && 'originalContent' in tutorContextResource && typeof (tutorContextResource as any).originalContent === 'string') {
+            localStorage.setItem('ai_tutor_context_to_load', (tutorContextResource as any).originalContent);
             toast({
                 title: "Teacher's Context Loaded!",
                 description: "Launching the Classroom Compass. Your AI guide is ready.",
@@ -181,7 +180,7 @@ export default function StudentJourneyPage() {
                 return (
                      <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                            <CardTitle className="text-stone-800">Step 1: Choose Your Path</CardTitle>
+                            <CardTitle className="text-stone-800">Choose Your Path</CardTitle>
                             <CardDescription className="text-stone-600">How would you like to start your learning session today?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid md:grid-cols-2 gap-6">
@@ -316,3 +315,5 @@ export default function StudentJourneyPage() {
         </div>
     );
 }
+
+    
