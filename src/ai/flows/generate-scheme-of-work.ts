@@ -48,10 +48,31 @@ Generate a detailed Scheme of Work based on the following information. The outpu
 **Available Resources:** {{{availableResources}}}
 
 **CRITICAL INSTRUCTIONS FOR LEARNING ACTIVITIES:**
-When generating the "Learning Activities", you MUST structure them according to the three CBC domains of learning. Use the following framework as your guide:
-1.  **Knowledge (Cognitive Domain):** Focus on intellectual skills. What will learners *know* or *understand*? Activities can include remembering, understanding, applying, analyzing, evaluating, and creating. (e.g., "Brainstorm the classification of communities," "Discuss the reasons for migration").
-2.  **Skills (Psychomotor Domain):** Focus on physical skills and performing tasks. What will learners be able to *do*? Activities can include practical demonstrations, physical activities, and using tools. (e.g., "Draw the movement routes on a map," "Perform a cultural dance").
-3.  **Attitude (Affective Domain):** Focus on values, interests, and appreciation. What values or feelings will be developed? Activities can include respectful listening, teamwork, and forming opinions. (e.g., "Work in groups to appreciate unity," "Present findings to the class").
+When generating the "Learning Activities", you MUST structure them according to the three CBC domains of learning. Use the following framework as your guide. Be creative and specific.
+
+1.  **Knowledge (Cognitive Domain):** Focus on intellectual skills. What will learners *know* or *understand*?
+    -   **Remembering:** Learners list, define, recite, recall, identify, name.
+    -   **Understanding:** Learners describe, explain, summarize, interpret, discuss.
+    -   **Applying:** Learners apply, use, demonstrate, solve, model, present.
+    -   **Analyzing:** Learners classify, break down, compare, contrast, examine, simplify.
+    -   **Evaluating:** Learners choose, support, judge, argue, justify, convince, evaluate.
+    -   **Creating:** Learners design, formulate, build, invent, generate, modify, develop.
+    *(Example: "Learners brainstorm and list the language groups in Eastern Africa (Remembering). Learners discuss the reasons for migration (Understanding).")*
+
+2.  **Skills (Psychomotor Domain):** Focus on physical skills and performing tasks. What will learners be able to *do*?
+    -   **Basic Movement:** Learners perform simple actions like running, throwing, drawing.
+    -   **Perceptual Abilities:** Learners use sensory cues to guide activity (e.g., using a map, judging distance).
+    -   **Skilled Movements:** Learners adapt movement to achieve goals (e.g., performing a strategic game, creating a dance).
+    -   **Communication:** Learners express themselves through purposeful movement (e.g., role-playing, performing a skit, presenting a project).
+    *(Example: "Learners draw the movement routes on a map (Perceptual). Learners perform a cultural dance from one of the groups (Skilled).")*
+
+3.  **Attitude (Affective Domain):** Focus on values, interests, and appreciation. What values or feelings will be developed?
+    -   **Receiving:** Learners listen respectfully to others.
+    -   **Responding:** Learners participate in discussions, answer questions, present work.
+    -   **Valuing:** Learners express their own opinions, show appreciation for diversity.
+    -   **Organization:** Learners work in groups, compare different perspectives.
+    -   **Characterization:** Learners demonstrate teamwork, integrity, and responsibility in a group project.
+    *(Example: "Learners work in groups to appreciate the unity and diversity of language groups (Organization). Learners respectfully listen to other groups' presentations (Receiving).")*
 
 The scheme of work must be a Markdown table with the following columns:
 - **Week**: The week number.
