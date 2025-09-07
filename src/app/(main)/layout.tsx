@@ -17,6 +17,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
              <main className="flex-1 p-4 md:p-6">
                 {children}
             </main>
+            <footer className="p-4 text-center text-xs text-muted-foreground">
+              © 2024 Pacher. All rights reserved.
+            </footer>
         </SidebarInset>
       </SidebarProvider>
     </RoleProvider>
