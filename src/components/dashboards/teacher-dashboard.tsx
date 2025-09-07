@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, Plus } from "lucide-react";
+import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, Plus, Bot } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AddClassDialog } from '@/components/add-class-dialog';
 import {
@@ -14,15 +14,66 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import type { Teacher, ClassInfo } from '@/lib/types';
+import type { Teacher, ClassInfo, TeacherResource } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 import { mockTeacher } from '@/lib/mock-data';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary';
+import { Skeleton } from '../ui/skeleton';
 
 
 interface TeacherDashboardProps {
     teacher: Teacher;
+}
+
+function AssistantWidget({ teacher }: { teacher: Teacher }) {
+    const [summary, setSummary] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSummary = async () => {
+            const allResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
+            const relevantResources = allResources.map(({ title, type }) => ({ title, type }));
+            const classes = teacher.classes.map(({ name }) => ({ name }));
+
+            try {
+                const result = await generateDashboardSummary({
+                    classes,
+                    resources: relevantResources
+                });
+                setSummary(result.summary);
+            } catch (error) {
+                console.error("Error generating dashboard summary:", error);
+                setSummary("Could not load AI suggestions. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSummary();
+    }, [teacher]);
+
+    return (
+        <Card className="flex flex-col">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Bot className="w-6 h-6 text-accent" /> AI Teaching Assistant
+                </CardTitle>
+                <CardDescription>Your AI-powered summary and suggestions.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-grow">
+                {loading ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-[80%]" />
+                    </div>
+                ) : (
+                    <p className="text-sm text-muted-foreground">{summary}</p>
+                )}
+            </CardContent>
+        </Card>
+    )
 }
 
 export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardProps) {
@@ -106,70 +157,68 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                     <h1 className="font-headline text-3xl font-bold">Welcome, {teacher.name}!</h1>
                     <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button asChild>
-                        <Link href="/dashboard/tools">
-                            <PlusCircle className="mr-2" />
-                            Generate Resources
-                        </Link>
-                    </Button>
-                </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-5">
-                <Card className="md:col-span-2">
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="lg:col-span-2 grid gap-6 md:grid-cols-2">
+                    <Card className="md:col-span-2">
+                        <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <BookOpen className="w-6 h-6 text-accent" /> My Hub
+                                <FilePen className="w-6 h-6 text-accent" /> Class Performance
                             </CardTitle>
-                            <CardDescription>View your classes and take attendance.</CardDescription>
-                        </div>
-                         <Button variant="outline" size="sm" onClick={() => setAddClassDialogOpen(true)}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Class
-                        </Button>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {teacher.classes.map(c => (
-                             <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleClassSelect(c)}>
-                                <div className="flex items-center gap-4">
-                                     <Avatar className="h-12 w-12 border-2 border-primary/20">
-                                        <AvatarFallback className="bg-primary/10 text-primary font-bold">{c.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-bold">{c.name}</p>
-                                        <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
-                                    </div>
-                                </div>
-                                <Button variant="ghost" size="icon">
-                                    <ChevronRight className="w-5 h-5" />
-                                </Button>
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
+                            <CardDescription>An overview of recent performance across your classes.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="h-[250px] w-full">
+                        <ChartContainer config={{}} className="w-full h-full">
+                            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
+                                <CartesianGrid vertical={false} />
+                                <XAxis dataKey="name" tickLine={false} axisLine={false} />
+                                <YAxis tickLine={false} axisLine={false} domain={[60, 100]} />
+                                <ChartTooltip content={<ChartTooltipContent />} />
+                                <ChartLegend content={<ChartLegendContent />} />
+                                <Bar dataKey="performance" fill="hsl(var(--primary))" radius={8} />
+                            </BarChart>
+                            </ChartContainer>
+                        </CardContent>
+                    </Card>
+                     <AssistantWidget teacher={teacher} />
+                </div>
+                
 
-                <Card className="md:col-span-3">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <FilePen className="w-6 h-6 text-accent" /> Class Performance
-                        </CardTitle>
-                         <CardDescription>An overview of recent performance across your classes.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[300px] w-full">
-                       <ChartContainer config={{}} className="w-full h-full">
-                          <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
-                            <CartesianGrid vertical={false} />
-                            <XAxis dataKey="name" tickLine={false} axisLine={false} />
-                            <YAxis tickLine={false} axisLine={false} domain={[60, 100]} />
-                             <ChartTooltip content={<ChartTooltipContent />} />
-                             <ChartLegend content={<ChartLegendContent />} />
-                            <Bar dataKey="performance" fill="hsl(var(--primary))" radius={8} />
-                          </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <div className="lg:col-span-1">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <BookOpen className="w-6 h-6 text-accent" /> My Hub
+                                </CardTitle>
+                                <CardDescription>View your classes and take attendance.</CardDescription>
+                            </div>
+                            <Button variant="outline" size="sm" onClick={() => setAddClassDialogOpen(true)}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Class
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {teacher.classes.map(c => (
+                                <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleClassSelect(c)}>
+                                    <div className="flex items-center gap-4">
+                                        <Avatar className="h-12 w-12 border-2 border-primary/20">
+                                            <AvatarFallback className="bg-primary/10 text-primary font-bold">{c.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-bold">{c.name}</p>
+                                            <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
+                                        </div>
+                                    </div>
+                                    <Button variant="ghost" size="icon">
+                                        <ChevronRight className="w-5 h-5" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
              
              <AddClassDialog open={isAddClassDialogOpen} onOpenChange={setAddClassDialogOpen} onAddClass={handleAddClass} />
