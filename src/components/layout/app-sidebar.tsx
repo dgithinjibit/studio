@@ -40,9 +40,7 @@ export function AppSidebar() {
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
-    { href: "/dashboard/classes", icon: Users, label: "My Classes", roles: ["teacher"] },
-    { href: "/dashboard/curriculum", icon: FileText, label: "Curriculum", roles: ["teacher"] },
-    { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["teacher", "school_head", "county_officer"] },
+    { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["school_head", "county_officer"] },
     { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["school_head", "county_officer"] },
   ];
 

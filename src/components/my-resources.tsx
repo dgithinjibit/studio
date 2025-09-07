@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
-import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, FileUp } from 'lucide-react';
+import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, FileUp, GraduationCap, CopySlash } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -73,11 +73,11 @@ export function MyResources() {
             case 'Scheme of Work':
                 return <Calendar className="h-5 w-5 text-green-500" />;
             case 'Rubric':
-                return <FileUp className="h-5 w-5 text-orange-500" />;
+                return <GraduationCap className="h-5 w-5 text-orange-500" />;
             case 'Worksheet':
                 return <BookCopy className="h-5 w-5 text-purple-500" />;
             case 'Differentiated Worksheet':
-                 return <BookCopy className="h-5 w-5 text-indigo-500" />;
+                 return <CopySlash className="h-5 w-5 text-indigo-500" />;
             case 'AI Tutor Context':
                 return <BrainCircuit className="h-5 w-5 text-pink-500" />;
             default:
@@ -90,6 +90,9 @@ export function MyResources() {
             case 'Lesson Plan': return 'default';
             case 'Scheme of Work': return 'secondary';
             case 'AI Tutor Context': return 'destructive';
+            case 'Rubric': return 'default';
+            case 'Worksheet': return 'secondary';
+            case 'Differentiated Worksheet': return 'outline';
             default: return 'outline';
         }
     }
