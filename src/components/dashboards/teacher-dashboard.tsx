@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users } from "lucide-react";
+import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, Plus } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AITunerDialog } from '@/components/ai-tuner-dialog';
+import { AddClassDialog } from '@/components/add-class-dialog';
 import {
   ChartContainer,
   ChartTooltip,
@@ -18,6 +19,7 @@ import type { Teacher, ClassInfo } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 import { mockTeacher } from '@/lib/mock-data';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 
 interface TeacherDashboardProps {
@@ -28,7 +30,9 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     const [teacher, setTeacher] = useState<Teacher>(initialTeacher);
     const [isAITunerDialogOpen, setAITunerDialogOpen] = useState(false);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
+    const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
     const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
+    const { toast } = useToast();
 
     useEffect(() => {
         setTeacher(initialTeacher);
@@ -57,6 +61,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
             );
             const newTeacherState = { ...prevTeacher, classes: updatedClasses };
             
+            // Persist to localStorage
             const storedTeacher = JSON.parse(localStorage.getItem('mockTeacher') || JSON.stringify(mockTeacher));
             storedTeacher.classes = updatedClasses;
             localStorage.setItem('mockTeacher', JSON.stringify(storedTeacher));
@@ -64,6 +69,33 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
             return newTeacherState;
         });
     };
+    
+    const handleAddClass = (className: string) => {
+        const newClass: ClassInfo = {
+            id: `class_${Date.now()}`,
+            name: className,
+            performance: 75, // Default performance
+            students: [],
+        };
+
+        setTeacher(prevTeacher => {
+            const updatedClasses = [...prevTeacher.classes, newClass];
+            const newTeacherState = { ...prevTeacher, classes: updatedClasses };
+
+            // Persist to localStorage
+            const storedTeacher = JSON.parse(localStorage.getItem('mockTeacher') || JSON.stringify(mockTeacher));
+            storedTeacher.classes = updatedClasses;
+            localStorage.setItem('mockTeacher', JSON.stringify(storedTeacher));
+            
+            return newTeacherState;
+        });
+        
+        toast({
+            title: "Class Added",
+            description: `"${className}" has been added to your hub.`,
+        })
+    };
+
 
     const onResourceSaved = () => {
         window.dispatchEvent(new CustomEvent('resource-update'));
@@ -92,11 +124,17 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
 
             <div className="grid gap-6 md:grid-cols-5">
                 <Card className="md:col-span-2">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <BookOpen className="w-6 h-6 text-accent" /> My Hub
-                        </CardTitle>
-                        <CardDescription>View your classes and take attendance.</CardDescription>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle className="flex items-center gap-2">
+                                <BookOpen className="w-6 h-6 text-accent" /> My Hub
+                            </CardTitle>
+                            <CardDescription>View your classes and take attendance.</CardDescription>
+                        </div>
+                         <Button variant="outline" size="sm" onClick={() => setAddClassDialogOpen(true)}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Class
+                        </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {teacher.classes.map(c => (
@@ -141,6 +179,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
             </div>
              
              <AITunerDialog open={isAITunerDialogOpen} onOpenChange={setAITunerDialogOpen} onResourceSaved={onResourceSaved} />
+             <AddClassDialog open={isAddClassDialogOpen} onOpenChange={setAddClassDialogOpen} onAddClass={handleAddClass} />
 
              {selectedClass && (
                  <DigitalAttendanceRegister 
