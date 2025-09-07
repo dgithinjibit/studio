@@ -1,8 +1,15 @@
 
+"use client";
+
 import Link from "next/link";
 import {
   LayoutDashboard,
   LogOut,
+  Users,
+  FileText,
+  School,
+  User,
+  GitGraph,
 } from "lucide-react";
 
 import {
@@ -17,12 +24,36 @@ import {
 import { SyncSentaLogo } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useRole } from "@/hooks/use-role";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { UserRole } from "@/lib/types";
 
-const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-];
 
 export function AppSidebar() {
+  const { role, setRole } = useRole();
+
+  const navItems = [
+    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
+    { href: "/dashboard/classes", icon: Users, label: "My Classes", roles: ["teacher"] },
+    { href: "/dashboard/curriculum", icon: FileText, label: "Curriculum", roles: ["teacher"] },
+    { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["teacher", "school_head", "county_officer"] },
+    { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["school_head", "county_officer"] },
+    { href: "/student/journey", icon: User, label: "Student View", roles: ["teacher", "school_head", "county_officer"] },
+  ];
+
+  const filteredNavItems = navItems.filter(item => item.roles.includes(role));
+
+  const handleRoleChange = (newRole: UserRole) => {
+     setRole(newRole);
+  }
+
+  const roleName = {
+    teacher: "Teacher",
+    school_head: "School Head",
+    county_officer: "County Officer",
+    student: "Student"
+  }
+
 
   return (
     <Sidebar>
@@ -35,8 +66,22 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
+        <div className="p-2">
+            <Label htmlFor="role-switcher" className="text-xs text-muted-foreground px-2">Current Role</Label>
+             <Select value={role} onValueChange={(newRole) => handleRoleChange(newRole as UserRole)}>
+                <SelectTrigger id="role-switcher" className="w-full bg-sidebar-accent border-sidebar-border text-sidebar-foreground mt-1">
+                    <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="teacher">Teacher</SelectItem>
+                    <SelectItem value="school_head">School Head</SelectItem>
+                    <SelectItem value="county_officer">County Officer</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
+         <Separator />
         <SidebarMenu>
-          {navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton asChild tooltip={item.label}>
                 <Link href={item.href}>
@@ -66,7 +111,7 @@ export function AppSidebar() {
                 <AvatarFallback>U</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-                <span className="text-sm font-semibold">User</span>
+                <span className="text-sm font-semibold">{roleName[role]}</span>
                 <span className="text-xs text-muted-foreground">user@example.com</span>
             </div>
         </div>
@@ -74,3 +119,4 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
