@@ -37,10 +37,17 @@ function SignupFormComponent() {
         }
     }
 
-    const handleSignup = (e: React.FormEvent) => {
+    const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // In a real application, you would handle registration here.
-        // For this prototype, we'll simulate success and redirect.
+        
+        const formData = new FormData(e.currentTarget);
+        const fullName = formData.get('fullName') as string;
+
+        // Persist user's name for personalization
+        if (role === 'student' && fullName) {
+            localStorage.setItem('studentName', fullName);
+        }
+
         toast({
             title: "Account Created!",
             description: "Welcome! We're redirecting you now.",
@@ -83,15 +90,15 @@ function SignupFormComponent() {
                     <form onSubmit={handleSignup} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="fullName">Full Name</Label>
-                            <Input id="fullName" placeholder="Asha Juma" required />
+                            <Input id="fullName" name="fullName" placeholder="Asha Juma" required />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" placeholder="m@example.com" required />
+                            <Input id="email" name="email" type="email" placeholder="m@example.com" required />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input id="password" type="password" required />
+                            <Input id="password" name="password" type="password" required />
                         </div>
                         
                         {role === 'county_officer' && (

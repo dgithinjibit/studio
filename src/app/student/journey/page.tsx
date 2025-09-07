@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -12,13 +12,6 @@ import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
 import { BlockchainCurriculumDisplay } from '@/components/blockchain-curriculum-display';
 import { AiIcon } from '@/components/icons';
-
-
-// Mock user data for personalization
-const mockUser = {
-    fullName: 'Asha Juma'
-};
-const studentFirstName = mockUser.fullName.split(' ')[0];
 
 type Step = 'level' | 'sub-level' | 'grade' | 'subject' | 'chat' | 'content';
 
@@ -67,9 +60,7 @@ const commonSubjects: Subject[] = [
     { name: 'Creative Activities', icon: '/assets/creative_act.png' },
 ];
 
-
 const pastoralInstruction = { name: 'Pastoral Instruction Programme', icon: HeartHandshake };
-
 
 const subjectsMap: { [key: string]: Subject[] } = {
     g4: [...commonSubjects, aiSubject, blockchainSubject],
@@ -84,7 +75,6 @@ const levelColors = ["bg-teal-500", "bg-amber-500"];
 const subLevelColors = ["bg-blue-500", "bg-green-500"];
 const gradeColors = ["bg-orange-500", "bg-lime-600", "bg-cyan-500", "bg-rose-500", "bg-indigo-500", "bg-pink-500"];
 
-
 export default function StudentJourneyPage() {
     const router = useRouter();
     const [step, setStep] = useState<Step>('level');
@@ -92,6 +82,14 @@ export default function StudentJourneyPage() {
     const [selectedSubLevel, setSelectedSubLevel] = useState<string | null>(null);
     const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+    const [studentFirstName, setStudentFirstName] = useState('Student');
+
+    useEffect(() => {
+        const name = localStorage.getItem('studentName');
+        if (name) {
+            setStudentFirstName(name.split(' ')[0]);
+        }
+    }, []);
 
     const handleLevelSelect = useCallback((levelId: string) => {
         setSelectedLevel(levelId);

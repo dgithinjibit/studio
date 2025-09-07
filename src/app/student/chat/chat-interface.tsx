@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
-import type { MwalimuAiTutorInput } from '@/ai/flows/mwalimu-ai-types';
 import { Loader2, Send } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 
@@ -16,21 +15,21 @@ type Message = {
     content: string;
 };
 
-// Mock user data for personalization
-const mockUser = {
-    fullName: 'Asha Juma'
-};
-const studentFirstName = mockUser.fullName.split(' ')[0];
-
 export default function ChatInterface({ subject, grade, onBack }: { subject: string, grade: string, onBack?: () => void }) {
     const gradeName = `Grade ${grade.replace('g', '')}`
     
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(true);
+    const [studentFirstName, setStudentFirstName] = useState('Student');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        const name = localStorage.getItem('studentName');
+        if (name) {
+            setStudentFirstName(name.split(' ')[0]);
+        }
+
         // Initial message from Mwalimu AI
         const getInitialMessage = async () => {
             setLoading(true);

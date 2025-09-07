@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,26 +17,41 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil } from "lucide-react";
 
-// Mock user data for personalization
-const mockUser = {
-    fullName: 'Asha Juma',
-    email: 'asha.juma@example.com',
-    school: 'Moi Nyeri Complex Primary School',
+const defaultUser = {
+    fullName: 'User',
+    email: 'user@example.com',
+    school: 'SyncSenta School',
     avatar: 'https://github.com/shadcn.png'
 };
 
-
 export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
     const { toast } = useToast();
+    const [userName, setUserName] = useState(defaultUser.fullName);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        if (open) {
+            const storedName = localStorage.getItem('studentName') || localStorage.getItem('userName');
+            setUserName(storedName || defaultUser.fullName);
+        }
+    }, [open]);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // In a real app, you'd save the changes here.
+        const formData = new FormData(e.currentTarget);
+        const newFullName = formData.get('fullName') as string;
+        
+        // In a real app, you'd save the changes to the backend.
+        // For this prototype, we update localStorage.
+        localStorage.setItem('studentName', newFullName);
+        localStorage.setItem('userName', newFullName);
+
         toast({
             title: "Profile Updated",
             description: "Your changes have been saved successfully.",
         });
         onOpenChange(false); // Close dialog on save
+        // Force a reload to reflect the name change in the header immediately
+        window.location.reload();
     };
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,8 +82,8 @@ export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenCha
                             <div className="relative group">
                                 <label htmlFor="picture" className="cursor-pointer">
                                     <Avatar className="h-24 w-24">
-                                        <AvatarImage src={mockUser.avatar} alt={mockUser.fullName} />
-                                        <AvatarFallback>{mockUser.fullName.charAt(0)}</AvatarFallback>
+                                        <AvatarImage src={defaultUser.avatar} alt={userName} />
+                                        <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
                                     </Avatar>
                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                         <Pencil className="h-8 w-8 text-white" />
@@ -86,15 +102,15 @@ export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenCha
                         <div className="grid grid-cols-1 gap-4 px-4">
                              <div className="space-y-2">
                                 <Label htmlFor="fullName">Full Name</Label>
-                                <Input id="fullName" defaultValue={mockUser.fullName} />
+                                <Input id="fullName" name="fullName" defaultValue={userName} />
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="email">Email Address</Label>
-                                <Input id="email" type="email" defaultValue={mockUser.email} disabled />
+                                <Input id="email" type="email" defaultValue={defaultUser.email} disabled />
                             </div>
                               <div className="space-y-2">
                                 <Label htmlFor="school">School</Label>
-                                <Input id="school" defaultValue={mockUser.school} />
+                                <Input id="school" defaultValue={defaultUser.school} />
                             </div>
                         </div>
                     </div>

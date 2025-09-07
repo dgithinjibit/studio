@@ -2,7 +2,7 @@
 "use client";
 
 import { Suspense } from 'react';
-import ChatInterface from './chat-interface';
+import ChatInterface from '../chat-interface';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function ChatPage({ params }: { params: { subject: string } }) {
