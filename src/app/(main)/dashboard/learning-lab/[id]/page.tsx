@@ -32,7 +32,6 @@ export default function LearningLabRoomPage() {
 
     const handleDialogClose = () => {
         setShareDialogOpen(false);
-        router.push('/dashboard/resources');
     }
 
     if (!room) {

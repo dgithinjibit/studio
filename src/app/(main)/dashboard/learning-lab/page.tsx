@@ -33,7 +33,6 @@ export default function LearningLabPage() {
         // We need to dispatch a custom event to tell the MyResources component to update
         // because localStorage changes in the same window don't trigger the 'storage' event.
         window.dispatchEvent(new CustomEvent('resource-update'));
-        // Don't redirect immediately, let the user close the share dialog first.
     }
 
     const handleSaveToRoom = () => {
@@ -75,7 +74,7 @@ export default function LearningLabPage() {
     
     const handleDialogClose = () => {
         setShareDialogOpen(false);
-        router.push('/dashboard/resources');
+        router.push('/dashboard/reports');
     }
 
   return (
