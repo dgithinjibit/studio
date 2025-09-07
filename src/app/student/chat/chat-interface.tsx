@@ -20,35 +20,29 @@ interface ChatInterfaceProps {
     subject: string;
     grade: string;
     studentFirstName: string;
-    onBack?: () => void;
+    onBack: () => void;
+    teacherContext?: string;
 }
 
-export default function ChatInterface({ subject, grade, onBack, studentFirstName }: ChatInterfaceProps) {
+export default function ChatInterface({ subject, grade, onBack, studentFirstName, teacherContext }: ChatInterfaceProps) {
     const gradeName = `Grade ${grade.replace('g', '')}`
     
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(true);
-    const [teacherContext, setTeacherContext] = useState<string | null>(null);
     const [tutorMode, setTutorMode] = useState<'compass' | 'mwalimu'>('mwalimu');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const context = localStorage.getItem('ai_tutor_context');
-        if (context) {
-            setTeacherContext(context);
-            setTutorMode('compass');
-        } else {
-            setTutorMode('mwalimu');
-        }
-
         const getInitialMessage = async () => {
             setLoading(true);
             try {
                 let result;
-                if (context) {
-                    result = await classroomCompass({ teacherContext: context, history: [] });
+                if (teacherContext) {
+                    setTutorMode('compass');
+                    result = await classroomCompass({ teacherContext: teacherContext, history: [] });
                 } else {
+                    setTutorMode('mwalimu');
                     result = await mwalimuAiTutor({ grade, subject, history: [] });
                 }
                 setMessages([{ role: 'model', content: result.response }]);
@@ -60,7 +54,7 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
             }
         };
         getInitialMessage();
-    }, [grade, subject]);
+    }, [grade, subject, teacherContext]);
     
     useEffect(() => {
         if (scrollAreaRef.current) {
@@ -76,8 +70,8 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
         if (!input.trim() || loading) return;
 
         const userMessage: Message = { role: 'user', content: input };
-        const newMessages = [...messages, userMessage];
-        setMessages(newMessages);
+        const historyForAI = [...messages, userMessage];
+        setMessages(historyForAI); // Show user message immediately
         const currentInput = input;
         setInput('');
         setLoading(true);
@@ -87,20 +81,20 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
             if (tutorMode === 'compass' && teacherContext) {
                  result = await classroomCompass({
                     teacherContext,
-                    history: messages,
+                    history: messages, // Pass history *before* new user message
                 });
             } else {
                  result = await mwalimuAiTutor({
                     grade,
                     subject,
-                    history: messages,
                     currentMessage: currentInput,
+                    history: messages // Pass history *before* new user message
                 });
             }
-            setMessages([...newMessages, { role: 'model', content: result.response }]);
+            setMessages([...historyForAI, { role: 'model', content: result.response }]);
         } catch (error) {
             console.error("Error calling AI tutor:", error);
-            setMessages([...newMessages, { role: 'model', content: "I'm sorry, I encountered an error. Could you please rephrase your question?" }]);
+            setMessages([...historyForAI, { role: 'model', content: "I'm sorry, I encountered an error. Could you please rephrase your question?" }]);
         } finally {
             setLoading(false);
         }

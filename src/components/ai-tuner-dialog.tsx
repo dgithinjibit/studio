@@ -37,13 +37,11 @@ export function AITunerDialog({ open, onOpenChange, onResourceSaved }: AITunerDi
   
   const handleSave = () => {
     setLoading(true);
-    
-    // Save the main context for the AI to use
-    localStorage.setItem("ai_tutor_context", context);
 
-    // Also save it as a "TeacherResource" so it appears in the list
+    const resourceId = `tutor_ctx_${Date.now()}`;
+
     const newResource: TeacherResource = {
-      id: `ai_tutor_context_${Date.now()}`,
+      id: resourceId,
       title: "AI Tutor Custom Context",
       content: context,
       createdAt: new Date().toISOString(),
@@ -52,14 +50,14 @@ export function AITunerDialog({ open, onOpenChange, onResourceSaved }: AITunerDi
 
     const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
     
-    // Remove old AI tutor contexts to prevent clutter
     const otherResources = existingResources.filter(r => r.type !== 'AI Tutor Context');
     
     localStorage.setItem("teacherResources", JSON.stringify([newResource, ...otherResources]));
     
     toast({
       title: "AI Tutor Context Saved!",
-      description: "Your custom instructions have been saved and will be used by the Classroom Compass.",
+      description: `Share this code with students: ${resourceId}`,
+      duration: 10000, // Make toast persistent
     });
 
     setLoading(false);
@@ -74,7 +72,7 @@ export function AITunerDialog({ open, onOpenChange, onResourceSaved }: AITunerDi
         <DialogHeader>
           <DialogTitle className="font-headline">AI Tuner</DialogTitle>
           <DialogDescription>
-            Provide specific context, materials, or instructions for your AI tutor. This will be its ONLY source of knowledge.
+            Provide specific context, materials, or instructions for your AI tutor. This will be its ONLY source of knowledge. After saving, share the generated code with your students.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
@@ -90,7 +88,7 @@ export function AITunerDialog({ open, onOpenChange, onResourceSaved }: AITunerDi
         <DialogFooter>
           <Button onClick={handleSave} disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            Save Context
+            Save & Get Code
           </Button>
         </DialogFooter>
       </DialogContent>

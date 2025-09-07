@@ -5,14 +5,17 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BrainCircuit, HeartHandshake } from 'lucide-react';
+import { ArrowRight, BrainCircuit, HeartHandshake, KeyRound, Link as LinkIcon, Loader2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import ChatInterface from '../chat/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
 import { AiIcon } from '@/components/icons';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import type { TeacherResource } from '@/lib/types';
 
-type Step = 'level' | 'sub-level' | 'grade' | 'subject' | 'chat';
+
+type Step = 'start' | 'level' | 'sub-level' | 'grade' | 'subject';
 
 const levels = [
     { id: 'ms', name: 'Middle School' },
@@ -76,12 +79,14 @@ const gradeColors = ["bg-orange-500", "bg-lime-600", "bg-cyan-500", "bg-rose-500
 
 export default function StudentJourneyPage() {
     const router = useRouter();
-    const [step, setStep] = useState<Step>('level');
+    const { toast } = useToast();
+    const [step, setStep] = useState<Step>('start');
     const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
     const [selectedSubLevel, setSelectedSubLevel] = useState<string | null>(null);
     const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
-    const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
     const [studentFirstName, setStudentFirstName] = useState('Student');
+    const [teacherCode, setTeacherCode] = useState('');
+    const [isSubmittingCode, setIsSubmittingCode] = useState(false);
 
     useEffect(() => {
         const name = localStorage.getItem('studentName');
@@ -106,32 +111,54 @@ export default function StudentJourneyPage() {
 
     const handleGradeSelect = useCallback((gradeId: string) => {
         setSelectedGrade(gradeId);
+        localStorage.setItem('studentGrade', gradeId);
         setStep('subject');
     }, []);
     
     const handleSubjectSelect = useCallback((subjectName: string) => {
-        setSelectedSubject(subjectName);
-        setStep('chat');
-    }, []);
+        router.push(`/student/chat/${subjectName}`);
+    }, [router]);
+
+    const handleTeacherCodeSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!teacherCode.trim()) return;
+
+        setIsSubmittingCode(true);
+
+        const allResources: TeacherResource[] = JSON.parse(localStorage.getItem('teacherResources') || '[]');
+        const tutorContext = allResources.find(r => r.id === teacherCode.trim() && r.type === 'AI Tutor Context');
+
+        if (tutorContext) {
+            localStorage.setItem('ai_tutor_context_to_load', tutorContext.content);
+            toast({
+                title: "Teacher's Context Loaded!",
+                description: "Launching the Classroom Compass. Your AI guide is ready.",
+            });
+            router.push(`/student/chat/teacher-context`);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: "Invalid Code",
+                description: "The code you entered does not match any AI Tutor context. Please check the code and try again.",
+            });
+            setIsSubmittingCode(false);
+        }
+    }
 
     const handleGoBack = useCallback(() => {
-        if (step === 'chat') {
-            setSelectedSubject(null);
-            setStep('subject');
-        } else if (step === 'subject') {
+        if (step === 'subject') {
             setStep('grade');
-            setSelectedSubject(null);
         } else if (step === 'grade') {
              if(selectedLevel && subLevelsMap[selectedLevel].length > 0) {
                 setStep('sub-level');
             } else {
                 setStep('level');
             }
-            setSelectedGrade(null);
         } else if (step === 'sub-level') {
             setStep('level');
-            setSelectedSubLevel(null);
         } else if (step === 'level') {
+            setStep('start');
+        } else if (step === 'start') {
             router.push('/');
         }
     }, [step, selectedLevel, router]);
@@ -150,18 +177,49 @@ export default function StudentJourneyPage() {
 
     const renderContent = () => {
         switch (step) {
-            case 'chat':
-                if (selectedSubject && selectedGrade) {
-                    return <ChatInterface subject={selectedSubject} grade={selectedGrade} onBack={handleGoBack} studentFirstName={studentFirstName} />;
-                }
-                return null;
+            case 'start':
+                return (
+                     <Card className="w-full bg-transparent border-none shadow-none">
+                        <CardHeader>
+                            <CardTitle className="text-stone-800">Step 1: Choose Your Path</CardTitle>
+                            <CardDescription className="text-stone-600">How would you like to start your learning session today?</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid md:grid-cols-2 gap-6">
+                           <Card className="p-6 flex flex-col items-center justify-center text-center">
+                                <LinkIcon className="w-12 h-12 text-primary mb-4" />
+                                <h3 className="font-bold text-xl mb-2">Join a Teacher's Session</h3>
+                                <p className="text-muted-foreground mb-4">Enter a code from your teacher to start a guided lesson with the Classroom Compass.</p>
+                                <form onSubmit={handleTeacherCodeSubmit} className="w-full flex items-center gap-2">
+                                    <Input 
+                                        placeholder="Enter Teacher Code" 
+                                        value={teacherCode} 
+                                        onChange={(e) => setTeacherCode(e.target.value)} 
+                                        disabled={isSubmittingCode}
+                                    />
+                                    <Button type="submit" size="icon" disabled={isSubmittingCode}>
+                                        {isSubmittingCode ? <Loader2 className="animate-spin" /> : <ArrowRight />}
+                                    </Button>
+                                </form>
+                           </Card>
+                            <Card className="p-6 flex flex-col items-center justify-center text-center hover:bg-stone-50 transition-colors cursor-pointer" onClick={() => setStep('level')}>
+                                <KeyRound className="w-12 h-12 text-accent mb-4" />
+                                <h3 className="font-bold text-xl mb-2">Explore on Your Own</h3>
+                                <p className="text-muted-foreground mb-4">Choose your grade and subject to chat with Mwalimu AI, your personal Socratic tutor.</p>
+                                <Button className="w-full">
+                                    Start Exploring
+                                    <ArrowRight className="ml-2" />
+                                </Button>
+                           </Card>
+                        </CardContent>
+                    </Card>
+                );
             case 'subject':
                  const subjects = selectedGrade ? (subjectsMap[selectedGrade] || []) : [];
                  const gradeName = `Grade ${selectedGrade?.replace('g', '')}`
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                          <CardHeader>
-                            <CardTitle className="text-stone-800">Step 4: Choose Your Subject</CardTitle>
+                            <CardTitle className="text-stone-800">Choose Your Subject</CardTitle>
                             <CardDescription className="text-stone-600">What would you like to learn about today in {gradeName}?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -186,7 +244,7 @@ export default function StudentJourneyPage() {
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                            <CardTitle className="text-stone-800">Step 3: Pick Your Grade</CardTitle>
+                            <CardTitle className="text-stone-800">Pick Your Grade</CardTitle>
                             <CardDescription className="text-stone-600">Almost there! Which grade are you in?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -207,7 +265,7 @@ export default function StudentJourneyPage() {
                 return (
                      <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                             <CardTitle className="text-stone-800">Step 2: Narrow It Down</CardTitle>
+                             <CardTitle className="text-stone-800">Narrow It Down</CardTitle>
                              <CardDescription className="text-stone-600">Let's get more specific.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -229,7 +287,7 @@ export default function StudentJourneyPage() {
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                            <CardTitle className="text-stone-800">Step 1: Choose Your Education Level</CardTitle>
+                            <CardTitle className="text-stone-800">Choose Your Education Level</CardTitle>
                             <CardDescription className="text-stone-600">Where are you in your learning journey?</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -249,18 +307,10 @@ export default function StudentJourneyPage() {
         }
     };
     
-    if (step === 'chat') {
-        return (
-             <div className="flex flex-col w-full h-screen sm:h-[95vh] max-w-4xl mx-auto overflow-hidden">
-                <ChatInterface subject={selectedSubject!} grade={selectedGrade!} onBack={handleGoBack} studentFirstName={studentFirstName} />
-             </div>
-        )
-    }
-
     return (
         <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-[#F5F5DC] sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
-             <StudentHeader showBackButton={step !== 'level'} onBack={handleGoBack} studentFirstName={studentFirstName} />
-            <main className="flex-grow overflow-y-auto p-6">
+             <StudentHeader showBackButton={step !== 'start'} onBack={handleGoBack} studentFirstName={studentFirstName} />
+            <main className="flex-grow overflow-y-auto p-6 flex items-center">
                 {renderContent()}
             </main>
         </div>
