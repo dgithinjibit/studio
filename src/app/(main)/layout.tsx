@@ -18,7 +18,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
                 {children}
             </main>
             <footer className="mt-auto p-4 text-center text-xs text-muted-foreground">
-              © 2025 Pacher. All rights reserved.
+              by @dantedone
             </footer>
         </SidebarInset>
       </SidebarProvider>
