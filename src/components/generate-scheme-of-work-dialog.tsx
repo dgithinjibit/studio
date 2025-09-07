@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -43,8 +42,8 @@ import { grade1EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade1-e
 import { grade1IndigenousLanguageCurriculum } from "@/curriculum/grade1-indigenous-language";
 import { grade1KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade1-kiswahili-language-activities";
 import { grade1MathematicsActivitiesCurriculum } from "@/curriculum/grade1-mathematics-activities";
-import { grade1EnvironmentalActivitiesCurriculum } from "@/curriculum/grade1-environmental-activities";
 import { grade1CreCurriculum } from "@/curriculum/grade1-cre";
+import { grade1EnvironmentalActivitiesCurriculum } from "@/curriculum/grade1-environmental-activities";
 import { grade2EnvironmentalActivitiesCurriculum } from "@/curriculum/grade2-environmental-activities";
 import { grade2CreCurriculum } from "@/curriculum/grade2-cre";
 import { grade2CreativeActivitiesCurriculum } from "@/curriculum/grade2-creative-activities";
@@ -53,6 +52,14 @@ import { grade2IndigenousLanguageCurriculum } from "@/curriculum/grade2-indigeno
 import { grade2KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade2-kiswahili-language-activities";
 import { grade2MathematicsActivitiesCurriculum } from "@/curriculum/grade2-mathematics-activities";
 import { grade3EnvironmentalActivitiesCurriculum } from "@/curriculum/grade3-environmental-activities";
+import { grade3CreativeActivitiesCurriculum } from "@/curriculum/grade3-creative-activities";
+import { grade3EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade3-english-language-activities";
+import { grade3IndigenousLanguageCurriculum } from "@/curriculum/grade3-indigenous-language";
+import { grade3KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade3-kiswahili-language-activities";
+import { grade3MathematicsActivitiesCurriculum } from "@/curriculum/grade3-mathematics-activities";
+import { grade3CreCurriculum } from "@/curriculum/grade3-cre";
+import { grade4AgricultureAndNutritionCurriculum } from "@/curriculum/grade4-agriculture-and-nutrition";
+import { grade4CreCurriculum } from "@/curriculum/grade4-cre";
 
 
 interface GenerateSchemeOfWorkDialogProps {
@@ -89,7 +96,14 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
 
   const availableSubjects = useMemo(() => {
     if (!selectedGrade) return [];
-    return availableGrades.find(g => g.name === selectedGrade)?.subjects || [];
+    const gradeData = availableGrades.find(g => g.name === selectedGrade);
+    if (!gradeData) return [];
+
+    const coreSubjects = gradeData.subjects.filter(s => s.type === 'Core');
+    const optionalSubjects = gradeData.subjects.filter(s => s.type === 'Optional');
+    
+    return { core: coreSubjects, optional: optionalSubjects };
+
   }, [selectedGrade, availableGrades]);
 
   const curriculumData = useMemo(() => {
@@ -102,8 +116,14 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
      if (selectedGrade === "PP2" && selectedSubject === "Christian Religious Education") {
       return pp2CreCurriculum;
     }
+    if (selectedGrade === "Grade 1" && selectedSubject === "Christian Religious Education") {
+      return grade1CreCurriculum;
+    }
      if (selectedGrade === "Grade 2" && selectedSubject === "Christian Religious Education") {
       return grade2CreCurriculum;
+    }
+     if (selectedGrade === "Grade 3" && selectedSubject === "Christian Religious Education") {
+      return grade3CreCurriculum;
     }
     if (selectedGrade === "PP1" && selectedSubject === "Creative Activities") {
       return pp1CreativeArtsCurriculum;
@@ -129,11 +149,17 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
      if (selectedGrade === "Grade 2" && selectedSubject === "English Language Activities") {
       return grade2EnglishLanguageActivitiesCurriculum;
     }
+     if (selectedGrade === "Grade 3" && selectedSubject === "English Language Activities") {
+      return grade3EnglishLanguageActivitiesCurriculum;
+    }
     if (selectedGrade === "Grade 1" && selectedSubject === "Indigenous Language Activities") {
       return grade1IndigenousLanguageCurriculum;
     }
      if (selectedGrade === "Grade 2" && selectedSubject === "Indigenous Language Activities") {
       return grade2IndigenousLanguageCurriculum;
+    }
+      if (selectedGrade === "Grade 3" && selectedSubject === "Indigenous Language Activities") {
+      return grade3IndigenousLanguageCurriculum;
     }
      if (selectedGrade === "Grade 1" && selectedSubject === "Kiswahili Language Activities") {
       return grade1KiswahiliLanguageActivitiesCurriculum;
@@ -147,29 +173,23 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
      if (selectedGrade === "Grade 2" && selectedSubject === "Mathematical Activities") {
       return grade2MathematicsActivitiesCurriculum;
     }
-     if (selectedGrade === "Grade 1" && selectedSubject === "Christian Religious Education") {
-      return grade1CreCurriculum;
-    }
-    if (selectedGrade === "PP1" && selectedSubject === "Environmental Activities") {
-      return pp1EnvironmentalActivitiesCurriculum;
-    }
-     if (selectedGrade === "PP2" && selectedSubject === "Environmental Activities") {
-      return pp2EnvironmentalActivitiesCurriculum;
-    }
-    if (selectedGrade === "PP1" && selectedSubject === "Language Activities") {
-      return pp1LanguageActivitiesCurriculum;
-    }
-    if (selectedGrade === "PP2" && selectedSubject === "Language Activities") {
-        return pp2LanguageActivitiesCurriculum;
-    }
-    if (selectedGrade === "PP1" && selectedSubject === "Mathematical Activities") {
-        return pp1MathematicsActivitiesCurriculum;
-    }
-    if (selectedGrade === "PP2" && selectedSubject === "Mathematical Activities") {
-        return pp2MathematicsActivitiesCurriculum;
-    }
     if (selectedGrade === "Grade 2" && selectedSubject === "Movement and Creative Activities") {
         return grade2CreativeActivitiesCurriculum;
+    }
+     if (selectedGrade === "Grade 3" && selectedSubject === "Movement and Creative Activities") {
+        return grade3CreativeActivitiesCurriculum;
+    }
+    if (selectedGrade === "Grade 3" && selectedSubject === "Kiswahili Language Activities") {
+      return grade3KiswahiliLanguageActivitiesCurriculum;
+    }
+    if (selectedGrade === "Grade 3" && selectedSubject === "Mathematical Activities") {
+      return grade3MathematicsActivitiesCurriculum;
+    }
+    if (selectedGrade === "Grade 4" && selectedSubject === "Agriculture and Nutrition") {
+      return grade4AgricultureAndNutritionCurriculum;
+    }
+     if (selectedGrade === "Grade 4" && selectedSubject === "Christian Religious Education") {
+      return grade4CreCurriculum;
     }
     return null;
   }, [selectedGrade, selectedSubject]);
@@ -295,7 +315,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
       setSelectedSubject('');
       setSelectedStrand('');
       setSelectedSubStrandName('');
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => {
@@ -356,7 +376,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                         <Select name="subject" value={selectedSubject} onValueChange={v => { setSelectedSubject(v); setSelectedStrand(''); setSelectedSubStrandName(''); }} required disabled={!selectedGrade}>
                            <SelectTrigger><SelectValue placeholder="Select subject..." /></SelectTrigger>
                            <SelectContent>
-                                {availableSubjects.map(s => (
+                                {availableSubjects.core.map(s => (
                                   <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>
                                 ))}
                            </SelectContent>
@@ -430,7 +450,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 )}
                  {!loading && !generatedScheme && (
                     <div className="flex items-center justify-center h-full text-muted-foreground text-center p-8 bg-muted/50 rounded-lg">
-                        <p>Your generated scheme of work will appear here once you fill out the details.</p>
+                        <p>Your generated scheme of work will appear here once you fill out the form and click "Generate".</p>
                     </div>
                 )}
             </div>
@@ -439,6 +459,3 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     </Dialog>
   );
 }
-
-    
-    
