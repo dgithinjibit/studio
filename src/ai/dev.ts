@@ -41,6 +41,8 @@ import '@/curriculum/grade2-cre.ts';
 import '@/curriculum/grade2-creative-activities.ts';
 import '@/curriculum/grade2-english-language-activities.ts';
 import '@/curriculum/grade2-indigenous-language.ts';
+import '@/curriculum/grade2-kiswahili-language-activities.ts';
+import '@/curriculum/grade2-mathematics-activities.ts';
 
 
 
