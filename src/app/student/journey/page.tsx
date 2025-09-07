@@ -10,10 +10,9 @@ import type { LucideIcon } from 'lucide-react';
 import ChatInterface from '../chat/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
-import { BlockchainCurriculumDisplay } from '@/components/blockchain-curriculum-display';
 import { AiIcon } from '@/components/icons';
 
-type Step = 'level' | 'sub-level' | 'grade' | 'subject' | 'chat' | 'content';
+type Step = 'level' | 'sub-level' | 'grade' | 'subject' | 'chat';
 
 const levels = [
     { id: 'ms', name: 'Middle School' },
@@ -112,15 +111,11 @@ export default function StudentJourneyPage() {
     
     const handleSubjectSelect = useCallback((subjectName: string) => {
         setSelectedSubject(subjectName);
-        if (subjectName === 'Blockchain') {
-            setStep('content');
-        } else {
-            setStep('chat');
-        }
+        setStep('chat');
     }, []);
 
     const handleGoBack = useCallback(() => {
-        if (step === 'chat' || step === 'content') {
+        if (step === 'chat') {
             setSelectedSubject(null);
             setStep('subject');
         } else if (step === 'subject') {
@@ -155,8 +150,6 @@ export default function StudentJourneyPage() {
 
     const renderContent = () => {
         switch (step) {
-            case 'content':
-                return <BlockchainCurriculumDisplay onBack={handleGoBack} />;
             case 'chat':
                 if (selectedSubject && selectedGrade) {
                     return <ChatInterface subject={selectedSubject} grade={selectedGrade} onBack={handleGoBack} studentFirstName={studentFirstName} />;
@@ -243,7 +236,7 @@ export default function StudentJourneyPage() {
                             {levels.map((level, index) => (
                                 <Button 
                                     key={level.id} 
-                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus:scale-105 ${levelColors[index % levelColors.length]}`}
+                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus-scale-105 ${levelColors[index % levelColors.length]}`}
                                     onClick={() => handleLevelSelect(level.id)}
                                 >
                                     {level.name}
@@ -256,11 +249,10 @@ export default function StudentJourneyPage() {
         }
     };
     
-    if (step === 'chat' || step === 'content') {
+    if (step === 'chat') {
         return (
              <div className="flex flex-col w-full h-screen sm:h-[95vh] max-w-4xl mx-auto overflow-hidden">
-                {step === 'chat' && <ChatInterface subject={selectedSubject!} grade={selectedGrade!} onBack={handleGoBack} studentFirstName={studentFirstName} />}
-                {step === 'content' && <BlockchainCurriculumDisplay onBack={handleGoBack} />}
+                <ChatInterface subject={selectedSubject!} grade={selectedGrade!} onBack={handleGoBack} studentFirstName={studentFirstName} />
              </div>
         )
     }
@@ -274,5 +266,3 @@ export default function StudentJourneyPage() {
         </div>
     );
 }
-
-    

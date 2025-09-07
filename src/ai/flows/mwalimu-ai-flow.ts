@@ -16,6 +16,7 @@ import {
 } from './mwalimu-ai-types';
 import { kikuyuDictionary } from '@/lib/kikuyu-dictionary';
 import { aiCurriculum } from '@/lib/ai-curriculum';
+import { blockchainCurriculum } from '@/lib/blockchain-curriculum';
 
 export async function mwalimuAiTutor(
   input: MwalimuAiTutorInput
@@ -51,18 +52,18 @@ You MUST use the "Context from Teacher's Materials" (which contains the Gikuyu d
 
 ---
 
-## SCENARIO 2: AI Curriculum Tutor (Subject: "AI")
+## SCENARIO 2: AI & Blockchain Curriculum Tutor (Subject: "AI" or "Blockchain")
 
-**Your Persona:** You are a specialized AI curriculum tutor. Your goal is to guide the learner through the provided AI syllabus, from foundational concepts to advanced projects.
+**Your Persona:** You are a specialized AI & Blockchain curriculum tutor. Your goal is to guide the learner through the provided syllabus, from foundational concepts to advanced projects.
 
 **Your Capabilities:**
-1.  **Syllabus Navigation:** Answer questions about the AI curriculum's vision, guiding principles, and different learning stages (Early Years, Middle School, etc.).
-2.  **Concept Explanation:** Explain concepts from the curriculum, like "computational thinking," "algorithms," and "machine learning," using the examples and activities provided in the text.
-3.  **Project Guidance:** Act as a project coach for the activities listed in the syllabus (e.g., "Community Helper Chatbot," "M-Pesa Fraud Predictor"). Help learners understand the project goals, tools, and underlying AI concepts.
-4.  **Ethical Discussion:** Facilitate discussions on AI ethics, using the case studies and debate topics mentioned in the curriculum (e.g., algorithmic bias, data privacy).
+1.  **Syllabus Navigation:** Answer questions about the curriculum's vision, guiding principles, and different learning stages (Early Years, Middle School, etc.).
+2.  **Concept Explanation:** Explain concepts from the curriculum, like "computational thinking," "algorithms," "machine learning," or "decentralized ledger" using the examples and activities provided in the text.
+3.  **Project Guidance:** Act as a project coach for the activities listed in the syllabus (e.g., "Community Helper Chatbot," "M-Pesa Fraud Predictor"). Help learners understand the project goals, tools, and underlying concepts.
+4.  **Ethical Discussion:** Facilitate discussions on ethics, using the case studies and debate topics mentioned in the curriculum (e.g., algorithmic bias, data privacy, digital voting).
 
 **Your Knowledge Source:**
-You MUST base all your answers on the provided "AI Curriculum" in the "Context from Teacher's Materials." Do not introduce topics or projects not mentioned in the syllabus.
+You MUST base all your answers on the provided curriculum in the "Context from Teacher's Materials." Do not introduce topics or projects not mentioned in the syllabus.
 
 ---
 
@@ -131,6 +132,14 @@ const mwalimuAiTutorFlow = ai.defineFlow(
 According to the curriculum, a key skill is understanding algorithms. Let's start there: can you describe the 'algorithm' or steps you followed to get ready for school today?`
         };
       }
+      if (input.subject === 'Blockchain') {
+        const gradeName = `Grade ${input.grade.replace('g', '')}`;
+        return {
+          response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore Blockchain for ${gradeName}.
+
+According to the curriculum, a key concept is a 'digital record' or ledger. Let's start there: can you think of an example of a digital record you use in your daily life?`
+        };
+      }
       const gradeName = `Grade ${input.grade.replace('g', '')}`;
       return {
         response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${gradeName} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
@@ -145,6 +154,9 @@ According to the curriculum, a key skill is understanding algorithms. Let's star
     
     if (flowInput.subject === 'AI') {
       flowInput.teacherContext = `AI Curriculum:\n${aiCurriculum}`;
+    }
+    else if (flowInput.subject === 'Blockchain') {
+      flowInput.teacherContext = `Blockchain Curriculum:\n${blockchainCurriculum}`;
     }
     else if (flowInput.subject === 'Indigenous Language' && input.currentMessage) {
       const categories = Object.keys(kikuyuDictionary) as Array<keyof typeof kikuyuDictionary>;
