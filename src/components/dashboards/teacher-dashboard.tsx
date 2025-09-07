@@ -20,6 +20,7 @@ import type { Teacher, ClassInfo } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MyResources } from '@/components/my-resources';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
+import { mockTeacher } from '@/lib/mock-data';
 
 
 interface TeacherDashboardProps {
@@ -71,13 +72,14 @@ const teacherTools = [
     }
 ];
 
-export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
+export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardProps) {
+    const [teacher, setTeacher] = useState<Teacher>(initialTeacher);
     const [isLessonPlanDialogOpen, setLessonPlanDialogOpen] = useState(false);
     const [isSchemeOfWorkDialogOpen, setSchemeOfWorkDialogOpen] = useState(false);
     const [isRubricDialogOpen, setRubricDialogOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
-    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(teacher.classes?.[0] ?? null);
+    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
 
     const chartData = teacher.classes.map(c => ({ 
         name: c.name.replace(' English', '').replace(' Literature', ''), 
@@ -97,6 +99,23 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
     const handleClassSelect = (classInfo: ClassInfo) => {
         setSelectedClass(classInfo);
         setAttendanceDialogOpen(true);
+    };
+    
+    const handleClassNameUpdate = (classId: string, newName: string) => {
+        setTeacher(prevTeacher => {
+            const updatedClasses = prevTeacher.classes.map(c => 
+                c.id === classId ? { ...c, name: newName } : c
+            );
+            const newTeacherState = { ...prevTeacher, classes: updatedClasses };
+            
+            // Note: This only updates localStorage for the mock.
+            // In a real app, you'd save this to a database.
+            const storedTeacher = JSON.parse(localStorage.getItem('mockTeacher') || JSON.stringify(mockTeacher));
+            storedTeacher.classes = updatedClasses;
+            localStorage.setItem('mockTeacher', JSON.stringify(storedTeacher));
+
+            return newTeacherState;
+        });
     };
 
     const onResourceSaved = () => {
@@ -143,7 +162,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {teacher.classes.map(c => (
-                                     <div key={c.name} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                                     <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
                                         <div className="flex items-center gap-4">
                                              <Avatar className="h-12 w-12 border-2 border-primary/20">
                                                 <AvatarFallback className="bg-primary/10 text-primary font-bold">{c.name.charAt(0)}</AvatarFallback>
@@ -164,7 +183,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                                     variant="outline" 
                                     className="w-full" 
                                     onClick={() => selectedClass && handleClassSelect(selectedClass)}
-                                    disabled={!selectedClass}
+                                    disabled={!teacher.classes.length}
                                 >
                                     Digital Attendance Register
                                 </Button>
@@ -256,6 +275,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                     open={isAttendanceDialogOpen}
                     onOpenChange={setAttendanceDialogOpen}
                     classInfo={selectedClass}
+                    onClassNameUpdate={handleClassNameUpdate}
                  />
              )}
         </>

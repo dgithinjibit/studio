@@ -12,13 +12,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import type { ClassInfo, Student } from '@/lib/types';
-import { PlusCircle, User, Trash2 } from 'lucide-react';
+import { PlusCircle, User, Trash2, Save } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface DigitalAttendanceRegisterProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     classInfo: ClassInfo;
+    onClassNameUpdate: (classId: string, newName: string) => void;
 }
 
 type AttendanceStatus = 'present' | 'absent';
@@ -28,43 +29,40 @@ type AttendanceRecord = {
 };
 type AttendanceState = Record<string, Record<string, AttendanceRecord>>; // { [date]: { [studentId]: record } }
 
-export function DigitalAttendanceRegister({ open, onOpenChange, classInfo }: DigitalAttendanceRegisterProps) {
+export function DigitalAttendanceRegister({ open, onOpenChange, classInfo, onClassNameUpdate }: DigitalAttendanceRegisterProps) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
     const [attendance, setAttendance] = useState<AttendanceState>({});
-    const [students, setStudents] = useState<Student[]>(classInfo.students);
+    const [students, setStudents] = useState<Student[]>([]);
+    const [className, setClassName] = useState('');
     const [newStudentName, setNewStudentName] = useState('');
     const { toast } = useToast();
 
-    // Load attendance from localStorage when the component mounts or classInfo changes
+    // Load data from localStorage when the component mounts or classInfo changes
     useEffect(() => {
-        if (open) {
-            const storedAttendance = localStorage.getItem(`attendance_${classInfo.name}`);
-            if (storedAttendance) {
-                setAttendance(JSON.parse(storedAttendance));
-            } else {
-                setAttendance({});
-            }
-            const storedStudents = localStorage.getItem(`students_${classInfo.name}`);
-            if (storedStudents) {
-                setStudents(JSON.parse(storedStudents));
-            } else {
-                 setStudents(classInfo.students);
-            }
+        if (open && classInfo) {
+            setClassName(classInfo.name);
+            const storedAttendance = localStorage.getItem(`attendance_${classInfo.id}`);
+            setAttendance(storedAttendance ? JSON.parse(storedAttendance) : {});
+            
+            const storedStudents = localStorage.getItem(`students_${classInfo.id}`);
+            setStudents(storedStudents ? JSON.parse(storedStudents) : classInfo.students);
         }
-    }, [classInfo.name, open]);
+    }, [classInfo, open]);
 
-    // Save attendance to localStorage whenever it changes
-    useEffect(() => {
-        if(open) {
-            localStorage.setItem(`attendance_${classInfo.name}`, JSON.stringify(attendance));
+    const handleSave = () => {
+        localStorage.setItem(`attendance_${classInfo.id}`, JSON.stringify(attendance));
+        localStorage.setItem(`students_${classInfo.id}`, JSON.stringify(students));
+        
+        if (className !== classInfo.name) {
+            onClassNameUpdate(classInfo.id, className);
         }
-    }, [attendance, classInfo.name, open]);
-    
-    useEffect(() => {
-        if(open) {
-            localStorage.setItem(`students_${classInfo.name}`, JSON.stringify(students));
-        }
-    }, [students, classInfo.name, open]);
+        
+        toast({
+            title: "Changes Saved",
+            description: "Your attendance records and class details have been updated.",
+        });
+        onOpenChange(false);
+    };
 
     const handleAttendanceChange = (studentId: string, session: 'morning' | 'evening', checked: boolean) => {
         if (!selectedDate) return;
@@ -93,7 +91,7 @@ export function DigitalAttendanceRegister({ open, onOpenChange, classInfo }: Dig
         setNewStudentName('');
         toast({
             title: 'Student Added',
-            description: `${newStudent.name} has been added to ${classInfo.name}.`,
+            description: `${newStudent.name} has been added to ${className}. Remember to save your changes.`,
         });
     };
     
@@ -101,6 +99,7 @@ export function DigitalAttendanceRegister({ open, onOpenChange, classInfo }: Dig
         setStudents(prev => prev.filter(s => s.id !== studentId));
          toast({
             title: 'Student Removed',
+            description: "The student has been removed from the list. Remember to save your changes.",
             variant: 'destructive'
         });
     }
@@ -113,8 +112,17 @@ export function DigitalAttendanceRegister({ open, onOpenChange, classInfo }: Dig
             <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle className="font-headline text-2xl">Digital Attendance Register</DialogTitle>
-                    <DialogDescription>
-                        Marking attendance for <span className="font-bold text-primary">{classInfo.name}</span> on <span className="font-bold text-primary">{selectedDate ? format(selectedDate, 'PPP') : ''}</span>.
+                    <div className="flex items-center gap-2 pt-2">
+                        <Label htmlFor="className" className="text-sm font-medium">Class Name:</Label>
+                        <Input 
+                            id="className"
+                            value={className}
+                            onChange={(e) => setClassName(e.target.value)}
+                            className="text-lg font-bold h-9"
+                        />
+                    </div>
+                     <DialogDescription>
+                        Marking attendance for <span className="font-bold text-primary">{format(selectedDate ?? new Date(), 'PPP')}</span>.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid md:grid-cols-3 gap-6 flex-1 min-h-0">
@@ -177,6 +185,12 @@ export function DigitalAttendanceRegister({ open, onOpenChange, classInfo }: Dig
                         </ScrollArea>
                     </div>
                 </div>
+                 <DialogFooter>
+                    <Button onClick={handleSave} className="w-full sm:w-auto">
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Changes & Close
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

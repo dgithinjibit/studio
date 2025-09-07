@@ -36,9 +36,9 @@ export const mockTeacher: Teacher = {
     id: 'usr_3',
     name: 'Okoro',
     classes: [
-        { name: 'Form 1 English', performance: 75, students: form1Students },
-        { name: 'Form 2 English', performance: 82, students: form2EnglishStudents },
-        { name: 'Form 2 Literature', performance: 78, students: form2LitStudents },
+        { id: 'class_1', name: 'Form 1 English', performance: 75, students: form1Students },
+        { id: 'class_2', name: 'Form 2 English', performance: 82, students: form2EnglishStudents },
+        { id: 'class_3', name: 'Form 2 Literature', performance: 78, students: form2LitStudents },
     ],
     totalStudents: 12,
 };

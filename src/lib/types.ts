@@ -17,6 +17,7 @@ export type Student = {
 };
 
 export type ClassInfo = {
+    id: string;
     name: string;
     performance: number;
     students: Student[];
