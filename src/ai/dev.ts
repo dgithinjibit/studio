@@ -36,4 +36,6 @@ import '@/curriculum/grade1-kiswahili-language-activities.ts';
 import '@/curriculum/grade1-mathematics-activities.ts';
 import '@/curriculum/grade1-environmental-activities.ts';
 import '@/curriculum/grade1-cre.ts';
+import '@/curriculum/grade2-environmental-activities.ts';
+
 
