@@ -5,7 +5,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake, LogOut, ArrowLeft, Sparkles, User } from 'lucide-react';
+import { ArrowRight, BookOpen, Leaf, Wind, Palette, Languages, Church, HeartHandshake, LogOut, ArrowLeft, User } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import ChatInterface from '../chat/[subject]/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
@@ -46,57 +46,57 @@ const gradesMap: { [key: string]: { id: string; name: string }[] } = {
 
 const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
     g7: [
-        { name: 'English', icon: Book },
+        { name: 'English', icon: BookOpen },
         { name: 'Creative Arts', icon: Palette },
         { name: 'Indigenous Language', icon: Languages },
-        { name: 'Kiswahili/Sign Language', icon: Book },
+        { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
         { name: 'Environmental Activities', icon: Leaf },
         { name: 'Creative Activities', icon: Wind },
         { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
     ],
      g4: [
-        { name: 'English', icon: Book },
+        { name: 'English', icon: BookOpen },
         { name: 'Creative Arts', icon: Palette },
         { name: 'Indigenous Language', icon: Languages },
-        { name: 'Kiswahili/Sign Language', icon: Book },
+        { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
         { name: 'Environmental Activities', icon: Leaf },
         { name: 'Creative Activities', icon: Wind },
     ],
      g5: [
-        { name: 'English', icon: Book },
+        { name: 'English', icon: BookOpen },
         { name: 'Creative Arts', icon: Palette },
         { name: 'Indigenous Language', icon: Languages },
-        { name: 'Kiswahili/Sign Language', icon: Book },
+        { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
         { name: 'Environmental Activities', icon: Leaf },
         { name: 'Creative Activities', icon: Wind },
     ],
      g6: [
-        { name: 'English', icon: Book },
+        { name: 'English', icon: BookOpen },
         { name: 'Creative Arts', icon: Palette },
         { name: 'Indigenous Language', icon: Languages },
-        { name: 'Kiswahili/Sign Language', icon: Book },
+        { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
         { name: 'Environmental Activities', icon: Leaf },
         { name: 'Creative Activities', icon: Wind },
     ],
     g8: [
-        { name: 'English', icon: Book },
+        { name: 'English', icon: BookOpen },
         { name: 'Creative Arts', icon: Palette },
         { name: 'Indigenous Language', icon: Languages },
-        { name: 'Kiswahili/Sign Language', icon: Book },
+        { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
         { name: 'Environmental Activities', icon: Leaf },
         { name: 'Creative Activities', icon: Wind },
         { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
     ],
     g9: [
-        { name: 'English', icon: Book },
+        { name: 'English', icon: BookOpen },
         { name: 'Creative Arts', icon: Palette },
         { name: 'Indigenous Language', icon: Languages },
-        { name: 'Kiswahili/Sign Language', icon: Book },
+        { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
         { name: 'Environmental Activities', icon: Leaf },
         { name: 'Creative Activities', icon: Wind },
