@@ -181,7 +181,7 @@ export default function StudentJourneyPage() {
                                  <CardDescription>Let's get more specific.</CardDescription>
                              </div>
                              <Button variant="ghost" onClick={goBack}>
-                                <ArrowLeft className="mr-2"/> Back
+                                Back <ArrowLeft className="ml-2"/>
                             </Button>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -204,7 +204,7 @@ export default function StudentJourneyPage() {
                                  <CardDescription>Almost there! Which grade are you in?</CardDescription>
                             </div>
                             <Button variant="ghost" onClick={goBack}>
-                                <ArrowLeft className="mr-2"/> Back
+                                Back <ArrowLeft className="ml-2"/>
                             </Button>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -227,7 +227,7 @@ export default function StudentJourneyPage() {
                                 <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
                             </div>
                             <Button variant="ghost" onClick={goBack}>
-                                <ArrowLeft className="mr-2"/> Back
+                                Back <ArrowLeft className="ml-2"/>
                             </Button>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
