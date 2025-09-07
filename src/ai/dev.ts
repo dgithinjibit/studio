@@ -55,5 +55,8 @@ import '@/curriculum/grade3-indigenous-language.ts';
 import '@/curriculum/grade4-indigenous-language.ts';
 import '@/curriculum/grade4-english-language-activities.ts';
 import '@/curriculum/grade3-creative-activities.ts';
+import '@/curriculum/grade4-kiswahili-language-activities.ts';
+
+    
 
     
