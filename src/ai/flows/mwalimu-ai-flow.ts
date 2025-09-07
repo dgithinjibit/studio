@@ -78,10 +78,10 @@ Base your Socratic questions and answers on the "Context from Teacher's Material
 
 ## Conversation History:
 {{#each history}}
-  {{#if (eq role 'user')}}
-    Student: {{{content}}}
+  {{#if (eq this.role 'user')}}
+    Student: {{{this.content}}}
   {{else}}
-    Mwalimu AI: {{{content}}}
+    Mwalimu AI: {{{this.content}}}
   {{/if}}
 {{/each}}
 
