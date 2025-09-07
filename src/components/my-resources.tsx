@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import type { TeacherResource } from '@/lib/types';
+import type { TeacherResource, Communication } from '@/lib/types';
 import {
   Accordion,
   AccordionContent,
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, GraduationCap, CopySlash, MoreHorizontal, PlusCircle, Search, PlayCircle, ChevronDown } from 'lucide-react';
+import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, GraduationCap, CopySlash, MoreHorizontal, PlusCircle, Search, PlayCircle, ChevronDown, Megaphone } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
@@ -26,25 +26,30 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 
 export function MyResources() {
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
+    const [communications, setCommunications] = useState<Communication[]>([]);
     const { toast } = useToast();
 
     useEffect(() => {
-        const loadResources = () => {
+        const loadData = () => {
             const storedResources = localStorage.getItem("teacherResources");
             if (storedResources) {
                 setAllResources(JSON.parse(storedResources));
             }
+            const storedComms = localStorage.getItem("mockCommunications");
+            if (storedComms) {
+                setCommunications(JSON.parse(storedComms).map((c: any) => ({ ...c, date: new Date(c.date) })));
+            }
         };
-        loadResources();
+        loadData();
         
         const handleStorageChange = () => {
-            loadResources();
+            loadData();
         };
 
         window.addEventListener('storage', handleStorageChange);
         
         const handleResourceUpdate = () => {
-            loadResources();
+            loadData();
         };
         window.addEventListener('resource-update', handleResourceUpdate);
         
@@ -57,15 +62,20 @@ export function MyResources() {
     const learningLabs = allResources.filter(r => r.type === 'AI Tutor Context');
     const otherResources = allResources.filter(r => r.type !== 'AI Tutor Context');
 
-
-    const handleDelete = (resourceId: string, event: React.MouseEvent) => {
+    const handleDelete = (id: string, type: 'resource' | 'communication', event: React.MouseEvent) => {
         event.stopPropagation();
-        const updatedResources = allResources.filter(p => p.id !== resourceId);
-        setAllResources(updatedResources);
-        localStorage.setItem("teacherResources", JSON.stringify(updatedResources));
+        if (type === 'resource') {
+            const updated = allResources.filter(p => p.id !== id);
+            setAllResources(updated);
+            localStorage.setItem("teacherResources", JSON.stringify(updated));
+        } else {
+            const updated = communications.filter(c => c.id !== id);
+            setCommunications(updated);
+            localStorage.setItem("mockCommunications", JSON.stringify(updated));
+        }
         toast({
-            title: "Resource Deleted",
-            description: "The item has been removed from your resources.",
+            title: "Item Deleted",
+            description: "The item has been removed from your library.",
             variant: "destructive"
         });
     };
@@ -110,11 +120,11 @@ export function MyResources() {
         }
     }
 
-    if (allResources.length === 0) {
+    if (allResources.length === 0 && communications.length === 0) {
         return (
             <div className="text-center text-muted-foreground p-8">
                 <FileText className="mx-auto h-12 w-12" />
-                <h3 className="mt-4 text-lg font-semibold">No Resources Yet</h3>
+                <h3 className="mt-4 text-lg font-semibold">No Items Yet</h3>
                 <p className="mt-1 text-sm">
                     Use the "Teacher Tools" or "Learning Lab" to generate resources.
                 </p>
@@ -196,7 +206,7 @@ export function MyResources() {
                                     <TableCell>0</TableCell>
                                     <TableCell>{format(new Date(lab.createdAt), 'PP p')}</TableCell>
                                     <TableCell className="text-right">
-                                         <Button variant="ghost" size="icon" onClick={(e) => handleDelete(lab.id, e)}>
+                                         <Button variant="ghost" size="icon" onClick={(e) => handleDelete(lab.id, 'resource', e)}>
                                             <MoreHorizontal className="h-4 w-4" />
                                         </Button>
                                     </TableCell>
@@ -245,7 +255,48 @@ export function MyResources() {
                                                 <Copy className="mr-2 h-4 w-4"/>
                                                 Copy
                                             </Button>
-                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource.id, e)}>
+                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource.id, 'resource', e)}>
+                                                <Trash2 className="mr-2 h-4 w-4"/>
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
+            )}
+             {communications.length > 0 && (
+                <div>
+                     <h3 className="text-lg font-semibold mb-4 ml-1">Communications Log</h3>
+                     <Accordion type="single" collapsible className="w-full">
+                        {communications.map((comm) => (
+                             <AccordionItem value={comm.id} key={comm.id}>
+                                <AccordionTrigger className="hover:no-underline px-4">
+                                    <div className="flex items-center justify-between w-full">
+                                        <div className="flex items-center gap-4">
+                                            <Megaphone className="h-5 w-5 text-destructive" />
+                                            <div>
+                                                <p className="font-semibold text-left">{comm.title}</p>
+                                                <p className="text-xs text-muted-foreground font-normal">
+                                                    Sent {format(new Date(comm.date), 'PP p')}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <Badge variant={comm.sender === 'School Head' ? 'destructive' : 'outline'} className="mr-4">
+                                            From: {comm.sender}
+                                        </Badge>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="p-4 bg-muted/50 rounded-md">
+                                        <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-pre:bg-transparent prose-pre:p-0">
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{comm.content}</ReactMarkdown>
+                                        </div>
+                                         <div className="text-xs text-muted-foreground pt-2 mt-2 border-t">Recipient: {comm.recipient}</div>
+                                        <div className="flex items-center justify-end gap-2 pt-2 mt-2">
+                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(comm.id, 'communication', e)}>
                                                 <Trash2 className="mr-2 h-4 w-4"/>
                                                 Delete
                                             </Button>

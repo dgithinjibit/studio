@@ -138,7 +138,6 @@ export function SchoolHeadDashboard() {
                     <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
                     <TabsTrigger value="resources">Resource Management</TabsTrigger>
                     <TabsTrigger value="staff">Staff Management</TabsTrigger>
-                    <TabsTrigger value="communications">Communications</TabsTrigger>
                 </TabsList>
                 <TabsContent value="dashboard" className="space-y-6">
                     <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3">
@@ -265,26 +264,6 @@ export function SchoolHeadDashboard() {
                              <Button asChild>
                                 <Link href="/dashboard/staff">
                                     Open Staff Hub
-                                    <ChevronRight className="ml-2 w-4 h-4" />
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-                 <TabsContent value="communications">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Megaphone className="text-primary w-6 h-6"/>
-                                School-wide Communications
-                            </CardTitle>
-                            <CardDescription>A central hub for all official school announcements.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground mb-4">View and track all announcements sent to staff. For a detailed view, visit the main communications page.</p>
-                             <Button asChild>
-                                <Link href="/dashboard/communications">
-                                    Open Communications Hub
                                     <ChevronRight className="ml-2 w-4 h-4" />
                                 </Link>
                             </Button>
