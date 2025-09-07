@@ -8,7 +8,7 @@ export function SchoolHeadDashboard() {
   return (
     <div>
         <div className="mb-6">
-            <h1 className="font-headline text-3xl font-bold">Welcome, School Head!</h1>
+            <h1 className="font-headline text-3xl font-bold">Welcome!</h1>
             <p className="text-muted-foreground">Manage your teachers, students, and school-wide performance.</p>
         </div>
          <Card>

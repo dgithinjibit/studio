@@ -15,6 +15,8 @@ export default function DashboardPage() {
   const [teacher, setTeacher] = useState<Teacher>(mockTeacher);
   
   useEffect(() => {
+    // We get the teacher name from localStorage to personalize the experience
+    // This is a stand-in for a real auth system.
     const storedName = localStorage.getItem('userName');
     if (role === 'teacher' && storedName) {
       setTeacher(prevTeacher => ({ ...prevTeacher, name: storedName.split(' ')[0] }));

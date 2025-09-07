@@ -73,7 +73,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         <>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="font-headline text-3xl font-bold">Welcome, {teacher.name}!</h1>
+                    <h1 className="font-headline text-3xl font-bold">Welcome, Teacher!</h1>
                     <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
                 </div>
                 <div className="flex items-center gap-2">

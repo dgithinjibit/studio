@@ -17,7 +17,7 @@ export function CountyOfficerDashboard() {
     <>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-headline text-3xl font-bold">Welcome, County Officer!</h1>
+            <h1 className="font-headline text-3xl font-bold">Welcome!</h1>
             <p className="text-muted-foreground">Oversee schools and performance in your county.</p>
           </div>
            <div className="flex items-center gap-2">
