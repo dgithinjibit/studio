@@ -23,10 +23,10 @@ import type { LessonPlan } from "@/lib/types";
 interface GenerateLessonPlanDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onLessonPlanSaved: () => void;
+    onResourceSaved: () => void;
 }
 
-export function GenerateLessonPlanDialog({ open, onOpenChange, onLessonPlanSaved }: GenerateLessonPlanDialogProps) {
+export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }: GenerateLessonPlanDialogProps) {
   const [loading, setLoading] = useState(false);
   const [generatedPlan, setGeneratedPlan] = useState("");
   const [currentTopic, setCurrentTopic] = useState("");
@@ -49,10 +49,11 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onLessonPlanSaved
       title: currentTopic || "Untitled Lesson Plan",
       content: generatedPlan,
       createdAt: new Date().toISOString(),
+      type: 'Lesson Plan'
     };
 
-    const existingPlans: LessonPlan[] = JSON.parse(localStorage.getItem("lessonPlans") || "[]");
-    localStorage.setItem("lessonPlans", JSON.stringify([newPlan, ...existingPlans]));
+    const existingPlans: LessonPlan[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
+    localStorage.setItem("teacherResources", JSON.stringify([newPlan, ...existingPlans]));
     
     toast({
       title: "Lesson Plan Saved!",
@@ -60,7 +61,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onLessonPlanSaved
     });
 
     onOpenChange(false);
-    onLessonPlanSaved(); // Notify parent to switch tabs
+    onResourceSaved(); // Notify parent to switch tabs
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

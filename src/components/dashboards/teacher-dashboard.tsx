@@ -99,7 +99,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
         setAttendanceDialogOpen(true);
     };
 
-    const onLessonPlanSaved = () => {
+    const onResourceSaved = () => {
         // Switch to the resources tab to show the newly saved plan
         setActiveTab("resources");
     }
@@ -235,9 +235,13 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
              <GenerateLessonPlanDialog 
                 open={isLessonPlanDialogOpen} 
                 onOpenChange={setLessonPlanDialogOpen} 
-                onLessonPlanSaved={onLessonPlanSaved}
+                onResourceSaved={onResourceSaved}
              />
-             <GenerateSchemeOfWorkDialog open={isSchemeOfWorkDialogOpen} onOpenChange={setSchemeOfWorkDialogOpen} />
+             <GenerateSchemeOfWorkDialog 
+                open={isSchemeOfWorkDialogOpen} 
+                onOpenChange={setSchemeOfWorkDialogOpen}
+                onResourceSaved={onResourceSaved}
+             />
              <GenerateRubricDialog open={isRubricDialogOpen} onOpenChange={setRubricDialogOpen} />
              {selectedClass && (
                  <DigitalAttendanceRegister 

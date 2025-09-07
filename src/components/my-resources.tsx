@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import type { LessonPlan } from '@/lib/types';
+import type { TeacherResource } from '@/lib/types';
 import {
   Accordion,
   AccordionContent,
@@ -10,35 +10,51 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
-import { FileText, Trash2, Copy } from 'lucide-react';
+import { FileText, Trash2, Copy, Calendar } from 'lucide-react';
 
 export function MyResources() {
-    const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([]);
+    const [resources, setResources] = useState<TeacherResource[]>([]);
     const { toast } = useToast();
 
     useEffect(() => {
-        const loadPlans = () => {
-            const storedPlans = localStorage.getItem("lessonPlans");
-            if (storedPlans) {
-                setLessonPlans(JSON.parse(storedPlans));
+        const loadResources = () => {
+            const storedResources = localStorage.getItem("teacherResources");
+            if (storedResources) {
+                setResources(JSON.parse(storedResources));
             }
         };
-        loadPlans();
+        loadResources();
         
         // Listen for storage changes to update in real-time if other tabs modify it
-        window.addEventListener('storage', loadPlans);
-        return () => window.removeEventListener('storage', loadPlans);
+        const handleStorageChange = () => {
+            loadResources();
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        
+        // Also listen for a custom event that we can dispatch from our dialogs
+        const handleResourceUpdate = () => {
+            loadResources();
+        };
+        window.addEventListener('resource-update', handleResourceUpdate);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('resource-update', handleResourceUpdate);
+        };
     }, []);
 
-    const handleDelete = (planId: string) => {
-        const updatedPlans = lessonPlans.filter(p => p.id !== planId);
-        setLessonPlans(updatedPlans);
-        localStorage.setItem("lessonPlans", JSON.stringify(updatedPlans));
+    const handleDelete = (resourceId: string) => {
+        const updatedResources = resources.filter(p => p.id !== resourceId);
+        setResources(updatedResources);
+        localStorage.setItem("teacherResources", JSON.stringify(updatedResources));
         toast({
-            title: "Lesson Plan Deleted",
-            description: "The lesson plan has been removed from your resources.",
+            title: "Resource Deleted",
+            description: "The item has been removed from your resources.",
+            variant: "destructive"
         });
     };
     
@@ -49,14 +65,25 @@ export function MyResources() {
             });
         });
     };
+    
+    const getIcon = (type: string) => {
+        switch(type) {
+            case 'Lesson Plan':
+                return <FileText className="h-5 w-5 text-primary" />;
+            case 'Scheme of Work':
+                return <Calendar className="h-5 w-5 text-blue-500" />;
+            default:
+                return <FileText className="h-5 w-5 text-primary" />;
+        }
+    }
 
-    if (lessonPlans.length === 0) {
+    if (resources.length === 0) {
         return (
             <div className="text-center text-muted-foreground p-8">
                 <FileText className="mx-auto h-12 w-12" />
                 <h3 className="mt-4 text-lg font-semibold">No Resources Yet</h3>
                 <p className="mt-1 text-sm">
-                    Generate a new lesson plan using the "Teacher Tools" tab to get started.
+                    Use the "Teacher Tools" tab to generate lesson plans or schemes of work.
                 </p>
             </div>
         );
@@ -64,28 +91,33 @@ export function MyResources() {
 
     return (
         <Accordion type="single" collapsible className="w-full">
-            {lessonPlans.map((plan) => (
-                 <AccordionItem value={plan.id} key={plan.id}>
+            {resources.map((resource) => (
+                 <AccordionItem value={resource.id} key={resource.id}>
                     <AccordionTrigger className="hover:no-underline">
-                        <div className="flex items-center gap-4">
-                             <FileText className="h-5 w-5 text-primary" />
-                             <div>
-                                <p className="font-semibold text-left">{plan.title}</p>
-                                <p className="text-xs text-muted-foreground font-normal">
-                                    Saved {formatDistanceToNow(new Date(plan.createdAt), { addSuffix: true })}
-                                </p>
-                             </div>
+                        <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-4">
+                                 {getIcon(resource.type)}
+                                 <div>
+                                    <p className="font-semibold text-left">{resource.title}</p>
+                                    <p className="text-xs text-muted-foreground font-normal">
+                                        Saved {formatDistanceToNow(new Date(resource.createdAt), { addSuffix: true })}
+                                    </p>
+                                 </div>
+                            </div>
+                            <Badge variant={resource.type === 'Lesson Plan' ? 'secondary' : 'outline'} className="mr-4">
+                                {resource.type}
+                            </Badge>
                         </div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="p-4 bg-muted/50 rounded-md">
-                             <pre className="text-sm whitespace-pre-wrap font-body mb-4">{plan.content}</pre>
+                             <pre className="text-sm whitespace-pre-wrap font-body mb-4">{resource.content}</pre>
                              <div className="flex items-center justify-end gap-2 border-t pt-2">
-                                <Button variant="ghost" size="sm" onClick={() => handleCopy(plan.content)}>
+                                <Button variant="ghost" size="sm" onClick={() => handleCopy(resource.content)}>
                                     <Copy className="mr-2 h-4 w-4"/>
                                     Copy
                                 </Button>
-                                <Button variant="destructive" size="sm" onClick={() => handleDelete(plan.id)}>
+                                <Button variant="destructive" size="sm" onClick={() => handleDelete(resource.id)}>
                                     <Trash2 className="mr-2 h-4 w-4"/>
                                     Delete
                                 </Button>

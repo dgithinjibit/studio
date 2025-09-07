@@ -1,4 +1,5 @@
 
+
 export type UserRole = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 export type User = {
@@ -67,10 +68,11 @@ export type School = {
   longitude: number;
 };
 
-export type LessonPlan = {
+export type TeacherResource = {
   id: string;
   title: string;
   content: string;
   createdAt: string;
+  type: 'Lesson Plan' | 'Scheme of Work' | 'Rubric' | 'Other';
 };
     

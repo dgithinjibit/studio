@@ -16,16 +16,56 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Save, Copy } from "lucide-react";
 import { generateSchemeOfWork, GenerateSchemeOfWorkInput } from "@/ai/flows/generate-scheme-of-work";
 import ReactMarkdown from 'react-markdown';
+import type { TeacherResource } from "@/lib/types";
 
-export function GenerateSchemeOfWorkDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
+interface GenerateSchemeOfWorkDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onResourceSaved: () => void;
+}
+
+export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved }: GenerateSchemeOfWorkDialogProps) {
   const [loading, setLoading] = useState(false);
   const [generatedScheme, setGeneratedScheme] = useState("");
+  const [currentSubStrand, setCurrentSubStrand] = useState("");
   const { toast } = useToast();
   const [weeks, setWeeks] = useState(6);
   const [lessonsPerWeek, setLessonsPerWeek] = useState(3);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generatedScheme).then(() => {
+        toast({
+            title: "Copied to Clipboard",
+        });
+    });
+  };
+
+  const handleSave = () => {
+    if (!generatedScheme) return;
+    
+    const newResource: TeacherResource = {
+      id: `scheme_${Date.now()}`,
+      title: currentSubStrand || "Untitled Scheme of Work",
+      content: generatedScheme,
+      createdAt: new Date().toISOString(),
+      type: 'Scheme of Work'
+    };
+
+    const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
+    localStorage.setItem("teacherResources", JSON.stringify([newResource, ...existingResources]));
+    
+    toast({
+      title: "Scheme of Work Saved!",
+      description: `"${newResource.title}" has been added to your resources.`,
+    });
+
+    onOpenChange(false);
+    onResourceSaved();
+  };
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,6 +81,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange }: { open: boole
       numberOfWeeks: weeks.toString(),
       lessonsPerWeek: lessonsPerWeek.toString(),
     };
+    setCurrentSubStrand(data.subStrand);
     
     try {
         const result = await generateSchemeOfWork(data);
@@ -60,12 +101,17 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange }: { open: boole
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+        onOpenChange(isOpen);
+        if (!isOpen) {
+            setGeneratedScheme("");
+        }
+    }}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl">Schemer: Schemes of Work Creator</DialogTitle>
           <DialogDescription>
-            Create CBC-compliant Schemes of Work in official table format.
+            Create CBC-compliant Schemes of Work in official table format. You can edit the generated content.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -102,19 +148,32 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange }: { open: boole
               </DialogFooter>
             </form>
              <div className="border-l border-border pl-8">
-                <h3 className="font-bold mb-2">Generated Scheme of Work:</h3>
+                <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-bold">Generated Scheme of Work:</h3>
+                    {generatedScheme && (
+                         <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon" onClick={handleCopy}>
+                                <Copy className="h-4 w-4" />
+                            </Button>
+                             <Button onClick={handleSave}>
+                                <Save className="mr-2 h-4 w-4" />
+                                Save
+                            </Button>
+                        </div>
+                    )}
+                </div>
                 {loading && (
                     <div className="flex items-center justify-center h-full">
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                     </div>
                 )}
                 {generatedScheme && (
-                    <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 overflow-auto h-[500px]">
+                    <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 overflow-auto h-[500px] border rounded-md p-2">
                         <ReactMarkdown>{generatedScheme}</ReactMarkdown>
                     </div>
                 )}
                  {!loading && !generatedScheme && (
-                    <div className="flex items-center justify-center h-full text-muted-foreground text-center">
+                    <div className="flex items-center justify-center h-full text-muted-foreground text-center p-8 bg-muted/50 rounded-lg">
                         <p>Your generated scheme of work will appear here.</p>
                     </div>
                 )}
