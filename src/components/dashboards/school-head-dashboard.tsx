@@ -4,10 +4,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, ChevronRight, Plus, Users, Bot, Send, UserCheck, Percent, Megaphone, Library, BrainCircuit } from "lucide-react";
+import { BookOpen, ChevronRight, Plus, Users, Bot, Send, UserCheck, Percent, Megaphone, Library, BrainCircuit, Briefcase } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AddClassDialog } from '@/components/add-class-dialog';
-import type { Teacher, ClassInfo, Student } from '@/lib/types';
+import type { Teacher, ClassInfo, Student, TeacherResource } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 import { mockTeacher } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
@@ -15,7 +15,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { MyResources } from '../my-resources';
 import { Textarea } from '../ui/textarea';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
-import { school } from 'firebase-admin/lib/auth/auth-config';
+import { StaffManagementTab } from '../staff-management-tab';
 
 export function SchoolHeadDashboard() {
     const [schoolData, setSchoolData] = useState<Teacher>(mockTeacher);
@@ -94,7 +94,7 @@ export function SchoolHeadDashboard() {
         setIsConsultantLoading(true);
         setConsultantResponse('');
 
-        const allResources = JSON.parse(localStorage.getItem('teacherResources') || '[]');
+        const allResources: TeacherResource[] = JSON.parse(localStorage.getItem('teacherResources') || '[]');
 
         try {
             const result = await schoolHeadConsultant({
@@ -122,7 +122,7 @@ export function SchoolHeadDashboard() {
     
     const totalStudents = schoolData.classes.reduce((acc, c) => acc + c.students.length, 0);
     const totalTeachers = 5; // Mock data for now
-    const studentTeacherRatio = totalStudents / totalTeachers;
+    const studentTeacherRatio = totalStudents > 0 ? totalStudents / totalTeachers : 0;
 
     return (
         <>
@@ -133,15 +133,15 @@ export function SchoolHeadDashboard() {
                 </div>
             </div>
 
-            <Tabs defaultValue="overview">
+            <Tabs defaultValue="dashboard">
                 <TabsList className="mb-4">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="ai-consultant">AI Consultant</TabsTrigger>
-                    <TabsTrigger value="resources">Resource Inventory</TabsTrigger>
-                    <TabsTrigger value="announcements">Announcements</TabsTrigger>
+                    <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                    <TabsTrigger value="staff">Staff Management</TabsTrigger>
+                    <TabsTrigger value="resources">Resource Management</TabsTrigger>
+                    <TabsTrigger value="communications">Communications</TabsTrigger>
                 </TabsList>
-                <TabsContent value="overview">
-                    <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3 mb-6">
+                <TabsContent value="dashboard" className="space-y-6">
+                    <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Total Students</CardTitle>
@@ -173,41 +173,7 @@ export function SchoolHeadDashboard() {
                     </div>
 
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle className="flex items-center gap-2">
-                                    <BookOpen className="w-6 h-6 text-accent" /> School Hub
-                                </CardTitle>
-                                <CardDescription>Manage all classes and take attendance.</CardDescription>
-                            </div>
-                            <Button variant="outline" size="sm" onClick={() => setAddClassDialogOpen(true)}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                New Class
-                            </Button>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {schoolData.classes.map(c => (
-                                <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleClassSelect(c)}>
-                                    <div className="flex items-center gap-4">
-                                        <Avatar className="h-12 w-12 border-2 border-primary/20">
-                                            <AvatarFallback className="bg-primary/10 text-primary font-bold">{c.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <p className="font-bold">{c.name}</p>
-                                            <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
-                                        </div>
-                                    </div>
-                                    <Button variant="ghost" size="icon">
-                                        <ChevronRight className="w-5 h-5" />
-                                    </Button>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="ai-consultant">
-                    <Card>
-                        <CardHeader>
+                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <BrainCircuit className="text-primary w-6 h-6"/>
                                 AI Operational Consultant
@@ -248,16 +214,52 @@ export function SchoolHeadDashboard() {
                             </CardFooter>
                         </form>
                     </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <BookOpen className="w-6 h-6 text-accent" /> School Hub
+                                </CardTitle>
+                                <CardDescription>Manage all classes and take attendance.</CardDescription>
+                            </div>
+                            <Button variant="outline" size="sm" onClick={() => setAddClassDialogOpen(true)}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                New Class
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {schoolData.classes.map(c => (
+                                <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleClassSelect(c)}>
+                                    <div className="flex items-center gap-4">
+                                        <Avatar className="h-12 w-12 border-2 border-primary/20">
+                                            <AvatarFallback className="bg-primary/10 text-primary font-bold">{c.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-bold">{c.name}</p>
+                                            <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
+                                        </div>
+                                    </div>
+                                    <Button variant="ghost" size="icon">
+                                        <ChevronRight className="w-5 h-5" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                 <TabsContent value="staff">
+                    <StaffManagementTab />
                 </TabsContent>
                  <TabsContent value="resources">
                     <MyResources />
                 </TabsContent>
-                 <TabsContent value="announcements">
+                 <TabsContent value="communications">
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Megaphone className="text-primary w-6 h-6"/>
-                                School-wide Announcements
+                                School-wide Communications
                             </CardTitle>
                             <CardDescription>Post announcements for all staff. (Feature coming soon)</CardDescription>
                         </CardHeader>

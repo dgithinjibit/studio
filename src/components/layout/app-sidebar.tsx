@@ -14,6 +14,8 @@ import {
   Bot,
   FlaskConical,
   HelpCircle,
+  Briefcase,
+  Megaphone,
 } from "lucide-react";
 
 import {
@@ -36,12 +38,28 @@ export function AppSidebar() {
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
     { href: "/dashboard/tools", icon: Bot, label: "Teacher Tools", roles: ["teacher"] },
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab", roles: ["teacher"] },
-    { href: "/dashboard/resources", icon: Library, label: "My Resources", roles: ["teacher"] },
+    { href: "/dashboard/resources", icon: Library, label: "My Resources", roles: ["teacher", "school_head"] },
+    { href: "/dashboard/staff", icon: Briefcase, label: "Staff", roles: ["school_head"] },
+    { href: "/dashboard/communications", icon: Megaphone, label: "Communications", roles: ["school_head"] },
     { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["school_head", "county_officer"] },
-    { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["school_head", "county_officer"] },
+    { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["county_officer"] },
   ];
 
-  const filteredNavItems = navItems.filter(item => item.roles.includes(role));
+  // A simple role-based filtering logic
+  const getFilteredNavItems = () => {
+    if (role === 'teacher') {
+        return navItems.filter(item => ['Dashboard', 'Teacher Tools', 'Learning Lab', 'My Resources'].includes(item.label));
+    }
+    if (role === 'school_head') {
+        return navItems.filter(item => ['Dashboard', 'Staff', 'My Resources', 'Communications', 'Reports'].includes(item.label));
+    }
+     if (role === 'county_officer') {
+        return navItems.filter(item => ['Dashboard', 'Reports', 'Schools'].includes(item.label));
+    }
+    return [];
+  }
+
+  const filteredNavItems = getFilteredNavItems();
 
   return (
     <Sidebar>
