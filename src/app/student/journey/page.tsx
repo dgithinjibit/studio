@@ -148,10 +148,10 @@ export default function StudentJourneyPage() {
             }
         } else if (step === 'sub-level') {
             setStep('level');
+        } else if (step === 'level') {
+            router.push('/');
         }
     };
-    
-    const showBackButton = step !== 'level';
 
     const renderStep = () => {
         switch (step) {
@@ -237,7 +237,7 @@ export default function StudentJourneyPage() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
             <div className="w-full max-w-4xl">
                  <StudentHeader 
-                    showBackButton={showBackButton} 
+                    showBackButton={true} 
                     onBack={goBack} 
                     studentFirstName={studentFirstName} 
                  />
