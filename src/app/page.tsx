@@ -14,16 +14,14 @@ import { db, storage } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const grade9Subjects = [
-    "Social Studies",
-    "Pre-Technical Studies",
-    "Mathematics",
-    "Kiswahili",
-    "Integrated Science",
-    "English",
+const grade1Subjects = [
+    "Environmental Activities",
     "CRE",
-    "Agriculture and Nutrition",
-    "Creative Arts and Sports",
+    "Creative Activities",
+    "English Language Activities",
+    "Indigenous Language",
+    "Kiswahili Language Activities",
+    "Mathematics Activities",
 ];
 
 export default function CurriculumIngestorPage() {
@@ -126,7 +124,7 @@ export default function CurriculumIngestorPage() {
                          <div className="grid md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="grade">Grade Level</Label>
-                                <Select name="grade" required defaultValue="Grade 9">
+                                <Select name="grade" required defaultValue="Grade 1">
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a grade" />
                                     </SelectTrigger>
@@ -144,7 +142,7 @@ export default function CurriculumIngestorPage() {
                                         <SelectValue placeholder="Select a subject" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {grade9Subjects.map(subject => (
+                                        {grade1Subjects.map(subject => (
                                             <SelectItem key={subject} value={subject}>{subject}</SelectItem>
                                         ))}
                                     </SelectContent>
