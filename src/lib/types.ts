@@ -1,3 +1,4 @@
+
 export type UserRole = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 export type User = {
@@ -7,6 +8,19 @@ export type User = {
   role: UserRole;
   avatar: string;
   schoolId?: string; 
+};
+
+export type ClassInfo = {
+    name: string;
+    studentCount: number;
+    performance: number;
+};
+
+export type Teacher = {
+    id: string;
+    name: string;
+    classes: ClassInfo[];
+    totalStudents: number;
 };
 
 export type CurriculumDoc = {

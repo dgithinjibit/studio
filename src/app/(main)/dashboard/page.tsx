@@ -6,6 +6,7 @@ import { useRole } from "@/hooks/use-role";
 import { CountyOfficerDashboard } from "@/components/dashboards/county-officer-dashboard";
 import { TeacherDashboard } from "@/components/dashboards/teacher-dashboard";
 import { SchoolHeadDashboard } from "@/components/dashboards/school-head-dashboard";
+import { mockTeacher } from "@/lib/mock-data";
 
 
 export default function DashboardPage() {
@@ -14,7 +15,7 @@ export default function DashboardPage() {
   const renderDashboard = () => {
     switch (role) {
       case "teacher":
-        return <TeacherDashboard />;
+        return <TeacherDashboard teacher={mockTeacher} />;
       case "school_head":
         return <SchoolHeadDashboard />;
       case "county_officer":

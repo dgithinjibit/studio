@@ -1,4 +1,5 @@
-import type { User, CurriculumDoc, Assignment, Report, County, School } from './types';
+
+import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher } from './types';
 
 export const mockUsers: User[] = [
   { id: 'usr_1', name: 'Asha Juma', email: 'asha.juma@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
@@ -8,6 +9,18 @@ export const mockUsers: User[] = [
   { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'evelyn.wanjala@example.com', role: 'school_head', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
   { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'felix.omondi@example.com', role: 'county_officer', avatar: '/avatar-placeholder.svg' },
 ];
+
+export const mockTeacher: Teacher = {
+    id: 'usr_3',
+    name: 'Ms. Okoro',
+    classes: [
+        { name: 'Form 1 English', studentCount: 42, performance: 75 },
+        { name: 'Form 2 English', studentCount: 38, performance: 82 },
+        { name: 'Form 2 Literature', studentCount: 35, performance: 78 },
+    ],
+    totalStudents: 115,
+};
+
 
 export const mockCurriculumDocs: CurriculumDoc[] = [
   { id: 'doc_1', title: 'Mathematics Form 1 Syllabus', subject: 'Mathematics', grade: 'Form 1', url: '#' },
