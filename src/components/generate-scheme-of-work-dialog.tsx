@@ -44,16 +44,6 @@ import { grade2KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade2
 import { grade2EnvironmentalActivitiesCurriculum } from "@/curriculum/grade2-environmental-activities";
 import { grade2MathematicsActivitiesCurriculum } from "@/curriculum/grade2-mathematics-activities";
 
-// Grade 3
-import { grade3CreCurriculum } from "@/curriculum/grade3-cre";
-import { grade3CreativeActivitiesCurriculum } from "@/curriculum/grade3-creative-activities";
-import { grade3EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade3-english-language-activities";
-import { grade3IndigenousLanguageCurriculum } from "@/curriculum/grade3-indigenous-language";
-import { grade3KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade3-kiswahili-language-activities";
-import { grade3EnvironmentalActivitiesCurriculum } from "@/curriculum/grade3-environmental-activities";
-import { grade3MathematicsActivitiesCurriculum } from "@/curriculum/grade3-mathematics-activities";
-
-
 // Grade 4
 import { grade4AgricultureAndNutritionCurriculum } from "@/curriculum/grade4-agriculture-and-nutrition";
 import { grade4CreCurriculum } from "@/curriculum/grade4-cre";
@@ -139,15 +129,6 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     if (selectedGrade === "Grade 2" && selectedSubject === "Environmental Activities") return grade2EnvironmentalActivitiesCurriculum;
     if (selectedGrade === "Grade 2" && selectedSubject === "Mathematical Activities") return grade2MathematicsActivitiesCurriculum;
     
-    // Grade 3
-    if (selectedGrade === "Grade 3" && selectedSubject === "Christian Religious Education") return grade3CreCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "Movement and Creative Activities") return grade3CreativeActivitiesCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "English Language Activities") return grade3EnglishLanguageActivitiesCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "Indigenous Language Activities") return grade3IndigenousLanguageCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "Kiswahili Language Activities") return grade3KiswahiliLanguageActivitiesCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "Environmental Activities") return grade3EnvironmentalActivitiesCurriculum;
-    if (selectedGrade === "Grade 3" && selectedSubject === "Mathematical Activities") return grade3MathematicsActivitiesCurriculum;
-
     // Grade 4
     if (selectedGrade === "Grade 4" && selectedSubject === "Agriculture and Nutrition") return grade4AgricultureAndNutritionCurriculum;
     if (selectedGrade === "Grade 4" && selectedSubject === "Christian Religious Education") return grade4CreCurriculum;

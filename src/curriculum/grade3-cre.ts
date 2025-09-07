@@ -1,4 +1,3 @@
-
 /**
  * @fileOverview Curriculum data for Grade 3 Christian Religious Education.
  * 
@@ -739,4 +738,4 @@ export const grade3CreCurriculum = {
     },
   ],
 };
-```
+    
