@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface StudentHeaderProps {
   showBackButton: boolean;
@@ -47,10 +48,15 @@ export function StudentHeader({ showBackButton, onBack, studentFirstName }: Stud
             <div className="absolute right-0 top-1/2 -translate-y-1/2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="text-stone-700 bg-white/80 border-stone-300 hover:bg-white hover:text-stone-900">
-                            <User className="mr-2" />
-                            Profile
-                        </Button>
+                         <Button
+                            variant="ghost"
+                            className="relative h-12 w-12 rounded-full"
+                          >
+                            <Avatar className="h-12 w-12">
+                               <AvatarImage src="/assets/prof.png" alt="Profile Picture" />
+                               <AvatarFallback>{studentFirstName.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                          </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                          <DropdownMenuLabel>My Account</DropdownMenuLabel>
