@@ -206,7 +206,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="gradeLevel">Grade Level</Label>
-                    <Select name="gradeLevel" defaultValue="Grade 8">
+                    <Select name="gradeLevel" defaultValue="Grade 5">
                         <SelectTrigger>
                             <SelectValue placeholder="Select a grade" />
                         </SelectTrigger>
@@ -221,27 +221,27 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
                 </div>
                  <div className="space-y-2">
                   <Label htmlFor="subject">Learning Area / Subject</Label>
-                  <Input id="subject" name="subject" defaultValue="Creative Arts and Sports" />
+                  <Input id="subject" name="subject" defaultValue="Social Studies" />
                 </div>
                  <div className="space-y-2">
                   <Label htmlFor="strand">Strand</Label>
-                  <Input id="strand" name="strand" defaultValue="2.0 Creating and Performing" />
+                  <Input id="strand" name="strand" defaultValue="2.0 People, Population and Social Organisations" />
                 </div>
                  <div className="space-y-2">
                   <Label htmlFor="subStrand">Sub Strand</Label>
-                  <Input id="subStrand" name="subStrand" defaultValue="Netball" />
+                  <Input id="subStrand" name="subStrand" defaultValue="2.1 Language groups in Eastern Africa" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="topic">Topic</Label>
-                <Input id="topic" name="topic" defaultValue="Overhead Pass in Netball" />
+                <Input id="topic" name="topic" defaultValue="Migration of Language Groups in Eastern Africa" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="learningObjectives">Learning Objectives</Label>
                 <Textarea id="learningObjectives" name="learningObjectives" 
                   placeholder="e.g., a) describe the phases...&#10;b) perform the phases..."
-                  defaultValue="a) describe the phases of overhead pass in Netball for skill acquisition,&#10;b) Perform phases of overhead pass in Netball for skill mastery,&#10;c) Appreciate playing Netball for enjoyment."
-                  className="h-24" />
+                  defaultValue="a) Describe the classification of communities in Eastern Africa according to language groups,&#10;b) explain the reasons for migration of selected language groups into Eastern Africa,&#10;c) illustrate the movement and settlement of the selected language groups in Eastern Africa on a map&#10;d) describe the effects of the migration and settlement of selected language groups in Eastern Africa.&#10;e) appreciate unity of language groups in Eastern Africa."
+                  className="h-36" />
               </div>
               <DialogFooter className="sticky bottom-0 bg-background py-4">
                 <Button type="submit" disabled={loading}>

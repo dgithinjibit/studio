@@ -38,7 +38,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
   const [generatedScheme, setGeneratedScheme] = useState("");
   const [currentSubStrand, setCurrentSubStrand] = useState("");
   const { toast } = useToast();
-  const [lessonsPerWeek, setLessonsPerWeek] = useState(3);
+  const [lessonsPerWeek, setLessonsPerWeek] = useState(5);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedScheme).then(() => {
@@ -147,7 +147,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 <div className="grid grid-cols-2 gap-4">
                      <div className="space-y-2">
                         <Label htmlFor="grade">Grade Level</Label>
-                        <Select name="grade" defaultValue="Grade 4">
+                        <Select name="grade" defaultValue="Grade 5">
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a grade" />
                             </SelectTrigger>
@@ -160,18 +160,13 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="subject">Subject</Label>
-                        <Input id="subject" name="subject" placeholder="e.g. Agriculture" required />
+                        <Input id="subject" name="subject" placeholder="e.g. Agriculture" defaultValue="Social Studies" required />
                     </div>
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="strand">Strand</Label>
-                    <Input id="strand" name="strand" placeholder="e.g. Conserving our Environment" required />
                 </div>
 
                  <div className="space-y-2">
                     <Label htmlFor="subStrand">Sub-Strand</Label>
-                    <Input id="subStrand" name="subStrand" placeholder="e.g. Water Conservation" required />
+                    <Input id="subStrand" name="subStrand" placeholder="e.g. Water Conservation" defaultValue="Language groups in Eastern Africa" required />
                 </div>
                 
                 <div>
@@ -180,7 +175,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 </div>
                  <div>
                     <Label htmlFor="availableResources">Available Resources</Label>
-                    <Textarea id="availableResources" name="availableResources" defaultValue="Chalkboard, textbooks, local environment" />
+                    <Textarea id="availableResources" name="availableResources" defaultValue="Map of Eastern Africa, digital resources, charts" />
                 </div>
                 <DialogFooter className="pt-4">
                     <Button type="submit" disabled={loading} className="w-full">
