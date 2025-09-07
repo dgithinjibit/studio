@@ -2,14 +2,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
 import type { MwalimuAiTutorInput } from '@/ai/flows/mwalimu-ai-types';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 type Message = {
@@ -19,6 +19,7 @@ type Message = {
 
 export default function ChatInterface({ subject }: { subject: string }) {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const grade = searchParams.get('grade') || 'g7'; // Default for safety
     const gradeName = `Grade ${grade.replace('g', '')}`
     
@@ -80,13 +81,14 @@ export default function ChatInterface({ subject }: { subject: string }) {
     return (
         <div className="flex h-screen w-full items-center justify-center bg-muted/40">
             <Card className="w-full max-w-2xl h-[90vh] flex flex-col">
-                <CardHeader className='border-b'>
-                    <CardTitle className="font-headline text-2xl flex justify-between items-center">
-                        <span>Mwalimu AI: {subject} ({gradeName})</span>
-                        <Button variant="ghost" asChild>
-                            <Link href={`/student/journey`}>End Chat</Link>
-                        </Button>
+                <CardHeader className='border-b flex flex-row items-center justify-between'>
+                     <Button variant="ghost" onClick={() => router.back()}>
+                        <ArrowLeft className="mr-2"/> Back
+                    </Button>
+                    <CardTitle className="font-headline text-2xl">
+                        Mwalimu AI: {subject} ({gradeName})
                     </CardTitle>
+                    <div className="w-16"></div> {/* Spacer to balance title */}
                 </CardHeader>
                 <CardContent className="flex-1 overflow-hidden p-0">
                     <ScrollArea className="h-full" ref={scrollAreaRef}>
