@@ -51,8 +51,8 @@ The scheme of work must be a Markdown table with the following columns:
 - **Week**: The week number.
 - **Lesson**: The lesson number within the week.
 - **Topic/Sub-Topic**: The specific topic for the lesson, derived from the Sub-Strand.
-- **Learning Outcomes**: What the student should be able to do by the end of the lesson.
-- **Learning Activities**: Specific learning experiences (Knowledge, skill, attitude) for the lesson.
+- **Learning Outcomes**: Must begin with the exact phrase "By the end of the lesson, the learner should be able to:" followed by a lettered list (e.g., a. b. c.) of specific outcomes.
+- **Learning Activities**: Specific learning experiences structured around the CBC pillars (Knowledge, skill, attitude).
 - **Key Inquiry Question(s)**: Socratic questions to provoke critical thinking.
 - **Resources**: Learning resources required for the lesson.
 - **Assessment**: The method of assessment to be used (e.g., Oral questions, Observation, Project).
@@ -72,3 +72,4 @@ const generateSchemeOfWorkFlow = ai.defineFlow(
     return output!;
   }
 );
+
