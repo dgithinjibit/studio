@@ -40,7 +40,7 @@ export function AppSidebar() {
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab", roles: ["teacher"] },
     { href: "/dashboard/reports", icon: Library, label: "My Library", roles: ["teacher", "school_head"] },
     { href: "/dashboard/staff", icon: Briefcase, label: "Staff", roles: ["school_head"] },
-    { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["school_head", "county_officer"] },
+    { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["county_officer"] },
     { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["county_officer"] },
   ];
 
@@ -50,7 +50,7 @@ export function AppSidebar() {
         return navItems.filter(item => ['Dashboard', 'Teacher Tools', 'Learning Lab', 'My Library'].includes(item.label));
     }
     if (role === 'school_head') {
-        return navItems.filter(item => ['Dashboard', 'Staff', 'Reports'].includes(item.label));
+        return navItems.filter(item => ['Dashboard', 'Staff', 'My Library'].includes(item.label));
     }
      if (role === 'county_officer') {
         return navItems.filter(item => ['Dashboard', 'Reports', 'Schools'].includes(item.label));
@@ -59,6 +59,35 @@ export function AppSidebar() {
   }
 
   const filteredNavItems = getFilteredNavItems();
+
+  const renderGuideLink = () => {
+    switch (role) {
+      case 'teacher':
+        return (
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Teacher Guide">
+              <Link href="/dashboard/guide" prefetch={true}>
+                <HelpCircle />
+                <span>Teacher Guide</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      case 'school_head':
+        return (
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="School Head Guide">
+              <Link href="/dashboard/school-head-guide" prefetch={true}>
+                <HelpCircle />
+                <span>School Head Guide</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <Sidebar>
@@ -87,14 +116,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarSeparator />
         <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Teacher Guide">
-                    <Link href="/dashboard/guide" prefetch={true}>
-                        <HelpCircle />
-                        <span>Teacher Guide</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
+          {renderGuideLink()}
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
