@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
-import { FileText, Trash2, Copy, Calendar } from 'lucide-react';
+import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, FileUp } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -66,14 +66,31 @@ export function MyResources() {
         });
     };
     
-    const getIcon = (type: string) => {
+    const getIcon = (type: TeacherResource['type']) => {
         switch(type) {
             case 'Lesson Plan':
-                return <FileText className="h-5 w-5 text-primary" />;
+                return <FileText className="h-5 w-5 text-blue-500" />;
             case 'Scheme of Work':
-                return <Calendar className="h-5 w-5 text-blue-500" />;
+                return <Calendar className="h-5 w-5 text-green-500" />;
+            case 'Rubric':
+                return <FileUp className="h-5 w-5 text-orange-500" />;
+            case 'Worksheet':
+                return <BookCopy className="h-5 w-5 text-purple-500" />;
+            case 'Differentiated Worksheet':
+                 return <BookCopy className="h-5 w-5 text-indigo-500" />;
+            case 'AI Tutor Context':
+                return <BrainCircuit className="h-5 w-5 text-pink-500" />;
             default:
                 return <FileText className="h-5 w-5 text-primary" />;
+        }
+    }
+    
+     const getBadgeVariant = (type: TeacherResource['type']): "secondary" | "outline" | "default" | "destructive" => {
+        switch(type) {
+            case 'Lesson Plan': return 'default';
+            case 'Scheme of Work': return 'secondary';
+            case 'AI Tutor Context': return 'destructive';
+            default: return 'outline';
         }
     }
 
@@ -104,20 +121,16 @@ export function MyResources() {
                                     </p>
                                  </div>
                             </div>
-                            <Badge variant={resource.type === 'Lesson Plan' ? 'secondary' : 'outline'} className="mr-4">
+                            <Badge variant={getBadgeVariant(resource.type)} className="mr-4">
                                 {resource.type}
                             </Badge>
                         </div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="p-4 bg-muted/50 rounded-md">
-                            {resource.type === 'Scheme of Work' ? (
-                                 <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2">
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.content}</ReactMarkdown>
-                                 </div>
-                            ) : (
-                                <pre className="text-sm whitespace-pre-wrap font-body mb-4">{resource.content}</pre>
-                            )}
+                            <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-pre:bg-transparent prose-pre:p-0">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.content}</ReactMarkdown>
+                             </div>
                              <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
                                 <Button variant="ghost" size="sm" onClick={() => handleCopy(resource.content)}>
                                     <Copy className="mr-2 h-4 w-4"/>

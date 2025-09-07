@@ -10,6 +10,7 @@ import { GenerateSchemeOfWorkDialog } from '@/components/generate-scheme-of-work
 import { GenerateRubricDialog } from '@/components/generate-rubric-dialog';
 import { GenerateWorksheetDialog } from '@/components/generate-worksheet-dialog';
 import { DifferentiateWorksheetDialog } from '@/components/differentiate-worksheet-dialog';
+import { AITunerDialog } from '@/components/ai-tuner-dialog';
 import {
   ChartContainer,
   ChartTooltip,
@@ -81,6 +82,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     const [isRubricDialogOpen, setRubricDialogOpen] = useState(false);
     const [isWorksheetDialogOpen, setWorksheetDialogOpen] = useState(false);
     const [isDifferentiateDialogOpen, setDifferentiateDialogOpen] = useState(false);
+    const [isAITunerDialogOpen, setAITunerDialogOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
@@ -88,6 +90,13 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     useEffect(() => {
         setTeacher(initialTeacher);
     }, [initialTeacher]);
+    
+    useEffect(() => {
+        // Pre-select the first class if available
+        if (initialTeacher.classes.length > 0 && !selectedClass) {
+            setSelectedClass(initialTeacher.classes[0]);
+        }
+    }, [initialTeacher.classes, selectedClass]);
 
     const chartData = teacher.classes.map(c => ({ 
         name: c.name.replace(' English', '').replace(' Literature', ''), 
@@ -144,7 +153,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                         <PlusCircle className="mr-2" />
                         Generate Lesson Plan
                     </Button>
-                     <Button variant="outline">
+                     <Button variant="outline" onClick={() => setAITunerDialogOpen(true)}>
                         <Settings className="mr-2" />
                         AI Tuner
                     </Button>
@@ -278,6 +287,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
              <GenerateRubricDialog open={isRubricDialogOpen} onOpenChange={setRubricDialogOpen} onResourceSaved={onResourceSaved} />
              <GenerateWorksheetDialog open={isWorksheetDialogOpen} onOpenChange={setWorksheetDialogOpen} onResourceSaved={onResourceSaved} />
              <DifferentiateWorksheetDialog open={isDifferentiateDialogOpen} onOpenChange={setDifferentiateDialogOpen} onResourceSaved={onResourceSaved} />
+             <AITunerDialog open={isAITunerDialogOpen} onOpenChange={setAITunerDialogOpen} onResourceSaved={onResourceSaved} />
 
              {selectedClass && (
                  <DigitalAttendanceRegister 

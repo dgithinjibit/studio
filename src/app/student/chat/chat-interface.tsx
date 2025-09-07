@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
+import { classroomCompass } from '@/ai/flows/classroom-compass-flow';
 import { Loader2, Send } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 
@@ -28,15 +29,28 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(true);
+    const [teacherContext, setTeacherContext] = useState<string | null>(null);
+    const [tutorMode, setTutorMode] = useState<'compass' | 'mwalimu'>('mwalimu');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Initial message from Mwalimu AI
+        const context = localStorage.getItem('ai_tutor_context');
+        if (context) {
+            setTeacherContext(context);
+            setTutorMode('compass');
+        } else {
+            setTutorMode('mwalimu');
+        }
+
         const getInitialMessage = async () => {
             setLoading(true);
             try {
-                // The history is empty, so the flow will return a hardcoded greeting
-                const result = await mwalimuAiTutor({ grade, subject, history: [] });
+                let result;
+                if (context) {
+                    result = await classroomCompass({ teacherContext: context, history: [] });
+                } else {
+                    result = await mwalimuAiTutor({ grade, subject, history: [] });
+                }
                 setMessages([{ role: 'model', content: result.response }]);
             } catch (error) {
                 console.error("Error getting initial message:", error);
@@ -69,13 +83,20 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
         setLoading(true);
 
         try {
-            // Pass the existing messages in history, and the new message separately
-            const result = await mwalimuAiTutor({
-                grade,
-                subject,
-                history: messages,
-                currentMessage: currentInput,
-            });
+            let result;
+            if (tutorMode === 'compass' && teacherContext) {
+                 result = await classroomCompass({
+                    teacherContext,
+                    history: messages,
+                });
+            } else {
+                 result = await mwalimuAiTutor({
+                    grade,
+                    subject,
+                    history: messages,
+                    currentMessage: currentInput,
+                });
+            }
             setMessages([...newMessages, { role: 'model', content: result.response }]);
         } catch (error) {
             console.error("Error calling AI tutor:", error);
@@ -96,7 +117,7 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
                      />
                      <div className="text-center pt-2">
                         <CardTitle className="font-headline text-2xl text-stone-800">
-                            Mwalimu AI: {subject} ({gradeName})
+                            {tutorMode === 'compass' ? 'Classroom Compass' : `Mwalimu AI: ${subject}`} ({gradeName})
                         </CardTitle>
                     </div>
                 </CardHeader>
@@ -114,7 +135,7 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
                                 <div className="flex justify-start">
                                     <div className="max-w-[75%] p-3 rounded-lg bg-green-100/80 flex items-center text-green-900/80">
                                         <Loader2 className="h-5 w-5 animate-spin" />
-                                        <span className="ml-2 text-sm">Mwalimu AI is thinking...</span>
+                                        <span className="ml-2 text-sm">AI Tutor is thinking...</span>
                                     </div>
                                 </div>
                             )}
@@ -149,5 +170,3 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
         </div>
     );
 }
-
-    
