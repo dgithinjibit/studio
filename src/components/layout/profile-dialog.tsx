@@ -27,11 +27,15 @@ const defaultUser = {
 export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
     const { toast } = useToast();
     const [userName, setUserName] = useState(defaultUser.fullName);
+    const [userEmail, setUserEmail] = useState(defaultUser.email);
+    const [userAvatar, setUserAvatar] = useState(defaultUser.avatar);
 
     useEffect(() => {
         if (open) {
-            const storedName = localStorage.getItem('studentName') || localStorage.getItem('userName');
-            setUserName(storedName || defaultUser.fullName);
+            const storedName = localStorage.getItem('userName') || defaultUser.fullName;
+            const storedEmail = localStorage.getItem('userEmail') || defaultUser.email;
+            setUserName(storedName);
+            setUserEmail(storedEmail);
         }
     }, [open]);
 
@@ -40,30 +44,33 @@ export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenCha
         const formData = new FormData(e.currentTarget);
         const newFullName = formData.get('fullName') as string;
         
-        // In a real app, you'd save the changes to the backend.
-        // For this prototype, we update localStorage.
-        localStorage.setItem('studentName', newFullName);
         localStorage.setItem('userName', newFullName);
+        // Also update studentName if it exists, for consistency
+        if (localStorage.getItem('studentName')) {
+            localStorage.setItem('studentName', newFullName);
+        }
 
         toast({
             title: "Profile Updated",
             description: "Your changes have been saved successfully.",
         });
-        onOpenChange(false); // Close dialog on save
-        // Force a reload to reflect the name change in the header immediately
+        onOpenChange(false);
         window.location.reload();
     };
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            // In a real app, you would handle the file upload here.
-            // For now, we'll just log it and show a toast.
-            console.log("Selected file:", file.name);
-            toast({
-                title: "Picture Selected",
-                description: `${file.name} is ready to be uploaded.`,
-            });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                setUserAvatar(result);
+                 toast({
+                    title: "Picture Selected",
+                    description: `New avatar is ready to be saved.`,
+                });
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -82,7 +89,7 @@ export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenCha
                             <div className="relative group">
                                 <label htmlFor="picture" className="cursor-pointer">
                                     <Avatar className="h-24 w-24">
-                                        <AvatarImage src={defaultUser.avatar} alt={userName} />
+                                        <AvatarImage src={userAvatar} alt={userName} />
                                         <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
                                     </Avatar>
                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -106,7 +113,7 @@ export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenCha
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="email">Email Address</Label>
-                                <Input id="email" type="email" defaultValue={defaultUser.email} disabled />
+                                <Input id="email" type="email" value={userEmail} disabled />
                             </div>
                               <div className="space-y-2">
                                 <Label htmlFor="school">School</Label>

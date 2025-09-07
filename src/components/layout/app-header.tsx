@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -20,6 +20,15 @@ import { ProfileDialog } from './profile-dialog';
 
 export function AppHeader({ title }: { title: string }) {
   const [isProfileOpen, setProfileOpen] = useState(false);
+  const [userName, setUserName] = useState('User');
+  const [userEmail, setUserEmail] = useState('user@example.com');
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('userName');
+    const storedEmail = localStorage.getItem('userEmail');
+    if (storedName) setUserName(storedName);
+    if (storedEmail) setUserEmail(storedEmail);
+  }, []);
 
   return (
     <>
@@ -36,16 +45,16 @@ export function AppHeader({ title }: { title: string }) {
             >
               <Avatar className="h-10 w-10">
                 <AvatarImage src="/assets/prof.png" alt="User Avatar" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">User</p>
+                <p className="text-sm font-medium leading-none">{userName}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  user@example.com
+                  {userEmail}
                 </p>
               </div>
             </DropdownMenuLabel>

@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -8,7 +9,6 @@ import {
   Users,
   FileText,
   School,
-  User,
   GitGraph,
 } from "lucide-react";
 
@@ -28,6 +28,15 @@ import { useRole } from "@/hooks/use-role";
 
 export function AppSidebar() {
   const { role } = useRole();
+  const [userName, setUserName] = useState('User');
+  const [userEmail, setUserEmail] = useState('user@example.com');
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('userName');
+    const storedEmail = localStorage.getItem('userEmail');
+    if (storedName) setUserName(storedName);
+    if (storedEmail) setUserEmail(storedEmail);
+  }, [role]); // Rerun if role changes, just in case
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
@@ -39,7 +48,7 @@ export function AppSidebar() {
 
   const filteredNavItems = navItems.filter(item => item.roles.includes(role));
 
-  const roleName = {
+  const roleName: { [key: string]: string } = {
     teacher: "Teacher",
     school_head: "School Head",
     county_officer: "County Officer",
@@ -86,11 +95,11 @@ export function AppSidebar() {
         <Separator />
          <div className="flex items-center gap-3 p-2">
             <Avatar className="h-10 w-10">
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-                <span className="text-sm font-semibold">{roleName[role]}</span>
-                <span className="text-xs text-muted-foreground">user@example.com</span>
+                <span className="text-sm font-semibold">{userName}</span>
+                <span className="text-xs text-muted-foreground">{userEmail}</span>
             </div>
         </div>
       </SidebarFooter>

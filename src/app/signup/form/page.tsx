@@ -42,9 +42,12 @@ function SignupFormComponent() {
         
         const formData = new FormData(e.currentTarget);
         const fullName = formData.get('fullName') as string;
+        const email = formData.get('email') as string;
 
-        // Persist user's name for personalization
-        if (role === 'student' && fullName) {
+        // Persist user's details for personalization
+        localStorage.setItem('userName', fullName);
+        localStorage.setItem('userEmail', email);
+        if (role === 'student') {
             localStorage.setItem('studentName', fullName);
         }
 
