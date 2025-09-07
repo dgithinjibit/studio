@@ -89,7 +89,7 @@ export const grade2EnglishLanguageActivitiesCurriculum = {
                 key_inquiry_questions: [
                     "How do we talk about what is happening at the present?",
                 ],
-d            },
+            },
             {
                 title: "1.4.1 Handwriting",
                 learning_outcomes: [
@@ -111,5 +111,3 @@ d            },
     }
   ],
 };
-
-    
