@@ -14,16 +14,21 @@ import {
   MwalimuAiTutorOutput,
   MwalimuAiTutorOutputSchema,
 } from './mwalimu-ai-types';
-import { kikuyuDictionary } from '@/lib/kikuyu-dictionary';
+import { languageTutorFlow } from './language-tutor-flow';
 
 export async function mwalimuAiTutor(
   input: MwalimuAiTutorInput
 ): Promise<MwalimuAiTutorOutput> {
-  return mwalimuAiTutorFlow(input);
+  // If the subject is Indigenous Language, use the specialized language tutor flow.
+  // Otherwise, use the general Socratic tutor flow.
+  if (input.subject === 'Indigenous Language') {
+    return languageTutorFlow(input);
+  }
+  return mwalimuAiSocraticTutorFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'mwalimuAiTutorPrompt',
+const socraticPrompt = ai.definePrompt({
+  name: 'mwalimuAiSocraticTutorPrompt',
   input: {schema: MwalimuAiTutorInputSchema},
   output: {schema: MwalimuAiTutorOutputSchema},
   prompt: `
@@ -87,9 +92,9 @@ Based on the conversation history and the provided context, provide your next So
 });
 
 
-const mwalimuAiTutorFlow = ai.defineFlow(
+const mwalimuAiSocraticTutorFlow = ai.defineFlow(
   {
-    name: 'mwalimuAiTutorFlow',
+    name: 'mwalimuAiSocraticTutorFlow',
     inputSchema: MwalimuAiTutorInputSchema,
     outputSchema: MwalimuAiTutorOutputSchema,
   },
@@ -103,14 +108,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
       };
     }
     
-    let teacherContext = "";
-    if (input.subject === "Indigenous Language") {
-        teacherContext = `Here is a dictionary of English to Kikuyu translations. Use this as your primary source of truth. The format is "english": "kikuyu".\n\n${JSON.stringify(kikuyuDictionary, null, 2)}`;
-    }
-
-    const augmentedInput = { ...input, teacherContext };
-    
-    const {output} = await prompt(augmentedInput);
+    const {output} = await socraticPrompt(input);
     return output!;
   }
 );
