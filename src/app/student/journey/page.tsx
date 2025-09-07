@@ -3,12 +3,19 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 type Step = 'level' | 'sub-level' | 'grade' | 'subject';
+
+// Mock user data for personalization
+const mockUser = {
+    fullName: 'Asha Juma'
+};
+const studentFirstName = mockUser.fullName.split(' ')[0];
+
 
 const levels = [
     { id: 'ms', name: 'Middle School' },
@@ -241,9 +248,9 @@ export default function StudentJourneyPage() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
             <div className="w-full max-w-4xl">
                  <div className="text-center mb-8">
-                    <h1 className="font-headline text-4xl font-bold">Meet Mwalimu AI 🦉</h1>
+                    <h1 className="font-headline text-4xl font-bold">Karibu, {studentFirstName}!</h1>
                     <p className="text-muted-foreground text-lg mt-2">
-                        I’m your friendly Socratic Mentor. I'm here to guide you through learning by asking questions that spark your curiosity and help you discover answers on your own.
+                        I’m Mwalimu AI, your friendly Socratic Mentor. 🦉 I'm here to guide you through learning by asking questions that spark your curiosity and help you discover answers on your own.
                     </p>
                 </div>
                 {renderStep()}

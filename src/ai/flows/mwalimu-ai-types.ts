@@ -21,6 +21,7 @@ export const MwalimuAiTutorInputSchema = z.object({
       })
     )
     .describe('The history of the conversation so far.'),
+  teacherContext: z.string().optional().describe("Context from teacher's uploaded materials (RAG)."),
 });
 export type MwalimuAiTutorInput = z.infer<typeof MwalimuAiTutorInputSchema>;
 
