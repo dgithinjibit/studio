@@ -34,6 +34,7 @@ export default function SchoolMap({ schools }: SchoolMapProps) {
       style={{ width: '100%', height: '100%' }}
       mapStyle="mapbox://styles/mapbox/streets-v11"
       mapboxAccessToken={MAPBOX_TOKEN}
+      crossOrigin="anonymous"
     >
       {schools.map(school => (
         <Marker
