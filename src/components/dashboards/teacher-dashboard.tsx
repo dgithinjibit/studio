@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, Plus, Bot, Sparkles } from "lucide-react";
+import { BookOpen, ChevronRight, Plus, Bot, Sparkles, Users } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AddClassDialog } from '@/components/add-class-dialog';
 import {
@@ -17,10 +17,8 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import type { Teacher, ClassInfo, TeacherResource } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 import { mockTeacher } from '@/lib/mock-data';
-import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary';
-import { Skeleton } from '../ui/skeleton';
 
 
 interface TeacherDashboardProps {
@@ -142,29 +140,37 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                 </Button>
             </div>
 
+             {isSummaryLoading && (
+                <Card className="mb-6">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-muted-foreground">
+                            <Bot className="w-6 h-6" /> Generating AI Suggestions...
+                        </CardTitle>
+                    </CardHeader>
+                </Card>
+            )}
+
+            {summary && !isSummaryLoading && (
+                <Card className="mb-6 bg-accent/20 border-accent">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Bot className="w-6 h-6 text-accent" /> AI Teaching Assistant
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                        <p className="text-sm text-foreground">{summary}</p>
+                    </CardContent>
+                </Card>
+            )}
+
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <div className="lg:col-span-2 grid gap-6 md:grid-cols-2">
-                    {summary && (
-                         <Card className="md:col-span-2">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Bot className="w-6 h-6 text-accent" /> AI Teaching Assistant
-                                </CardTitle>
-                                <CardDescription>Your AI-powered summary and suggestions.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-grow">
-                                <p className="text-sm text-muted-foreground">{summary}</p>
-                            </CardContent>
-                        </Card>
-                    )}
-                    <Card className="md:col-span-2">
+                <div className="lg:col-span-2">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <FilePen className="w-6 h-6 text-accent" /> Class Performance
-                            </CardTitle>
+                            <CardTitle>Class Performance</CardTitle>
                             <CardDescription>An overview of recent performance across your classes.</CardDescription>
                         </CardHeader>
-                        <CardContent className="h-[250px] w-full">
+                        <CardContent className="h-[300px] w-full">
                         <ChartContainer config={{}} className="w-full h-full">
                             <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
                                 <CartesianGrid vertical={false} />
@@ -229,3 +235,5 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         </>
     );
 }
+
+    
