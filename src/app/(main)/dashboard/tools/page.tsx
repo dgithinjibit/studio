@@ -14,6 +14,13 @@ import { useRouter } from 'next/navigation';
 
 const teacherTools = [
     {
+        title: "Schemer: Schemes of Work",
+        description: "Create complete Schemes of Work from curriculum data.",
+        icon: CalendarDays,
+        action: "Open Schemer",
+        dialog: "schemeOfWork"
+    },
+    {
         title: "Lesson Plan Generator",
         description: "Create CBC-aligned lesson plans",
         icon: FilePen,
@@ -26,13 +33,6 @@ const teacherTools = [
         icon: ClipboardList,
         action: "Open Worksheet Generator",
         dialog: "worksheet"
-    },
-    {
-        title: "Schemer: Schemes of Work",
-        description: "Create complete Schemes of Work",
-        icon: CalendarDays,
-        action: "Open Schemer: Schemes of Work",
-        dialog: "schemeOfWork"
     },
     {
         title: "Differentiation Station",
