@@ -23,6 +23,10 @@ import '@/ai/flows/generate-county-summary-types.ts';
 import '@/ai/flows/ingest-curriculum.ts';
 import '@/curriculum/pp1-mathematics-activities.ts';
 import '@/curriculum/pp1-language-activities.ts';
+import '@/curriculum/pp2-environmental-activities.ts';
+import '@/curriculum/pp2-cre.ts';
+import '@/curriculum/pp2-creative-arts.ts';
+import '@/curriculum/grade6-social-studies.ts';
 
 
 
@@ -36,3 +40,5 @@ import '@/curriculum/pp1-language-activities.ts';
 
 
 
+
+    

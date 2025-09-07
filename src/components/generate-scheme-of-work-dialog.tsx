@@ -31,6 +31,7 @@ import { pp2CreCurriculum } from "@/curriculum/pp2-cre";
 import { pp1CreativeArtsCurriculum } from "@/curriculum/pp1-creative-arts";
 import { pp2CreativeArtsCurriculum } from "@/curriculum/pp2-creative-arts";
 import { pp1EnvironmentalActivitiesCurriculum } from "@/curriculum/pp1-environmental-activities";
+import { pp2EnvironmentalActivitiesCurriculum } from "@/curriculum/pp2-environmental-activities";
 import { pp1LanguageActivitiesCurriculum } from "@/curriculum/pp1-language-activities";
 import { pp1MathematicsActivitiesCurriculum } from "@/curriculum/pp1-mathematics-activities";
 import { curriculumStructure } from "@/lib/curriculum-structure";
@@ -91,6 +92,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }
     if (selectedGrade === "PP1" && selectedSubject === "Environmental Activities") {
       return pp1EnvironmentalActivitiesCurriculum;
+    }
+     if (selectedGrade === "PP2" && selectedSubject === "Environmental Activities") {
+      return pp2EnvironmentalActivitiesCurriculum;
     }
     if (selectedGrade === "PP1" && selectedSubject === "Language Activities") {
       return pp1LanguageActivitiesCurriculum;
@@ -366,5 +370,8 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     </Dialog>
   );
 }
+
+    
+
 
     
