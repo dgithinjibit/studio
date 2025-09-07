@@ -11,7 +11,7 @@ export default function WelcomePage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
         <div className="text-center max-w-3xl">
             <Image 
-              src="/sync.png" 
+              src="/assets/sync.png" 
               alt="SyncSenta Logo" 
               width={96} 
               height={96} 
