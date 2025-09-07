@@ -49,13 +49,14 @@ export function StudentHeader({ showBackButton, onBack, studentFirstName }: Stud
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                          <Button
-                            variant="ghost"
-                            className="relative h-12 w-12 rounded-full"
+                            variant="outline"
+                            className="flex items-center gap-2 rounded-full h-12 px-4 bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800"
                           >
-                            <Avatar className="h-12 w-12">
+                            <Avatar className="h-8 w-8">
                                <AvatarImage src="/assets/prof.png" alt="Profile Picture" />
                                <AvatarFallback>{studentFirstName.charAt(0)}</AvatarFallback>
                             </Avatar>
+                            <span>Profile</span>
                           </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
