@@ -20,6 +20,8 @@ import '@/ai/flows/school-head-consultant.ts';
 import '@/ai/flows/school-head-consultant-types.ts';
 import '@/ai/flows/generate-county-summary.ts';
 import '@/ai/flows/generate-county-summary-types.ts';
+import '@/ai/flows/ingest-curriculum.ts';
+
 
 
 
