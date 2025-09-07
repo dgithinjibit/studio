@@ -54,6 +54,7 @@ export const curriculumStructure: MajorLevel[] = [
                     {
                         name: 'Grade 1',
                         subjects: [
+                           { name: 'Creative Activities', type: 'Core' },
                            { name: 'English Language Activities', type: 'Core' },
                            { name: 'Kiswahili Language Activities', type: 'Core' },
                            { name: 'Mathematical Activities', type: 'Core' },
@@ -212,5 +213,3 @@ export const curriculumStructure: MajorLevel[] = [
         ]
     }
 ];
-
-    
