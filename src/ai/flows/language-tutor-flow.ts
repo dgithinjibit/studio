@@ -64,6 +64,14 @@ export const languageTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
+    // If the history is empty, this is the first message.
+    // Return a hardcoded greeting instead of calling the AI.
+    if (!input.history || input.history.length === 0) {
+      return {
+        response: "Habari! I'm your Gikuyu Literacy Buddy. You can ask me to translate words, quiz you, or teach you about categories like 'greetings', 'animals', or 'family'. What would you like to do first?"
+      };
+    }
+
     const dictionary = JSON.stringify(kikuyuDictionary, null, 2);
 
     const {output} = await languageTutorPrompt({
