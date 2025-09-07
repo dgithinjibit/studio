@@ -45,6 +45,7 @@ import { grade1MathematicsActivitiesCurriculum } from "@/curriculum/grade1-mathe
 import { grade1EnvironmentalActivitiesCurriculum } from "@/curriculum/grade1-environmental-activities";
 import { grade1CreCurriculum } from "@/curriculum/grade1-cre";
 import { grade2EnvironmentalActivitiesCurriculum } from "@/curriculum/grade2-environmental-activities";
+import { grade2CreCurriculum } from "@/curriculum/grade2-cre";
 
 
 interface GenerateSchemeOfWorkDialogProps {
@@ -94,6 +95,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
      if (selectedGrade === "PP2" && selectedSubject === "Christian Religious Education") {
       return pp2CreCurriculum;
     }
+     if (selectedGrade === "Grade 2" && selectedSubject === "Christian Religious Education") {
+      return grade2CreCurriculum;
+    }
     if (selectedGrade === "PP1" && selectedSubject === "Creative Activities") {
       return pp1CreativeArtsCurriculum;
     }
@@ -121,7 +125,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     if (selectedGrade === "Grade 1" && selectedSubject === "Mathematical Activities") {
       return grade1MathematicsActivitiesCurriculum;
     }
-     if (selectedGrade === "Grade 1" && selectedSubject === "Religious Education Activities") {
+     if (selectedGrade === "Grade 1" && selectedSubject === "Christian Religious Education") {
       return grade1CreCurriculum;
     }
     if (selectedGrade === "PP1" && selectedSubject === "Environmental Activities") {
