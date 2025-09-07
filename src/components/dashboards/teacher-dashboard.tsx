@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users } from "lucide-react";
+import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, ClipboardList, CalendarDays, HelpCircle, GraduationCap, Mail } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { GenerateLessonPlanDialog } from '@/components/generate-lesson-plan-dialog';
 import {
@@ -19,6 +19,45 @@ import type { Teacher } from '@/lib/types';
 interface TeacherDashboardProps {
     teacher: Teacher;
 }
+
+const teacherTools = [
+    {
+        title: "Lesson Plan Generator",
+        description: "Create CBC-aligned lesson plans",
+        icon: FilePen,
+        action: "Open Lesson Plan Generator"
+    },
+    {
+        title: "Worksheet Generator",
+        description: "Generate printable worksheets",
+        icon: ClipboardList,
+        action: "Open Worksheet Generator"
+    },
+    {
+        title: "Schemer: Schemes of Work",
+        description: "Create complete Schemes of Work",
+        icon: CalendarDays,
+        action: "Open Schemer: Schemes of Work"
+    },
+    {
+        title: "Multiple Choice Quiz",
+        description: "Generate quizzes and assessments",
+        icon: HelpCircle,
+        action: "Open Multiple Choice Quiz"
+    },
+    {
+        title: "Rubric Generator",
+        description: "Create custom rubrics",
+        icon: GraduationCap,
+        action: "Open Rubric Generator"
+    },
+    {
+        title: "Email to Family",
+        description: "Generate professional parent communications",
+        icon: Mail,
+        action: "Open Email to Family"
+    }
+];
 
 export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
     const [isLessonPlanDialogOpen, setLessonPlanDialogOpen] = useState(false);
@@ -46,32 +85,35 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                     </Button>
                 </div>
             </div>
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Total Classes</CardTitle>
-                        <p className="text-3xl font-bold">{teacher.classes.length}</p>
-                    </CardHeader>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Total Students</CardTitle>
-                        <p className="text-3xl font-bold">{teacher.totalStudents}</p>
-                    </CardHeader>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Avg. Performance</CardTitle>
-                        <p className="text-3xl font-bold">
-                            {Math.round(teacher.classes.reduce((acc, c) => acc + c.performance, 0) / teacher.classes.length)}%
-                        </p>
-                    </CardHeader>
-                </Card>
+            
+            <div className="mb-8">
+                <h2 className="text-2xl font-headline mb-4 flex items-center gap-2">
+                    <span className="font-mono text-2xl text-primary">🛠️</span> Teacher Tools
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {teacherTools.map((tool, index) => {
+                        const Icon = tool.icon;
+                        return (
+                             <Card key={index} className="flex flex-col">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-3">
+                                        <Icon className="w-6 h-6 text-accent" />
+                                        {tool.title}
+                                    </CardTitle>
+                                    <CardDescription>{tool.description}</CardDescription>
+                                </CardHeader>
+                                <CardFooter className="mt-auto">
+                                    <Button variant="secondary" className="w-full" onClick={() => index === 0 && setLessonPlanDialogOpen(true)}>
+                                        {tool.action}
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )
+                    })}
+                </div>
             </div>
 
-            <div className="grid gap-6 mt-6 md:grid-cols-5">
-                {/* My Classes Card */}
+            <div className="grid gap-6 md:grid-cols-5">
                 <Card className="md:col-span-2">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -104,7 +146,6 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                     </CardFooter>
                 </Card>
 
-                 {/* Recent Submissions Card */}
                 <Card className="md:col-span-3">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
