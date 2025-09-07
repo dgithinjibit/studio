@@ -13,6 +13,7 @@ export const MwalimuAiTutorInputSchema = z.object({
     .describe(
       "The subject the student wants to discuss (e.g., Integrated Science)."
     ),
+   currentMessage: z.string().optional().describe("The user's most recent message."),
   history: z
     .array(
       z.object({
@@ -20,6 +21,7 @@ export const MwalimuAiTutorInputSchema = z.object({
         content: z.string(),
       })
     )
+    .optional()
     .describe('The history of the conversation so far.'),
   teacherContext: z.string().optional().describe("Context from teacher's uploaded materials (RAG)."),
 });

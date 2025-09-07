@@ -97,9 +97,15 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
-    // If the history is empty, this is the first message.
-    // Return a hardcoded greeting instead of calling the AI to prevent crashes.
-    if (!input.history || input.history.length === 0) {
+    
+    // Add the current message to the history for the AI call
+    const history = [...(input.history || [])];
+    if (input.currentMessage) {
+        history.push({ role: 'user', content: input.currentMessage });
+    }
+
+    // Handle initial greeting separately to prevent crashes
+    if (history.length === 0) {
       if (input.subject === 'Indigenous Language') {
          return {
           response: "Habari! I'm your Gikuyu Literacy Buddy. You can ask me to translate words, quiz you, or teach you about categories like 'greetings', 'animals', or 'family'. What would you like to do first?"
@@ -111,7 +117,12 @@ const mwalimuAiTutorFlow = ai.defineFlow(
       };
     }
     
-    const flowInput = {...input};
+    const flowInput: MwalimuAiTutorInput = {
+        grade: input.grade,
+        subject: input.subject,
+        history: history,
+    };
+    
     // If the subject is Indigenous Language, inject the categorized dictionary into the context.
     if (flowInput.subject === 'Indigenous Language') {
         flowInput.teacherContext = JSON.stringify(kikuyuDictionary, null, 2);

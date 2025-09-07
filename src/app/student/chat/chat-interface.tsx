@@ -35,6 +35,7 @@ export default function ChatInterface({ subject, grade, onBack }: { subject: str
         const getInitialMessage = async () => {
             setLoading(true);
             try {
+                // The history is empty, so the flow will return a hardcoded greeting
                 const result = await mwalimuAiTutor({ grade, subject, history: [] });
                 setMessages([{ role: 'model', content: result.response }]);
             } catch (error) {
@@ -63,14 +64,17 @@ export default function ChatInterface({ subject, grade, onBack }: { subject: str
         const userMessage: Message = { role: 'user', content: input };
         const newMessages = [...messages, userMessage];
         setMessages(newMessages);
+        const currentInput = input;
         setInput('');
         setLoading(true);
 
         try {
+            // Pass the existing messages in history, and the new message separately
             const result = await mwalimuAiTutor({
                 grade,
                 subject,
-                history: newMessages.map(m => ({ role: m.role, content: m.content })),
+                history: messages,
+                currentMessage: currentInput,
             });
             setMessages([...newMessages, { role: 'model', content: result.response }]);
         } catch (error) {
