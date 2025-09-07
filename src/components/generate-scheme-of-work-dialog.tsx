@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -25,7 +24,46 @@ import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
 import { Input } from "./ui/input";
+import { curriculumStructure } from "@/lib/curriculum-structure";
+
+// Grade 1
+import { grade1CreativeActivitiesCurriculum } from "@/curriculum/grade1-creative-activities";
+import { grade1EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade1-english-language-activities";
+import { grade1IndigenousLanguageCurriculum } from "@/curriculum/grade1-indigenous-language";
+import { grade1KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade1-kiswahili-language-activities";
+import { grade1MathematicsActivitiesCurriculum } from "@/curriculum/grade1-mathematics-activities";
+import { grade1CreCurriculum } from "@/curriculum/grade1-cre";
+import { grade1EnvironmentalActivitiesCurriculum } from "@/curriculum/grade1-environmental-activities";
+
+// Grade 2
+import { grade2CreCurriculum } from "@/curriculum/grade2-cre";
+import { grade2CreativeActivitiesCurriculum } from "@/curriculum/grade2-creative-activities";
+import { grade2EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade2-english-language-activities";
+import { grade2IndigenousLanguageCurriculum } from "@/curriculum/grade2-indigenous-language";
+import { grade2KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade2-kiswahili-language-activities";
+import { grade2EnvironmentalActivitiesCurriculum } from "@/curriculum/grade2-environmental-activities";
+import { grade2MathematicsActivitiesCurriculum } from "@/curriculum/grade2-mathematics-activities";
+
+// Grade 3
+import { grade3CreCurriculum } from "@/curriculum/grade3-cre";
+import { grade3CreativeActivitiesCurriculum } from "@/curriculum/grade3-creative-activities";
+import { grade3EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade3-english-language-activities";
+import { grade3IndigenousLanguageCurriculum } from "@/curriculum/grade3-indigenous-language";
+import { grade3KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade3-kiswahili-language-activities";
+import { grade3EnvironmentalActivitiesCurriculum } from "@/curriculum/grade3-environmental-activities";
+import { grade3MathematicsActivitiesCurriculum } from "@/curriculum/grade3-mathematics-activities";
+
+
+// Grade 4
+import { grade4AgricultureAndNutritionCurriculum } from "@/curriculum/grade4-agriculture-and-nutrition";
+import { grade4CreCurriculum } from "@/curriculum/grade4-cre";
+import { grade4CreativeArtsCurriculum } from "@/curriculum/grade4-creative-arts";
+
+
+// Grade 6
 import { grade6SocialStudiesCurriculum } from "@/curriculum/grade6-social-studies";
+
+// PP1 & PP2
 import { pp1CreCurriculum } from "@/curriculum/pp1-cre";
 import { pp2CreCurriculum } from "@/curriculum/pp2-cre";
 import { pp1CreativeArtsCurriculum } from "@/curriculum/pp1-creative-arts";
@@ -36,30 +74,6 @@ import { pp1LanguageActivitiesCurriculum } from "@/curriculum/pp1-language-activ
 import { pp2LanguageActivitiesCurriculum } from "@/curriculum/pp2-language-activities";
 import { pp1MathematicsActivitiesCurriculum } from "@/curriculum/pp1-mathematics-activities";
 import { pp2MathematicsActivitiesCurriculum } from "@/curriculum/pp2-mathematics-activities";
-import { curriculumStructure } from "@/lib/curriculum-structure";
-import { grade1CreativeActivitiesCurriculum } from "@/curriculum/grade1-creative-activities";
-import { grade1EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade1-english-language-activities";
-import { grade1IndigenousLanguageCurriculum } from "@/curriculum/grade1-indigenous-language";
-import { grade1KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade1-kiswahili-language-activities";
-import { grade1MathematicsActivitiesCurriculum } from "@/curriculum/grade1-mathematics-activities";
-import { grade1CreCurriculum } from "@/curriculum/grade1-cre";
-import { grade1EnvironmentalActivitiesCurriculum } from "@/curriculum/grade1-environmental-activities";
-import { grade2EnvironmentalActivitiesCurriculum } from "@/curriculum/grade2-environmental-activities";
-import { grade2CreCurriculum } from "@/curriculum/grade2-cre";
-import { grade2CreativeActivitiesCurriculum } from "@/curriculum/grade2-creative-activities";
-import { grade2EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade2-english-language-activities";
-import { grade2IndigenousLanguageCurriculum } from "@/curriculum/grade2-indigenous-language";
-import { grade2KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade2-kiswahili-language-activities";
-import { grade2MathematicsActivitiesCurriculum } from "@/curriculum/grade2-mathematics-activities";
-import { grade3EnvironmentalActivitiesCurriculum } from "@/curriculum/grade3-environmental-activities";
-import { grade3CreativeActivitiesCurriculum } from "@/curriculum/grade3-creative-activities";
-import { grade3EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade3-english-language-activities";
-import { grade3IndigenousLanguageCurriculum } from "@/curriculum/grade3-indigenous-language";
-import { grade3KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade3-kiswahili-language-activities";
-import { grade3MathematicsActivitiesCurriculum } from "@/curriculum/grade3-mathematics-activities";
-import { grade3CreCurriculum } from "@/curriculum/grade3-cre";
-import { grade4AgricultureAndNutritionCurriculum } from "@/curriculum/grade4-agriculture-and-nutrition";
-import { grade4CreCurriculum } from "@/curriculum/grade4-cre";
 
 
 interface GenerateSchemeOfWorkDialogProps {
@@ -106,91 +120,56 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
 
   }, [selectedGrade, availableGrades]);
 
-  const curriculumData = useMemo(() => {
-    if (selectedGrade === "Grade 6" && selectedSubject === "Social Studies") {
-      return grade6SocialStudiesCurriculum;
-    }
-    if (selectedGrade === "PP1" && selectedSubject === "Christian Religious Education") {
-      return pp1CreCurriculum;
-    }
-     if (selectedGrade === "PP2" && selectedSubject === "Christian Religious Education") {
-      return pp2CreCurriculum;
-    }
-    if (selectedGrade === "Grade 1" && selectedSubject === "Christian Religious Education") {
-      return grade1CreCurriculum;
-    }
-     if (selectedGrade === "Grade 2" && selectedSubject === "Christian Religious Education") {
-      return grade2CreCurriculum;
-    }
-     if (selectedGrade === "Grade 3" && selectedSubject === "Christian Religious Education") {
-      return grade3CreCurriculum;
-    }
-    if (selectedGrade === "PP1" && selectedSubject === "Creative Activities") {
-      return pp1CreativeArtsCurriculum;
-    }
-     if (selectedGrade === "PP2" && selectedSubject === "Creative Activities") {
-      return pp2CreativeArtsCurriculum;
-    }
-     if (selectedGrade === "Grade 1" && selectedSubject === "Creative Activities") {
-      return grade1CreativeActivitiesCurriculum;
-    }
-     if (selectedGrade === "Grade 1" && selectedSubject === "Environmental Activities") {
-      return grade1EnvironmentalActivitiesCurriculum;
-    }
-     if (selectedGrade === "Grade 2" && selectedSubject === "Environmental Activities") {
-      return grade2EnvironmentalActivitiesCurriculum;
-    }
-     if (selectedGrade === "Grade 3" && selectedSubject === "Environmental Activities") {
-      return grade3EnvironmentalActivitiesCurriculum;
-    }
-    if (selectedGrade === "Grade 1" && selectedSubject === "English Language Activities") {
-      return grade1EnglishLanguageActivitiesCurriculum;
-    }
-     if (selectedGrade === "Grade 2" && selectedSubject === "English Language Activities") {
-      return grade2EnglishLanguageActivitiesCurriculum;
-    }
-     if (selectedGrade === "Grade 3" && selectedSubject === "English Language Activities") {
-      return grade3EnglishLanguageActivitiesCurriculum;
-    }
-    if (selectedGrade === "Grade 1" && selectedSubject === "Indigenous Language Activities") {
-      return grade1IndigenousLanguageCurriculum;
-    }
-     if (selectedGrade === "Grade 2" && selectedSubject === "Indigenous Language Activities") {
-      return grade2IndigenousLanguageCurriculum;
-    }
-      if (selectedGrade === "Grade 3" && selectedSubject === "Indigenous Language Activities") {
-      return grade3IndigenousLanguageCurriculum;
-    }
-     if (selectedGrade === "Grade 1" && selectedSubject === "Kiswahili Language Activities") {
-      return grade1KiswahiliLanguageActivitiesCurriculum;
-    }
-     if (selectedGrade === "Grade 2" && selectedSubject === "Kiswahili Language Activities") {
-      return grade2KiswahiliLanguageActivitiesCurriculum;
-    }
-    if (selectedGrade === "Grade 1" && selectedSubject === "Mathematical Activities") {
-      return grade1MathematicsActivitiesCurriculum;
-    }
-     if (selectedGrade === "Grade 2" && selectedSubject === "Mathematical Activities") {
-      return grade2MathematicsActivitiesCurriculum;
-    }
-    if (selectedGrade === "Grade 2" && selectedSubject === "Movement and Creative Activities") {
-        return grade2CreativeActivitiesCurriculum;
-    }
-     if (selectedGrade === "Grade 3" && selectedSubject === "Movement and Creative Activities") {
-        return grade3CreativeActivitiesCurriculum;
-    }
-    if (selectedGrade === "Grade 3" && selectedSubject === "Kiswahili Language Activities") {
-      return grade3KiswahiliLanguageActivitiesCurriculum;
-    }
-    if (selectedGrade === "Grade 3" && selectedSubject === "Mathematical Activities") {
-      return grade3MathematicsActivitiesCurriculum;
-    }
-    if (selectedGrade === "Grade 4" && selectedSubject === "Agriculture and Nutrition") {
-      return grade4AgricultureAndNutritionCurriculum;
-    }
-     if (selectedGrade === "Grade 4" && selectedSubject === "Christian Religious Education") {
-      return grade4CreCurriculum;
-    }
+ const curriculumData = useMemo(() => {
+    // Grade 1
+    if (selectedGrade === "Grade 1" && selectedSubject === "Creative Activities") return grade1CreativeActivitiesCurriculum;
+    if (selectedGrade === "Grade 1" && selectedSubject === "English Language Activities") return grade1EnglishLanguageActivitiesCurriculum;
+    if (selectedGrade === "Grade 1" && selectedSubject === "Indigenous Language Activities") return grade1IndigenousLanguageCurriculum;
+    if (selectedGrade === "Grade 1" && selectedSubject === "Kiswahili Language Activities") return grade1KiswahiliLanguageActivitiesCurriculum;
+    if (selectedGrade === "Grade 1" && selectedSubject === "Mathematical Activities") return grade1MathematicsActivitiesCurriculum;
+    if (selectedGrade === "Grade 1" && selectedSubject === "Christian Religious Education") return grade1CreCurriculum;
+    if (selectedGrade === "Grade 1" && selectedSubject === "Environmental Activities") return grade1EnvironmentalActivitiesCurriculum;
+
+    // Grade 2
+    if (selectedGrade === "Grade 2" && selectedSubject === "Christian Religious Education") return grade2CreCurriculum;
+    if (selectedGrade === "Grade 2" && selectedSubject === "Movement and Creative Activities") return grade2CreativeActivitiesCurriculum;
+    if (selectedGrade === "Grade 2" && selectedSubject === "English Language Activities") return grade2EnglishLanguageActivitiesCurriculum;
+    if (selectedGrade === "Grade 2" && selectedSubject === "Indigenous Language Activities") return grade2IndigenousLanguageCurriculum;
+    if (selectedGrade === "Grade 2" && selectedSubject === "Kiswahili Language Activities") return grade2KiswahiliLanguageActivitiesCurriculum;
+    if (selectedGrade === "Grade 2" && selectedSubject === "Environmental Activities") return grade2EnvironmentalActivitiesCurriculum;
+    if (selectedGrade === "Grade 2" && selectedSubject === "Mathematical Activities") return grade2MathematicsActivitiesCurriculum;
+    
+    // Grade 3
+    if (selectedGrade === "Grade 3" && selectedSubject === "Christian Religious Education") return grade3CreCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "Movement and Creative Activities") return grade3CreativeActivitiesCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "English Language Activities") return grade3EnglishLanguageActivitiesCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "Indigenous Language Activities") return grade3IndigenousLanguageCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "Kiswahili Language Activities") return grade3KiswahiliLanguageActivitiesCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "Environmental Activities") return grade3EnvironmentalActivitiesCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "Mathematical Activities") return grade3MathematicsActivitiesCurriculum;
+
+    // Grade 4
+    if (selectedGrade === "Grade 4" && selectedSubject === "Agriculture and Nutrition") return grade4AgricultureAndNutritionCurriculum;
+    if (selectedGrade === "Grade 4" && selectedSubject === "Christian Religious Education") return grade4CreCurriculum;
+    if (selectedGrade === "Grade 4" && selectedSubject === "Creative Arts") return grade4CreativeArtsCurriculum;
+
+    // Grade 6
+    if (selectedGrade === "Grade 6" && selectedSubject === "Social Studies") return grade6SocialStudiesCurriculum;
+    
+    // PP1
+    if (selectedGrade === "PP1" && selectedSubject === "Christian Religious Education") return pp1CreCurriculum;
+    if (selectedGrade === "PP1" && selectedSubject === "Creative Activities") return pp1CreativeArtsCurriculum;
+    if (selectedGrade === "PP1" && selectedSubject === "Environmental Activities") return pp1EnvironmentalActivitiesCurriculum;
+    if (selectedGrade === "PP1" && selectedSubject === "Language Activities") return pp1LanguageActivitiesCurriculum;
+    if (selectedGrade === "PP1" && selectedSubject === "Mathematical Activities") return pp1MathematicsActivitiesCurriculum;
+    
+    // PP2
+    if (selectedGrade === "PP2" && selectedSubject === "Christian Religious Education") return pp2CreCurriculum;
+    if (selectedGrade === "PP2" && selectedSubject === "Creative Activities") return pp2CreativeArtsCurriculum;
+    if (selectedGrade === "PP2" && selectedSubject === "Environmental Activities") return pp2EnvironmentalActivitiesCurriculum;
+    if (selectedGrade === "PP2" && selectedSubject === "Language Activities") return pp2LanguageActivitiesCurriculum;
+    if (selectedGrade === "PP2" && selectedSubject === "Mathematical Activities") return pp2MathematicsActivitiesCurriculum;
+    
     return null;
   }, [selectedGrade, selectedSubject]);
 
@@ -376,7 +355,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                         <Select name="subject" value={selectedSubject} onValueChange={v => { setSelectedSubject(v); setSelectedStrand(''); setSelectedSubStrandName(''); }} required disabled={!selectedGrade}>
                            <SelectTrigger><SelectValue placeholder="Select subject..." /></SelectTrigger>
                            <SelectContent>
-                                {availableSubjects.core.map(s => (
+                                {availableSubjects && availableSubjects.core.map(s => (
                                   <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>
                                 ))}
                            </SelectContent>
