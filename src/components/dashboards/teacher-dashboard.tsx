@@ -8,7 +8,6 @@ import { Lightbulb, BookOpen, User, FilePen, ChevronRight, PlusCircle, Settings,
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { GenerateLessonPlanDialog } from '@/components/generate-lesson-plan-dialog';
 import { mockAssignments } from '@/lib/mock-data';
-import { formatDistanceToNow } from 'date-fns';
 import {
   ChartContainer,
   ChartTooltip,
