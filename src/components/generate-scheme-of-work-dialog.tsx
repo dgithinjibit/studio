@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
 import { Input } from "./ui/input";
+import { grade6SocialStudiesCurriculum } from "@/curriculum/grade6-social-studies";
 
 
 interface GenerateSchemeOfWorkDialogProps {
@@ -39,6 +40,29 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
   const [currentSubStrand, setCurrentSubStrand] = useState("");
   const { toast } = useToast();
   const [lessonsPerWeek, setLessonsPerWeek] = useState(5);
+
+  // State for data-driven form
+  const [selectedGrade, setSelectedGrade] = useState("Grade 6");
+  const [selectedSubject, setSelectedSubject] = useState("Social Studies");
+  const [selectedStrand, setSelectedStrand] = useState("");
+  const [selectedSubStrand, setSelectedSubStrand] = useState("");
+
+
+  const availableStrands = useMemo(() => {
+    if (selectedGrade === "Grade 6" && selectedSubject === "Social Studies") {
+      return grade6SocialStudiesCurriculum.strands;
+    }
+    return [];
+  }, [selectedGrade, selectedSubject]);
+
+  const availableSubStrands = useMemo(() => {
+    if (selectedStrand) {
+      const strand = availableStrands.find(s => s.title === selectedStrand);
+      return strand?.sub_strands || [];
+    }
+    return [];
+  }, [selectedStrand, availableStrands]);
+
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedScheme).then(() => {
@@ -95,13 +119,34 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     setGeneratedScheme("");
 
     const formData = new FormData(event.currentTarget);
+    const subStrandData = availableSubStrands.find(ss => ss.title === selectedSubStrand);
+    
+    if (!subStrandData) {
+        toast({
+            variant: "destructive",
+            title: "Invalid Selection",
+            description: "Please select a valid strand and sub-strand.",
+        });
+        setLoading(false);
+        return;
+    }
+    
+    // Create a detailed context string from the selected curriculum data
+    const contextString = `
+        Learning Outcomes: ${subStrandData.learning_outcomes.join('; ')}
+        Suggested Activities: ${subStrandData.suggested_activities.join('; ')}
+        Key Inquiry Question: ${subStrandData.key_inquiry_questions.join('; ')}
+    `;
+
     const data: GenerateSchemeOfWorkInput = {
-      subject: formData.get("subject") as string,
-      grade: formData.get("grade") as string,
-      subStrand: formData.get("subStrand") as string,
+      subject: selectedSubject,
+      grade: selectedGrade,
+      subStrand: selectedSubStrand,
       availableResources: formData.get("availableResources") as string,
-      numberOfWeeks: "1",
+      numberOfWeeks: "1", // Default to 1 week for this generator
       lessonsPerWeek: lessonsPerWeek.toString(),
+      // Pass the detailed context to the AI
+      schemeOfWorkContext: contextString, 
     };
     setCurrentSubStrand(data.subStrand);
     
@@ -147,26 +192,54 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 <div className="grid grid-cols-2 gap-4">
                      <div className="space-y-2">
                         <Label htmlFor="grade">Grade Level</Label>
-                        <Select name="grade" defaultValue="Grade 5">
+                        <Select name="grade" value={selectedGrade} onValueChange={setSelectedGrade} required>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a grade" />
                             </SelectTrigger>
                             <SelectContent>
-                                {Array.from({ length: 12 }, (_, i) => (
-                                    <SelectItem key={i + 1} value={`Grade ${i + 1}`}>Grade {i + 1}</SelectItem>
-                                ))}
+                                <SelectItem value="Grade 6">Grade 6</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="subject">Subject</Label>
-                        <Input id="subject" name="subject" placeholder="e.g. Agriculture" defaultValue="Social Studies" required />
+                        <Select name="subject" value={selectedSubject} onValueChange={setSelectedSubject} required>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a subject" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Social Studies">Social Studies</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 
                  <div className="space-y-2">
+                    <Label htmlFor="strand">Strand</Label>
+                    <Select name="strand" value={selectedStrand} onValueChange={v => { setSelectedStrand(v); setSelectedSubStrand(''); }} required>
+                        <SelectTrigger disabled={!availableStrands.length}>
+                            <SelectValue placeholder="Select a strand" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableStrands.map(s => (
+                                <SelectItem key={s.title} value={s.title}>{s.title}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="space-y-2">
                     <Label htmlFor="subStrand">Sub-Strand</Label>
-                    <Input id="subStrand" name="subStrand" placeholder="e.g. Water Conservation" defaultValue="Language groups in Eastern Africa" required />
+                    <Select name="subStrand" value={selectedSubStrand} onValueChange={setSelectedSubStrand} required>
+                        <SelectTrigger disabled={!availableSubStrands.length}>
+                            <SelectValue placeholder="Select a sub-strand" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableSubStrands.map(ss => (
+                                <SelectItem key={ss.title} value={ss.title}>{ss.title}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                 
                 <div>
@@ -178,7 +251,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                     <Textarea id="availableResources" name="availableResources" defaultValue="Map of Eastern Africa, digital resources, charts" />
                 </div>
                 <DialogFooter className="pt-4">
-                    <Button type="submit" disabled={loading} className="w-full">
+                    <Button type="submit" disabled={loading || !selectedSubStrand} className="w-full">
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Generate Scheme for 1 Week
                     </Button>

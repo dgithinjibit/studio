@@ -19,6 +19,7 @@ const GenerateSchemeOfWorkInputSchema = z.object({
   numberOfWeeks: z.string().describe('The total number of weeks the scheme should cover.'),
   lessonsPerWeek: z.string().describe('The number of lessons to be taught each week.'),
   availableResources: z.string().describe('A list of available teaching and learning resources.'),
+  schemeOfWorkContext: z.string().optional().describe('A string containing the Learning Outcomes, Suggested Activities, and Key Inquiry Questions for the sub-strand.')
 });
 export type GenerateSchemeOfWorkInput = z.infer<typeof GenerateSchemeOfWorkInputSchema>;
 
@@ -46,6 +47,14 @@ Generate a detailed Scheme of Work based on the following information. The outpu
 **Sub-Strand:** {{{subStrand}}}
 **Duration:** {{{numberOfWeeks}}} weeks, with {{{lessonsPerWeek}}} lessons per week.
 **Available Resources:** {{{availableResources}}}
+
+{{#if schemeOfWorkContext}}
+---
+**CONTEXT FROM CURRICULUM DOCUMENT:**
+You MUST use the following curriculum details as the primary source of truth for creating the learning outcomes and activities.
+{{{schemeOfWorkContext}}}
+---
+{{/if}}
 
 **CRITICAL INSTRUCTIONS FOR LEARNING ACTIVITIES:**
 When generating the "Learning Activities", you MUST structure them according to the three CBC domains of learning. Use the following framework as your guide. Be creative and specific.
@@ -78,9 +87,9 @@ The scheme of work must be a Markdown table with the following columns:
 - **Week**: The week number.
 - **Lesson**: The lesson number within the week.
 - **Topic/Sub-Topic**: The specific topic for the lesson, derived from the Sub-Strand.
-- **Learning Outcomes**: Must begin with the exact phrase "By the end of the lesson, the learner should be able to:" followed by a lettered list (e.g., a. b. c.) of specific outcomes.
-- **Learning Activities**: Specific learning experiences structured around the CBC pillars (Knowledge, skill, attitude).
-- **Key Inquiry Question(s)**: Socratic questions to provoke critical thinking.
+- **Learning Outcomes**: Must begin with the exact phrase "By the end of the lesson, the learner should be able to:" followed by a lettered list (e.g., a. b. c.) of specific outcomes. These outcomes must be directly derived from the `schemeOfWorkContext` if provided.
+- **Learning Activities**: Specific learning experiences structured around the CBC pillars (Knowledge, skill, attitude). These activities must be directly derived from the `schemeOfWorkContext` if provided.
+- **Key Inquiry Question(s)**: Socratic questions to provoke critical thinking. These questions must be directly derived from the `schemeOfWorkContext` if provided.
 - **Resources**: Learning resources required for the lesson.
 - **Assessment**: The method of assessment to be used (e.g., Oral questions, Observation, Project).
 
