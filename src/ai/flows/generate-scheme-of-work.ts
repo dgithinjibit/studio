@@ -47,6 +47,12 @@ Generate a detailed Scheme of Work based on the following information. The outpu
 **Duration:** {{{numberOfWeeks}}} weeks, with {{{lessonsPerWeek}}} lessons per week.
 **Available Resources:** {{{availableResources}}}
 
+**CRITICAL INSTRUCTIONS FOR LEARNING ACTIVITIES:**
+When generating the "Learning Activities", you MUST structure them according to the three CBC domains of learning. Use the following framework as your guide:
+1.  **Knowledge (Cognitive Domain):** Focus on intellectual skills. What will learners *know* or *understand*? Activities can include remembering, understanding, applying, analyzing, evaluating, and creating. (e.g., "Brainstorm the classification of communities," "Discuss the reasons for migration").
+2.  **Skills (Psychomotor Domain):** Focus on physical skills and performing tasks. What will learners be able to *do*? Activities can include practical demonstrations, physical activities, and using tools. (e.g., "Draw the movement routes on a map," "Perform a cultural dance").
+3.  **Attitude (Affective Domain):** Focus on values, interests, and appreciation. What values or feelings will be developed? Activities can include respectful listening, teamwork, and forming opinions. (e.g., "Work in groups to appreciate unity," "Present findings to the class").
+
 The scheme of work must be a Markdown table with the following columns:
 - **Week**: The week number.
 - **Lesson**: The lesson number within the week.
@@ -72,4 +78,3 @@ const generateSchemeOfWorkFlow = ai.defineFlow(
     return output!;
   }
 );
-
