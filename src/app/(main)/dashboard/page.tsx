@@ -19,7 +19,7 @@ export default function DashboardPage() {
     // This is a stand-in for a real auth system.
     const storedName = localStorage.getItem('userName');
     if (role === 'teacher' && storedName) {
-      setTeacher(prevTeacher => ({ ...prevTeacher, name: storedName.split(' ')[0] }));
+      setTeacher(prevTeacher => ({ ...prevTeacher, name: storedName }));
     }
   }, [role]);
 

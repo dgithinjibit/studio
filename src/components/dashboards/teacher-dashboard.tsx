@@ -1,7 +1,7 @@
 
 "use client";
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -73,7 +73,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         <>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="font-headline text-3xl font-bold">Welcome, Teacher!</h1>
+                    <h1 className="font-headline text-3xl font-bold">Welcome, {teacher.name}!</h1>
                     <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
                 </div>
                 <div className="flex items-center gap-2">
