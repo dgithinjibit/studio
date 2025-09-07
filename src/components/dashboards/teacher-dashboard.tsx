@@ -7,6 +7,7 @@ import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, Clipboard
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { GenerateLessonPlanDialog } from '@/components/generate-lesson-plan-dialog';
 import { GenerateSchemeOfWorkDialog } from '@/components/generate-scheme-of-work-dialog';
+import { GenerateRubricDialog } from '@/components/generate-rubric-dialog';
 import {
   ChartContainer,
   ChartTooltip,
@@ -59,7 +60,7 @@ const teacherTools = [
         description: "Create custom rubrics",
         icon: GraduationCap,
         action: "Open Rubric Generator",
-        dialog: null
+        dialog: "rubric"
     },
     {
         title: "Email to Family",
@@ -73,6 +74,7 @@ const teacherTools = [
 export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
     const [isLessonPlanDialogOpen, setLessonPlanDialogOpen] = useState(false);
     const [isSchemeOfWorkDialogOpen, setSchemeOfWorkDialogOpen] = useState(false);
+    const [isRubricDialogOpen, setRubricDialogOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(teacher.classes[0]);
@@ -87,6 +89,8 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
             setLessonPlanDialogOpen(true);
         } else if (dialog === 'schemeOfWork') {
             setSchemeOfWorkDialogOpen(true);
+        } else if (dialog === 'rubric') {
+            setRubricDialogOpen(true);
         }
     };
     
@@ -234,6 +238,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                 onLessonPlanSaved={onLessonPlanSaved}
              />
              <GenerateSchemeOfWorkDialog open={isSchemeOfWorkDialogOpen} onOpenChange={setSchemeOfWorkDialogOpen} />
+             <GenerateRubricDialog open={isRubricDialogOpen} onOpenChange={setRubricDialogOpen} />
              {selectedClass && (
                  <DigitalAttendanceRegister 
                     open={isAttendanceDialogOpen}

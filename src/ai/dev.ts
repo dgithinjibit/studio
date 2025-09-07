@@ -7,4 +7,6 @@ import '@/ai/flows/generate-lesson-plan.ts';
 import '@/ai/flows/mwalimu-ai-flow.ts';
 import '@/ai/flows/mwalimu-ai-types.ts';
 import '@/ai/flows/generate-scheme-of-work.ts';
+import '@/ai/flows/generate-rubric.ts';
+
 
