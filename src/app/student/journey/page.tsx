@@ -5,9 +5,10 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake, LogOut, ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowRight, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake, LogOut, ArrowLeft, Sparkles, User } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import ChatInterface from '../chat/[subject]/chat-interface';
+import { StudentHeader } from '@/components/layout/student-header';
 
 // Mock user data for personalization
 const mockUser = {
@@ -154,22 +155,17 @@ export default function StudentJourneyPage() {
             setStep('level');
             setSelectedSubLevel(null);
         } else if (step === 'level') {
-            setSelectedLevel(null);
             router.push('/');
         }
     }, [step, selectedLevel, router]);
-
-    const handleLogout = () => {
-        router.push('/login');
-    };
 
     const renderContent = () => {
         switch (step) {
             case 'chat':
                 if (selectedSubject && selectedGrade) {
-                    return <ChatInterface subject={selectedSubject} grade={selectedGrade} />;
+                    return <ChatInterface subject={selectedSubject} grade={selectedGrade} onBack={handleGoBack} />;
                 }
-                return null; // Or some fallback
+                return null;
             case 'subject':
                  const subjects = selectedGrade ? (subjectsMap[selectedGrade] || subjectsMap['g7']) : [];
                  const gradeName = `Grade ${selectedGrade?.replace('g', '')}`
@@ -249,8 +245,7 @@ export default function StudentJourneyPage() {
         }
     };
     
-    const canGoBack = !!(selectedLevel);
-    const showHeader = !!(selectedLevel);
+    const showHeader = step !== 'chat';
 
     if (step === 'chat') {
         return (
@@ -262,30 +257,9 @@ export default function StudentJourneyPage() {
 
     return (
         <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-black/20 backdrop-blur-md sm:rounded-2xl shadow-2xl ring-1 ring-white/20">
-            <header className="flex-shrink-0 flex items-center justify-between p-4 border-b border-white/20">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 flex items-center justify-center">
-                        {canGoBack && (
-                            <button onClick={handleGoBack} className="flex items-center gap-2 text-white/80 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10" aria-label="Go Back">
-                                <ArrowLeft className="w-6 h-6" />
-                            </button>
-                        )}
-                    </div>
-                    {showHeader && (
-                        <div className="flex items-center gap-3">
-                            <Sparkles className="w-7 h-7 text-yellow-300"/>
-                            <div>
-                                <h1 className="text-xl md:text-2xl font-bold text-white">Mwalimu AI</h1>
-                                {studentFirstName && <p className="text-xs text-white/70 -mt-1">Karibu, {studentFirstName}</p>}
-                            </div>
-                        </div>
-                    )}
-                </div>
-                 <button onClick={handleLogout} className="flex items-center gap-2 text-white/80 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Log Out">
-                    <span className="hidden sm:inline">Log Out</span>
-                    <LogOut className="w-6 h-6" />
-                </button>
-            </header>
+             {showHeader && (
+                 <StudentHeader showBackButton={step !== 'level'} onBack={handleGoBack} studentFirstName={studentFirstName} />
+             )}
             <main className="flex-grow overflow-y-auto p-6">
                 {renderContent()}
             </main>

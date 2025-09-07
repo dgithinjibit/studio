@@ -96,8 +96,9 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     // If the history is empty, this is the first message.
     // Return a hardcoded greeting instead of calling the AI.
     if (!input.history || input.history.length === 0) {
+      const gradeName = `Grade ${input.grade.replace('g', '')}`;
       return {
-        response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${input.grade} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
+        response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${gradeName} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
       };
     }
     
@@ -111,4 +112,3 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     return output!;
   }
 );
-

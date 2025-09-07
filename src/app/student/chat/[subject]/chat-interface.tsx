@@ -33,6 +33,7 @@ export default function ChatInterface({ subject, grade, onBack }: { subject: str
     useEffect(() => {
         // Initial message from Mwalimu AI
         const getInitialMessage = async () => {
+            setLoading(true);
             try {
                 const result = await mwalimuAiTutor({ grade, subject, history: [] });
                 setMessages([{ role: 'model', content: result.response }]);
@@ -105,7 +106,15 @@ export default function ChatInterface({ subject, grade, onBack }: { subject: str
                                     </div>
                                 </div>
                             ))}
-                             {loading && (
+                             {loading && messages.length === 0 && (
+                                <div className="flex justify-start">
+                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                        <span className="ml-2 text-sm">Mwalimu AI is thinking...</span>
+                                    </div>
+                                </div>
+                            )}
+                             {loading && messages.length > 0 && (
                                 <div className="flex justify-start">
                                     <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
                                         <Loader2 className="h-5 w-5 animate-spin" />
