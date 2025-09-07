@@ -83,29 +83,6 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
-        <Separator />
-         <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Logout">
-                  <Link href="/login">
-                    <LogOut />
-                    <span>Logout</span>
-                  </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
-        <Separator />
-         <div className="flex items-center gap-3 p-2">
-            <Avatar className="h-10 w-10">
-                <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-                <span className="text-sm font-semibold">{userName}</span>
-                <span className="text-xs text-muted-foreground">{userEmail}</span>
-            </div>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }
