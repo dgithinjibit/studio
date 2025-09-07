@@ -15,6 +15,7 @@ import {
   MwalimuAiTutorOutputSchema,
 } from './mwalimu-ai-types';
 import { kikuyuDictionary } from '@/lib/kikuyu-dictionary';
+import { aiCurriculum } from '@/lib/ai-curriculum';
 
 export async function mwalimuAiTutor(
   input: MwalimuAiTutorInput
@@ -50,7 +51,22 @@ You MUST use the "Context from Teacher's Materials" (which contains the Gikuyu d
 
 ---
 
-## SCENARIO 2: Socratic Mentor (All Other Subjects)
+## SCENARIO 2: AI Curriculum Tutor (Subject: "AI")
+
+**Your Persona:** You are a specialized AI curriculum tutor. Your goal is to guide the learner through the provided AI syllabus, from foundational concepts to advanced projects.
+
+**Your Capabilities:**
+1.  **Syllabus Navigation:** Answer questions about the AI curriculum's vision, guiding principles, and different learning stages (Early Years, Middle School, etc.).
+2.  **Concept Explanation:** Explain concepts from the curriculum, like "computational thinking," "algorithms," and "machine learning," using the examples and activities provided in the text.
+3.  **Project Guidance:** Act as a project coach for the activities listed in the syllabus (e.g., "Community Helper Chatbot," "M-Pesa Fraud Predictor"). Help learners understand the project goals, tools, and underlying AI concepts.
+4.  **Ethical Discussion:** Facilitate discussions on AI ethics, using the case studies and debate topics mentioned in the curriculum (e.g., algorithmic bias, data privacy).
+
+**Your Knowledge Source:**
+You MUST base all your answers on the provided "AI Curriculum" in the "Context from Teacher's Materials." Do not introduce topics or projects not mentioned in the syllabus.
+
+---
+
+## SCENARIO 3: Socratic Mentor (All Other Subjects)
 
 **Your Persona:** You are a patient, curious, and insightful Socratic mentor. Your purpose is to foster critical thinking and self-discovery.
 
@@ -70,7 +86,7 @@ Base your Socratic questions and answers on the "Context from Teacher's Material
 **Grade:** {{grade}}
 
 {{#if teacherContext}}
-### Context from Teacher's Materials (Gikuyu Dictionary):
+### Context from Teacher's Materials:
 ---
 {{{teacherContext}}}
 ---
@@ -78,7 +94,7 @@ Base your Socratic questions and answers on the "Context from Teacher's Material
 
 ## Conversation History:
 {{#each history}}
-  Student: {{{content}}}
+  Student: {{{this.content}}}
 {{/each}}
 
 Based on the subject, conversation history, and your instructions for the relevant persona, provide your next response as Mwalimu AI.
@@ -119,8 +135,10 @@ const mwalimuAiTutorFlow = ai.defineFlow(
         history: history,
     };
     
-    // CORRECTED LOGIC: Intelligently select context instead of dumping the whole dictionary.
-    if (flowInput.subject === 'Indigenous Language' && input.currentMessage) {
+    if (flowInput.subject === 'AI') {
+      flowInput.teacherContext = `AI Curriculum:\n${aiCurriculum}`;
+    }
+    else if (flowInput.subject === 'Indigenous Language' && input.currentMessage) {
       const categories = Object.keys(kikuyuDictionary) as Array<keyof typeof kikuyuDictionary>;
       let foundCategory: keyof typeof kikuyuDictionary | null = null;
       
