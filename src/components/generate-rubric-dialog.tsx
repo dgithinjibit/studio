@@ -22,6 +22,7 @@ import { generateRubric, GenerateRubricInput } from "@/ai/flows/generate-rubric"
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface GenerateRubricDialogProps {
     open: boolean;
@@ -122,7 +123,16 @@ export function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: Ge
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                     <Label htmlFor="grade">Grade Level</Label>
-                    <Input id="grade" name="grade" defaultValue="5th Grade" />
+                    <Select name="grade" defaultValue="Grade 5">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a grade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Array.from({ length: 12 }, (_, i) => (
+                                <SelectItem key={i + 1} value={`Grade ${i + 1}`}>Grade {i + 1}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="levels">Number of Performance Levels: {levels}</Label>
