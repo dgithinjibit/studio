@@ -121,6 +121,13 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
             topic: formData.get("topic") as string,
             gradeLevel: formData.get("gradeLevel") as string,
             learningObjectives: formData.get("learningObjectives") as string,
+            strand: formData.get("strand") as string,
+            subStrand: formData.get("subStrand") as string,
+            teacherName: "Mwalimu Wetu", // Example, could be dynamic
+            school: "Sure Junior School", // Example
+            term: "2",
+            year: new Date().getFullYear().toString(),
+            roll: "Boys: 20, Girls: 20", // Example
         };
         setCurrentTopic(data.topic);
     } else {
@@ -195,20 +202,12 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
           </DialogDescription>
         </DialogHeader>
         {!generatedPlan && !loading && !schemeOfWorkContext ? (
-            <form onSubmit={handleInitialSubmit}>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="subject" className="text-right">Subject</Label>
-                  <Input id="subject" name="subject" defaultValue="Mathematics" className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="topic" className="text-right">Topic</Label>
-                  <Input id="topic" name="topic" defaultValue="Introduction to Algebra" className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="gradeLevel" className="text-right">Grade Level</Label>
-                   <Select name="gradeLevel" defaultValue="Grade 7">
-                        <SelectTrigger className="col-span-3">
+            <form onSubmit={handleInitialSubmit} className="space-y-4 overflow-y-auto pr-2">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="gradeLevel">Grade Level</Label>
+                    <Select name="gradeLevel" defaultValue="Grade 8">
+                        <SelectTrigger>
                             <SelectValue placeholder="Select a grade" />
                         </SelectTrigger>
                         <SelectContent>
@@ -220,12 +219,31 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <Label htmlFor="learningObjectives" className="text-right mt-2">Objectives</Label>
-                  <Textarea id="learningObjectives" name="learningObjectives" placeholder="e.g., Understand variables, Solve simple linear equations" className="col-span-3" />
+                 <div className="space-y-2">
+                  <Label htmlFor="subject">Learning Area / Subject</Label>
+                  <Input id="subject" name="subject" defaultValue="Creative Arts and Sports" />
+                </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="strand">Strand</Label>
+                  <Input id="strand" name="strand" defaultValue="2.0 Creating and Performing" />
+                </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="subStrand">Sub Strand</Label>
+                  <Input id="subStrand" name="subStrand" defaultValue="Netball" />
                 </div>
               </div>
-              <DialogFooter>
+              <div className="space-y-2">
+                <Label htmlFor="topic">Topic</Label>
+                <Input id="topic" name="topic" defaultValue="Overhead Pass in Netball" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="learningObjectives">Learning Objectives</Label>
+                <Textarea id="learningObjectives" name="learningObjectives" 
+                  placeholder="e.g., a) describe the phases...&#10;b) perform the phases..."
+                  defaultValue="a) describe the phases of overhead pass in Netball for skill acquisition,&#10;b) Perform phases of overhead pass in Netball for skill mastery,&#10;c) Appreciate playing Netball for enjoyment."
+                  className="h-24" />
+              </div>
+              <DialogFooter className="sticky bottom-0 bg-background py-4">
                 <Button type="submit" disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   <Sparkles className="mr-2 h-4 w-4" /> Generate

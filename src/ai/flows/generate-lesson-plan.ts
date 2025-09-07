@@ -14,11 +14,21 @@ import {z} from 'genkit';
 
 const GenerateLessonPlanInputSchema = z.object({
   subject: z.string().describe('The subject of the lesson plan.'),
-  topic: z.string().describe('The topic of the lesson plan.'),
+  topic: z.string().describe('The specific topic of the lesson plan.'),
   gradeLevel: z.string().describe('The grade level for the lesson plan.'),
   learningObjectives: z
     .string()
     .describe('The learning objectives for the lesson plan.'),
+  strand: z.string().optional().describe('The main curriculum strand.'),
+  subStrand: z.string().optional().describe('The curriculum sub-strand.'),
+  teacherName: z.string().optional().describe("The teacher's name."),
+  school: z.string().optional().describe('The name of the school.'),
+  term: z.string().optional().describe('The school term.'),
+  year: z.string().optional().describe('The academic year.'),
+  roll: z
+    .string()
+    .optional()
+    .describe('The number of students (e.g., "Boys: 20, Girls: 20").'),
   schemeOfWorkContext: z
     .string()
     .optional()
@@ -27,7 +37,7 @@ const GenerateLessonPlanInputSchema = z.object({
 export type GenerateLessonPlanInput = z.infer<typeof GenerateLessonPlanInputSchema>;
 
 const GenerateLessonPlanOutputSchema = z.object({
-  lessonPlan: z.string().describe('The generated lesson plan.'),
+  lessonPlan: z.string().describe('The generated lesson plan in Markdown format.'),
 });
 export type GenerateLessonPlanOutput = z.infer<typeof GenerateLessonPlanOutputSchema>;
 
@@ -41,26 +51,79 @@ const prompt = ai.definePrompt({
   name: 'generateLessonPlanPrompt',
   input: {schema: GenerateLessonPlanInputSchema},
   output: {schema: GenerateLessonPlanOutputSchema},
-  prompt: `You are an expert teacher and curriculum developer in Kenya. Your task is to generate a detailed, single-lesson plan based on the provided information.
-
-**Core Details:**
-- **Subject:** {{{subject}}}
-- **Topic:** {{{topic}}}
-- **Grade Level:** {{{gradeLevel}}}
-- **Learning Objectives:** {{{learningObjectives}}}
+  prompt: `You are an expert curriculum developer in Kenya, creating a detailed, CBC-compliant lesson plan.
 
 {{#if schemeOfWorkContext}}
 ---
 **CONTEXT: SCHEME OF WORK**
-You MUST use the following Scheme of Work as the primary source of truth for creating the lesson plan. The lesson plan should be for one specific lesson outlined within this scheme.
+You MUST use the following Scheme of Work as the primary source of truth for creating the lesson plan. The lesson plan should be for one specific lesson outlined within this scheme. Extract all necessary details from the scheme.
 {{{schemeOfWorkContext}}}
 ---
-**Instruction:** Based on the scheme, select one lesson and create a detailed lesson plan for it. Include learning activities, resources, and assessment methods mentioned in the scheme.
+**Instruction:** Based on the scheme, select one lesson and create a detailed lesson plan for it.
 {{else}}
-**Instruction:** Generate a standard lesson plan based on the core details provided above.
+**Instruction:** Generate a standard lesson plan based on the core details provided by the user.
 {{/if}}
 
-Output the complete lesson plan in Markdown format.
+**FORMATTING INSTRUCTIONS:**
+Generate the lesson plan in Markdown. The structure MUST be as follows:
+
+## Administrative Details
+| | | | |
+| :--- | :--- | :--- | :--- |
+| **School** | {{school}} | **Date** | {{current_date format="DD/MM/YYYY"}} |
+| **Learning Area** | {{subject}} | **Time** | 8.00-8.40 am |
+| **Year** | {{year}} | **Grade** | {{gradeLevel}} |
+| **Term** | {{term}} | **Roll** | {{roll}} |
+| **Teacher's Name** | {{teacherName}} | **TSC No.** | |
+
+---
+
+## Lesson Details
+
+**Strand:** {{strand}}
+**Sub Strand:** {{subStrand}}
+
+**Lesson Learning outcomes:**
+By the end of the lesson the learner should be able to:
+{{{learningObjectives}}}
+
+**Key Inquiry Question(s):**
+- [Generate 1-2 relevant inquiry questions based on the topic]
+
+---
+
+## Learning Resources
+- [List relevant learning resources]
+
+---
+
+## Organization of Learning
+
+### Introduction (5 Minutes)
+- [Detail an engaging introduction. How will you link to the previous lesson?]
+
+### Lesson Development (25 Minutes)
+**Step 1: [Activity Title] (10 mins)**
+- [Describe the first activity. What will the teacher do? What will the learners do? How does it align with the learning objectives?]
+
+**Step 2: [Activity Title] (10 mins)**
+- [Describe the second activity. Focus on learner-centered participation.]
+
+**Step 3: [Activity Title] (5 mins)**
+- [Describe the third activity, possibly a group discussion or collaborative task.]
+
+### Conclusion (5 Minutes)
+- [How will you summarize the key points and assess understanding?]
+
+---
+
+## Assessment
+- [Describe the specific assessment method to be used (e.g., Observation, Checklist, Oral questions).]
+
+---
+
+## Teacher's Reflection
+- [Leave this section blank for the teacher to fill in after the lesson.]
 `,
 });
 
