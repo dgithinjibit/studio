@@ -13,8 +13,8 @@ export default function WelcomePage() {
             <Image 
               src="/assets/sync.png" 
               alt="SyncSenta Logo" 
-              width={144} 
-              height={144} 
+              width={288} 
+              height={288} 
               className="mx-auto mb-6" 
             />
             <h1 className="font-headline text-5xl md:text-6xl font-bold">Welcome to <span className="text-primary">SyncSenta</span></h1>
