@@ -51,7 +51,7 @@ export const kikuyuDictionary = {
     "bird": "nyoni",
     "fish": "thamaki",
     "snake": "nyoka",
-    "lion": "mũrũthi",
+    "lion": "mũrũũthi",
   },
   questions: {
     "how old are you": "kwerwo atia",
