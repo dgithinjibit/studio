@@ -119,31 +119,42 @@ const mwalimuAiTutorFlow = ai.defineFlow(
 
     // Handle initial greeting separately to prevent crashes
     if (history.length === 0) {
-      if (input.subject === 'Indigenous Language') {
-         return {
-          response: "Habari! I'm your Gikuyu Literacy Buddy. You can ask me to translate words, quiz you, or teach you about categories like 'greetings', 'animals', or 'family'. What would you like to do first?"
-        };
-      }
-      if (input.subject === 'AI') {
         const gradeName = `Grade ${input.grade.replace('g', '')}`;
-        return {
-          response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore AI for ${gradeName}.
+        
+        if (input.subject === 'Indigenous Language') {
+            return {
+                response: "Habari! I'm your Gikuyu Literacy Buddy. You can ask me to translate words, quiz you, or teach you about categories like 'greetings', 'animals', or 'family'. What would you like to do first?"
+            };
+        }
+        if (input.subject === 'AI') {
+             if (['g4', 'g5', 'g6'].includes(input.grade)) {
+                return {
+                    response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore AI for ${gradeName}.\n\nAccording to the curriculum, a key skill is understanding algorithms. Let's start there: can you describe the 'algorithm' or steps you followed to get ready for school today?`
+                };
+            }
+             if (['g7', 'g8', 'g9'].includes(input.grade)) {
+                return {
+                    response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore AI for ${gradeName}.\n\nThe curriculum mentions building a 'Community Helper Chatbot.' Before we get to that, let's think about conversations. What makes a good conversation helper? What should they know?`
+                };
+            }
+        }
+        if (input.subject === 'Blockchain') {
+             if (['g4', 'g5', 'g6'].includes(input.grade)) {
+                return {
+                    response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore Blockchain for ${gradeName}.\n\nAccording to the curriculum, a key concept is a 'digital record' or ledger. Can you think of an example of a digital record you use in your daily life, maybe at home or at school?`
+                };
+            }
+            if (['g7', 'g8', 'g9'].includes(input.grade)) {
+                return {
+                    response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore Blockchain for ${gradeName}.\n\nThe curriculum talks about keeping digital information safe. How do you keep your own information private, like a secret note or a password? What makes it secure?`
+                };
+            }
+        }
 
-According to the curriculum, a key skill is understanding algorithms. Let's start there: can you describe the 'algorithm' or steps you followed to get ready for school today?`
-        };
-      }
-      if (input.subject === 'Blockchain') {
-        const gradeName = `Grade ${input.grade.replace('g', '')}`;
+        // Default greeting
         return {
-          response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore Blockchain for ${gradeName}.
-
-According to the curriculum, a key concept is a 'digital record' or ledger. Let's start there: can you think of an example of a digital record you use in your daily life?`
+            response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${gradeName} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
         };
-      }
-      const gradeName = `Grade ${input.grade.replace('g', '')}`;
-      return {
-        response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${gradeName} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
-      };
     }
     
     const flowInput: MwalimuAiTutorInput = {
