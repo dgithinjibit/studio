@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -29,15 +29,23 @@ interface GenerateLessonPlanDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onResourceSaved: () => void;
+    schemeOfWorkContext?: string;
 }
 
-export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }: GenerateLessonPlanDialogProps) {
+export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, schemeOfWorkContext }: GenerateLessonPlanDialogProps) {
   const [loading, setLoading] = useState(false);
   const [improving, setImproving] = useState(false);
   const [generatedPlan, setGeneratedPlan] = useState("");
   const [currentTopic, setCurrentTopic] = useState("");
   const [improvementRequest, setImprovementRequest] = useState("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    // If context is passed, immediately trigger generation
+    if (open && schemeOfWorkContext) {
+      handleInitialSubmit(undefined, schemeOfWorkContext);
+    }
+  }, [open, schemeOfWorkContext]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedPlan).then(() => {
@@ -63,7 +71,8 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
             title: currentTopic || "Untitled Lesson Plan",
             url: downloadURL,
             createdAt: new Date().toISOString(),
-            type: 'Lesson Plan'
+            type: 'Lesson Plan',
+            // content: generatedPlan
         };
 
         await addDoc(collection(db, "teacherResources"), newPlan);
@@ -87,20 +96,37 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
     }
   };
 
-  const handleInitialSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleInitialSubmit = async (event?: React.FormEvent<HTMLFormElement>, schemeContext?: string) => {
+    event?.preventDefault();
     setLoading(true);
     setGeneratedPlan("");
 
-    const formData = new FormData(event.currentTarget);
-    const data: GenerateLessonPlanInput = {
-      subject: formData.get("subject") as string,
-      topic: formData.get("topic") as string,
-      gradeLevel: formData.get("gradeLevel") as string,
-      learningObjectives: formData.get("learningObjectives") as string,
-    };
-    
-    setCurrentTopic(data.topic);
+    let data: GenerateLessonPlanInput;
+
+    if (schemeContext) {
+        // If we have context, we can derive some details.
+        // This is a simplified derivation for now.
+        data = {
+            subject: "Derived from Scheme",
+            topic: "Lesson from Scheme",
+            gradeLevel: "Derived from Scheme",
+            learningObjectives: "Derived from Scheme's Learning Outcomes",
+            schemeOfWorkContext: schemeContext,
+        };
+        setCurrentTopic("Lesson Plan from Scheme");
+    } else if (event) {
+        const formData = new FormData(event.currentTarget);
+        data = {
+            subject: formData.get("subject") as string,
+            topic: formData.get("topic") as string,
+            gradeLevel: formData.get("gradeLevel") as string,
+            learningObjectives: formData.get("learningObjectives") as string,
+        };
+        setCurrentTopic(data.topic);
+    } else {
+        setLoading(false);
+        return;
+    }
     
     try {
         const result = await generateLessonPlan(data);
@@ -145,12 +171,20 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
     }
   };
 
+  const resetState = () => {
+    setLoading(false);
+    setImproving(false);
+    setGeneratedPlan("");
+    setCurrentTopic("");
+    setImprovementRequest("");
+  }
+
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => {
         onOpenChange(isOpen);
         if (!isOpen) {
-            setGeneratedPlan(""); // Reset on close
+            resetState();
         }
     }}>
       <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col">
@@ -160,7 +194,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
             {generatedPlan ? "Review your lesson plan and use the chat to make improvements." : "Use AI to generate a draft lesson plan. You can refine it with AI afterwards."}
           </DialogDescription>
         </DialogHeader>
-        {!generatedPlan && !loading ? (
+        {!generatedPlan && !loading && !schemeOfWorkContext ? (
             <form onSubmit={handleInitialSubmit}>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -204,7 +238,10 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved }
              <div className="flex-1 flex flex-col min-h-0 border-t pt-4">
                 {loading && !generatedPlan && (
                     <div className="flex-1 flex items-center justify-center">
-                        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                        <div className="text-center">
+                            <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
+                            <p className="mt-2 text-muted-foreground">The AI is generating your lesson plan...</p>
+                        </div>
                     </div>
                 )}
                 

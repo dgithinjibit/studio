@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, GraduationCap, CopySlash, MoreHorizontal, PlusCircle, Search, PlayCircle, ChevronDown, Megaphone } from 'lucide-react';
+import { FilePen, FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, GraduationCap, CopySlash, MoreHorizontal, PlusCircle, Search, PlayCircle, ChevronDown, Megaphone } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
@@ -23,31 +23,34 @@ import { Input } from './ui/input';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useRouter } from 'next/navigation';
+import { GenerateLessonPlanDialog } from './generate-lesson-plan-dialog';
+import { storage } from '@/lib/firebase';
+import { ref, getBytes } from 'firebase/storage';
 
 
 export function MyResources() {
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
     const [communications, setCommunications] = useState<Communication[]>([]);
+    const [isLessonPlanDialogOpen, setLessonPlanDialogOpen] = useState(false);
+    const [selectedSchemeContent, setSelectedSchemeContent] = useState<string | undefined>(undefined);
     const { toast } = useToast();
     const router = useRouter();
 
 
-    useEffect(() => {
-        const fetchResources = () => {
-            const storedResources = localStorage.getItem("teacherResources");
-            const storedComms = localStorage.getItem("mockCommunications");
-            if (storedResources) {
-                setAllResources(JSON.parse(storedResources));
-            }
-            if (storedComms) {
-                setCommunications(JSON.parse(storedComms).map((c: any) => ({...c, date: new Date(c.date)})));
-            }
-        };
+    const fetchResources = () => {
+        const storedResources = localStorage.getItem("teacherResources");
+        const storedComms = localStorage.getItem("mockCommunications");
+        if (storedResources) {
+            setAllResources(JSON.parse(storedResources));
+        }
+        if (storedComms) {
+            setCommunications(JSON.parse(storedComms).map((c: any) => ({...c, date: new Date(c.date)})));
+        }
+    };
 
+    useEffect(() => {
         fetchResources();
         
-        // We need this event listener because localStorage changes in the same window
-        // do not trigger the 'storage' event. This is a custom event we fire.
         const handleResourceUpdate = () => fetchResources();
         window.addEventListener('resource-update', handleResourceUpdate);
         
@@ -87,6 +90,29 @@ export function MyResources() {
             });
         });
     };
+
+    const handleGenerateLessonPlan = async (resourceUrl: string, event: React.MouseEvent) => {
+        event.stopPropagation();
+        try {
+            const storageRef = ref(storage, resourceUrl);
+            const bytes = await getBytes(storageRef);
+            const content = new TextDecoder().decode(bytes);
+            setSelectedSchemeContent(content);
+            setLessonPlanDialogOpen(true);
+        } catch (error) {
+            console.error("Error fetching scheme content:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not fetch the Scheme of Work content.',
+            });
+        }
+    };
+
+    const onResourceSaved = () => {
+        fetchResources();
+        router.push('/dashboard/reports');
+    }
     
     const getIcon = (type: TeacherResource['type']) => {
         switch(type) {
@@ -245,14 +271,14 @@ export function MyResources() {
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <div className="p-4 bg-muted/50 rounded-md">
-                                        <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-pre:bg-transparent prose-pre:p-0">
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.content || "No preview available."}</ReactMarkdown>
-                                        </div>
+                                        <p className="text-xs text-muted-foreground mb-2">A preview of the document is not available. Download the file to view its content.</p>
                                         <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
-                                            <Button variant="ghost" size="sm" onClick={(e) => handleCopy(resource.content || "", e)}>
-                                                <Copy className="mr-2 h-4 w-4"/>
-                                                Copy Text
-                                            </Button>
+                                            {resource.type === 'Scheme of Work' && (
+                                                <Button variant="default" size="sm" onClick={(e) => handleGenerateLessonPlan(resource.url, e)}>
+                                                    <FilePen className="mr-2 h-4 w-4" />
+                                                    Generate Lesson Plan
+                                                </Button>
+                                            )}
                                             <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource.id, 'resource', e)}>
                                                 <Trash2 className="mr-2 h-4 w-4"/>
                                                 Delete
@@ -306,6 +332,12 @@ export function MyResources() {
                     </Accordion>
                 </div>
             )}
+             <GenerateLessonPlanDialog 
+                open={isLessonPlanDialogOpen} 
+                onOpenChange={setLessonPlanDialogOpen} 
+                onResourceSaved={onResourceSaved}
+                schemeOfWorkContext={selectedSchemeContent}
+             />
         </div>
     );
 }

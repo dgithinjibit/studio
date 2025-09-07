@@ -1,7 +1,8 @@
+
 'use server';
 
 /**
- * @fileOverview AI agent to generate a draft lesson plan from a prompt.
+ * @fileOverview AI agent to generate a draft lesson plan from a prompt, optionally using a Scheme of Work as context.
  *
  * - generateLessonPlan - A function that handles the lesson plan generation process.
  * - GenerateLessonPlanInput - The input type for the generateLessonPlan function.
@@ -18,6 +19,10 @@ const GenerateLessonPlanInputSchema = z.object({
   learningObjectives: z
     .string()
     .describe('The learning objectives for the lesson plan.'),
+  schemeOfWorkContext: z
+    .string()
+    .optional()
+    .describe('The full Markdown content of the relevant Scheme of Work for context.'),
 });
 export type GenerateLessonPlanInput = z.infer<typeof GenerateLessonPlanInputSchema>;
 
@@ -36,15 +41,29 @@ const prompt = ai.definePrompt({
   name: 'generateLessonPlanPrompt',
   input: {schema: GenerateLessonPlanInputSchema},
   output: {schema: GenerateLessonPlanOutputSchema},
-  prompt: `You are an expert teacher. Generate a lesson plan based on the following information:
+  prompt: `You are an expert teacher and curriculum developer in Kenya. Your task is to generate a detailed, single-lesson plan based on the provided information.
 
-Subject: {{{subject}}}
-Topic: {{{topic}}}
-Grade Level: {{{gradeLevel}}}
-Learning Objectives: {{{learningObjectives}}}
+**Core Details:**
+- **Subject:** {{{subject}}}
+- **Topic:** {{{topic}}}
+- **Grade Level:** {{{gradeLevel}}}
+- **Learning Objectives:** {{{learningObjectives}}}
 
-Lesson Plan:`,
+{{#if schemeOfWorkContext}}
+---
+**CONTEXT: SCHEME OF WORK**
+You MUST use the following Scheme of Work as the primary source of truth for creating the lesson plan. The lesson plan should be for one specific lesson outlined within this scheme.
+{{{schemeOfWorkContext}}}
+---
+**Instruction:** Based on the scheme, select one lesson and create a detailed lesson plan for it. Include learning activities, resources, and assessment methods mentioned in the scheme.
+{{else}}
+**Instruction:** Generate a standard lesson plan based on the core details provided above.
+{{/if}}
+
+Output the complete lesson plan in Markdown format.
+`,
 });
+
 
 const generateLessonPlanFlow = ai.defineFlow(
   {
