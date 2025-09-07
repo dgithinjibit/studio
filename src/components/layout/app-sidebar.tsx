@@ -25,13 +25,9 @@ import { SyncSentaLogo } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRole } from "@/hooks/use-role";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { UserRole } from "@/lib/types";
-import { Label } from "@/components/ui/label";
-
 
 export function AppSidebar() {
-  const { role, setRole } = useRole();
+  const { role } = useRole();
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
@@ -43,10 +39,6 @@ export function AppSidebar() {
   ];
 
   const filteredNavItems = navItems.filter(item => item.roles.includes(role));
-
-  const handleRoleChange = (newRole: UserRole) => {
-     setRole(newRole);
-  }
 
   const roleName = {
     teacher: "Teacher",
@@ -67,20 +59,6 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <div className="p-2">
-            <Label htmlFor="role-switcher" className="text-xs text-muted-foreground px-2">Current Role</Label>
-             <Select value={role} onValueChange={(newRole) => handleRoleChange(newRole as UserRole)}>
-                <SelectTrigger id="role-switcher" className="w-full bg-sidebar-accent border-sidebar-border text-sidebar-foreground mt-1">
-                    <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="teacher">Teacher</SelectItem>
-                    <SelectItem value="school_head">School Head</SelectItem>
-                    <SelectItem value="county_officer">County Officer</SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
-         <Separator />
         <SidebarMenu>
           {filteredNavItems.map((item) => (
             <SidebarMenuItem key={item.href}>
