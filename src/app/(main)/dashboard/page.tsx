@@ -7,15 +7,26 @@ import { CountyOfficerDashboard } from "@/components/dashboards/county-officer-d
 import { TeacherDashboard } from "@/components/dashboards/teacher-dashboard";
 import { SchoolHeadDashboard } from "@/components/dashboards/school-head-dashboard";
 import { mockTeacher } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import type { Teacher } from "@/lib/types";
 
 
 export default function DashboardPage() {
   const { role } = useRole();
+  const [teacher, setTeacher] = useState<Teacher>(mockTeacher);
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('userName');
+    if (role === 'teacher' && storedName) {
+      // Use the real name but keep the mock data for classes/performance
+      setTeacher(prevTeacher => ({ ...prevTeacher, name: storedName }));
+    }
+  }, [role]);
 
   const renderDashboard = () => {
     switch (role) {
       case "teacher":
-        return <TeacherDashboard teacher={mockTeacher} />;
+        return <TeacherDashboard teacher={teacher} />;
       case "school_head":
         return <SchoolHeadDashboard />;
       case "county_officer":
