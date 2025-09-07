@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -13,14 +14,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy } from "lucide-react";
 import { generateLessonPlan, GenerateLessonPlanInput } from "@/ai/flows/generate-lesson-plan";
 
 export function GenerateLessonPlanDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const [loading, setLoading] = useState(false);
   const [generatedPlan, setGeneratedPlan] = useState("");
   const { toast } = useToast();
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generatedPlan).then(() => {
+        toast({
+            title: "Copied to Clipboard",
+            description: "The lesson plan has been copied.",
+        });
+    });
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -73,7 +84,18 @@ export function GenerateLessonPlanDialog({ open, onOpenChange }: { open: boolean
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="gradeLevel" className="text-right">Grade Level</Label>
-              <Input id="gradeLevel" name="gradeLevel" defaultValue="Form 1" className="col-span-3" />
+               <Select name="gradeLevel" defaultValue="Grade 7">
+                    <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select a grade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => (
+                            <SelectItem key={i + 1} value={`Grade ${i + 1}`}>
+                                Grade {i + 1}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
             <div className="grid grid-cols-4 items-start gap-4">
               <Label htmlFor="learningObjectives" className="text-right mt-2">Objectives</Label>
@@ -89,7 +111,12 @@ export function GenerateLessonPlanDialog({ open, onOpenChange }: { open: boolean
         </form>
         {generatedPlan && (
             <div className="mt-4 border-t pt-4">
-                <h3 className="font-bold mb-2">Generated Plan:</h3>
+                <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-bold">Generated Plan:</h3>
+                    <Button variant="ghost" size="icon" onClick={handleCopy}>
+                        <Copy className="h-4 w-4" />
+                    </Button>
+                </div>
                 <pre className="text-sm bg-muted p-4 rounded-md whitespace-pre-wrap font-body">{generatedPlan}</pre>
             </div>
         )}
