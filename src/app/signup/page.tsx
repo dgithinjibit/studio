@@ -1,12 +1,64 @@
 
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import type { UserRole } from "@/lib/types";
+
+type RoleCardProps = {
+    role: UserRole;
+    title: string;
+    description: string;
+    buttonText: string;
+    isLoading: boolean;
+    disabled: boolean;
+    onClick: (role: UserRole) => void;
+};
+
+const RoleCard = ({ role, title, description, buttonText, isLoading, disabled, onClick }: RoleCardProps) => (
+    <Card 
+        className={`text-center p-6 transition-all h-full flex flex-col justify-between ${disabled && !isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent hover:border-primary cursor-pointer'}`}
+        onClick={() => !disabled && onClick(role)}
+    >
+        <div>
+            <h3 className="font-bold text-xl mb-2">{title}</h3>
+            <p className="text-muted-foreground">{description}</p>
+        </div>
+        <Button variant="ghost" className="mt-4 w-full" disabled={disabled}>
+            {isLoading ? (
+                <>
+                    <Loader2 className="mr-2 animate-spin" />
+                    Loading...
+                </>
+            ) : (
+                <>
+                    {buttonText} <ArrowRight className="ml-2" />
+                </>
+            )}
+        </Button>
+    </Card>
+);
+
 
 export default function SignupPage() {
+  const router = useRouter();
+  const [loadingRole, setLoadingRole] = useState<UserRole | null>(null);
+
+  const handleRoleSelect = (role: UserRole) => {
+    setLoadingRole(role);
+    router.push(`/signup/form?role=${role}`);
+  };
+
+  const roles: Omit<RoleCardProps, 'isLoading' | 'disabled' | 'onClick'>[] = [
+    { role: 'student', title: "I'm a Student", description: "I want to learn, get help with homework, and chat with an AI tutor.", buttonText: "Start Learning" },
+    { role: 'teacher', title: "I'm a Teacher", description: "I want to create lesson plans, manage classes, and access resources.", buttonText: "Get Started" },
+    { role: 'school_head', title: "I'm a School Head", description: "I manage a school and need to track teacher and student progress.", buttonText: "Manage School" },
+    { role: 'county_officer', title: "I'm a County Officer", description: "I oversee schools in a county and need to view performance data.", buttonText: "View Reports" },
+  ];
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
@@ -18,50 +70,15 @@ export default function SignupPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Link href="/signup/form?role=student" passHref>
-                   <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
-                       <div>
-                            <h3 className="font-bold text-xl mb-2">I'm a Student</h3>
-                            <p className="text-muted-foreground">I want to learn, get help with homework, and chat with an AI tutor.</p>
-                       </div>
-                        <Button variant="ghost" className="mt-4 w-full">
-                            Start Learning <ArrowRight className="ml-2"/>
-                        </Button>
-                   </Card>
-                </Link>
-                 <Link href="/signup/form?role=teacher" passHref>
-                    <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
-                        <div>
-                            <h3 className="font-bold text-xl mb-2">I'm a Teacher</h3>
-                            <p className="text-muted-foreground">I want to create lesson plans, manage classes, and access resources.</p>
-                        </div>
-                        <Button variant="ghost" className="mt-4 w-full">
-                           Get Started <ArrowRight className="ml-2"/>
-                        </Button>
-                    </Card>
-                </Link>
-                <Link href="/signup/form?role=school_head" passHref>
-                    <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
-                        <div>
-                            <h3 className="font-bold text-xl mb-2">I'm a School Head</h3>
-                            <p className="text-muted-foreground">I manage a school and need to track teacher and student progress.</p>
-                        </div>
-                        <Button variant="ghost" className="mt-4 w-full">
-                           Manage School <ArrowRight className="ml-2"/>
-                        </Button>
-                    </Card>
-                </Link>
-                <Link href="/signup/form?role=county_officer" passHref>
-                    <Card className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer h-full flex flex-col justify-between">
-                        <div>
-                            <h3 className="font-bold text-xl mb-2">I'm a County Officer</h3>
-                            <p className="text-muted-foreground">I oversee schools in a county and need to view performance data.</p>
-                        </div>
-                        <Button variant="ghost" className="mt-4 w-full">
-                           View Reports <ArrowRight className="ml-2"/>
-                        </Button>
-                    </Card>
-                </Link>
+                {roles.map((roleInfo) => (
+                    <RoleCard
+                        key={roleInfo.role}
+                        {...roleInfo}
+                        isLoading={loadingRole === roleInfo.role}
+                        disabled={loadingRole !== null && loadingRole !== roleInfo.role}
+                        onClick={handleRoleSelect}
+                    />
+                ))}
             </CardContent>
              <CardContent className="text-center text-sm text-muted-foreground">
                 <p>
