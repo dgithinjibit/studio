@@ -1,15 +1,13 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake } from 'lucide-react';
+import { ArrowRight, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake, LogOut, ArrowLeft, Sparkles } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { StudentHeader } from '@/components/layout/student-header';
-
-type Step = 'level' | 'sub-level' | 'grade' | 'subject';
+import ChatInterface from '../chat/[subject]/chat-interface';
 
 // Mock user data for personalization
 const mockUser = {
@@ -17,6 +15,7 @@ const mockUser = {
 };
 const studentFirstName = mockUser.fullName.split(' ')[0];
 
+type Step = 'level' | 'sub-level' | 'grade' | 'subject' | 'chat';
 
 const levels = [
     { id: 'ms', name: 'Middle School' },
@@ -111,107 +110,71 @@ export default function StudentJourneyPage() {
     const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
     const [selectedSubLevel, setSelectedSubLevel] = useState<string | null>(null);
     const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
+    const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
-    const handleLevelSelect = (levelId: string) => {
+    const handleLevelSelect = useCallback((levelId: string) => {
         setSelectedLevel(levelId);
         if (subLevelsMap[levelId]?.length > 0) {
             setStep('sub-level');
         } else {
              setStep('grade');
         }
-    };
+    }, []);
     
-    const handleSubLevelSelect = (subLevelId: string) => {
+    const handleSubLevelSelect = useCallback((subLevelId: string) => {
         setSelectedSubLevel(subLevelId);
         setStep('grade');
-    };
+    }, []);
 
-    const handleGradeSelect = (gradeId: string) => {
+    const handleGradeSelect = useCallback((gradeId: string) => {
         setSelectedGrade(gradeId);
         setStep('subject');
-    };
+    }, []);
     
-    const handleSubjectSelect = (subjectName: string) => {
-        if (selectedGrade) {
-            router.push(`/student/chat/${encodeURIComponent(subjectName)}?grade=${selectedGrade}`);
-        }
-    };
+    const handleSubjectSelect = useCallback((subjectName: string) => {
+        setSelectedSubject(subjectName);
+        setStep('chat');
+    }, []);
 
-    const goBack = () => {
-        if (step === 'subject') {
+    const handleGoBack = useCallback(() => {
+        if (step === 'chat') {
+            setStep('subject');
+            setSelectedSubject(null);
+        } else if (step === 'subject') {
             setStep('grade');
+            setSelectedSubject(null);
         } else if (step === 'grade') {
-            if(selectedLevel && subLevelsMap[selectedLevel].length > 0) {
+             if(selectedLevel && subLevelsMap[selectedLevel].length > 0) {
                 setStep('sub-level');
             } else {
                 setStep('level');
             }
+            setSelectedGrade(null);
         } else if (step === 'sub-level') {
             setStep('level');
+            setSelectedSubLevel(null);
         } else if (step === 'level') {
+            setSelectedLevel(null);
             router.push('/');
         }
+    }, [step, selectedLevel, router]);
+
+    const handleLogout = () => {
+        router.push('/login');
     };
 
-    const renderStep = () => {
+    const renderContent = () => {
         switch (step) {
-            case 'level':
-                return (
-                    <Card className="w-full">
-                        <CardHeader>
-                            <CardTitle>Step 1: Choose Your Education Level</CardTitle>
-                            <CardDescription>Where are you in your learning journey?</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {levels.map((level) => (
-                                <Button key={level.id} variant="outline" className="w-full justify-between h-14 text-lg" onClick={() => handleLevelSelect(level.id)}>
-                                    {level.name}
-                                    <ArrowRight />
-                                </Button>
-                            ))}
-                        </CardContent>
-                    </Card>
-                );
-            case 'sub-level':
-                const subLevels = selectedLevel ? subLevelsMap[selectedLevel] : [];
-                return (
-                     <Card className="w-full">
-                        <CardHeader>
-                             <CardTitle>Step 2: Narrow It Down</CardTitle>
-                             <CardDescription>Let's get more specific.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {subLevels.map((sub) => (
-                                <Button key={sub.id} variant="outline" className="w-full justify-between h-14 text-lg" onClick={() => handleSubLevelSelect(sub.id)}>
-                                    {sub.name}
-                                    <ArrowRight />
-                                </Button>
-                            ))}
-                        </CardContent>
-                    </Card>
-                );
-            case 'grade':
-                const grades = selectedSubLevel ? gradesMap[selectedSubLevel] : [];
-                return (
-                    <Card className="w-full">
-                        <CardHeader>
-                            <CardTitle>Step 3: Pick Your Grade</CardTitle>
-                            <CardDescription>Almost there! Which grade are you in?</CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {grades.map((grade) => (
-                                <Button key={grade.id} variant="outline" className="h-20 text-lg" onClick={() => handleGradeSelect(grade.id)}>
-                                    {grade.name}
-                                </Button>
-                            ))}
-                        </CardContent>
-                    </Card>
-                );
+            case 'chat':
+                if (selectedSubject && selectedGrade) {
+                    return <ChatInterface subject={selectedSubject} grade={selectedGrade} />;
+                }
+                return null; // Or some fallback
             case 'subject':
-                const subjects = selectedGrade ? (subjectsMap[selectedGrade] || subjectsMap['g7']) : [];
+                 const subjects = selectedGrade ? (subjectsMap[selectedGrade] || subjectsMap['g7']) : [];
                  const gradeName = `Grade ${selectedGrade?.replace('g', '')}`
                 return (
-                    <Card className="w-full">
+                    <Card className="w-full bg-transparent border-none shadow-none">
                          <CardHeader>
                             <CardTitle>Step 4: Choose Your Subject</CardTitle>
                             <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
@@ -220,7 +183,7 @@ export default function StudentJourneyPage() {
                            {subjects.map((subject) => (
                                 <Card 
                                     key={subject.name}
-                                    className="text-center p-6 hover:bg-accent hover:border-primary transition-all cursor-pointer flex flex-col items-center justify-center aspect-square"
+                                    className="text-center p-6 bg-card/80 hover:bg-accent hover:border-primary transition-all cursor-pointer flex flex-col items-center justify-center aspect-square"
                                     onClick={() => handleSubjectSelect(subject.name)}
                                 >
                                     <subject.icon className="w-12 h-12 text-primary mb-4" />
@@ -230,21 +193,102 @@ export default function StudentJourneyPage() {
                         </CardContent>
                     </Card>
                 );
+            case 'grade':
+                const grades = selectedSubLevel ? gradesMap[selectedSubLevel] : [];
+                return (
+                    <Card className="w-full bg-transparent border-none shadow-none">
+                        <CardHeader>
+                            <CardTitle>Step 3: Pick Your Grade</CardTitle>
+                            <CardDescription>Almost there! Which grade are you in?</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {grades.map((grade) => (
+                                <Button key={grade.id} variant="outline" className="h-20 text-lg bg-card/80" onClick={() => handleGradeSelect(grade.id)}>
+                                    {grade.name}
+                                </Button>
+                            ))}
+                        </CardContent>
+                    </Card>
+                );
+            case 'sub-level':
+                const subLevels = selectedLevel ? subLevelsMap[selectedLevel] : [];
+                return (
+                     <Card className="w-full bg-transparent border-none shadow-none">
+                        <CardHeader>
+                             <CardTitle>Step 2: Narrow It Down</CardTitle>
+                             <CardDescription>Let's get more specific.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {subLevels.map((sub) => (
+                                <Button key={sub.id} variant="outline" className="w-full justify-between h-14 text-lg bg-card/80" onClick={() => handleSubLevelSelect(sub.id)}>
+                                    {sub.name}
+                                    <ArrowRight />
+                                </Button>
+                            ))}
+                        </CardContent>
+                    </Card>
+                );
+            case 'level':
+            default:
+                return (
+                    <Card className="w-full bg-transparent border-none shadow-none">
+                        <CardHeader>
+                            <CardTitle>Step 1: Choose Your Education Level</CardTitle>
+                            <CardDescription>Where are you in your learning journey?</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {levels.map((level) => (
+                                <Button key={level.id} variant="outline" className="w-full justify-between h-14 text-lg bg-card/80" onClick={() => handleLevelSelect(level.id)}>
+                                    {level.name}
+                                    <ArrowRight />
+                                </Button>
+                            ))}
+                        </CardContent>
+                    </Card>
+                );
         }
     };
+    
+    const canGoBack = !!(selectedLevel);
+    const showHeader = !!(selectedLevel);
+
+    if (step === 'chat') {
+        return (
+             <div className="flex flex-col w-full h-screen sm:h-[95vh] max-w-4xl mx-auto overflow-hidden">
+                <ChatInterface subject={selectedSubject!} grade={selectedGrade!} onBack={handleGoBack} />
+             </div>
+        )
+    }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-            <div className="w-full max-w-4xl">
-                 <StudentHeader 
-                    showBackButton={true} 
-                    onBack={goBack} 
-                    studentFirstName={studentFirstName} 
-                 />
-                {renderStep()}
-            </div>
+        <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-black/20 backdrop-blur-md sm:rounded-2xl shadow-2xl ring-1 ring-white/20">
+            <header className="flex-shrink-0 flex items-center justify-between p-4 border-b border-white/20">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 flex items-center justify-center">
+                        {canGoBack && (
+                            <button onClick={handleGoBack} className="flex items-center gap-2 text-white/80 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10" aria-label="Go Back">
+                                <ArrowLeft className="w-6 h-6" />
+                            </button>
+                        )}
+                    </div>
+                    {showHeader && (
+                        <div className="flex items-center gap-3">
+                            <Sparkles className="w-7 h-7 text-yellow-300"/>
+                            <div>
+                                <h1 className="text-xl md:text-2xl font-bold text-white">Mwalimu AI</h1>
+                                {studentFirstName && <p className="text-xs text-white/70 -mt-1">Karibu, {studentFirstName}</p>}
+                            </div>
+                        </div>
+                    )}
+                </div>
+                 <button onClick={handleLogout} className="flex items-center gap-2 text-white/80 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Log Out">
+                    <span className="hidden sm:inline">Log Out</span>
+                    <LogOut className="w-6 h-6" />
+                </button>
+            </header>
+            <main className="flex-grow overflow-y-auto p-6">
+                {renderContent()}
+            </main>
         </div>
     );
 }
-
-    

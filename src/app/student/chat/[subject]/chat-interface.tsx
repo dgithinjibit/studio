@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,10 +22,7 @@ const mockUser = {
 };
 const studentFirstName = mockUser.fullName.split(' ')[0];
 
-export default function ChatInterface({ subject }: { subject: string }) {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const grade = searchParams.get('grade') || 'g7'; // Default for safety
+export default function ChatInterface({ subject, grade, onBack }: { subject: string, grade: string, onBack?: () => void }) {
     const gradeName = `Grade ${grade.replace('g', '')}`
     
     const [messages, setMessages] = useState<Message[]>([]);
@@ -85,12 +81,12 @@ export default function ChatInterface({ subject }: { subject: string }) {
     };
 
     return (
-        <div className="flex h-screen w-full items-center justify-center bg-muted/40 p-4">
-            <Card className="w-full max-w-2xl h-[95vh] flex flex-col">
+        <div className="flex h-full w-full items-center justify-center bg-muted/40">
+            <Card className="w-full h-full flex flex-col shadow-2xl">
                 <CardHeader className='border-b'>
                      <StudentHeader 
-                        showBackButton={true} 
-                        onBack={() => router.back()} 
+                        showBackButton={!!onBack} 
+                        onBack={onBack!} 
                         studentFirstName={studentFirstName} 
                      />
                      <div className="text-center pt-2">
