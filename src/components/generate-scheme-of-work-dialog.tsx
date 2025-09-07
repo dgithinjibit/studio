@@ -28,6 +28,7 @@ import { Input } from "./ui/input";
 import { grade6SocialStudiesCurriculum } from "@/curriculum/grade6-social-studies";
 import { pp1CreCurriculum } from "@/curriculum/pp1-cre";
 import { pp1CreativeArtsCurriculum } from "@/curriculum/pp1-creative-arts";
+import { pp1EnvironmentalActivitiesCurriculum } from "@/curriculum/pp1-environmental-activities";
 import { curriculumStructure } from "@/lib/curriculum-structure";
 
 
@@ -77,6 +78,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }
     if (selectedGrade === "PP1" && selectedSubject === "Creative Activities") {
       return pp1CreativeArtsCurriculum;
+    }
+    if (selectedGrade === "PP1" && selectedSubject === "Environmental Activities") {
+      return pp1EnvironmentalActivitiesCurriculum;
     }
     return null;
   }, [selectedGrade, selectedSubject]);
@@ -346,3 +350,5 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     </Dialog>
   );
 }
+
+    
