@@ -111,21 +111,29 @@ export function DigitalAttendanceRegister({ open, onOpenChange, classInfo, onCla
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col">
                 <DialogHeader>
-                    <DialogTitle className="font-headline text-2xl">Digital Attendance Register</DialogTitle>
-                    <div className="flex items-center gap-2 pt-2">
-                        <Label htmlFor="className" className="text-sm font-medium">Class Name:</Label>
-                        <Input 
-                            id="className"
-                            value={className}
-                            onChange={(e) => setClassName(e.target.value)}
-                            className="text-lg font-bold h-9"
-                        />
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <DialogTitle className="font-headline text-2xl">Digital Attendance Register</DialogTitle>
+                            <div className="flex items-center gap-2 pt-2">
+                                <Label htmlFor="className" className="text-sm font-medium">Class Name:</Label>
+                                <Input 
+                                    id="className"
+                                    value={className}
+                                    onChange={(e) => setClassName(e.target.value)}
+                                    className="text-lg font-bold h-9"
+                                />
+                            </div>
+                            <DialogDescription className="mt-2">
+                                Marking attendance for <span className="font-bold text-primary">{format(selectedDate ?? new Date(), 'PPP')}</span>.
+                            </DialogDescription>
+                        </div>
+                        <Button onClick={handleSave} className="w-full sm:w-auto">
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Changes & Close
+                        </Button>
                     </div>
-                     <DialogDescription>
-                        Marking attendance for <span className="font-bold text-primary">{format(selectedDate ?? new Date(), 'PPP')}</span>.
-                    </DialogDescription>
                 </DialogHeader>
-                <div className="grid md:grid-cols-3 gap-6 flex-1 min-h-0">
+                <div className="grid md:grid-cols-3 gap-6 flex-1 min-h-0 pt-4">
                     <div className="md:col-span-1 flex flex-col gap-4">
                          <Calendar
                             mode="single"
@@ -185,12 +193,6 @@ export function DigitalAttendanceRegister({ open, onOpenChange, classInfo, onCla
                         </ScrollArea>
                     </div>
                 </div>
-                 <DialogFooter>
-                    <Button onClick={handleSave} className="w-full sm:w-auto">
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Changes & Close
-                    </Button>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
