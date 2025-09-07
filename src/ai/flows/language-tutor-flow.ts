@@ -3,6 +3,7 @@
 
 /**
  * @fileOverview A specialized AI flow for language tutoring.
+ * @deprecated This flow is no longer in use and has been consolidated into mwalimu-ai-flow.ts
  */
 
 import {ai} from '@/ai/genkit';
