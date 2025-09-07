@@ -18,6 +18,9 @@ import '@/ai/flows/generate-dashboard-summary.ts';
 import '@/ai/flows/generate-dashboard-summary-types.ts';
 import '@/ai/flows/school-head-consultant.ts';
 import '@/ai/flows/school-head-consultant-types.ts';
+import '@/ai/flows/generate-county-summary.ts';
+import '@/ai/flows/generate-county-summary-types.ts';
+
 
 
 

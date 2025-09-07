@@ -7,7 +7,7 @@ import type { School } from '@/lib/types';
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+const MAPBOX_TOKEN = "pk.eyJ1IjoiZWR1cGxleCIsImEiOiJjbHh6M3F2NnMwOXNqMmtwZ3M3NmdsZWhsIn0.PNbK6xhD47iY4Cg3M2Y74A";
 
 interface SchoolMapProps {
   schools: School[];
@@ -27,9 +27,9 @@ export default function SchoolMap({ schools }: SchoolMapProps) {
   return (
     <Map
       initialViewState={{
-        longitude: 36.9463, // Centered on Nyeri
-        latitude: -0.4134,
-        zoom: 10
+        longitude: 36.8219, // Centered on Nairobi
+        latitude: -1.2921,
+        zoom: 8
       }}
       style={{ width: '100%', height: '100%' }}
       mapStyle="mapbox://styles/mapbox/streets-v11"
