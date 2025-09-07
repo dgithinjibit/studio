@@ -47,14 +47,15 @@ Generate a detailed Scheme of Work based on the following information. The outpu
 **Duration:** {{{numberOfWeeks}}} weeks, with {{{lessonsPerWeek}}} lessons per week.
 **Available Resources:** {{{availableResources}}}
 
-The scheme of work should be structured in a table with the following columns:
-- Week
-- Lesson
-- Topic/Sub-Topic
-- Learning Outcomes
-- Learning Activities
-- Assessment Methods
-- Resources
+The scheme of work must be a Markdown table with the following columns:
+- **Week**: The week number.
+- **Lesson**: The lesson number within the week.
+- **Topic/Sub-Topic**: The specific topic for the lesson, derived from the Sub-Strand.
+- **Learning Outcomes**: What the student should be able to do by the end of the lesson.
+- **Learning Activities**: Specific learning experiences (Knowledge, skill, attitude) for the lesson.
+- **Key Inquiry Question(s)**: Socratic questions to provoke critical thinking.
+- **Resources**: Learning resources required for the lesson.
+- **Assessment**: The method of assessment to be used (e.g., Oral questions, Observation, Project).
 
 Create a comprehensive and practical scheme of work based on these inputs.
 `,
