@@ -1,0 +1,126 @@
+
+"use client";
+
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import { generateSchemeOfWork, GenerateSchemeOfWorkInput } from "@/ai/flows/generate-scheme-of-work";
+import ReactMarkdown from 'react-markdown';
+
+export function GenerateSchemeOfWorkDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
+  const [loading, setLoading] = useState(false);
+  const [generatedScheme, setGeneratedScheme] = useState("");
+  const { toast } = useToast();
+  const [weeks, setWeeks] = useState(6);
+  const [lessonsPerWeek, setLessonsPerWeek] = useState(3);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+    setGeneratedScheme("");
+
+    const formData = new FormData(event.currentTarget);
+    const data: GenerateSchemeOfWorkInput = {
+      subject: formData.get("subject") as string,
+      grade: formData.get("grade") as string,
+      subStrand: formData.get("subStrand") as string,
+      availableResources: formData.get("availableResources") as string,
+      numberOfWeeks: weeks.toString(),
+      lessonsPerWeek: lessonsPerWeek.toString(),
+    };
+    
+    try {
+        const result = await generateSchemeOfWork(data);
+        if (result.schemeOfWork) {
+            setGeneratedScheme(result.schemeOfWork);
+        }
+    } catch (error) {
+        console.error(error);
+        toast({
+            variant: "destructive",
+            title: "Error generating scheme of work",
+            description: "An unexpected error occurred. Please try again.",
+        });
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-4xl">
+        <DialogHeader>
+          <DialogTitle className="font-headline text-2xl">Schemer: Schemes of Work Creator</DialogTitle>
+          <DialogDescription>
+            Create CBC-compliant Schemes of Work in official table format.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <Label htmlFor="subject">Subject</Label>
+                    <Input id="subject" name="subject" defaultValue="Mathematics" />
+                </div>
+                 <div>
+                    <Label htmlFor="grade">Grade</Label>
+                    <Input id="grade" name="grade" defaultValue="4" />
+                </div>
+                 <div>
+                    <Label htmlFor="subStrand">Sub-Strand</Label>
+                    <Input id="subStrand" name="subStrand" placeholder="e.g., Numbers, Grammar, Living Things" />
+                </div>
+                <div>
+                    <Label htmlFor="numberOfWeeks">Number of Weeks: {weeks}</Label>
+                    <Slider id="numberOfWeeks" name="numberOfWeeks" min={1} max={12} step={1} value={[weeks]} onValueChange={(value) => setWeeks(value[0])} />
+                </div>
+                 <div>
+                    <Label htmlFor="lessonsPerWeek">Lessons per Week: {lessonsPerWeek}</Label>
+                    <Slider id="lessonsPerWeek" name="lessonsPerWeek" min={1} max={5} step={1} value={[lessonsPerWeek]} onValueChange={(value) => setLessonsPerWeek(value[0])} />
+                </div>
+                 <div>
+                    <Label htmlFor="availableResources">Available Resources</Label>
+                    <Textarea id="availableResources" name="availableResources" defaultValue="Chalkboard, basic materials" />
+                </div>
+              <DialogFooter>
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Generate Scheme of Work
+                </Button>
+              </DialogFooter>
+            </form>
+             <div className="border-l border-border pl-8">
+                <h3 className="font-bold mb-2">Generated Scheme of Work:</h3>
+                {loading && (
+                    <div className="flex items-center justify-center h-full">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                )}
+                {generatedScheme && (
+                    <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 overflow-auto h-[500px]">
+                        <ReactMarkdown>{generatedScheme}</ReactMarkdown>
+                    </div>
+                )}
+                 {!loading && !generatedScheme && (
+                    <div className="flex items-center justify-center h-full text-muted-foreground text-center">
+                        <p>Your generated scheme of work will appear here.</p>
+                    </div>
+                )}
+            </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

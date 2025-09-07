@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, ClipboardList, CalendarDays, HelpCircle, GraduationCap, Mail } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { GenerateLessonPlanDialog } from '@/components/generate-lesson-plan-dialog';
+import { GenerateSchemeOfWorkDialog } from '@/components/generate-scheme-of-work-dialog';
 import {
   ChartContainer,
   ChartTooltip,
@@ -25,47 +26,62 @@ const teacherTools = [
         title: "Lesson Plan Generator",
         description: "Create CBC-aligned lesson plans",
         icon: FilePen,
-        action: "Open Lesson Plan Generator"
+        action: "Open Lesson Plan Generator",
+        dialog: "lessonPlan"
     },
     {
         title: "Worksheet Generator",
         description: "Generate printable worksheets",
         icon: ClipboardList,
-        action: "Open Worksheet Generator"
+        action: "Open Worksheet Generator",
+        dialog: null
     },
     {
         title: "Schemer: Schemes of Work",
         description: "Create complete Schemes of Work",
         icon: CalendarDays,
-        action: "Open Schemer: Schemes of Work"
+        action: "Open Schemer: Schemes of Work",
+        dialog: "schemeOfWork"
     },
     {
         title: "Multiple Choice Quiz",
         description: "Generate quizzes and assessments",
         icon: HelpCircle,
-        action: "Open Multiple Choice Quiz"
+        action: "Open Multiple Choice Quiz",
+        dialog: null
     },
     {
         title: "Rubric Generator",
         description: "Create custom rubrics",
         icon: GraduationCap,
-        action: "Open Rubric Generator"
+        action: "Open Rubric Generator",
+        dialog: null
     },
     {
         title: "Email to Family",
         description: "Generate professional parent communications",
         icon: Mail,
-        action: "Open Email to Family"
+        action: "Open Email to Family",
+        dialog: null
     }
 ];
 
 export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
     const [isLessonPlanDialogOpen, setLessonPlanDialogOpen] = useState(false);
+    const [isSchemeOfWorkDialogOpen, setSchemeOfWorkDialogOpen] = useState(false);
     
     const chartData = teacher.classes.map(c => ({ 
         name: c.name.replace(' English', '').replace(' Literature', ''), 
         performance: c.performance 
     }));
+    
+    const handleToolClick = (dialog: string | null) => {
+        if (dialog === 'lessonPlan') {
+            setLessonPlanDialogOpen(true);
+        } else if (dialog === 'schemeOfWork') {
+            setSchemeOfWorkDialogOpen(true);
+        }
+    };
 
     return (
         <>
@@ -103,7 +119,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                                     <CardDescription>{tool.description}</CardDescription>
                                 </CardHeader>
                                 <CardFooter className="mt-auto">
-                                    <Button variant="secondary" className="w-full" onClick={() => index === 0 && setLessonPlanDialogOpen(true)}>
+                                    <Button variant="secondary" className="w-full" onClick={() => handleToolClick(tool.dialog)}>
                                         {tool.action}
                                     </Button>
                                 </CardFooter>
@@ -169,6 +185,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
 
             </div>
              <GenerateLessonPlanDialog open={isLessonPlanDialogOpen} onOpenChange={setLessonPlanDialogOpen} />
+             <GenerateSchemeOfWorkDialog open={isSchemeOfWorkDialogOpen} onOpenChange={setSchemeOfWorkDialogOpen} />
         </>
     );
 }
