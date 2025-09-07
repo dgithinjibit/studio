@@ -100,7 +100,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {teacher.classes.map(c => (
-                             <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                             <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleClassSelect(c)}>
                                 <div className="flex items-center gap-4">
                                      <Avatar className="h-12 w-12 border-2 border-primary/20">
                                         <AvatarFallback className="bg-primary/10 text-primary font-bold">{c.name.charAt(0)}</AvatarFallback>
@@ -110,22 +110,12 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                                         <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
                                     </div>
                                 </div>
-                                <Button variant="ghost" size="icon" onClick={() => handleClassSelect(c)}>
+                                <Button variant="ghost" size="icon">
                                     <ChevronRight className="w-5 h-5" />
                                 </Button>
                             </div>
                         ))}
                     </CardContent>
-                     <CardFooter>
-                        <Button 
-                            variant="outline" 
-                            className="w-full" 
-                            onClick={() => selectedClass && handleClassSelect(selectedClass)}
-                            disabled={!teacher.classes.length || !selectedClass}
-                        >
-                            Digital Attendance Register
-                        </Button>
-                    </CardFooter>
                 </Card>
 
                 <Card className="md:col-span-3">
