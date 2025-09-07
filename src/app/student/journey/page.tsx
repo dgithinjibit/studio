@@ -11,6 +11,7 @@ import ChatInterface from '../chat/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
 import { BlockchainCurriculumDisplay } from '@/components/blockchain-curriculum-display';
+import { AiIcon } from '@/components/icons';
 
 
 // Mock user data for personalization
@@ -52,7 +53,8 @@ type Subject = {
     icon: LucideIcon | string;
 };
 
-const aiAndBlockchainSubject: Subject = { name: 'AI & Blockchain', icon: BrainCircuit };
+const aiSubject: Subject = { name: 'AI', icon: AiIcon };
+const blockchainSubject: Subject = { name: 'Blockchain', icon: BrainCircuit };
 
 const commonSubjects: Subject[] = [
     { name: 'English', icon: '/assets/english-icon.png' },
@@ -70,12 +72,12 @@ const pastoralInstruction = { name: 'Pastoral Instruction Programme', icon: Hear
 
 
 const subjectsMap: { [key: string]: Subject[] } = {
-    g4: [...commonSubjects, aiAndBlockchainSubject],
-    g5: [...commonSubjects, aiAndBlockchainSubject],
-    g6: [...commonSubjects, aiAndBlockchainSubject],
-    g7: [...commonSubjects, pastoralInstruction, aiAndBlockchainSubject],
-    g8: [...commonSubjects, pastoralInstruction, aiAndBlockchainSubject],
-    g9: [...commonSubjects, pastoralInstruction, aiAndBlockchainSubject],
+    g4: [...commonSubjects, aiSubject, blockchainSubject],
+    g5: [...commonSubjects, aiSubject, blockchainSubject],
+    g6: [...commonSubjects, aiSubject, blockchainSubject],
+    g7: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
+    g8: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
+    g9: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
 };
 
 const levelColors = ["bg-teal-500", "bg-amber-500"];
@@ -112,7 +114,7 @@ export default function StudentJourneyPage() {
     
     const handleSubjectSelect = useCallback((subjectName: string) => {
         setSelectedSubject(subjectName);
-        if (subjectName === 'AI & Blockchain') {
+        if (subjectName === 'Blockchain') {
             setStep('content');
         } else {
             setStep('chat');
