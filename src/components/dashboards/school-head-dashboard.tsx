@@ -16,6 +16,7 @@ import { MyResources } from '../my-resources';
 import { Textarea } from '../ui/textarea';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
 import { StaffManagementTab } from '../staff-management-tab';
+import Link from 'next/link';
 
 export function SchoolHeadDashboard() {
     const [schoolData, setSchoolData] = useState<Teacher>(mockTeacher);
@@ -101,7 +102,7 @@ export function SchoolHeadDashboard() {
                 question: consultantQuestion,
                 schoolData: {
                     teacherCount: 5, // Mock data
-                    studentCount: schoolData.totalStudents,
+                    studentCount: totalStudents,
                     averageAttendance: 92, // Mock data
                     classes: schoolData.classes.map(c => ({ name: c.name, studentCount: c.students.length, averagePerformance: c.performance })),
                     resources: allResources.map((r: any) => ({ title: r.title, type: r.type })),
@@ -261,10 +262,16 @@ export function SchoolHeadDashboard() {
                                 <Megaphone className="text-primary w-6 h-6"/>
                                 School-wide Communications
                             </CardTitle>
-                            <CardDescription>Post announcements for all staff. (Feature coming soon)</CardDescription>
+                            <CardDescription>A central hub for all official school announcements.</CardDescription>
                         </CardHeader>
-                        <CardContent className="text-center text-muted-foreground p-8">
-                            <p>The announcements module is under development.</p>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">View and track all announcements sent to staff. For a detailed view, visit the main communications page.</p>
+                             <Button asChild>
+                                <Link href="/dashboard/communications">
+                                    Open Communications Hub
+                                    <ChevronRight className="ml-2 w-4 h-4" />
+                                </Link>
+                            </Button>
                         </CardContent>
                     </Card>
                 </TabsContent>

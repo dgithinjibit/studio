@@ -1,5 +1,5 @@
 
-import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student } from './types';
+import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication } from './types';
 
 export const mockUsers: User[] = [
   { id: 'usr_1', name: 'Asha Juma', email: 'asha.juma@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
@@ -161,4 +161,31 @@ export const mockSchools: School[] = [
     { id: 'sch_11', name: 'Ngunguru Primary School', countyId: 'county_19', latitude: -0.4777, longitude: 36.9657 },
     { id: 'sch_12', name: 'Alliance High School', countyId: 'county_22', latitude: -1.2263, longitude: 36.7214 },
     { id: 'sch_13', name: 'Nairobi School', countyId: 'county_47', latitude: -1.2662, longitude: 36.7845 },
+];
+
+export const mockCommunications: Communication[] = [
+    {
+        id: 'comm_1',
+        title: 'Urgent: Staff Meeting Tomorrow at 8 AM',
+        content: 'Please be advised that there will be a mandatory all-staff meeting in the main hall tomorrow morning to discuss the upcoming term.',
+        recipient: 'All Staff',
+        date: new Date('2024-07-29T08:00:00Z'),
+        acknowledged: false,
+    },
+    {
+        id: 'comm_2',
+        title: 'Distribution of New Science Kits',
+        content: 'The new science kits for Grade 6 have arrived. Please collect them from the main office by Friday.',
+        recipient: 'Grade 6 Teachers',
+        date: new Date('2024-07-28T11:30:00Z'),
+        acknowledged: true,
+    },
+    {
+        id: 'comm_3',
+        title: 'Reminder: Submit Term 2 Performance Reports',
+        content: 'All class teachers are reminded to submit their end-of-term performance reports by end of day this Friday.',
+        recipient: 'All Teachers',
+        date: new Date('2024-07-27T15:00:00Z'),
+        acknowledged: false,
+    }
 ];
