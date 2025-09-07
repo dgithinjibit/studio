@@ -30,7 +30,7 @@ export default function GuidePage() {
               Navigate to the <strong>Teacher Tools</strong> page from the sidebar.
             </p>
             <p>
-              Here you can instantly create high-quality, CBC-aligned resources like Lesson Plans, Schemes of Work, Worksheets, and Rubrics.
+              Here you can instantly create high-quality, CBE-aligned resources like Lesson Plans, Schemes of Work, Worksheets, and Rubrics.
             </p>
             <p>
               Just fill in the details, and let the AI do the heavy lifting! You can save any generated resource to <strong>My Resources</strong>.
