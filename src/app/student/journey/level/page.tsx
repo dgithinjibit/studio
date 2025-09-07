@@ -23,14 +23,16 @@ export default function SelectLevelPage() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
             <div className="w-full max-w-2xl">
                 <div className="text-center mb-8">
-                    <h1 className="font-headline text-4xl font-bold">Step 1: Choose Your Education Level</h1>
-                    <p className="text-muted-foreground text-lg mt-2">This helps us find the right starting point for you.</p>
+                    <h1 className="font-headline text-4xl font-bold">Meet Mwalimu AI 🦉</h1>
+                    <p className="text-muted-foreground text-lg mt-2">
+                        I’m your friendly Socratic Mentor. I'm here to guide you through learning by asking questions that spark your curiosity and help you discover answers on your own.
+                    </p>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Select Your Level</CardTitle>
-                        <CardDescription>Where are you in your learning journey?</CardDescription>
+                        <CardTitle>Step 1: Choose Your Education Level</CardTitle>
+                        <CardDescription>To get started, where are you in your learning journey?</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {levels.map((level) => (

@@ -15,7 +15,7 @@ export default function WelcomePage() {
             <SyncSentaLogo className="w-24 h-24 text-primary mx-auto mb-4" />
             <h1 className="font-headline text-5xl font-bold">Karibu! Welcome to SyncSenta!</h1>
             <p className="text-muted-foreground text-xl mt-4">
-              I’m Mwalimu AI — your friendly Socratic Mentor. 🦉 I'm here to guide you through learning by asking questions that spark your curiosity and help you discover answers on your own.
+              The AI-powered ecosystem for Kenyan education. Empowering students, teachers, and administrators with the tools they need to succeed.
             </p>
         </div>
 
