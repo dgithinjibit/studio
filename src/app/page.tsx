@@ -26,22 +26,22 @@ export default function CurriculumIngestorPage() {
 
         const formData = new FormData(event.currentTarget);
         const text = formData.get('documentText') as string;
-        const pdfFile = formData.get('pdfFile') as File;
+        const pdfFiles = (formData.get('pdfFiles') as FileList);
 
         if (!text.trim()) {
             toast({
                 variant: 'destructive',
                 title: 'Document text is empty',
-                description: 'Please paste the text from your curriculum document.'
+                description: 'Please paste the text from your curriculum document(s).'
             });
             return;
         }
 
-        if (pdfFile.size === 0) {
+        if (pdfFiles.length === 0) {
             toast({
                 variant: 'destructive',
-                title: 'No PDF selected',
-                description: 'Please select the original PDF file for backup.'
+                title: 'No PDFs selected',
+                description: 'Please select the original PDF file(s) for backup.'
             });
             return;
         }
@@ -52,29 +52,33 @@ export default function CurriculumIngestorPage() {
         const subject = formData.get('subject') as string;
 
         try {
-            // 1. Upload the original PDF for backup
-            const storageRef = ref(storage, `curriculum_pdfs/${pdfFile.name}`);
-            await uploadBytes(storageRef, pdfFile);
-            const downloadURL = await getDownloadURL(storageRef);
+            // 1. Upload all the original PDFs for backup
+            const uploadPromises = Array.from(pdfFiles).map(file => {
+                const storageRef = ref(storage, `curriculum_pdfs/${file.name}`);
+                return uploadBytes(storageRef, file).then(snapshot => getDownloadURL(snapshot.ref));
+            });
+            
+            const downloadURLs = await Promise.all(uploadPromises);
 
             // 2. Process the pasted text with the AI
+            // This assumes the pasted text is for one logical curriculum unit, even if it spans multiple files.
             const result = await ingestCurriculum({ documentText: text, grade, subject });
 
             if (result.parsedCurriculum && result.parsedCurriculum.length > 0) {
                 
-                // 3. Save the structured data AND the backup URL to Firestore
+                // 3. Save the structured data AND the backup URLs to Firestore
                 const curriculumCollection = collection(db, "curriculumData");
                 await addDoc(curriculumCollection, {
                     grade,
                     subject,
                     createdAt: new Date().toISOString(),
-                    originalFileUrl: downloadURL,
+                    originalFileUrls: downloadURLs, // Save all URLs
                     content: result.parsedCurriculum,
                 });
 
                 toast({
                     title: "Curriculum Ingested!",
-                    description: `Successfully parsed and saved ${result.parsedCurriculum.length} item(s) for ${grade} ${subject}. PDF backed up.`,
+                    description: `Successfully parsed ${result.parsedCurriculum.length} item(s) for ${grade} ${subject}. ${downloadURLs.length} PDF(s) backed up.`,
                 });
                 setDocumentText(""); // Clear the textarea
                 (event.target as HTMLFormElement).reset(); // Clear the form including file input
@@ -90,7 +94,7 @@ export default function CurriculumIngestorPage() {
             toast({
                 variant: "destructive",
                 title: "Error During Ingestion",
-                description: "An unexpected error occurred while parsing or uploading. Check the console for details."
+                description: "An unexpected error occurred. Check the console for details."
             });
         } finally {
             setLoading(false);
@@ -106,7 +110,7 @@ export default function CurriculumIngestorPage() {
                         Curriculum Ingestor
                     </CardTitle>
                     <CardDescription>
-                        Upload the curriculum PDF for backup and paste its text content. The AI will parse the text and store it in a structured format.
+                        Upload curriculum PDFs for backup and paste the text content. The AI will parse the text and store it in a structured format.
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
@@ -131,16 +135,16 @@ export default function CurriculumIngestorPage() {
                             </div>
                         </div>
                          <div className="space-y-2">
-                            <Label htmlFor="pdfFile">Original PDF Document</Label>
-                            <Input id="pdfFile" name="pdfFile" type="file" accept=".pdf" required />
-                             <p className="text-sm text-muted-foreground">Select the PDF file to be saved for backup.</p>
+                            <Label htmlFor="pdfFiles">Original PDF Document(s)</Label>
+                            <Input id="pdfFiles" name="pdfFiles" type="file" accept=".pdf" required multiple />
+                             <p className="text-sm text-muted-foreground">Select one or more PDF files to be saved for backup.</p>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="documentText">Curriculum Document Text</Label>
                             <Textarea 
                                 id="documentText"
                                 name="documentText"
-                                placeholder="Copy and paste the entire text content from the PDF here. Ensure it includes tables with columns like 'Strand', 'Sub strand', etc."
+                                placeholder="Copy and paste the entire text content from the PDF(s) here. Ensure it includes tables with columns like 'Strand', 'Sub strand', etc."
                                 className="h-96 font-mono text-xs"
                                 value={documentText}
                                 onChange={(e) => setDocumentText(e.target.value)}
