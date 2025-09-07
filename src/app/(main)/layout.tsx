@@ -9,19 +9,17 @@ import { AppHeader } from "@/components/layout/app-header";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (
-    <RoleProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset className="flex flex-col">
-            <AppHeader />
-             <main className="p-4 md:p-6">
-                {children}
-            </main>
-            <footer className="mt-auto p-4 text-center text-xs text-muted-foreground">
-              by @dantedone
-            </footer>
-        </SidebarInset>
-      </SidebarProvider>
-    </RoleProvider>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset className="flex flex-col">
+          <AppHeader />
+           <main className="p-4 md:p-6">
+              {children}
+          </main>
+          <footer className="mt-auto p-4 text-center text-xs text-muted-foreground">
+            by @dantedone
+          </footer>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
