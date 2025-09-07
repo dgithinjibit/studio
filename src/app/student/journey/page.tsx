@@ -9,7 +9,7 @@ import { ArrowRight, BookOpen, Leaf, Wind, Palette, Languages, Church, HeartHand
 import type { LucideIcon } from 'lucide-react';
 import ChatInterface from '../chat/[subject]/chat-interface';
 import { StudentHeader } from '@/components/layout/student-header';
-import { EnglishIcon, CreativeArtsIcon } from '@/components/icons';
+import Image from 'next/image';
 
 
 // Mock user data for personalization
@@ -46,10 +46,15 @@ const gradesMap: { [key: string]: { id: string; name: string }[] } = {
     ],
 };
 
-const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
+type Subject = {
+    name: string;
+    icon: LucideIcon | string;
+};
+
+const subjectsMap: { [key: string]: Subject[] } = {
     g7: [
-        { name: 'English', icon: EnglishIcon },
-        { name: 'Creative Arts', icon: CreativeArtsIcon },
+        { name: 'English', icon: '/assets/english-icon.svg' },
+        { name: 'Creative Arts', icon: '/assets/creative-arts-icon.svg' },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -58,8 +63,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
     ],
      g4: [
-        { name: 'English', icon: EnglishIcon },
-        { name: 'Creative Arts', icon: CreativeArtsIcon },
+        { name: 'English', icon: '/assets/english-icon.svg' },
+        { name: 'Creative Arts', icon: '/assets/creative-arts-icon.svg' },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -67,8 +72,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Creative Activities', icon: Palette },
     ],
      g5: [
-        { name: 'English', icon: EnglishIcon },
-        { name: 'Creative Arts', icon: CreativeArtsIcon },
+        { name: 'English', icon: '/assets/english-icon.svg' },
+        { name: 'Creative Arts', icon: '/assets/creative-arts-icon.svg' },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -76,8 +81,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Creative Activities', icon: Palette },
     ],
      g6: [
-        { name: 'English', icon: EnglishIcon },
-        { name: 'Creative Arts', icon: CreativeArtsIcon },
+        { name: 'English', icon: '/assets/english-icon.svg' },
+        { name: 'Creative Arts', icon: '/assets/creative-arts-icon.svg' },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -85,8 +90,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Creative Activities', icon: Palette },
     ],
     g8: [
-        { name: 'English', icon: EnglishIcon },
-        { name: 'Creative Arts', icon: CreativeArtsIcon },
+        { name: 'English', icon: '/assets/english-icon.svg' },
+        { name: 'Creative Arts', icon: '/assets/creative-arts-icon.svg' },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -95,8 +100,8 @@ const subjectsMap: { [key: string]: { name: string; icon: LucideIcon }[] } = {
         { name: 'Pastoral Instruction Programme', icon: HeartHandshake },
     ],
     g9: [
-        { name: 'English', icon: EnglishIcon },
-        { name: 'Creative Arts', icon: CreativeArtsIcon },
+        { name: 'English', icon: '/assets/english-icon.svg' },
+        { name: 'Creative Arts', icon: '/assets/creative-arts-icon.svg' },
         { name: 'Indigenous Language', icon: Languages },
         { name: 'Kiswahili/Sign Language', icon: BookOpen },
         { name: 'Religious Education', icon: Church },
@@ -160,6 +165,14 @@ export default function StudentJourneyPage() {
             router.push('/');
         }
     }, [step, selectedLevel, router]);
+    
+    const renderIcon = (icon: LucideIcon | string) => {
+        if (typeof icon === 'string') {
+            return <Image src={icon} alt="" width={48} height={48} className="w-12 h-12 mb-4" />;
+        }
+        const IconComponent = icon;
+        return <IconComponent className="w-12 h-12 text-primary mb-4" />;
+    };
 
     const renderContent = () => {
         switch (step) {
@@ -184,7 +197,7 @@ export default function StudentJourneyPage() {
                                     className="text-center p-6 bg-card/80 hover:bg-accent hover:border-primary transition-all cursor-pointer flex flex-col items-center justify-center aspect-square"
                                     onClick={() => handleSubjectSelect(subject.name)}
                                 >
-                                    <subject.icon className="w-12 h-12 text-primary mb-4" />
+                                    {renderIcon(subject.icon)}
                                     <h3 className="font-bold text-lg">{subject.name}</h3>
                                 </Card>
                             ))}
@@ -268,3 +281,5 @@ export default function StudentJourneyPage() {
         </div>
     );
 }
+
+    
