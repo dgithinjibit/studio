@@ -33,7 +33,9 @@ import { pp2CreativeArtsCurriculum } from "@/curriculum/pp2-creative-arts";
 import { pp1EnvironmentalActivitiesCurriculum } from "@/curriculum/pp1-environmental-activities";
 import { pp2EnvironmentalActivitiesCurriculum } from "@/curriculum/pp2-environmental-activities";
 import { pp1LanguageActivitiesCurriculum } from "@/curriculum/pp1-language-activities";
+import { pp2LanguageActivitiesCurriculum } from "@/curriculum/pp2-language-activities";
 import { pp1MathematicsActivitiesCurriculum } from "@/curriculum/pp1-mathematics-activities";
+import { pp2MathematicsActivitiesCurriculum } from "@/curriculum/pp2-mathematics-activities";
 import { curriculumStructure } from "@/lib/curriculum-structure";
 
 
@@ -99,8 +101,14 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     if (selectedGrade === "PP1" && selectedSubject === "Language Activities") {
       return pp1LanguageActivitiesCurriculum;
     }
+    if (selectedGrade === "PP2" && selectedSubject === "Language Activities") {
+        return pp2LanguageActivitiesCurriculum;
+    }
     if (selectedGrade === "PP1" && selectedSubject === "Mathematical Activities") {
         return pp1MathematicsActivitiesCurriculum;
+    }
+    if (selectedGrade === "PP2" && selectedSubject === "Mathematical Activities") {
+        return pp2MathematicsActivitiesCurriculum;
     }
     return null;
   }, [selectedGrade, selectedSubject]);
@@ -370,8 +378,5 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     </Dialog>
   );
 }
-
-    
-
 
     
