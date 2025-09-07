@@ -123,6 +123,14 @@ const mwalimuAiTutorFlow = ai.defineFlow(
           response: "Habari! I'm your Gikuyu Literacy Buddy. You can ask me to translate words, quiz you, or teach you about categories like 'greetings', 'animals', or 'family'. What would you like to do first?"
         };
       }
+      if (input.subject === 'AI') {
+        const gradeName = `Grade ${input.grade.replace('g', '')}`;
+        return {
+          response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore AI for ${gradeName}.
+
+According to the curriculum, a key skill is understanding algorithms. Let's start there: can you describe the 'algorithm' or steps you followed to get ready for school today?`
+        };
+      }
       const gradeName = `Grade ${input.grade.replace('g', '')}`;
       return {
         response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${gradeName} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
