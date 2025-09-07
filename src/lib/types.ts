@@ -62,4 +62,10 @@ export type School = {
   longitude: number;
 };
 
+export type LessonPlan = {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+};
     

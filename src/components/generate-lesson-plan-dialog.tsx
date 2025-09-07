@@ -16,12 +16,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Copy } from "lucide-react";
+import { Loader2, Copy, Save } from "lucide-react";
 import { generateLessonPlan, GenerateLessonPlanInput } from "@/ai/flows/generate-lesson-plan";
+import type { LessonPlan } from "@/lib/types";
 
-export function GenerateLessonPlanDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
+interface GenerateLessonPlanDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onLessonPlanSaved: () => void;
+}
+
+export function GenerateLessonPlanDialog({ open, onOpenChange, onLessonPlanSaved }: GenerateLessonPlanDialogProps) {
   const [loading, setLoading] = useState(false);
   const [generatedPlan, setGeneratedPlan] = useState("");
+  const [currentTopic, setCurrentTopic] = useState("");
   const { toast } = useToast();
 
   const handleCopy = () => {
@@ -31,6 +39,28 @@ export function GenerateLessonPlanDialog({ open, onOpenChange }: { open: boolean
             description: "The lesson plan has been copied.",
         });
     });
+  };
+  
+  const handleSave = () => {
+    if (!generatedPlan) return;
+    
+    const newPlan: LessonPlan = {
+      id: `lesson_${Date.now()}`,
+      title: currentTopic || "Untitled Lesson Plan",
+      content: generatedPlan,
+      createdAt: new Date().toISOString(),
+    };
+
+    const existingPlans: LessonPlan[] = JSON.parse(localStorage.getItem("lessonPlans") || "[]");
+    localStorage.setItem("lessonPlans", JSON.stringify([newPlan, ...existingPlans]));
+    
+    toast({
+      title: "Lesson Plan Saved!",
+      description: `"${newPlan.title}" has been added to your resources.`,
+    });
+
+    onOpenChange(false);
+    onLessonPlanSaved(); // Notify parent to switch tabs
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,6 +75,8 @@ export function GenerateLessonPlanDialog({ open, onOpenChange }: { open: boolean
       gradeLevel: formData.get("gradeLevel") as string,
       learningObjectives: formData.get("learningObjectives") as string,
     };
+    
+    setCurrentTopic(data.topic);
     
     try {
         const result = await generateLessonPlan(data);
@@ -64,60 +96,81 @@ export function GenerateLessonPlanDialog({ open, onOpenChange }: { open: boolean
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+        onOpenChange(isOpen);
+        if (!isOpen) {
+            setGeneratedPlan(""); // Reset on close
+        }
+    }}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="font-headline">Generate Lesson Plan</DialogTitle>
           <DialogDescription>
-            Use AI to generate a draft lesson plan. Fill in the details below.
+            Use AI to generate a draft lesson plan. You can edit the result before saving.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="subject" className="text-right">Subject</Label>
-              <Input id="subject" name="subject" defaultValue="Mathematics" className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="topic" className="text-right">Topic</Label>
-              <Input id="topic" name="topic" defaultValue="Introduction to Algebra" className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="gradeLevel" className="text-right">Grade Level</Label>
-               <Select name="gradeLevel" defaultValue="Grade 7">
-                    <SelectTrigger className="col-span-3">
-                        <SelectValue placeholder="Select a grade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {Array.from({ length: 12 }, (_, i) => (
-                            <SelectItem key={i + 1} value={`Grade ${i + 1}`}>
-                                Grade {i + 1}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="learningObjectives" className="text-right mt-2">Objectives</Label>
-              <Textarea id="learningObjectives" name="learningObjectives" placeholder="e.g., Understand variables, Solve simple linear equations" className="col-span-3" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Generate
-            </Button>
-          </DialogFooter>
-        </form>
-        {generatedPlan && (
-            <div className="mt-4 border-t pt-4">
-                <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-bold">Generated Plan:</h3>
-                    <Button variant="ghost" size="icon" onClick={handleCopy}>
-                        <Copy className="h-4 w-4" />
-                    </Button>
+        {!generatedPlan ? (
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="subject" className="text-right">Subject</Label>
+                  <Input id="subject" name="subject" defaultValue="Mathematics" className="col-span-3" />
                 </div>
-                <pre className="text-sm bg-muted p-4 rounded-md whitespace-pre-wrap font-body">{generatedPlan}</pre>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="topic" className="text-right">Topic</Label>
+                  <Input id="topic" name="topic" defaultValue="Introduction to Algebra" className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="gradeLevel" className="text-right">Grade Level</Label>
+                   <Select name="gradeLevel" defaultValue="Grade 7">
+                        <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Select a grade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Array.from({ length: 12 }, (_, i) => (
+                                <SelectItem key={i + 1} value={`Grade ${i + 1}`}>
+                                    Grade {i + 1}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="grid grid-cols-4 items-start gap-4">
+                  <Label htmlFor="learningObjectives" className="text-right mt-2">Objectives</Label>
+                  <Textarea id="learningObjectives" name="learningObjectives" placeholder="e.g., Understand variables, Solve simple linear equations" className="col-span-3" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Generate
+                </Button>
+              </DialogFooter>
+            </form>
+        ) : (
+             <div className="mt-4 border-t pt-4 space-y-4">
+                <div>
+                    <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-lg">Generated Plan: <span className="text-muted-foreground font-normal">{currentTopic}</span></h3>
+                        <Button variant="ghost" size="icon" onClick={handleCopy}>
+                            <Copy className="h-4 w-4" />
+                        </Button>
+                    </div>
+                    <Textarea 
+                        value={generatedPlan}
+                        onChange={(e) => setGeneratedPlan(e.target.value)}
+                        className="text-sm bg-muted whitespace-pre-wrap font-body h-64"
+                    />
+                </div>
+                <DialogFooter>
+                    <Button onClick={() => setGeneratedPlan("")} variant="outline">
+                        Start Over
+                    </Button>
+                    <Button onClick={handleSave}>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save to My Resources
+                    </Button>
+                </DialogFooter>
             </div>
         )}
       </DialogContent>
