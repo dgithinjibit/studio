@@ -153,7 +153,18 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 </div>
                  <div>
                     <Label htmlFor="grade">Grade</Label>
-                    <Input id="grade" name="grade" defaultValue="4" />
+                    <Select name="grade" defaultValue="Grade 4">
+                        <SelectTrigger id="grade">
+                            <SelectValue placeholder="Select a grade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Array.from({ length: 12 }, (_, i) => (
+                                <SelectItem key={i + 1} value={`Grade ${i + 1}`}>
+                                    Grade {i + 1}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                  <div>
                     <Label htmlFor="subStrand">Sub-Strand</Label>
@@ -210,4 +221,3 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     </Dialog>
   );
 }
-
