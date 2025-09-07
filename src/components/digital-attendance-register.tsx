@@ -20,6 +20,7 @@ interface DigitalAttendanceRegisterProps {
     onOpenChange: (open: boolean) => void;
     classInfo: ClassInfo;
     onClassNameUpdate: (classId: string, newName: string) => void;
+    onUpdateStudents: (classId: string, students: Student[]) => void;
 }
 
 type AttendanceStatus = 'present' | 'absent';
@@ -29,7 +30,7 @@ type AttendanceRecord = {
 };
 type AttendanceState = Record<string, Record<string, AttendanceRecord>>; // { [date]: { [studentId]: record } }
 
-export function DigitalAttendanceRegister({ open, onOpenChange, classInfo, onClassNameUpdate }: DigitalAttendanceRegisterProps) {
+export function DigitalAttendanceRegister({ open, onOpenChange, classInfo, onClassNameUpdate, onUpdateStudents }: DigitalAttendanceRegisterProps) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
     const [attendance, setAttendance] = useState<AttendanceState>({});
     const [students, setStudents] = useState<Student[]>([]);
@@ -41,18 +42,17 @@ export function DigitalAttendanceRegister({ open, onOpenChange, classInfo, onCla
     useEffect(() => {
         if (open && classInfo) {
             setClassName(classInfo.name);
+            setStudents(classInfo.students);
             const storedAttendance = localStorage.getItem(`attendance_${classInfo.id}`);
             setAttendance(storedAttendance ? JSON.parse(storedAttendance) : {});
-            
-            const storedStudents = localStorage.getItem(`students_${classInfo.id}`);
-            setStudents(storedStudents ? JSON.parse(storedStudents) : classInfo.students);
         }
     }, [classInfo, open]);
 
     const handleSave = () => {
         localStorage.setItem(`attendance_${classInfo.id}`, JSON.stringify(attendance));
-        localStorage.setItem(`students_${classInfo.id}`, JSON.stringify(students));
         
+        onUpdateStudents(classInfo.id, students);
+
         if (className !== classInfo.name) {
             onClassNameUpdate(classInfo.id, className);
         }

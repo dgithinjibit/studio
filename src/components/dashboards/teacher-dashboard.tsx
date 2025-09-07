@@ -14,7 +14,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import type { Teacher, ClassInfo, TeacherResource } from '@/lib/types';
+import type { Teacher, ClassInfo, TeacherResource, Student } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 import { mockTeacher } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
@@ -35,14 +35,23 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     const { toast } = useToast();
 
     useEffect(() => {
-        setTeacher(initialTeacher);
+        // Load teacher data from localStorage if it exists
+        const storedTeacher = localStorage.getItem('mockTeacher');
+        if (storedTeacher) {
+            setTeacher(JSON.parse(storedTeacher));
+        } else {
+            setTeacher(initialTeacher);
+        }
     }, [initialTeacher]);
     
     useEffect(() => {
-        if (initialTeacher.classes.length > 0 && !selectedClass) {
-            setSelectedClass(initialTeacher.classes[0]);
+        if (teacher.classes.length > 0 && !selectedClass) {
+            // Find the class in the current teacher state to ensure data is fresh
+            const currentSelectedClass = teacher.classes.find(c => c.id === (selectedClass?.id || teacher.classes[0].id));
+            setSelectedClass(currentSelectedClass || teacher.classes[0]);
         }
-    }, [initialTeacher.classes, selectedClass]);
+    }, [teacher.classes, selectedClass]);
+
 
     const chartData = teacher.classes.map(c => ({ 
         name: c.name.replace(' English', '').replace(' Literature', ''), 
@@ -54,20 +63,23 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         setAttendanceDialogOpen(true);
     };
     
-    const handleClassNameUpdate = (classId: string, newName: string) => {
-        setTeacher(prevTeacher => {
-            const updatedClasses = prevTeacher.classes.map(c => 
-                c.id === classId ? { ...c, name: newName } : c
-            );
-            const newTeacherState = { ...prevTeacher, classes: updatedClasses };
-            
-            // Persist to localStorage
-            const storedTeacher = JSON.parse(localStorage.getItem('mockTeacher') || JSON.stringify(mockTeacher));
-            storedTeacher.classes = updatedClasses;
-            localStorage.setItem('mockTeacher', JSON.stringify(storedTeacher));
+    const updateTeacherState = (newTeacherState: Teacher) => {
+        setTeacher(newTeacherState);
+        localStorage.setItem('mockTeacher', JSON.stringify(newTeacherState));
+    };
 
-            return newTeacherState;
-        });
+    const handleUpdateStudents = (classId: string, newStudents: Student[]) => {
+        const updatedClasses = teacher.classes.map(c => 
+            c.id === classId ? { ...c, students: newStudents } : c
+        );
+        updateTeacherState({ ...teacher, classes: updatedClasses });
+    };
+
+    const handleClassNameUpdate = (classId: string, newName: string) => {
+        const updatedClasses = teacher.classes.map(c => 
+            c.id === classId ? { ...c, name: newName } : c
+        );
+        updateTeacherState({ ...teacher, classes: updatedClasses });
     };
     
     const handleAddClass = (className: string) => {
@@ -78,17 +90,8 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
             students: [],
         };
 
-        setTeacher(prevTeacher => {
-            const updatedClasses = [...prevTeacher.classes, newClass];
-            const newTeacherState = { ...prevTeacher, classes: updatedClasses };
-
-            // Persist to localStorage
-            const storedTeacher = JSON.parse(localStorage.getItem('mockTeacher') || JSON.stringify(mockTeacher));
-            storedTeacher.classes = updatedClasses;
-            localStorage.setItem('mockTeacher', JSON.stringify(storedTeacher));
-            
-            return newTeacherState;
-        });
+        const updatedClasses = [...teacher.classes, newClass];
+        updateTeacherState({ ...teacher, classes: updatedClasses });
         
         toast({
             title: "Class Added",
@@ -142,11 +145,12 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
 
              {isSummaryLoading && (
                 <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-muted-foreground">
-                            <Bot className="w-6 h-6" /> Generating AI Suggestions...
-                        </CardTitle>
-                    </CardHeader>
+                    <CardContent className="p-4">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                            <Bot className="w-5 h-5 animate-pulse" /> 
+                            <p className="text-sm">Generating AI suggestions for your dashboard...</p>
+                        </div>
+                    </CardContent>
                 </Card>
             )}
 
@@ -230,6 +234,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                     onOpenChange={setAttendanceDialogOpen}
                     classInfo={selectedClass}
                     onClassNameUpdate={handleClassNameUpdate}
+                    onUpdateStudents={handleUpdateStudents}
                  />
              )}
         </>
