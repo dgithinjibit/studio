@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, ClipboardList, CalendarDays, HelpCircle, GraduationCap, Mail, Library } from "lucide-react";
+import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, ClipboardList, CalendarDays, HelpCircle, GraduationCap, Mail, Library, CopySlash } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { GenerateLessonPlanDialog } from '@/components/generate-lesson-plan-dialog';
 import { GenerateSchemeOfWorkDialog } from '@/components/generate-scheme-of-work-dialog';
 import { GenerateRubricDialog } from '@/components/generate-rubric-dialog';
+import { GenerateWorksheetDialog } from '@/components/generate-worksheet-dialog';
+import { DifferentiateWorksheetDialog } from '@/components/differentiate-worksheet-dialog';
 import {
   ChartContainer,
   ChartTooltip,
@@ -40,7 +42,7 @@ const teacherTools = [
         description: "Generate printable worksheets",
         icon: ClipboardList,
         action: "Open Worksheet Generator",
-        dialog: null
+        dialog: "worksheet"
     },
     {
         title: "Schemer: Schemes of Work",
@@ -50,11 +52,11 @@ const teacherTools = [
         dialog: "schemeOfWork"
     },
     {
-        title: "Multiple Choice Quiz",
-        description: "Generate quizzes and assessments",
-        icon: HelpCircle,
-        action: "Open Multiple Choice Quiz",
-        dialog: null
+        title: "Differentiation Station",
+        description: "Adapt worksheets for all learners",
+        icon: CopySlash,
+        action: "Open Differentiation Station",
+        dialog: "differentiate"
     },
     {
         title: "Rubric Generator",
@@ -77,6 +79,8 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     const [isLessonPlanDialogOpen, setLessonPlanDialogOpen] = useState(false);
     const [isSchemeOfWorkDialogOpen, setSchemeOfWorkDialogOpen] = useState(false);
     const [isRubricDialogOpen, setRubricDialogOpen] = useState(false);
+    const [isWorksheetDialogOpen, setWorksheetDialogOpen] = useState(false);
+    const [isDifferentiateDialogOpen, setDifferentiateDialogOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
@@ -87,13 +91,11 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     }));
     
     const handleToolClick = (dialog: string | null) => {
-        if (dialog === 'lessonPlan') {
-            setLessonPlanDialogOpen(true);
-        } else if (dialog === 'schemeOfWork') {
-            setSchemeOfWorkDialogOpen(true);
-        } else if (dialog === 'rubric') {
-            setRubricDialogOpen(true);
-        }
+        if (dialog === 'lessonPlan') setLessonPlanDialogOpen(true);
+        else if (dialog === 'schemeOfWork') setSchemeOfWorkDialogOpen(true);
+        else if (dialog === 'rubric') setRubricDialogOpen(true);
+        else if (dialog === 'worksheet') setWorksheetDialogOpen(true);
+        else if (dialog === 'differentiate') setDifferentiateDialogOpen(true);
     };
     
     const handleClassSelect = (classInfo: ClassInfo) => {
@@ -183,7 +185,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                                     variant="outline" 
                                     className="w-full" 
                                     onClick={() => selectedClass && handleClassSelect(selectedClass)}
-                                    disabled={!teacher.classes.length}
+                                    disabled={!teacher.classes.length || !selectedClass}
                                 >
                                     Digital Attendance Register
                                 </Button>
@@ -270,6 +272,9 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                 onResourceSaved={onResourceSaved}
              />
              <GenerateRubricDialog open={isRubricDialogOpen} onOpenChange={setRubricDialogOpen} onResourceSaved={onResourceSaved} />
+             <GenerateWorksheetDialog open={isWorksheetDialogOpen} onOpenChange={setWorksheetDialogOpen} onResourceSaved={onResourceSaved} />
+             <DifferentiateWorksheetDialog open={isDifferentiateDialogOpen} onOpenChange={setDifferentiateDialogOpen} onResourceSaved={onResourceSaved} />
+
              {selectedClass && (
                  <DigitalAttendanceRegister 
                     open={isAttendanceDialogOpen}
