@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRole } from "@/hooks/use-role";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { UserRole } from "@/lib/types";
+import { Label } from "@/components/ui/label";
 
 
 export function AppSidebar() {
@@ -119,4 +120,3 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
-
