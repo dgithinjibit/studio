@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, GraduationCap, CopySlash, MoreHorizontal, PlusCircle, Search, PlayCircle, ChevronDown, Megaphone, Loader2 } from 'lucide-react';
+import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, GraduationCap, CopySlash, MoreHorizontal, PlusCircle, Search, PlayCircle, ChevronDown, Megaphone } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
@@ -22,42 +22,33 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/
 import { Input } from './ui/input';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { db, storage } from '@/lib/firebase';
-import { collection, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
-import { ref, deleteObject } from 'firebase/storage';
+import { useRouter } from 'next/navigation';
+
 
 export function MyResources() {
-    const [allResources, setAllResources] = useState<(TeacherResource & { firestoreId: string })[]>([]);
-    const [communications, setCommunications] = useState<(Communication & { firestoreId: string })[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [allResources, setAllResources] = useState<TeacherResource[]>([]);
+    const [communications, setCommunications] = useState<Communication[]>([]);
     const { toast } = useToast();
+    const router = useRouter();
 
-    const fetchResources = async () => {
-        setLoading(true);
-        try {
-            const resourcesQuery = query(collection(db, "teacherResources"), orderBy("createdAt", "desc"));
-            const querySnapshot = await getDocs(resourcesQuery);
-            const resources = querySnapshot.docs.map(doc => ({ ...doc.data(), firestoreId: doc.id })) as (TeacherResource & { firestoreId: string })[];
-            setAllResources(resources);
-        } catch (error) {
-            console.error("Error fetching resources:", error);
-            toast({ variant: 'destructive', title: 'Failed to load resources' });
-        }
-    };
-    
-    const fetchCommunications = async () => {
-        // This can be implemented when communications are moved to Firestore
-    };
 
     useEffect(() => {
-        fetchResources();
-        fetchCommunications();
-        setLoading(false);
-        
-        const handleResourceUpdate = () => {
-            fetchResources();
-            fetchCommunications();
+        const fetchResources = () => {
+            const storedResources = localStorage.getItem("teacherResources");
+            const storedComms = localStorage.getItem("mockCommunications");
+            if (storedResources) {
+                setAllResources(JSON.parse(storedResources));
+            }
+            if (storedComms) {
+                setCommunications(JSON.parse(storedComms).map((c: any) => ({...c, date: new Date(c.date)})));
+            }
         };
+
+        fetchResources();
+        
+        // We need this event listener because localStorage changes in the same window
+        // do not trigger the 'storage' event. This is a custom event we fire.
+        const handleResourceUpdate = () => fetchResources();
         window.addEventListener('resource-update', handleResourceUpdate);
         
         return () => {
@@ -68,42 +59,31 @@ export function MyResources() {
     const learningLabs = allResources.filter(r => r.type === 'AI Tutor Context');
     const otherResources = allResources.filter(r => r.type !== 'AI Tutor Context');
 
-    const handleDelete = async (id: string, url: string, type: 'resource' | 'communication', event: React.MouseEvent) => {
-        event.stopPropagation();
-        
-        try {
-            if (type === 'resource') {
-                // Delete Firestore document
-                await deleteDoc(doc(db, "teacherResources", id));
-                
-                // Delete file from Storage
-                const storageRef = ref(storage, url);
-                await deleteObject(storageRef);
 
-                setAllResources(prev => prev.filter(p => p.firestoreId !== id));
-            } 
-            // Add communication deletion logic here if needed
-            
-            toast({
-                title: "Item Deleted",
-                description: "The item has been permanently removed.",
-                variant: "destructive"
-            });
-        } catch (error) {
-            console.error("Error deleting resource:", error);
-            toast({
-                variant: "destructive",
-                title: "Deletion Failed",
-                description: "The item could not be deleted. Please try again."
-            });
+    const handleDelete = (id: string, type: 'resource' | 'communication', event: React.MouseEvent) => {
+        event.stopPropagation();
+        if (type === 'resource') {
+            const updatedResources = allResources.filter(p => p.id !== id);
+            setAllResources(updatedResources);
+            localStorage.setItem("teacherResources", JSON.stringify(updatedResources));
+        } else {
+             const updatedComms = communications.filter(p => p.id !== id);
+            setCommunications(updatedComms);
+            localStorage.setItem("mockCommunications", JSON.stringify(updatedComms));
         }
+        
+        toast({
+            title: "Item Deleted",
+            description: "The item has been removed from your library.",
+            variant: "destructive"
+        });
     };
     
-    const handleCopyUrl = (url: string, event: React.MouseEvent) => {
+    const handleCopy = (content: string, event: React.MouseEvent) => {
         event.stopPropagation();
-        navigator.clipboard.writeText(url).then(() => {
+        navigator.clipboard.writeText(content).then(() => {
             toast({
-                title: "URL Copied to Clipboard",
+                title: "Copied to Clipboard",
             });
         });
     };
@@ -132,9 +112,6 @@ export function MyResources() {
         }
     }
 
-    if (loading) {
-        return <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>
-    }
 
     if (allResources.length === 0 && communications.length === 0) {
         return (
@@ -153,6 +130,7 @@ export function MyResources() {
             </div>
         );
     }
+
 
     return (
         <div className="space-y-8">
@@ -194,19 +172,21 @@ export function MyResources() {
                         </DropdownMenu>
                     </div>
 
+
                     <Table>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Lab Name</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Students</TableHead>
+                                <TableHead>Join Code</TableHead>
                                 <TableHead>Last Modified</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {learningLabs.length > 0 ? learningLabs.map(lab => (
-                                <TableRow key={lab.firestoreId} className="cursor-pointer" onClick={() => window.location.href = `/dashboard/learning-lab/${lab.firestoreId}`}>
+                                <TableRow key={lab.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/learning-lab/${lab.id}`)}>
                                     <TableCell className="font-medium flex items-center gap-3">
                                         <Avatar className="h-8 w-8 border">
                                             <AvatarFallback className="bg-pink-50 text-pink-600 font-bold text-xs">{lab.title.charAt(0)}</AvatarFallback>
@@ -220,16 +200,17 @@ export function MyResources() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell>0</TableCell>
+                                    <TableCell><Badge variant="outline" className="font-mono">{lab.id}</Badge></TableCell>
                                     <TableCell>{format(new Date(lab.createdAt), 'PP p')}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" onClick={(e) => handleDelete(lab.firestoreId, lab.url, 'resource', e)}>
+                                        <Button variant="ghost" size="icon" onClick={(e) => handleDelete(lab.id, 'resource', e)}>
                                             <Trash2 className="h-4 w-4 text-destructive" />
                                         </Button>
                                     </TableCell>
                                 </TableRow>
                             )) : (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center h-24">
+                                    <TableCell colSpan={6} className="text-center h-24">
                                         You haven't created any Learning Labs yet.
                                     </TableCell>
                                 </TableRow>
@@ -239,12 +220,13 @@ export function MyResources() {
                 </CardContent>
             </Card>
 
+
             {otherResources.length > 0 && (
                 <div>
                      <h3 className="text-lg font-semibold mb-4 ml-1">Generated Documents</h3>
                      <Accordion type="single" collapsible className="w-full">
                         {otherResources.map((resource) => (
-                             <AccordionItem value={resource.firestoreId} key={resource.firestoreId}>
+                             <AccordionItem value={resource.id} key={resource.id}>
                                 <AccordionTrigger className="hover:no-underline px-4">
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center gap-4">
@@ -264,17 +246,14 @@ export function MyResources() {
                                 <AccordionContent>
                                     <div className="p-4 bg-muted/50 rounded-md">
                                         <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-pre:bg-transparent prose-pre:p-0">
-                                            <p>Document stored in the cloud. You can open the file to view its content.</p>
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.content || "No preview available."}</ReactMarkdown>
                                         </div>
                                         <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
-                                            <Button variant="secondary" size="sm" asChild>
-                                                <a href={resource.url} target="_blank" rel="noopener noreferrer">Open File</a>
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={(e) => handleCopyUrl(resource.url, e)}>
+                                            <Button variant="ghost" size="sm" onClick={(e) => handleCopy(resource.content || "", e)}>
                                                 <Copy className="mr-2 h-4 w-4"/>
-                                                Copy Link
+                                                Copy Text
                                             </Button>
-                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource.firestoreId, resource.url, 'resource', e)}>
+                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource.id, 'resource', e)}>
                                                 <Trash2 className="mr-2 h-4 w-4"/>
                                                 Delete
                                             </Button>
@@ -315,7 +294,7 @@ export function MyResources() {
                                         </div>
                                          <div className="text-xs text-muted-foreground pt-2 mt-2 border-t">Recipient: {comm.recipient}</div>
                                         <div className="flex items-center justify-end gap-2 pt-2 mt-2">
-                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(comm.id, '', 'communication', e)}>
+                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(comm.id, 'communication', e)}>
                                                 <Trash2 className="mr-2 h-4 w-4"/>
                                                 Delete
                                             </Button>
