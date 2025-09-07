@@ -12,12 +12,12 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     <RoleProvider>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="flex flex-col">
             <AppHeader />
-             <main className="flex-1 p-4 md:p-6">
+             <main className="p-4 md:p-6">
                 {children}
             </main>
-            <footer className="p-4 text-center text-xs text-muted-foreground">
+            <footer className="mt-auto p-4 text-center text-xs text-muted-foreground">
               © 2025 Pacher. All rights reserved.
             </footer>
         </SidebarInset>
