@@ -15,7 +15,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { MyResources } from '../my-resources';
 import { Textarea } from '../ui/textarea';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
-import { StaffManagementTab } from '../staff-management-tab';
 import Link from 'next/link';
 
 export function SchoolHeadDashboard() {
@@ -137,7 +136,6 @@ export function SchoolHeadDashboard() {
             <Tabs defaultValue="dashboard">
                 <TabsList className="mb-4">
                     <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-                    <TabsTrigger value="staff">Staff Management</TabsTrigger>
                     <TabsTrigger value="resources">Resource Management</TabsTrigger>
                     <TabsTrigger value="communications">Communications</TabsTrigger>
                 </TabsList>
@@ -248,9 +246,25 @@ export function SchoolHeadDashboard() {
                             ))}
                         </CardContent>
                     </Card>
-                </TabsContent>
-                 <TabsContent value="staff">
-                    <StaffManagementTab />
+
+                     <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Briefcase className="text-primary w-6 h-6"/>
+                                Staff Management
+                            </CardTitle>
+                            <CardDescription>A central hub for all staff-related information and management.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">Oversee all teaching staff, their class loads, and performance metrics. For a detailed view, visit the main staff page.</p>
+                             <Button asChild>
+                                <Link href="/dashboard/staff">
+                                    Open Staff Hub
+                                    <ChevronRight className="ml-2 w-4 h-4" />
+                                </Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
                 </TabsContent>
                  <TabsContent value="resources">
                     <MyResources />
