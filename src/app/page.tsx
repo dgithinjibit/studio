@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -10,8 +11,9 @@ import { Loader2, Database, UploadCloud } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ingestCurriculum } from '@/ai/flows/ingest-curriculum';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 
 export default function CurriculumIngestorPage() {
@@ -21,7 +23,12 @@ export default function CurriculumIngestorPage() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!documentText.trim()) {
+
+        const formData = new FormData(event.currentTarget);
+        const text = formData.get('documentText') as string;
+        const pdfFile = formData.get('pdfFile') as File;
+
+        if (!text.trim()) {
             toast({
                 variant: 'destructive',
                 title: 'Document text is empty',
@@ -30,30 +37,47 @@ export default function CurriculumIngestorPage() {
             return;
         }
 
+        if (pdfFile.size === 0) {
+            toast({
+                variant: 'destructive',
+                title: 'No PDF selected',
+                description: 'Please select the original PDF file for backup.'
+            });
+            return;
+        }
+
         setLoading(true);
 
-        const formData = new FormData(event.currentTarget);
         const grade = formData.get('grade') as string;
         const subject = formData.get('subject') as string;
 
         try {
-            const result = await ingestCurriculum({ documentText, grade, subject });
+            // 1. Upload the original PDF for backup
+            const storageRef = ref(storage, `curriculum_pdfs/${pdfFile.name}`);
+            await uploadBytes(storageRef, pdfFile);
+            const downloadURL = await getDownloadURL(storageRef);
+
+            // 2. Process the pasted text with the AI
+            const result = await ingestCurriculum({ documentText: text, grade, subject });
 
             if (result.parsedCurriculum && result.parsedCurriculum.length > 0) {
                 
+                // 3. Save the structured data AND the backup URL to Firestore
                 const curriculumCollection = collection(db, "curriculumData");
                 await addDoc(curriculumCollection, {
                     grade,
                     subject,
                     createdAt: new Date().toISOString(),
+                    originalFileUrl: downloadURL,
                     content: result.parsedCurriculum,
                 });
 
                 toast({
                     title: "Curriculum Ingested!",
-                    description: `Successfully parsed and saved ${result.parsedCurriculum.length} item(s) for ${grade} ${subject}.`,
+                    description: `Successfully parsed and saved ${result.parsedCurriculum.length} item(s) for ${grade} ${subject}. PDF backed up.`,
                 });
                 setDocumentText(""); // Clear the textarea
+                (event.target as HTMLFormElement).reset(); // Clear the form including file input
             } else {
                  toast({
                     variant: 'destructive',
@@ -66,7 +90,7 @@ export default function CurriculumIngestorPage() {
             toast({
                 variant: "destructive",
                 title: "Error During Ingestion",
-                description: "An unexpected error occurred while the AI was parsing the document."
+                description: "An unexpected error occurred while parsing or uploading. Check the console for details."
             });
         } finally {
             setLoading(false);
@@ -82,7 +106,7 @@ export default function CurriculumIngestorPage() {
                         Curriculum Ingestor
                     </CardTitle>
                     <CardDescription>
-                        Paste the text content from a curriculum PDF. The AI will parse it and store it in a structured format for other tools to use.
+                        Upload the curriculum PDF for backup and paste its text content. The AI will parse the text and store it in a structured format.
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
@@ -106,16 +130,22 @@ export default function CurriculumIngestorPage() {
                                 <Input id="subject" name="subject" placeholder="e.g., Agriculture and Nutrition" required />
                             </div>
                         </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="pdfFile">Original PDF Document</Label>
+                            <Input id="pdfFile" name="pdfFile" type="file" accept=".pdf" required />
+                             <p className="text-sm text-muted-foreground">Select the PDF file to be saved for backup.</p>
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="documentText">Curriculum Document Text</Label>
                             <Textarea 
                                 id="documentText"
                                 name="documentText"
-                                placeholder="Copy and paste the entire text content from one curriculum PDF here. Ensure it includes tables with columns like 'Strand', 'Sub strand', etc."
+                                placeholder="Copy and paste the entire text content from the PDF here. Ensure it includes tables with columns like 'Strand', 'Sub strand', etc."
                                 className="h-96 font-mono text-xs"
                                 value={documentText}
                                 onChange={(e) => setDocumentText(e.target.value)}
                             />
+                             <p className="text-sm text-muted-foreground">The AI will read this text to structure the curriculum data.</p>
                         </div>
                     </CardContent>
                     <CardFooter>
