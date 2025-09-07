@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -46,8 +47,10 @@ import { grade2MathematicsActivitiesCurriculum } from "@/curriculum/grade2-mathe
 
 // Grade 3
 import { grade3CreCurriculum } from "@/curriculum/grade3-cre";
+import { grade3CreativeActivitiesCurriculum } from "@/curriculum/grade3-creative-activities";
 import { grade3EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade3-english-language-activities";
 import { grade3EnvironmentalActivitiesCurriculum } from "@/curriculum/grade3-environmental-activities";
+import { grade3IndigenousLanguageCurriculum } from "@/curriculum/grade3-indigenous-language";
 import { grade3KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade3-kiswahili-language-activities";
 import { grade3MathematicsActivitiesCurriculum } from "@/curriculum/grade3-mathematics-activities";
 
@@ -144,6 +147,8 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     if (selectedGrade === "Grade 3" && selectedSubject === "Environmental Activities") return grade3EnvironmentalActivitiesCurriculum;
     if (selectedGrade === "Grade 3" && selectedSubject === "Kiswahili Language Activities") return grade3KiswahiliLanguageActivitiesCurriculum;
     if (selectedGrade === "Grade 3" && selectedSubject === "Mathematical Activities") return grade3MathematicsActivitiesCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "Movement and Creative Activities") return grade3CreativeActivitiesCurriculum;
+    if (selectedGrade === "Grade 3" && selectedSubject === "Indigenous Language Activities") return grade3IndigenousLanguageCurriculum;
 
     // Grade 4
     if (selectedGrade === "Grade 4" && selectedSubject === "Agriculture and Nutrition") return grade4AgricultureAndNutritionCurriculum;
@@ -427,4 +432,14 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 )}
                  {!loading && !generatedScheme && (
                     <div className="flex items-center justify-center h-full text-muted-foreground text-center p-8 bg-muted/50 rounded-lg">
-                        <p>Your generated scheme of work will appear here once you fill out the form and click "Generate".</p
+                        <p>Your generated scheme of work will appear here once you fill out the form and click "Generate".</p>
+                    </div>
+                )}
+            </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+    
