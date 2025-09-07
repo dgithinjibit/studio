@@ -52,6 +52,7 @@ import { grade2EnglishLanguageActivitiesCurriculum } from "@/curriculum/grade2-e
 import { grade2IndigenousLanguageCurriculum } from "@/curriculum/grade2-indigenous-language";
 import { grade2KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade2-kiswahili-language-activities";
 import { grade2MathematicsActivitiesCurriculum } from "@/curriculum/grade2-mathematics-activities";
+import { grade3EnvironmentalActivitiesCurriculum } from "@/curriculum/grade3-environmental-activities";
 
 
 interface GenerateSchemeOfWorkDialogProps {
@@ -118,6 +119,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }
      if (selectedGrade === "Grade 2" && selectedSubject === "Environmental Activities") {
       return grade2EnvironmentalActivitiesCurriculum;
+    }
+     if (selectedGrade === "Grade 3" && selectedSubject === "Environmental Activities") {
+      return grade3EnvironmentalActivitiesCurriculum;
     }
     if (selectedGrade === "Grade 1" && selectedSubject === "English Language Activities") {
       return grade1EnglishLanguageActivitiesCurriculum;
