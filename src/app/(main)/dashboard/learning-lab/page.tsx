@@ -52,7 +52,7 @@ export default function LearningLabPage() {
 
         const newResource: TeacherResource = {
           id: resourceId,
-          title: `Study Tour - ${new Date().toLocaleString()}`,
+          title: `Study Bot - ${new Date().toLocaleString()}`,
           content: context,
           createdAt: new Date().toISOString(),
           type: 'AI Tutor Context'
@@ -60,8 +60,7 @@ export default function LearningLabPage() {
 
         const existingResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
         
-        const otherResources = existingResources.filter(r => r.type !== 'AI Tutor Context');
-        localStorage.setItem("teacherResources", JSON.stringify([newResource, ...otherResources]));
+        localStorage.setItem("teacherResources", JSON.stringify([newResource, ...existingResources]));
         
         toast({
           title: "Study Bot Room Saved!",
