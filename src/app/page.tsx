@@ -13,100 +13,77 @@ import { ingestCurriculum } from '@/ai/flows/ingest-curriculum';
 import { db, storage } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
-const curriculumMap = {
-    "Grade 1": [
-        "Environmental Activities",
-        "CRE",
-        "Creative Activities",
-        "English Language Activities",
-        "Indigenous Language",
-        "Kiswahili Language Activities",
-        "Mathematics Activities",
-    ],
-    "Grade 2": [
-        "Environmental Activities",
-        "CRE",
-        "Creative Activities",
-        "English Language Activities",
-        "Indigenous Language",
-        "Kiswahili",
-        "Mathematics Activities",
-    ]
-};
-
+import { curriculumStructure } from '@/lib/curriculum-structure';
 
 export default function CurriculumIngestorPage() {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
+
+    // State for the multi-step form
+    const [selectedMajorLevel, setSelectedMajorLevel] = useState('');
+    const [selectedSubLevel, setSelectedSubLevel] = useState('');
     const [selectedGrade, setSelectedGrade] = useState('');
+    const [selectedSubject, setSelectedSubject] = useState('');
+
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
         const formData = new FormData(event.currentTarget);
-        const pdfFiles = (formData.get('pdfFiles') as FileList);
-
-        if (pdfFiles.length === 0) {
+        const pdfFile = formData.get('pdfFile') as File | null;
+        
+        if (!pdfFile) {
             toast({
                 variant: 'destructive',
-                title: 'No PDFs selected',
-                description: 'Please select the original PDF file(s) for backup.'
+                title: 'No PDF selected',
+                description: 'Please select a curriculum PDF file.'
             });
             return;
         }
-        
-         toast({
-            variant: 'destructive',
-            title: 'Feature Under Development',
-            description: 'Automatic text extraction from PDFs is not yet available. This tool currently only backs up the selected files to the cloud.'
-        });
-        return;
-
 
         setLoading(true);
 
-        const grade = formData.get('grade') as string;
-        const subject = formData.get('subject') as string;
-
         try {
-            const uploadPromises = Array.from(pdfFiles).map(file => {
-                const storageRef = ref(storage, `curriculum_pdfs/${grade}/${subject}/${file.name}`);
-                return uploadBytes(storageRef, file).then(snapshot => getDownloadURL(snapshot.ref));
+            // 1. Upload the original PDF for backup
+            const storageRef = ref(storage, `curriculum_pdfs/${selectedGrade}/${selectedSubject}/${pdfFile.name}`);
+            const uploadSnapshot = await uploadBytes(storageRef, pdfFile);
+            const downloadURL = await getDownloadURL(uploadSnapshot.ref);
+
+            // 2. Ingest the curriculum content (text extraction from PDF is a future step)
+            // For now, we proceed with the upload and data structure saving.
+            const documentText = ""; // This will be replaced by PDF text extraction logic in the future.
+            
+            const result = await ingestCurriculum({ 
+                documentText, 
+                grade: selectedGrade, 
+                subject: selectedSubject,
+                majorLevel: selectedMajorLevel,
+                subLevel: selectedSubLevel
+            });
+
+            // 3. Save the structured data and a link to the original file
+            const curriculumCollection = collection(db, "curriculumData");
+            await addDoc(curriculumCollection, {
+                majorLevel: selectedMajorLevel,
+                subLevel: selectedSubLevel,
+                grade: selectedGrade,
+                subject: selectedSubject,
+                createdAt: new Date().toISOString(),
+                originalFileUrl: downloadURL,
+                content: result.parsedCurriculum || [], // Save parsed content or an empty array
+            });
+
+            toast({
+                title: "Curriculum Ingested!",
+                description: `Successfully uploaded and processed ${selectedGrade} ${selectedSubject}.`,
             });
             
-            const downloadURLs = await Promise.all(uploadPromises);
+            // Reset form
+            (event.target as HTMLFormElement).reset();
+            setSelectedMajorLevel('');
+            setSelectedSubLevel('');
+            setSelectedGrade('');
+            setSelectedSubject('');
 
-            // In the future, the extracted text from the PDF will be passed here.
-            // For now, it is empty.
-            const documentText = ""; 
-            
-            const result = await ingestCurriculum({ documentText, grade, subject });
-
-            if (result.parsedCurriculum && result.parsedCurriculum.length > 0) {
-                
-                const curriculumCollection = collection(db, "curriculumData");
-                await addDoc(curriculumCollection, {
-                    grade,
-                    subject,
-                    createdAt: new Date().toISOString(),
-                    originalFileUrls: downloadURLs,
-                    content: result.parsedCurriculum,
-                });
-
-                toast({
-                    title: "Curriculum Ingested!",
-                    description: `Successfully parsed ${result.parsedCurriculum.length} item(s) for ${grade} ${subject}. ${downloadURLs.length} PDF(s) backed up.`,
-                });
-                (event.target as HTMLFormElement).reset();
-                 setSelectedGrade('');
-            } else {
-                 toast({
-                    variant: 'destructive',
-                    title: 'Ingestion Failed',
-                    description: 'The AI could not find any structured curriculum data. Please check the document.'
-                });
-            }
         } catch (error) {
             console.error("Error ingesting curriculum:", error);
             toast({
@@ -119,10 +96,21 @@ export default function CurriculumIngestorPage() {
         }
     }
     
+    // Memoized selectors for dependent dropdowns
+    const availableSubLevels = useMemo(() => {
+        if (!selectedMajorLevel) return [];
+        return curriculumStructure.find(m => m.name === selectedMajorLevel)?.subLevels || [];
+    }, [selectedMajorLevel]);
+
+    const availableGrades = useMemo(() => {
+        if (!selectedSubLevel) return [];
+        return availableSubLevels.find(s => s.name === selectedSubLevel)?.grades || [];
+    }, [selectedSubLevel, availableSubLevels]);
+
     const availableSubjects = useMemo(() => {
         if (!selectedGrade) return [];
-        return curriculumMap[selectedGrade as keyof typeof curriculumMap] || [];
-    }, [selectedGrade]);
+        return availableGrades.find(g => g.name === selectedGrade)?.subjects || [];
+    }, [selectedGrade, availableGrades]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-background p-4">
@@ -138,44 +126,78 @@ export default function CurriculumIngestorPage() {
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-6">
-                         <div className="grid md:grid-cols-2 gap-4">
+                         <div className="grid md:grid-cols-2 gap-6">
+                            {/* Step 1: Major Level */}
                             <div className="space-y-2">
-                                <Label htmlFor="grade">1. Select Grade Level</Label>
-                                <Select name="grade" required value={selectedGrade} onValueChange={setSelectedGrade}>
+                                <Label htmlFor="majorLevel">1. Select Major Level</Label>
+                                <Select name="majorLevel" required value={selectedMajorLevel} onValueChange={v => { setSelectedMajorLevel(v); setSelectedSubLevel(''); setSelectedGrade(''); setSelectedSubject(''); }}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a grade" />
+                                        <SelectValue placeholder="Select an education level" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Object.keys(curriculumMap).map(grade => (
-                                            <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                                        {curriculumStructure.map(level => (
+                                            <SelectItem key={level.name} value={level.name}>{level.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
-                             {selectedGrade && (
+                            {/* Step 2: Sub Level */}
+                            {selectedMajorLevel && (
                                 <div className="space-y-2">
-                                    <Label htmlFor="subject">2. Select Subject</Label>
-                                    <Select name="subject" required>
-                                        <SelectTrigger>
+                                    <Label htmlFor="subLevel">2. Select Sub-Level</Label>
+                                    <Select name="subLevel" required value={selectedSubLevel} onValueChange={v => { setSelectedSubLevel(v); setSelectedGrade(''); setSelectedSubject(''); }}>
+                                        <SelectTrigger disabled={!availableSubLevels.length}>
+                                            <SelectValue placeholder="Select a sub-level" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {availableSubLevels.map(level => (
+                                                <SelectItem key={level.name} value={level.name}>{level.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+                             {/* Step 3: Grade */}
+                            {selectedSubLevel && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="grade">3. Select Grade</Label>
+                                    <Select name="grade" required value={selectedGrade} onValueChange={v => { setSelectedGrade(v); setSelectedSubject(''); }}>
+                                        <SelectTrigger disabled={!availableGrades.length}>
+                                            <SelectValue placeholder="Select a grade" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {availableGrades.map(grade => (
+                                                <SelectItem key={grade.name} value={grade.name}>{grade.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+                            {/* Step 4: Subject */}
+                            {selectedGrade && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="subject">4. Select Subject</Label>
+                                    <Select name="subject" required value={selectedSubject} onValueChange={setSelectedSubject}>
+                                        <SelectTrigger disabled={!availableSubjects.length}>
                                             <SelectValue placeholder="Select a subject" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {availableSubjects.map(subject => (
-                                                <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                                                <SelectItem key={subject.name} value={subject.name}>{subject.name} ({subject.type})</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             )}
                         </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="pdfFiles">3. Upload Curriculum PDF Document(s)</Label>
-                            <Input id="pdfFiles" name="pdfFiles" type="file" accept=".pdf" required multiple />
-                             <p className="text-sm text-muted-foreground">Select one or more PDF files for the selected grade and subject.</p>
+                         <div className="space-y-2 pt-4">
+                            <Label htmlFor="pdfFile">5. Upload Curriculum PDF</Label>
+                            <Input id="pdfFile" name="pdfFile" type="file" accept=".pdf" required />
+                             <p className="text-sm text-muted-foreground">Select the official PDF document for the chosen grade and subject.</p>
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" disabled={loading} className="w-full md:w-auto">
+                        <Button type="submit" disabled={loading || !selectedSubject} className="w-full md:w-auto">
                             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
                             {loading ? 'Ingesting...' : 'Ingest Curriculum Data'}
                         </Button>

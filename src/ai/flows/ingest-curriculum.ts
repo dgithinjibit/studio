@@ -21,6 +21,8 @@ const CurriculumStructureSchema = z.object({
 
 const IngestCurriculumInputSchema = z.object({
   documentText: z.string().describe("The raw text copied from a curriculum PDF document."),
+  majorLevel: z.string().describe("The major educational level, e.g., 'Early Years Education'."),
+  subLevel: z.string().describe("The sub-level, e.g., 'Lower Primary'."),
   grade: z.string().describe("The grade level for the curriculum, e.g., 'Grade 3'."),
   subject: z.string().describe("The subject for the curriculum, e.g., 'English Language Activities'."),
 });
@@ -35,6 +37,12 @@ export type IngestCurriculumOutput = z.infer<typeof IngestCurriculumOutputSchema
 export async function ingestCurriculum(
   input: IngestCurriculumInput
 ): Promise<IngestCurriculumOutput> {
+  // If there's no document text, we can't parse anything.
+  // This will be the case until we add PDF text extraction.
+  if (!input.documentText) {
+    return { parsedCurriculum: [] };
+  }
+  
   return ingestCurriculumFlow(input);
 }
 
@@ -44,7 +52,7 @@ const prompt = ai.definePrompt({
   output: {schema: IngestCurriculumOutputSchema},
   prompt: `You are an expert at parsing structured documents. Your task is to analyze the provided text from a curriculum document and extract the key information into a structured JSON format.
 
-The document contains tables with the following columns: "Strand", "Sub strand", "Specific Learning Outcomes", "Suggested Learning Experiences", and "Key Inquiry Question(s)".
+The document contains tables with columns like: "Strand", "Sub strand", "Specific Learning Outcomes", "Suggested Learning Experiences", and "Key Inquiry Question(s)".
 
 Carefully read the text provided and extract each row of curriculum content into a separate object.
 
