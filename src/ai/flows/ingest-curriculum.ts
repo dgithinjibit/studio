@@ -39,6 +39,7 @@ export async function ingestCurriculum(
 ): Promise<IngestCurriculumOutput> {
   // If there's no document text, we can't parse anything.
   // This will be the case until we add PDF text extraction.
+  // Returning immediately makes the upload process much faster for the user.
   if (!input.documentText) {
     return { parsedCurriculum: [] };
   }
