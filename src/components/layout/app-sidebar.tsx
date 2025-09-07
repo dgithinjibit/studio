@@ -43,7 +43,6 @@ export function AppSidebar() {
     { href: "/dashboard/staff", icon: Briefcase, label: "Staff", roles: ["school_head"] },
     { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["county_officer"] },
     { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["county_officer"] },
-    { href: "/dashboard/training", icon: Database, label: "Training Data", roles: ["school_head", "county_officer"] },
   ];
 
   // A simple role-based filtering logic
@@ -52,10 +51,10 @@ export function AppSidebar() {
         return navItems.filter(item => ['Dashboard', 'Teacher Tools', 'Learning Lab', 'My Library'].includes(item.label));
     }
     if (role === 'school_head') {
-        return navItems.filter(item => ['Dashboard', 'Staff', 'My Library', 'Training Data'].includes(item.label));
+        return navItems.filter(item => ['Dashboard', 'Staff', 'My Library'].includes(item.label));
     }
      if (role === 'county_officer') {
-        return navItems.filter(item => ['Dashboard', 'Reports', 'Schools', 'Training Data'].includes(item.label));
+        return navItems.filter(item => ['Dashboard', 'Reports', 'Schools'].includes(item.label));
     }
     return [];
   }
