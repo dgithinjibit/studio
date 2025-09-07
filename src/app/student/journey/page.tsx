@@ -5,9 +5,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake, User } from 'lucide-react';
+import { ArrowRight, Book, Leaf, Wind, Palette, Languages, Church, HeartHandshake } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import Link from 'next/link';
 import { StudentHeader } from '@/components/layout/student-header';
 
 type Step = 'level' | 'sub-level' | 'grade' | 'subject';
@@ -118,7 +117,6 @@ export default function StudentJourneyPage() {
         if (subLevelsMap[levelId]?.length > 0) {
             setStep('sub-level');
         } else {
-            // If no sub-levels, skip to grade, though current logic doesn't support this path well
              setStep('grade');
         }
     };

@@ -9,8 +9,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
 import type { MwalimuAiTutorInput } from '@/ai/flows/mwalimu-ai-types';
-import { Loader2, Send, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { Loader2, Send } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 
 type Message = {
