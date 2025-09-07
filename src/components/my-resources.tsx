@@ -14,6 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { FileText, Trash2, Copy, Calendar } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export function MyResources() {
     const [resources, setResources] = useState<TeacherResource[]>([]);
@@ -28,14 +30,12 @@ export function MyResources() {
         };
         loadResources();
         
-        // Listen for storage changes to update in real-time if other tabs modify it
         const handleStorageChange = () => {
             loadResources();
         };
 
         window.addEventListener('storage', handleStorageChange);
         
-        // Also listen for a custom event that we can dispatch from our dialogs
         const handleResourceUpdate = () => {
             loadResources();
         };
@@ -111,8 +111,14 @@ export function MyResources() {
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="p-4 bg-muted/50 rounded-md">
-                             <pre className="text-sm whitespace-pre-wrap font-body mb-4">{resource.content}</pre>
-                             <div className="flex items-center justify-end gap-2 border-t pt-2">
+                            {resource.type === 'Scheme of Work' ? (
+                                 <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.content}</ReactMarkdown>
+                                 </div>
+                            ) : (
+                                <pre className="text-sm whitespace-pre-wrap font-body mb-4">{resource.content}</pre>
+                            )}
+                             <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
                                 <Button variant="ghost" size="sm" onClick={() => handleCopy(resource.content)}>
                                     <Copy className="mr-2 h-4 w-4"/>
                                     Copy
