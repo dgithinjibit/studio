@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import Link from "next/link";
 import {
   LayoutDashboard,
-  LogOut,
   Users,
   FileText,
   School,
@@ -13,6 +12,7 @@ import {
   Library,
   Settings,
   Bot,
+  FlaskConical,
 } from "lucide-react";
 
 import {
@@ -22,11 +22,8 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarContent,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { SyncSentaLogo } from "@/components/icons";
-import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRole } from "@/hooks/use-role";
 
 export function AppSidebar() {
@@ -44,6 +41,7 @@ export function AppSidebar() {
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["teacher", "school_head", "county_officer"] },
     { href: "/dashboard/tools", icon: Bot, label: "Teacher Tools", roles: ["teacher"] },
+    { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab", roles: ["teacher"] },
     { href: "/dashboard/resources", icon: Library, label: "My Resources", roles: ["teacher"] },
     { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["school_head", "county_officer"] },
     { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["school_head", "county_officer"] },

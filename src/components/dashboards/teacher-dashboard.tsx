@@ -5,7 +5,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { BookOpen, FilePen, ChevronRight, PlusCircle, Settings, Users, Plus } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AITunerDialog } from '@/components/ai-tuner-dialog';
 import { AddClassDialog } from '@/components/add-class-dialog';
 import {
   ChartContainer,
@@ -28,7 +27,6 @@ interface TeacherDashboardProps {
 
 export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardProps) {
     const [teacher, setTeacher] = useState<Teacher>(initialTeacher);
-    const [isAITunerDialogOpen, setAITunerDialogOpen] = useState(false);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
     const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
@@ -115,10 +113,6 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                             Generate Resources
                         </Link>
                     </Button>
-                     <Button variant="outline" onClick={() => setAITunerDialogOpen(true)}>
-                        <Settings className="mr-2" />
-                        AI Tuner
-                    </Button>
                 </div>
             </div>
 
@@ -178,7 +172,6 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                 </Card>
             </div>
              
-             <AITunerDialog open={isAITunerDialogOpen} onOpenChange={setAITunerDialogOpen} onResourceSaved={onResourceSaved} />
              <AddClassDialog open={isAddClassDialogOpen} onOpenChange={setAddClassDialogOpen} onAddClass={handleAddClass} />
 
              {selectedClass && (
