@@ -41,6 +41,7 @@ export function AppSidebar() {
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab", roles: ["teacher"] },
     { href: "/dashboard/reports", icon: Library, label: "My Library", roles: ["teacher", "school_head"] },
     { href: "/dashboard/staff", icon: Briefcase, label: "Staff", roles: ["school_head"] },
+    { href: "/dashboard/curriculum", icon: Database, label: "Curriculum", roles: ["school_head"] },
     { href: "/dashboard/reports", icon: GitGraph, label: "Reports", roles: ["county_officer"] },
     { href: "/dashboard/schools", icon: School, label: "Schools", roles: ["county_officer"] },
   ];
@@ -51,12 +52,13 @@ export function AppSidebar() {
         return navItems.filter(item => ['Dashboard', 'Teacher Tools', 'Learning Lab', 'My Library'].includes(item.label));
     }
     if (role === 'school_head') {
-        return navItems.filter(item => ['Dashboard', 'Staff', 'My Library'].includes(item.label));
+        return navItems.filter(item => ['Dashboard', 'Staff', 'My Library', 'Curriculum'].includes(item.label));
     }
      if (role === 'county_officer') {
         return navItems.filter(item => ['Dashboard', 'Reports', 'Schools'].includes(item.label));
     }
-    return [];
+    // Fallback for super admin or unassigned roles could show all non-student items
+    return navItems.filter(item => item.roles.includes('school_head'));
   }
 
   const filteredNavItems = getFilteredNavItems();
