@@ -8,19 +8,12 @@ import { Library } from "lucide-react";
 export default function MyResourcesPage() {
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                    <Library className="w-6 h-6 text-accent" />
-                    My Resources
-                </CardTitle>
-                <CardDescription>
-                    All your saved lesson plans and schemes of work, organized for easy access.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-               <MyResources />
-            </CardContent>
-        </Card>
+        <div>
+            <div className="mb-6">
+                <h1 className="font-headline text-3xl font-bold">My Library</h1>
+                <p className="text-muted-foreground">All your saved Learning Labs and generated documents, organized for easy access.</p>
+            </div>
+            <MyResources />
+        </div>
     );
 }

@@ -12,22 +12,27 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { formatDistanceToNow } from 'date-fns';
-import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, GraduationCap, CopySlash, ArrowRight } from 'lucide-react';
+import { format } from 'date-fns';
+import { FileText, Trash2, Copy, Calendar, BrainCircuit, BookCopy, GraduationCap, CopySlash, MoreHorizontal, PlusCircle, Search, PlayCircle, ChevronDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Card } from './ui/card';
 import Link from 'next/link';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
+import { Input } from './ui/input';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
+import { Avatar, AvatarFallback } from './ui/avatar';
+
 
 export function MyResources() {
-    const [resources, setResources] = useState<TeacherResource[]>([]);
+    const [allResources, setAllResources] = useState<TeacherResource[]>([]);
     const { toast } = useToast();
 
     useEffect(() => {
         const loadResources = () => {
             const storedResources = localStorage.getItem("teacherResources");
             if (storedResources) {
-                setResources(JSON.parse(storedResources));
+                setAllResources(JSON.parse(storedResources));
             }
         };
         loadResources();
@@ -48,11 +53,15 @@ export function MyResources() {
             window.removeEventListener('resource-update', handleResourceUpdate);
         };
     }, []);
+    
+    const learningLabs = allResources.filter(r => r.type === 'AI Tutor Context');
+    const otherResources = allResources.filter(r => r.type !== 'AI Tutor Context');
+
 
     const handleDelete = (resourceId: string, event: React.MouseEvent) => {
-        event.stopPropagation(); // Prevent the click from opening the link/accordion
-        const updatedResources = resources.filter(p => p.id !== resourceId);
-        setResources(updatedResources);
+        event.stopPropagation();
+        const updatedResources = allResources.filter(p => p.id !== resourceId);
+        setAllResources(updatedResources);
         localStorage.setItem("teacherResources", JSON.stringify(updatedResources));
         toast({
             title: "Resource Deleted",
@@ -101,7 +110,7 @@ export function MyResources() {
         }
     }
 
-    if (resources.length === 0) {
+    if (allResources.length === 0) {
         return (
             <div className="text-center text-muted-foreground p-8">
                 <FileText className="mx-auto h-12 w-12" />
@@ -109,80 +118,145 @@ export function MyResources() {
                 <p className="mt-1 text-sm">
                     Use the "Teacher Tools" or "Learning Lab" to generate resources.
                 </p>
+                 <Button asChild className="mt-4">
+                    <Link href="/dashboard/tools">
+                        <PlusCircle className="mr-2" />
+                        Create a Resource
+                    </Link>
+                </Button>
             </div>
         );
     }
 
     return (
-        <Accordion type="single" collapsible className="w-full">
-            {resources.map((resource) => {
-                if (resource.type === 'AI Tutor Context') {
-                    return (
-                        <Card key={resource.id} className="mb-2">
-                             <Link href={`/dashboard/learning-lab/${resource.id}`} className="block hover:bg-muted/50 rounded-lg p-4">
-                                <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-4">
-                                        {getIcon(resource.type)}
-                                        <div>
-                                            <p className="font-semibold text-left">{resource.title}</p>
-                                            <p className="text-xs text-muted-foreground font-normal">
-                                                Created {formatDistanceToNow(new Date(resource.createdAt), { addSuffix: true })}
-                                            </p>
+        <div className="space-y-8">
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                         <CardTitle className="flex items-center gap-3">
+                            <BrainCircuit className="w-6 h-6 text-pink-500" />
+                            My Learning Labs
+                        </CardTitle>
+                        <Button asChild>
+                            <Link href="/dashboard/learning-lab">
+                                <PlusCircle className="mr-2" />
+                                Create Lab
+                            </Link>
+                        </Button>
+                    </div>
+                    <CardDescription>
+                        Your Learning Labs let you configure AI tools and share them with students so they can explore with purpose and stay on track.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="Search labs..." className="pl-10" />
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline">
+                                    Filter by status: Active
+                                    <ChevronDown className="ml-2 h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem>Active</DropdownMenuItem>
+                                <DropdownMenuItem>Archived</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Lab Name</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Students</TableHead>
+                                <TableHead>Last Modified</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {learningLabs.length > 0 ? learningLabs.map(lab => (
+                                <TableRow key={lab.id} className="cursor-pointer" onClick={() => window.location.href = `/dashboard/learning-lab/${lab.id}`}>
+                                    <TableCell className="font-medium flex items-center gap-3">
+                                        <Avatar className="h-8 w-8 border">
+                                            <AvatarFallback className="bg-pink-50 text-pink-600 font-bold text-xs">{lab.title.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        {lab.title}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="secondary" className="gap-1.5 pl-1.5">
+                                            <PlayCircle className="w-4 h-4 text-green-500" />
+                                            Active
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>0</TableCell>
+                                    <TableCell>{format(new Date(lab.createdAt), 'PP p')}</TableCell>
+                                    <TableCell className="text-right">
+                                         <Button variant="ghost" size="icon" onClick={(e) => handleDelete(lab.id, e)}>
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="text-center h-24">
+                                        You haven't created any Learning Labs yet.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+
+            {otherResources.length > 0 && (
+                <div>
+                     <h3 className="text-lg font-semibold mb-4 ml-1">Generated Documents</h3>
+                     <Accordion type="single" collapsible className="w-full">
+                        {otherResources.map((resource) => (
+                             <AccordionItem value={resource.id} key={resource.id}>
+                                <AccordionTrigger className="hover:no-underline px-4">
+                                    <div className="flex items-center justify-between w-full">
+                                        <div className="flex items-center gap-4">
+                                            {getIcon(resource.type)}
+                                            <div>
+                                                <p className="font-semibold text-left">{resource.title}</p>
+                                                <p className="text-xs text-muted-foreground font-normal">
+                                                    Saved {format(new Date(resource.createdAt), 'PP p')}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Badge variant={getBadgeVariant(resource.type)}>
+                                        <Badge variant={getBadgeVariant(resource.type)} className="mr-4">
                                             {resource.type}
                                         </Badge>
-                                        <Button variant="ghost" size="icon" onClick={(e) => handleDelete(resource.id, e)}>
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
-                                        <ArrowRight className="h-5 w-5 text-muted-foreground" />
                                     </div>
-                                </div>
-                            </Link>
-                        </Card>
-                    )
-                }
-
-                return (
-                    <AccordionItem value={resource.id} key={resource.id}>
-                        <AccordionTrigger className="hover:no-underline px-4">
-                            <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-4">
-                                     {getIcon(resource.type)}
-                                     <div>
-                                        <p className="font-semibold text-left">{resource.title}</p>
-                                        <p className="text-xs text-muted-foreground font-normal">
-                                            Saved {formatDistanceToNow(new Date(resource.createdAt), { addSuffix: true })}
-                                        </p>
-                                     </div>
-                                </div>
-                                <Badge variant={getBadgeVariant(resource.type)} className="mr-4">
-                                    {resource.type}
-                                </Badge>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <div className="p-4 bg-muted/50 rounded-md">
-                                <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-pre:bg-transparent prose-pre:p-0">
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.content}</ReactMarkdown>
-                                 </div>
-                                 <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
-                                    <Button variant="ghost" size="sm" onClick={(e) => handleCopy(resource.content, e)}>
-                                        <Copy className="mr-2 h-4 w-4"/>
-                                        Copy
-                                    </Button>
-                                    <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource.id, e)}>
-                                        <Trash2 className="mr-2 h-4 w-4"/>
-                                        Delete
-                                    </Button>
-                                 </div>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                )
-            })}
-        </Accordion>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="p-4 bg-muted/50 rounded-md">
+                                        <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-pre:bg-transparent prose-pre:p-0">
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.content}</ReactMarkdown>
+                                        </div>
+                                        <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
+                                            <Button variant="ghost" size="sm" onClick={(e) => handleCopy(resource.content, e)}>
+                                                <Copy className="mr-2 h-4 w-4"/>
+                                                Copy
+                                            </Button>
+                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource.id, e)}>
+                                                <Trash2 className="mr-2 h-4 w-4"/>
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
+            )}
+        </div>
     );
 }
