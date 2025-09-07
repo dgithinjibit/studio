@@ -74,7 +74,6 @@ You are a sophisticated and insightful academic partner. You can discuss complex
 
 ## Conversation Flow & History
 
-{{#if history.length}}
 {{#each history}}
   {{#if (eq role 'user')}}
     Student: {{{content}}}
@@ -83,9 +82,6 @@ You are a sophisticated and insightful academic partner. You can discuss complex
   {{/if}}
 {{/each}}
 Based on the conversation history and the provided context, provide your next Socratic response as Mwalimu AI.
-{{else}}
-**Initial Interaction:** The conversation history is empty. Greet the learner warmly. Acknowledge their chosen subject and grade. Ask what topic is on their mind. Example: "Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring {{subject}} for {{grade}} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together."
-{{/if}}
 `,
 });
 
@@ -97,6 +93,14 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
+    // If the history is empty, this is the first message.
+    // Return a hardcoded greeting instead of calling the AI.
+    if (!input.history || input.history.length === 0) {
+      return {
+        response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${input.grade} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
+      };
+    }
+    
     // In a full RAG implementation, this is where you would
     // first retrieve relevant `teacherContext` from a vector database
     // based on the latest message in input.history.
@@ -107,3 +111,4 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     return output!;
   }
 );
+
