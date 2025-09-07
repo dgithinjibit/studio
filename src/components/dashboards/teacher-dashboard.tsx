@@ -77,7 +77,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
     const [isRubricDialogOpen, setRubricDialogOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("dashboard");
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
-    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(teacher.classes[0]);
+    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(teacher.classes[0] ?? null);
 
     const chartData = teacher.classes.map(c => ({ 
         name: c.name.replace(' English', '').replace(' Literature', ''), 
@@ -160,7 +160,7 @@ export function TeacherDashboard({ teacher }: TeacherDashboardProps) {
                                 ))}
                             </CardContent>
                              <CardFooter>
-                                <Button variant="outline" className="w-full" onClick={() => handleClassSelect(teacher.classes[0])}>
+                                <Button variant="outline" className="w-full" onClick={() => selectedClass && handleClassSelect(selectedClass)}>
                                     Digital Attendance Register
                                 </Button>
                             </CardFooter>
