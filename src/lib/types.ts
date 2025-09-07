@@ -82,7 +82,7 @@ export type Communication = {
   title: string;
   content: string;
   recipient: string;
-  date: string;
+  date: Date;
   acknowledged: boolean;
   sender?: string;
 };
