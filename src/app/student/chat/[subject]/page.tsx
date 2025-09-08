@@ -63,7 +63,7 @@ export default function StudentChatPage() {
     }, [params.subject, searchParams]);
 
     const handleBack = () => {
-        router.push('/student/journey');
+        router.back();
     };
 
     if (!chatParams) {
