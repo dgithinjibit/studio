@@ -23,7 +23,7 @@ const GenerateSchemeOfWorkInputSchema = z.object({
 export type GenerateSchemeOfWorkInput = z.infer<typeof GenerateSchemeOfWorkInputSchema>;
 
 const GenerateSchemeOfWorkOutputSchema = z.object({
-  schemeOfWork: z.string().describe('The generated scheme of work in a structured Markdown format, including a main title, a table, and sections for competencies and values.'),
+  schemeOfWork: z.string().describe('The generated scheme of work in a structured Markdown format, broken down by week and lesson.'),
 });
 export type GenerateSchemeOfWorkOutput = z.infer<typeof GenerateSchemeOfWorkOutputSchema>;
 
@@ -37,15 +37,14 @@ const prompt = ai.definePrompt({
   name: 'generateSchemeOfWorkPrompt',
   input: {schema: GenerateSchemeOfWorkInputSchema},
   output: {schema: GenerateSchemeOfWorkOutputSchema},
-  prompt: `You are an expert curriculum developer in Kenya, specializing in creating CBC-compliant Schemes of Work.
+  prompt: `You are an expert curriculum developer in Kenya, creating a CBC-compliant Scheme of Work.
 
 Generate a detailed Scheme of Work based on the following information. The entire output must be in Markdown.
 
 **Subject:** {{{subject}}}
 **Grade:** {{{grade}}}
-**Main Strand Title:** {{{strand}}}
 **Sub-Strand for this Scheme:** {{{subStrand}}}
-**Lessons:** {{{lessonsPerWeek}}}
+**Total Lessons for Sub-Strand:** {{{lessonsPerWeek}}}
 
 {{#if schemeOfWorkContext}}
 ---
@@ -56,23 +55,33 @@ You MUST use the following curriculum details to generate the content. Do not ad
 {{/if}}
 
 **CRITICAL FORMATTING INSTRUCTIONS:**
-The final output must follow this exact Markdown structure:
-
-**STRAND: {{{strand}}}**
-
-| Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(S) |
-| :--- | :--- | :--- | :--- | :--- |
-| {{{strand}}} | **{{{subStrand}}}** <br> ({{{lessonsPerWeek}}} lessons) | By the end of the sub-strand, the learner should be able to: <br> [Extract and list the learning outcomes from the context here as a lettered list, e.g., a) b) c)...] | Learner is guided to: <br> [Extract and list the learning experiences from the context here as a bulleted list] | [Extract the key inquiry question(s) from the context here] |
+The final output must follow this exact Markdown structure, broken down by week and lesson. Generate content for each week until all {{{lessonsPerWeek}}} lessons for the sub-strand are covered.
 
 ---
+**WEEK 1**
 
-**Core Competencies to be developed:**
-- [Based on the context, identify and list 1-2 relevant core competencies and briefly explain how they apply. Example: Digital Literacy: Learners interact with new technology...]
+**LESSON 1**
+- **Strand:** {{{strand}}}
+- **Sub Strand:** {{{subStrand}}}
+- **Lesson Learning outcomes:** [Based on the context, list the specific learning outcome for this single lesson.]
+- **Learning Experiences:** [Based on the context, describe the suggested learning experience for this single lesson.]
+- **Key Inquiry Question(s):** [Based on the context, list the relevant key inquiry question for this lesson.]
+- **Assessment:** [Suggest a relevant formative assessment method for this lesson, e.g., Observation, Checklist, Q&A.]
+- **Reflection:** [Leave this section blank.]
 
-**Values:**
-- [Based on the context, identify and list 1-2 relevant values and briefly explain how they apply. Example: Unity: Learners cooperate as they practice...]
+**LESSON 2**
+- **Strand:** {{{strand}}}
+- **Sub Strand:** {{{subStrand}}}
+- **Lesson Learning outcomes:** [List the learning outcome for this lesson.]
+- **Learning Experiences:** [Describe the learning experience for this lesson.]
+- **Key Inquiry Question(s):** [List the inquiry question for this lesson.]
+- **Assessment:** [Suggest a relevant assessment method.]
+- **Reflection:** [Leave this section blank.]
 
-Create a comprehensive and practical scheme of work based on these inputs and format.
+---
+**WEEK 2**
+
+...[Continue this format for all subsequent lessons and weeks]...
 `,
 });
 
