@@ -162,15 +162,6 @@ export default function StudentJourneyPage() {
         }
     }, [step, selectedLevel, router]);
     
-    const renderIcon = (icon: LucideIcon, subjectName: string) => {
-        const IconComponent = icon;
-        return (
-            <div className="flex items-center justify-center w-full h-full bg-card">
-                 <IconComponent className="w-24 h-24 text-primary" />
-            </div>
-        )
-    };
-
     const renderContent = () => {
         switch (step) {
             case 'start':
@@ -225,7 +216,13 @@ export default function StudentJourneyPage() {
                                     className="relative group overflow-hidden rounded-lg cursor-pointer aspect-square text-white"
                                     onClick={() => handleSubjectSelect(subject.name)}
                                 >
-                                    {renderIcon(subject.icon, subject.name)}
+                                     <Image
+                                        src={`https://picsum.photos/seed/${subject.name}/400/400`}
+                                        alt={subject.name}
+                                        fill
+                                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                    />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-4">
                                         <h3 className="font-bold text-lg opacity-50 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
@@ -305,7 +302,7 @@ export default function StudentJourneyPage() {
     
     return (
         <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-[#F5F5DC] sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
-             <StudentHeader showBackButton={step !== 'start'} onBack={handleGoBack} studentFirstName={studentFirstName} />
+             <StudentHeader showBackButton={step !== 'start'} onBack={handleGoBack} />
             <main className="flex-grow overflow-y-auto p-6 flex items-center">
                 {renderContent()}
             </main>
@@ -314,3 +311,4 @@ export default function StudentJourneyPage() {
 }
 
     
+

@@ -15,7 +15,6 @@ export default function StudentChatPage() {
     const [chatParams, setChatParams] = useState<{
         subject: string;
         grade: string;
-        studentFirstName: string;
         teacherContext?: string;
     } | null>(null);
 
@@ -23,7 +22,6 @@ export default function StudentChatPage() {
         // This effect runs on the client side to retrieve all necessary data from localStorage.
         const subject = decodeURIComponent((params.subject as string) || 'General');
         const grade = localStorage.getItem('studentGrade') || 'g4';
-        const studentFirstName = (localStorage.getItem('studentName') || 'Student').split(' ')[0];
         
         // This is the special context loaded when a user enters a teacher's code.
         const teacherContext = localStorage.getItem('ai_tutor_context_to_load') || undefined;
@@ -31,7 +29,6 @@ export default function StudentChatPage() {
         setChatParams({
             subject,
             grade,
-            studentFirstName,
             teacherContext
         });
 
@@ -56,7 +53,6 @@ export default function StudentChatPage() {
             <ChatInterface 
                 subject={chatParams.subject}
                 grade={chatParams.grade}
-                studentFirstName={chatParams.studentFirstName}
                 onBack={handleBack}
                 teacherContext={chatParams.teacherContext}
             />

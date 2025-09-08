@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { User, ArrowLeft, LogOut, Settings } from 'lucide-react';
@@ -19,12 +19,19 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 interface StudentHeaderProps {
   showBackButton: boolean;
   onBack: () => void;
-  studentFirstName: string;
 }
 
-export function StudentHeader({ showBackButton, onBack, studentFirstName }: StudentHeaderProps) {
+export function StudentHeader({ showBackButton, onBack }: StudentHeaderProps) {
   const [isProfileOpen, setProfileOpen] = useState(false);
+  const [studentFirstName, setStudentFirstName] = useState('Student');
   const router = useRouter();
+
+  useEffect(() => {
+    const name = localStorage.getItem('studentName');
+    if (name) {
+        setStudentFirstName(name.split(' ')[0]);
+    }
+  }, []);
 
   const handleLogout = () => {
     router.push('/login');

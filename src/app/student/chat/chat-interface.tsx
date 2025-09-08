@@ -19,12 +19,11 @@ type Message = {
 interface ChatInterfaceProps {
     subject: string;
     grade: string;
-    studentFirstName: string;
     onBack: () => void;
     teacherContext?: string;
 }
 
-export default function ChatInterface({ subject, grade, onBack, studentFirstName, teacherContext }: ChatInterfaceProps) {
+export default function ChatInterface({ subject, grade, onBack, teacherContext }: ChatInterfaceProps) {
     const gradeName = `Grade ${grade.replace('g', '')}`
     
     const [messages, setMessages] = useState<Message[]>([]);
@@ -32,6 +31,14 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
     const [loading, setLoading] = useState(true);
     const [tutorMode, setTutorMode] = useState<'compass' | 'mwalimu'>('mwalimu');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const [studentFirstName, setStudentFirstName] = useState('Student');
+
+     useEffect(() => {
+        const name = localStorage.getItem('studentName');
+        if (name) {
+            setStudentFirstName(name.split(' ')[0]);
+        }
+    }, []);
 
     useEffect(() => {
         const getInitialMessage = async () => {
@@ -107,7 +114,6 @@ export default function ChatInterface({ subject, grade, onBack, studentFirstName
                      <StudentHeader 
                         showBackButton={!!onBack} 
                         onBack={onBack!} 
-                        studentFirstName={studentFirstName} 
                      />
                      <div className="text-center pt-2">
                         <CardTitle className="font-headline text-2xl text-stone-800">
