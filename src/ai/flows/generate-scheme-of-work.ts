@@ -63,7 +63,7 @@ The final output MUST follow this exact Markdown table structure. Do NOT add any
 
 | Mada (Strand) | Mada Ndogo (Sub Strand) & Vipindi | Matokeo Maalum Yanayotarajiwa (Specific Learning Outcomes) | Shughuli za Ujifunzaji Zilizopendekezwa (Suggested Learning Experiences) | Swali Dadisi Lililopendekezwa (Key Inquiry Question(s)) |
 | :--- | :--- | :--- | :--- | :--- |
-| **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list.] | [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list.] | [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list.] |
+| **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | - [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list.] | - [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list.] | - [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list.] |
 `;
 
     const englishPrompt = `You are an expert curriculum developer in Kenya, creating a CBC-compliant Scheme of Work.
