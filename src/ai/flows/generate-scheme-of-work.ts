@@ -74,7 +74,7 @@ However, before you emit the final table, run the four silent parahelp steps bel
 If the curriculum gives you more than 8 learning outcomes, break them into two consecutive rows; duplicate the Strand/Sub-strand cells so the teacher can choose a logical half-term split.
 
 **Parahelp Step 2: Cell Micro-formatting**
-Ensure every bullet in “Suggested Learning Experiences” starts with a CBC-active verb (explore, construct, demonstrate, record, present…).  If the source text uses passive voice, rewrite quietly. For lists within a cell, ensure each item is on a new line and starts with a hyphen (-).
+Ensure every bullet in “Suggested Learning Experiences” starts with a CBC-active verb (explore, construct, demonstrate, record, present…).  If the source text uses passive voice, rewrite quietly. For lists within a cell, ensure each item is on a new line.
 
 **Parahelp Step 3: Assessment Lift**
 If the suggested assessment is only “Observation” or “Oral questions”, append one concrete, low-prep idea in brackets, e.g. “Observation (traffic-light cards)” or “Oral questions (exit ticket: 2 stars & 1 wish)”.
@@ -93,6 +93,8 @@ You MUST use the following curriculum details to populate the table.
 
 **CRITICAL FORMATTING INSTRUCTIONS:**
 The final output MUST be a single, well-formatted Markdown table based on the rules above. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>.
+
+**FINAL FORMAT RULE:** print the table with genuine pipe-delimited columns and at least one hyphen-row \`|---|---|...|\` so it renders with full vertical & horizontal borders in every Markdown viewer.
 
 | Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
