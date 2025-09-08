@@ -16,7 +16,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings } from "lucide-react";
-import { ProfileDialog } from './profile-dialog';
+import dynamic from 'next/dynamic';
+
+const ProfileDialog = dynamic(() => 
+    import('./profile-dialog').then(mod => mod.ProfileDialog),
+    { ssr: false }
+);
+
 
 const getTitleFromPath = (path: string) => {
     const segments = path.split('/').filter(Boolean);
@@ -87,7 +93,7 @@ export function AppHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
-      <ProfileDialog open={isProfileOpen} onOpenChange={setProfileOpen} />
+      {isProfileOpen && <ProfileDialog open={isProfileOpen} onOpenChange={setProfileOpen} />}
     </>
   );
 }
