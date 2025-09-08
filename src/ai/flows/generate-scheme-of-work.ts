@@ -71,7 +71,7 @@ The final output MUST follow this exact Markdown table structure. Do NOT add any
 Your task is to generate a scheme of work for a specific sub-strand, based on the provided official curriculum data.
 
 **CONTEXT FROM CURRICULUM DOCUMENT (Your ONLY Source of Truth):**
-You MUST use the following curriculum details to populate the table and the sections below it.
+You MUST use the following curriculum details to populate the table.
 - **Subject:** {{{subject}}}
 - **Grade:** {{{grade}}}
 - **Strand:** {{{strand}}}
@@ -79,20 +79,12 @@ You MUST use the following curriculum details to populate the table and the sect
 - **Total Lessons for this Sub-Strand:** {{{lessonsPerWeek}}}
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
-**CRITICAL FORMATTING INSTRUCTIONS (ENGLISH):**
-The final output MUST follow this exact structure. Do NOT add any summaries.
+**CRITICAL FORMATTING INSTRUCTIONS:**
+The final output MUST be a single, well-formatted Markdown table. Do NOT add any text or summaries outside of the table. The table structure must be exactly as follows.
 
-**STRAND: {{{strand}}}**
-
-| Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(S) |
-| :--- | :--- | :--- | :--- | :--- |
-| **{{{strand}}}** | **{{{subStrand}}}** <br> ({{{lessonsPerWeek}}} lessons) | [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list.] | [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list.] | [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list.] |
-
-**Core Competencies to be developed:**
-- [Based on the learning experiences, identify and list relevant Core Competencies like 'Digital Literacy', 'Learning to learn', 'Creativity and Imagination' and provide a one-sentence justification for each.]
-
-**Values:**
-- [Based on the learning experiences, identify and list relevant Values like 'Unity', 'Respect', 'Responsibility' and provide a one-sentence justification for each.]
+| Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **{{{strand}}}** | **{{{subStrand}}}** <br> ({{{lessonsPerWeek}}} lessons) | [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list.] | [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list.] | [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list.] | [Suggest a relevant assessment method, e.g., 'Observation', 'Oral questions', 'Portfolio'] | [This section MUST be left blank.] |
 `;
 
     const selectedPrompt = ai.definePrompt({
