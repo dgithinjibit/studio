@@ -44,24 +44,24 @@ const gradesMap: { [key: string]: { id: string; name: string }[] } = {
 
 type Subject = {
     name: string;
-    icon: LucideIcon;
+    icon: string;
 };
 
-const aiSubject: Subject = { name: 'AI', icon: BrainCircuit };
-const blockchainSubject: Subject = { name: 'Blockchain', icon: LinkIcon };
+const aiSubject: Subject = { name: 'AI', icon: '/assets/ai.png' };
+const blockchainSubject: Subject = { name: 'Blockchain', icon: '/assets/blockchain.png' };
 
 const commonSubjects: Subject[] = [
-    { name: 'English', icon: BookOpen },
-    { name: 'Creative Arts', icon: Palette },
-    { name: 'Indigenous Language', icon: Globe },
-    { name: 'Kiswahili', icon: Globe },
-    { name: 'Kenyan Sign Language', icon: Hand },
-    { name: 'Religious Education', icon: BookUser },
-    { name: 'Environmental Activities', icon: Leaf },
-    { name: 'Creative Activities', icon: Sparkles },
+    { name: 'English', icon: '/assets/english.png' },
+    { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
+    { name: 'Indigenous Language', icon: '/assets/indigenous_language.png' },
+    { name: 'Kiswahili', icon: '/assets/kiswahili.png' },
+    { name: 'Kenyan Sign Language', icon: '/assets/sign_language.png' },
+    { name: 'Religious Education', icon: '/assets/religious_education.png' },
+    { name: 'Environmental Activities', icon: '/assets/environmental_activities.png' },
+    { name: 'Creative Activities', icon: '/assets/creative_activities.png' },
 ];
 
-const pastoralInstruction: Subject = { name: 'Pastoral Instruction Programme', icon: Church };
+const pastoralInstruction: Subject = { name: 'Pastoral Instruction Programme', icon: '/assets/pastoral_instruction.png' };
 
 const subjectsMap: { [key: string]: Subject[] } = {
     g4: [...commonSubjects, aiSubject, blockchainSubject],
@@ -217,7 +217,7 @@ export default function StudentJourneyPage() {
                                     onClick={() => handleSubjectSelect(subject.name)}
                                 >
                                      <Image
-                                        src={`https://picsum.photos/seed/${subject.name}/400/400`}
+                                        src={subject.icon}
                                         alt={subject.name}
                                         fill
                                         className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -311,4 +311,5 @@ export default function StudentJourneyPage() {
 }
 
     
+
 
