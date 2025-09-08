@@ -1,10 +1,11 @@
 
 "use client";
 
-import type { Teacher } from '@/lib/types';
+import type { Teacher, UserRole } from '@/lib/types';
 import { mockTeacher } from '@/lib/mock-data';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRole } from '@/hooks/use-role';
 
 const TeacherDashboard = dynamic(() => 
     import('@/components/dashboards/teacher-dashboard').then(mod => mod.TeacherDashboard),
@@ -13,6 +14,23 @@ const TeacherDashboard = dynamic(() =>
         loading: () => <DashboardSkeleton /> 
     }
 );
+
+const SchoolHeadDashboard = dynamic(() =>
+    import('@/components/dashboards/school-head-dashboard').then(mod => mod.SchoolHeadDashboard),
+    { 
+        ssr: false,
+        loading: () => <DashboardSkeleton /> 
+    }
+);
+
+const CountyOfficerDashboard = dynamic(() =>
+    import('@/components/dashboards/county-officer-dashboard').then(mod => mod.CountyOfficerDashboard),
+    { 
+        ssr: false,
+        loading: () => <DashboardSkeleton /> 
+    }
+);
+
 
 const DashboardSkeleton = () => (
     <div className="space-y-6">
@@ -36,7 +54,17 @@ const DashboardSkeleton = () => (
 
 
 export default function DashboardPage() {
-    // For now, we will default to the teacher dashboard for a streamlined experience.
-    // The role-based logic can be re-introduced later when other dashboards are created.
-    return <TeacherDashboard teacher={mockTeacher} />;
+    const { role } = useRole();
+
+    switch (role) {
+        case 'teacher':
+            return <TeacherDashboard teacher={mockTeacher} />;
+        case 'school_head':
+            return <SchoolHeadDashboard />;
+        case 'county_officer':
+            return <CountyOfficerDashboard />;
+        default:
+             return <TeacherDashboard teacher={mockTeacher} />;
+    }
 }
+
