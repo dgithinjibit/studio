@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview AI agent to generate a draft Scheme of Work.
+ * @fileOverview AI agent to generate a draft Scheme of Work based on official curriculum data.
  *
  * - generateSchemeOfWork - A function that handles the scheme of work generation process.
  * - GenerateSchemeOfWorkInput - The input type for the generateSchemeOfWork function.
@@ -17,13 +17,13 @@ const GenerateSchemeOfWorkInputSchema = z.object({
   grade: z.string().describe('The grade level for the scheme of work.'),
   strand: z.string().describe('The main curriculum strand. This should be the main title.'),
   subStrand: z.string().describe('The sub-strand or specific topic area.'),
-  lessonsPerWeek: z.string().describe('The number of lessons to be taught each week.'),
+  lessonsPerWeek: z.string().describe('The number of lessons to be taught each week for this sub-strand.'),
   schemeOfWorkContext: z.string().optional().describe('A string containing the Learning Outcomes, Suggested Activities, and Key Inquiry Questions for the sub-strand.')
 });
 export type GenerateSchemeOfWorkInput = z.infer<typeof GenerateSchemeOfWorkInputSchema>;
 
 const GenerateSchemeOfWorkOutputSchema = z.object({
-  schemeOfWork: z.string().describe('The generated scheme of work in a structured Markdown format, broken down by week and lesson.'),
+  schemeOfWork: z.string().describe('The generated scheme of work in a structured Markdown table format, based on the official curriculum design.'),
 });
 export type GenerateSchemeOfWorkOutput = z.infer<typeof GenerateSchemeOfWorkOutputSchema>;
 
@@ -39,49 +39,25 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateSchemeOfWorkOutputSchema},
   prompt: `You are an expert curriculum developer in Kenya, creating a CBC-compliant Scheme of Work.
 
-Generate a detailed Scheme of Work based on the following information. The entire output must be in Markdown.
+Your task is to generate a scheme of work for a specific sub-strand, based on the provided curriculum data. The entire output must be a single, well-formatted Markdown table.
 
-**Subject:** {{{subject}}}
-**Grade:** {{{grade}}}
-**Sub-Strand for this Scheme:** {{{subStrand}}}
-**Total Lessons for Sub-Strand:** {{{lessonsPerWeek}}}
-
-{{#if schemeOfWorkContext}}
----
-**CONTEXT FROM CURRICULUM DOCUMENT (Your Primary Source of Truth):**
-You MUST use the following curriculum details to generate the content. Do not add information not present in this context.
-{{{schemeOfWorkContext}}}
----
-{{/if}}
+**CONTEXT FROM CURRICULUM DOCUMENT (Your ONLY Source of Truth):**
+You MUST use the following curriculum details to populate the table.
+- **Subject:** {{{subject}}}
+- **Grade:** {{{grade}}}
+- **Strand:** {{{strand}}}
+- **Sub Strand:** {{{subStrand}}}
+- **Total Lessons for this Sub-Strand:** {{{lessonsPerWeek}}}
+- **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS:**
-The final output must follow this exact Markdown structure, broken down by week and lesson. Generate content for each week until all {{{lessonsPerWeek}}} lessons for the sub-strand are covered.
+The final output MUST follow this exact Markdown table structure. Do NOT add any text or summaries outside of the table.
+
+| Mada (Strand) | Mada Ndogo (Sub Strand) & Vipindi | Matokeo Maalum Yanayotarajiwa (Specific Learning Outcomes) | Shughuli za Ujifunzaji Zilizopendekezwa (Suggested Learning Experiences) | Swali Dadisi Lililopendekezwa (Key Inquiry Question(s)) |
+| :--- | :--- | :--- | :--- | :--- |
+| **{{{strand}}}** | **{{{subStrand}}}** <br> (Vipindi {{{lessonsPerWeek}}}) | [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list.] | [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list.] | [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list.] |
 
 ---
-**WEEK 1**
-
-**LESSON 1**
-- **Strand:** {{{strand}}}
-- **Sub Strand:** {{{subStrand}}}
-- **Lesson Learning outcomes:** [Based on the context, list the specific learning outcome for this single lesson.]
-- **Learning Experiences:** [Based on the context, describe the suggested learning experience for this single lesson.]
-- **Key Inquiry Question(s):** [Based on the context, list the relevant key inquiry question for this lesson.]
-- **Assessment:** [Suggest a relevant formative assessment method for this lesson, e.g., Observation, Checklist, Q&A.]
-- **Reflection:** [Leave this section blank.]
-
-**LESSON 2**
-- **Strand:** {{{strand}}}
-- **Sub Strand:** {{{subStrand}}}
-- **Lesson Learning outcomes:** [List the learning outcome for this lesson.]
-- **Learning Experiences:** [Describe the learning experience for this lesson.]
-- **Key Inquiry Question(s):** [List the inquiry question for this lesson.]
-- **Assessment:** [Suggest a relevant assessment method.]
-- **Reflection:** [Leave this section blank.]
-
----
-**WEEK 2**
-
-...[Continue this format for all subsequent lessons and weeks]...
 `,
 });
 
