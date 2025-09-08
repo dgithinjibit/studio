@@ -82,9 +82,9 @@ You MUST use the following curriculum details to populate the table.
 **CRITICAL FORMATTING INSTRUCTIONS:**
 The final output MUST be a single, well-formatted Markdown table. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. Use bullet points for lists within cells. The table structure must be exactly as follows.
 
-| Strand | Sub Strand & Lessons | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
+| Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **{{{strand}}}** | **{{{subStrand}}}** ({{{lessonsPerWeek}}} lessons) | [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list.] | [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list.] | [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list.] | [Suggest a relevant assessment method, e.g., 'Observation', 'Oral questions', 'Portfolio'] | [This section MUST be left blank.] |
+| **{{{strand}}}** | **{{{subStrand}}}** ({{{lessonsPerWeek}}} lessons) | - [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list.] | - [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list.] | - [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list.] | [Suggest a relevant assessment method, e.g., 'Observation', 'Oral questions', 'Portfolio'] | [This section MUST be left blank.] |
 `;
 
     const selectedPrompt = ai.definePrompt({
