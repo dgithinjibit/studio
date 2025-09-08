@@ -5,8 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2, BookOpen, Palette, Globe, Hand, BookUser, Leaf, Sparkles, Church } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2 } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -311,5 +310,6 @@ export default function StudentJourneyPage() {
 }
 
     
+
 
 
