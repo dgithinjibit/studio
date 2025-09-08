@@ -23,10 +23,12 @@ import { Input } from './ui/input';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useRouter } from 'next/navigation';
-import { GenerateLessonPlanDialog } from './generate-lesson-plan-dialog';
+import dynamic from 'next/dynamic';
 import { storage, db } from '@/lib/firebase';
 import { ref, getBytes, deleteObject } from 'firebase/storage';
 import { doc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
+
+const GenerateLessonPlanDialog = dynamic(() => import('@/components/generate-lesson-plan-dialog').then(mod => mod.GenerateLessonPlanDialog));
 
 
 export function MyResources() {
@@ -355,12 +357,14 @@ export function MyResources() {
                     </Accordion>
                 </div>
             )}
-             <GenerateLessonPlanDialog 
+             {isLessonPlanDialogOpen && <GenerateLessonPlanDialog 
                 open={isLessonPlanDialogOpen} 
                 onOpenChange={setLessonPlanDialogOpen} 
                 onResourceSaved={onResourceSaved}
                 schemeOfWorkContext={selectedSchemeContent}
-             />
+             />}
         </div>
     );
 }
+
+    
