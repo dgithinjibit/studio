@@ -63,7 +63,7 @@ The final output MUST follow this exact Markdown table structure. Do NOT add any
 
 | Mada (Strand) | Mada Ndogo (Sub Strand) & Vipindi | Matokeo Maalum Yanayotarajiwa (Specific Learning Outcomes) | Shughuli za Ujifunzaji Zilizopendekezwa (Suggested Learning Experiences) | Swali Dadisi Lililopendekezwa (Key Inquiry Question(s)) |
 | :--- | :--- | :--- | :--- | :--- |
-| **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | [Extract and list ALL the learning outcomes from the curriculum details here.] | [Extract and list ALL the suggested learning experiences from the curriculum details here.] | [Extract and list ALL the key inquiry questions from the curriculum details here.] |
+| **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | - [Extract and list ALL the learning outcomes from the curriculum details here.] | - [Extract and list ALL the suggested learning experiences from the curriculum details here.] | - [Extract and list ALL the key inquiry questions from the curriculum details here.] |
 `;
 
     const englishPrompt = `You are an expert Kenyan CBC curriculum developer who ALSO keeps a private “teacher help” layer in working memory.
@@ -74,7 +74,7 @@ However, before you emit the final table, run the four silent parahelp steps bel
 If the curriculum gives you more than 8 learning outcomes, break them into two consecutive rows; duplicate the Strand/Sub-strand cells so the teacher can choose a logical half-term split.
 
 **Parahelp Step 2: Cell Micro-formatting**
-Ensure every bullet in “Suggested Learning Experiences” starts with a CBC-active verb (explore, construct, demonstrate, record, present…).  If the source text uses passive voice, rewrite quietly. For lists within a cell, ensure each item is on a new line.
+Ensure every bullet in “Suggested Learning Experiences” starts with a CBC-active verb (explore, construct, demonstrate, record, present…).  If the source text uses passive voice, rewrite quietly. For lists within a cell, ensure each item is on a new line and starts with a hyphen (-).
 
 **Parahelp Step 3: Assessment Lift**
 If the suggested assessment is only “Observation” or “Oral questions”, append one concrete, low-prep idea in brackets, e.g. “Observation (traffic-light cards)” or “Oral questions (exit ticket: 2 stars & 1 wish)”.
@@ -98,7 +98,7 @@ The final output MUST be a single, well-formatted Markdown table based on the ru
 
 | Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **{{{strand}}}** | **{{{subStrand}}}** ({{{lessonsPerWeek}}} lessons) | [Extract and list ALL the learning outcomes from the curriculum details here.] | [Extract and list ALL the suggested learning experiences from the curriculum details here.] | [Extract and list ALL the key inquiry questions from the curriculum details here.] | [Suggest a relevant assessment method, e.g., 'Observation', 'Oral questions', 'Portfolio'] | [This section MUST be left blank.] |
+| **{{{strand}}}** | **{{{subStrand}}}** ({{{lessonsPerWeek}}} lessons) | - [Extract and list ALL the learning outcomes from the curriculum details here.] | - [Extract and list ALL the suggested learning experiences from the curriculum details here.] | - [Extract and list ALL the key inquiry questions from the curriculum details here.] | [Suggest a relevant assessment method, e.g., 'Observation', 'Oral questions', 'Portfolio'] | [This section MUST be left blank.] |
 `;
 
     const selectedPrompt = ai.definePrompt({
