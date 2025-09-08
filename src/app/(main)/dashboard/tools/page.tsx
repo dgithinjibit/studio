@@ -77,7 +77,7 @@ export default function TeacherToolsPage() {
         // We need to dispatch a custom event to tell the MyResources component to update
         // because localStorage changes in the same window don't trigger the 'storage' event.
         window.dispatchEvent(new CustomEvent('resource-update'));
-        router.push('/dashboard/resources');
+        router.push('/dashboard/reports');
     }
 
     return (

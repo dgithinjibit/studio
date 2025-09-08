@@ -59,13 +59,12 @@ export default function LearningLabPage() {
             await uploadString(storageRef, context, 'raw');
             const downloadURL = await getDownloadURL(storageRef);
 
-            const newResource: Omit<TeacherResource, 'id'> & {joinCode: string, originalContent: string} = {
+            const newResource: Omit<TeacherResource, 'id'> & {joinCode: string} = {
               title: `Study Bot - ${new Date().toLocaleString()}`,
               url: downloadURL,
               createdAt: new Date().toISOString(),
               type: 'AI Tutor Context',
               joinCode: resourceId,
-              originalContent: context
             };
             
             await addDoc(collection(db, "teacherResources"), newResource);

@@ -26,7 +26,7 @@ import { useRouter } from 'next/navigation';
 import { GenerateLessonPlanDialog } from './generate-lesson-plan-dialog';
 import { storage, db } from '@/lib/firebase';
 import { ref, getBytes, deleteObject } from 'firebase/storage';
-import { doc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 
 
 export function MyResources() {
@@ -39,23 +39,29 @@ export function MyResources() {
 
 
     const fetchResources = () => {
-        const storedResources = localStorage.getItem("teacherResources");
+        const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
+            const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
+            setAllResources(resourcesData);
+        });
+        
         const storedComms = localStorage.getItem("mockCommunications");
-        if (storedResources) {
-            setAllResources(JSON.parse(storedResources));
-        }
         if (storedComms) {
             setCommunications(JSON.parse(storedComms).map((c: any) => ({...c, date: new Date(c.date)})));
         }
+
+        return () => unsubscribe();
     };
 
     useEffect(() => {
-        fetchResources();
+        const unsubscribe = fetchResources();
         
-        const handleResourceUpdate = () => fetchResources();
+        const handleResourceUpdate = () => {
+            // The onSnapshot listener will handle the update, so we don't need to do anything here
+        };
         window.addEventListener('resource-update', handleResourceUpdate);
         
         return () => {
+            unsubscribe();
             window.removeEventListener('resource-update', handleResourceUpdate);
         };
     }, []);
@@ -67,21 +73,12 @@ export function MyResources() {
     const handleDelete = async (resource: TeacherResource, event: React.MouseEvent) => {
         event.stopPropagation();
         try {
-            // Delete from Firestore
-            const q = query(collection(db, "teacherResources"), where("url", "==", resource.url));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach(async (document) => {
-                await deleteDoc(doc(db, "teacherResources", document.id));
-            });
+            // Delete from Firestore using the document ID (resource.id)
+            await deleteDoc(doc(db, "teacherResources", resource.id));
 
-            // Delete from Storage
+            // Delete from Storage using the full URL
             const storageRef = ref(storage, resource.url);
             await deleteObject(storageRef);
-
-            // Update local state
-            const updatedResources = allResources.filter(p => p.id !== resource.id);
-            setAllResources(updatedResources);
-            localStorage.setItem("teacherResources", JSON.stringify(updatedResources));
             
             toast({
                 title: "Item Deleted",
@@ -126,7 +123,7 @@ export function MyResources() {
     };
 
     const onResourceSaved = () => {
-        fetchResources();
+        // No need to manually fetch, onSnapshot will do it.
         router.push('/dashboard/reports');
     }
     
