@@ -2,15 +2,18 @@
 "use client"
 
 import { useState } from "react";
+import dynamic from 'next/dynamic';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FilePen, ClipboardList, CalendarDays, CopySlash, GraduationCap, Mail } from "lucide-react";
-import { GenerateLessonPlanDialog } from '@/components/generate-lesson-plan-dialog';
-import { GenerateSchemeOfWorkDialog } from '@/components/generate-scheme-of-work-dialog';
-import { GenerateRubricDialog } from '@/components/generate-rubric-dialog';
-import { GenerateWorksheetDialog } from '@/components/generate-worksheet-dialog';
-import { DifferentiateWorksheetDialog } from '@/components/differentiate-worksheet-dialog';
+import { FilePen, ClipboardList, CalendarDays, CopySlash, GraduationCap, Mail, Loader2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
+
+const GenerateLessonPlanDialog = dynamic(() => import('@/components/generate-lesson-plan-dialog').then(mod => mod.GenerateLessonPlanDialog));
+const GenerateSchemeOfWorkDialog = dynamic(() => import('@/components/generate-scheme-of-work-dialog').then(mod => mod.GenerateSchemeOfWorkDialog));
+const GenerateRubricDialog = dynamic(() => import('@/components/generate-rubric-dialog').then(mod => mod.GenerateRubricDialog));
+const GenerateWorksheetDialog = dynamic(() => import('@/components/generate-worksheet-dialog').then(mod => mod.GenerateWorksheetDialog));
+const DifferentiateWorksheetDialog = dynamic(() => import('@/components/differentiate-worksheet-dialog').then(mod => mod.DifferentiateWorksheetDialog));
+
 
 const teacherTools = [
     {
@@ -58,19 +61,27 @@ const teacherTools = [
 ];
 
 export default function TeacherToolsPage() {
-    const [isLessonPlanDialogOpen, setLessonPlanDialogOpen] = useState(false);
-    const [isSchemeOfWorkDialogOpen, setSchemeOfWorkDialogOpen] = useState(false);
-    const [isRubricDialogOpen, setRubricDialogOpen] = useState(false);
-    const [isWorksheetDialogOpen, setWorksheetDialogOpen] = useState(false);
-    const [isDifferentiateDialogOpen, setDifferentiateDialogOpen] = useState(false);
+    const [dialogState, setDialogState] = useState({
+        lessonPlan: false,
+        schemeOfWork: false,
+        rubric: false,
+        worksheet: false,
+        differentiate: false
+    });
     const router = useRouter();
 
+    const openDialog = (dialog: keyof typeof dialogState) => {
+        setDialogState(prev => ({ ...prev, [dialog]: true }));
+    };
+
+    const closeDialog = (dialog: keyof typeof dialogState) => {
+        setDialogState(prev => ({ ...prev, [dialog]: false }));
+    };
+
     const handleToolClick = (dialog: string | null) => {
-        if (dialog === 'lessonPlan') setLessonPlanDialogOpen(true);
-        else if (dialog === 'schemeOfWork') setSchemeOfWorkDialogOpen(true);
-        else if (dialog === 'rubric') setRubricDialogOpen(true);
-        else if (dialog === 'worksheet') setWorksheetDialogOpen(true);
-        else if (dialog === 'differentiate') setDifferentiateDialogOpen(true);
+        if (dialog) {
+            openDialog(dialog as keyof typeof dialogState);
+        }
     };
 
     const onResourceSaved = () => {
@@ -110,19 +121,31 @@ export default function TeacherToolsPage() {
                 </CardContent>
             </Card>
 
-             <GenerateLessonPlanDialog 
-                open={isLessonPlanDialogOpen} 
-                onOpenChange={setLessonPlanDialogOpen} 
+             {dialogState.lessonPlan && <GenerateLessonPlanDialog 
+                open={dialogState.lessonPlan} 
+                onOpenChange={(open) => !open && closeDialog('lessonPlan')} 
                 onResourceSaved={onResourceSaved}
-             />
-             <GenerateSchemeOfWorkDialog 
-                open={isSchemeOfWorkDialogOpen} 
-                onOpenChange={setSchemeOfWorkDialogOpen}
+             />}
+             {dialogState.schemeOfWork && <GenerateSchemeOfWorkDialog 
+                open={dialogState.schemeOfWork} 
+                onOpenChange={(open) => !open && closeDialog('schemeOfWork')}
                 onResourceSaved={onResourceSaved}
-             />
-             <GenerateRubricDialog open={isRubricDialogOpen} onOpenChange={setRubricDialogOpen} onResourceSaved={onResourceSaved} />
-             <GenerateWorksheetDialog open={isWorksheetDialogOpen} onOpenChange={setWorksheetDialogOpen} onResourceSaved={onResourceSaved} />
-             <DifferentiateWorksheetDialog open={isDifferentiateDialogOpen} onOpenChange={setDifferentiateDialogOpen} onResourceSaved={onResourceSaved} />
+             />}
+             {dialogState.rubric && <GenerateRubricDialog 
+                open={dialogState.rubric} 
+                onOpenChange={(open) => !open && closeDialog('rubric')} 
+                onResourceSaved={onResourceSaved} 
+             />}
+             {dialogState.worksheet && <GenerateWorksheetDialog 
+                open={dialogState.worksheet} 
+                onOpenChange={(open) => !open && closeDialog('worksheet')} 
+                onResourceSaved={onResourceSaved} 
+             />}
+             {dialogState.differentiate && <DifferentiateWorksheetDialog 
+                open={dialogState.differentiate} 
+                onOpenChange={(open) => !open && closeDialog('differentiate')} 
+                onResourceSaved={onResourceSaved} 
+            />}
         </>
     );
 }
