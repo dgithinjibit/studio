@@ -89,7 +89,13 @@ Generate the lesson plan in Markdown. The structure MUST be as follows:
 
 **Lesson Learning outcomes:**
 By the end of the lesson the learner should be able to:
+{{#if schemeOfWorkContext}}
+- **Knowledge:** [Analyze the learning outcomes from the scheme and write the knowledge-based outcome here. Example: Identify different types of lines.]
+- **Skill:** [Analyze the learning outcomes from the scheme and write the skill-based outcome here. Example: Model straight lines using sticks, plasticine or clay.]
+- **Attitude:** [Analyze the learning outcomes from the scheme and write the attitude-based outcome here. Example: Appreciate the roles of straight lines in the environment.]
+{{else}}
 {{{learningObjectives}}}
+{{/if}}
 
 **Key Inquiry Question(s):**
 - [Generate 1-2 relevant inquiry questions based on the topic]
