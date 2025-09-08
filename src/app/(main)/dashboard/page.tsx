@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react';
 import type { Teacher } from '@/lib/types';
 import { mockTeacher } from '@/lib/mock-data';
-import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-dashboard';
 import { useRole } from '@/hooks/use-role';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,6 +18,14 @@ const TeacherDashboard = dynamic(() =>
 
 const SchoolHeadDashboard = dynamic(() =>
     import('@/components/dashboards/school-head-dashboard').then(mod => mod.SchoolHeadDashboard),
+    {
+        ssr: false,
+        loading: () => <DashboardSkeleton />
+    }
+);
+
+const CountyOfficerDashboard = dynamic(() =>
+    import('@/components/dashboards/county-officer-dashboard').then(mod => mod.CountyOfficerDashboard),
     {
         ssr: false,
         loading: () => <DashboardSkeleton />
