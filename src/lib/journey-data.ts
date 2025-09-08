@@ -37,13 +37,14 @@ const blockchainSubject: Subject = { name: 'Blockchain', icon: '/assets/blockcha
 
 const commonSubjects: Subject[] = [
     { name: 'English', icon: '/assets/english.png' },
-    { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
-    { name: 'Indigenous Language', icon: '/assets/indigenous_language.png' },
     { name: 'Kiswahili', icon: '/assets/kiswahili.png' },
-    { name: 'Kenyan Sign Language', icon: '/assets/sign_language.png' },
+    { name: 'Mathematics', icon: '/assets/mathematics.png' },
+    { name: 'Social Studies', icon: '/assets/social_studies.png' },
+    { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
     { name: 'Religious Education', icon: '/assets/religious_education.png' },
     { name: 'Environmental Activities', icon: '/assets/environmental_activities.png' },
-    { name: 'Creative Activities', icon: '/assets/creative_activities.png' },
+    { name: 'Indigenous Language', icon: '/assets/indigenous_language.png' },
+    { name: 'Kenyan Sign Language', icon: '/assets/sign_language.png' },
 ];
 
 const pastoralInstruction: Subject = { name: 'Pastoral Instruction Programme', icon: '/assets/pastoral_instruction.png' };
