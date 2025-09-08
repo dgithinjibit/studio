@@ -246,7 +246,6 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     setLoading(true);
     setGeneratedScheme("");
 
-    const formData = new FormData(event.currentTarget);
     const subStrandData = availableSubStrands.find(ss => ss.title === selectedSubStrandName);
     
     if (!subStrandData) {
@@ -268,9 +267,8 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     const data: GenerateSchemeOfWorkInput = {
       subject: selectedSubject,
       grade: selectedGrade,
+      strand: selectedStrand,
       subStrand: selectedSubStrandName,
-      availableResources: formData.get("availableResources") as string,
-      numberOfWeeks: "1",
       lessonsPerWeek: lessonsPerWeek.toString(),
       schemeOfWorkContext: contextString, 
     };
@@ -313,9 +311,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">Schemer: Week Generator</DialogTitle>
+          <DialogTitle className="font-headline text-2xl">Schemer: Single Sub-Strand</DialogTitle>
           <DialogDescription>
-             Create a one-week, CBC-compliant Scheme of Work by selecting from official curriculum data.
+             Create a one-sub-strand, CBC-compliant Scheme of Work by selecting from official curriculum data.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -396,17 +394,14 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 </div>
                 
                 <div>
-                    <Label htmlFor="lessonsPerWeek">Lessons per Week: {lessonsPerWeek}</Label>
-                    <Slider id="lessonsPerWeek" name="lessonsPerWeek" min={1} max={5} step={1} value={[lessonsPerWeek]} onValueChange={(value) => setLessonsPerWeek(value[0])} />
+                    <Label htmlFor="lessonsPerWeek">Number of Lessons: {lessonsPerWeek}</Label>
+                    <Slider id="lessonsPerWeek" name="lessonsPerWeek" min={1} max={10} step={1} value={[lessonsPerWeek]} onValueChange={(value) => setLessonsPerWeek(value[0])} />
                 </div>
-                 <div>
-                    <Label htmlFor="availableResources">Available Resources</Label>
-                    <Textarea id="availableResources" name="availableResources" defaultValue="Learner's Book, Digital Devices, Pictures" />
-                </div>
+                
                 <DialogFooter className="pt-4">
                     <Button type="submit" disabled={loading || !selectedSubStrandName} className="w-full">
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Generate Scheme for 1 Week
+                    Generate Scheme of Work
                     </Button>
                 </DialogFooter>
             </form>
@@ -446,7 +441,3 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     </Dialog>
   );
 }
-
-    
-
-    
