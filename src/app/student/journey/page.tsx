@@ -3,6 +3,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2 } from 'lucide-react';
@@ -60,33 +61,47 @@ export default function StudentJourneyPage() {
         localStorage.setItem('studentGrade', gradeId);
         navigateTo('subject');
     }, []);
-    
-    const handleSubjectSelect = useCallback((subjectName: string) => {
-        router.push(`/student/chat/${subjectName}`);
-    }, [router]);
 
-    const handleTeacherCodeSubmit = (e: React.FormEvent) => {
+    const handleTeacherCodeSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!teacherCode.trim()) return;
 
         setIsSubmittingCode(true);
 
-        const allResources: TeacherResource[] = JSON.parse(localStorage.getItem('teacherResources') || '[]');
-        const tutorContextResource = allResources.find(r => r.id === teacherCode.trim() && r.type === 'AI Tutor Context');
+        try {
+            const allResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
+            const tutorContextResource = allResources.find(r => r.id === teacherCode.trim() && r.type === 'AI Tutor Context');
+            
+            if (tutorContextResource) {
+                // Assuming the URL points to a text file in storage
+                const response = await fetch(tutorContextResource.url);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch context');
+                }
+                const contextText = await response.text();
+                
+                localStorage.setItem('ai_tutor_context_to_load', contextText);
+                toast({
+                    title: "Teacher's Context Loaded!",
+                    description: "Launching the Classroom Compass. Your AI guide is ready.",
+                });
+                router.push(`/student/chat/teacher-context`);
 
-        if (tutorContextResource && 'originalContent' in tutorContextResource && typeof (tutorContextResource as any).originalContent === 'string') {
-            localStorage.setItem('ai_tutor_context_to_load', (tutorContextResource as any).originalContent);
-            toast({
-                title: "Teacher's Context Loaded!",
-                description: "Launching the Classroom Compass. Your AI guide is ready.",
-            });
-            router.push(`/student/chat/teacher-context`);
-        } else {
-            toast({
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: "Invalid Code",
+                    description: "The code you entered does not match any AI Tutor context. Please check the code and try again.",
+                });
+            }
+        } catch (error) {
+             toast({
                 variant: 'destructive',
-                title: "Invalid Code",
-                description: "The code you entered does not match any AI Tutor context. Please check the code and try again.",
+                title: "Error Loading Context",
+                description: "Could not load the teacher's materials. Please try again.",
             });
+            console.error("Error handling teacher code:", error);
+        } finally {
             setIsSubmittingCode(false);
         }
     }
@@ -140,23 +155,23 @@ export default function StudentJourneyPage() {
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                            {subjects.map((subject) => (
-                                <Card 
-                                    key={subject.name}
-                                    className="relative group overflow-hidden rounded-lg cursor-pointer aspect-square text-white"
-                                    onClick={() => handleSubjectSelect(subject.name)}
-                                >
-                                     <Image
-                                        src={subject.icon}
-                                        alt={subject.name}
-                                        fill
-                                        className="object-cover group-hover:scale-110 transition-transform duration-300"
-                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-                                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                                        <h3 className="font-bold text-lg opacity-50 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
-                                    </div>
-                                </Card>
+                                <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
+                                    <Card 
+                                        className="relative group overflow-hidden rounded-lg cursor-pointer aspect-square text-white"
+                                    >
+                                        <Image
+                                            src={subject.icon}
+                                            alt={subject.name}
+                                            fill
+                                            className="object-cover group-hover:scale-110 transition-transform duration-300"
+                                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                                            <h3 className="font-bold text-lg opacity-50 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
+                                        </div>
+                                    </Card>
+                                </Link>
                             ))}
                         </CardContent>
                     </Card>
