@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2, BookOpen, Palette, Globe, Hand, BookUser, Leaf, Sparkles, Church } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
@@ -44,24 +44,24 @@ const gradesMap: { [key: string]: { id: string; name: string }[] } = {
 
 type Subject = {
     name: string;
-    icon: LucideIcon | string;
+    icon: LucideIcon;
 };
 
-const aiSubject: Subject = { name: 'AI', icon: '/assets/ai.png' };
-const blockchainSubject: Subject = { name: 'Blockchain', icon: '/assets/bc.png' };
+const aiSubject: Subject = { name: 'AI', icon: BrainCircuit };
+const blockchainSubject: Subject = { name: 'Blockchain', icon: LinkIcon };
 
 const commonSubjects: Subject[] = [
-    { name: 'English', icon: '/assets/english-icon.png' },
-    { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
-    { name: 'Indigenous Language', icon: '/assets/indig.png' },
-    { name: 'Kiswahili', icon: '/assets/kisw.png' },
-    { name: 'Kenyan Sign Language', icon: '/assets/ksl.png' },
-    { name: 'Religious Education', icon: '/assets/cre.png' },
-    { name: 'Environmental Activities', icon: '/assets/envr.png' },
-    { name: 'Creative Activities', icon: '/assets/creative_act.png' },
+    { name: 'English', icon: BookOpen },
+    { name: 'Creative Arts', icon: Palette },
+    { name: 'Indigenous Language', icon: Globe },
+    { name: 'Kiswahili', icon: Globe },
+    { name: 'Kenyan Sign Language', icon: Hand },
+    { name: 'Religious Education', icon: BookUser },
+    { name: 'Environmental Activities', icon: Leaf },
+    { name: 'Creative Activities', icon: Sparkles },
 ];
 
-const pastoralInstruction = { name: 'Pastoral Instruction Programme', icon: '/assets/pastoral.png' };
+const pastoralInstruction: Subject = { name: 'Pastoral Instruction Programme', icon: Church };
 
 const subjectsMap: { [key: string]: Subject[] } = {
     g4: [...commonSubjects, aiSubject, blockchainSubject],
@@ -162,10 +162,7 @@ export default function StudentJourneyPage() {
         }
     }, [step, selectedLevel, router]);
     
-    const renderIcon = (icon: LucideIcon | string, subjectName: string) => {
-        if (typeof icon === 'string') {
-            return <Image src={icon} alt={`${subjectName} icon`} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />;
-        }
+    const renderIcon = (icon: LucideIcon, subjectName: string) => {
         const IconComponent = icon;
         return (
             <div className="flex items-center justify-center w-full h-full bg-card">

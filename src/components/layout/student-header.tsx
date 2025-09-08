@@ -40,7 +40,7 @@ export function StudentHeader({ showBackButton, onBack, studentFirstName }: Stud
                 </Button>
             )}
             <div className="text-center">
-                <h1 className="font-headline text-4xl font-bold">Karibu, {studentFirstName}!</h1>
+                <h1 className="font-headline text-4xl font-bold">Karibu! Welcome!</h1>
                 <p className="text-stone-600 text-lg mt-2">
                     I’m Mwalimu AI, your friendly Socratic Mentor.
                 </p>
