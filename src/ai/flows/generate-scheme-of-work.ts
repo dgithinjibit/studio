@@ -59,7 +59,7 @@ You MUST use the following curriculum details to populate the table.
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS (KISWAHILI):**
-The final output MUST follow this exact Markdown table structure. Do NOT add any text or summaries outside of the table.
+The final output MUST follow this exact Markdown table structure. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. Use bullet points for lists within cells.
 
 | Mada (Strand) | Mada Ndogo (Sub Strand) & Vipindi | Matokeo Maalum Yanayotarajiwa (Specific Learning Outcomes) | Shughuli za Ujifunzaji Zilizopendekezwa (Suggested Learning Experiences) | Swali Dadisi Lililopendekezwa (Key Inquiry Question(s)) |
 | :--- | :--- | :--- | :--- | :--- |
@@ -80,7 +80,7 @@ You MUST use the following curriculum details to populate the table.
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS:**
-The final output MUST be a single, well-formatted Markdown table. Do NOT add any text or summaries outside of the table. The table structure must be exactly as follows.
+The final output MUST be a single, well-formatted Markdown table. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. Use bullet points for lists within cells. The table structure must be exactly as follows.
 
 | Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
