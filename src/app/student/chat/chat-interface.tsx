@@ -88,14 +88,14 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext }
             if (tutorMode === 'compass' && teacherContext) {
                  result = await classroomCompass({
                     teacherContext,
-                    history: newMessages,
+                    history: newMessages, // Pass the full, updated history
                 });
             } else {
                  result = await mwalimuAiTutor({
                     grade,
                     subject,
                     currentMessage: currentInput,
-                    history: messages // Pass history *before* new user message
+                    history: newMessages // Pass the full, updated history
                 });
             }
             setMessages([...newMessages, { role: 'model', content: result.response }]);

@@ -124,7 +124,7 @@ Base your Socratic questions and answers on the "Context from Teacher's Material
 
 ## Conversation History:
 {{#each history}}
-  Student: {{{this.content}}}
+  {{this.role}}: {{{this.content}}}
 {{/each}}
 
 Based on the subject, conversation history, and your instructions for the relevant persona, provide your next response as Mwalimu AI.
@@ -139,15 +139,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
-    
-    // This is the old, buggy code. I am removing it.
-    // // Add the current message to the history for the AI call
-    // const history = [...(input.history || [])];
-    // if (input.currentMessage) {
-    //     history.push({ role: 'user', content: input.currentMessage });
-    // }
-
-    // Handle initial greeting separately to prevent crashes
+    // Handle initial greeting separately to prevent crashes and ensure a good first experience.
     if (!input.history || input.history.length === 0) {
         const gradeName = `Grade ${input.grade.replace('g', '')}`;
         
@@ -187,13 +179,8 @@ const mwalimuAiTutorFlow = ai.defineFlow(
         };
     }
     
-    // This is the new, correct code.
-    // The history is now passed directly from the UI.
-    const flowInput: MwalimuAiTutorInput = {
-        grade: input.grade,
-        subject: input.subject,
-        history: input.history,
-    };
+    // The history is now passed directly from the UI, no modification needed.
+    const flowInput: MwalimuAiTutorInput = { ...input };
     
     if (flowInput.subject === 'AI') {
       flowInput.teacherContext = `AI Curriculum:\n${aiCurriculum}`;
@@ -268,7 +255,13 @@ const mwalimuAiTutorFlow = ai.defineFlow(
         }
     }
     
-    const {output} = await tutorPrompt(flowInput);
+    // Explicitly use the faster model for conversation
+    const {output} = await ai.generate({
+        model: 'googleai/gemini-2.5-flash',
+        prompt: tutorPrompt.prompt,
+        input: flowInput,
+        output: { schema: MwalimuAiTutorOutputSchema }
+    });
     return output!;
   }
 );
