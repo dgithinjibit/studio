@@ -33,18 +33,19 @@ type Subject = {
 };
 
 const aiSubject: Subject = { name: 'AI', icon: '/assets/ai.png' };
-const blockchainSubject: Subject = { name: 'Blockchain', icon: '/assets/blockchain.png' };
+const blockchainSubject: Subject = { name: 'Blockchain', icon: '/assets/bc.png' };
 
 const commonSubjects: Subject[] = [
-    { name: 'English', icon: '/assets/english.png' },
-    { name: 'Kiswahili', icon: '/assets/kiswahili.png' },
+    { name: 'English', icon: '/assets/english-icon.png' },
+    { name: 'Kiswahili', icon: '/assets/kisw.png' },
     { name: 'Mathematics', icon: '/assets/mathematics.png' },
     { name: 'Social Studies', icon: '/assets/social_studies.png' },
     { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
-    { name: 'Religious Education', icon: '/assets/religious_education.png' },
-    { name: 'Environmental Activities', icon: '/assets/environmental_activities.png' },
-    { name: 'Indigenous Language', icon: '/assets/indigenous_language.png' },
-    { name: 'Kenyan Sign Language', icon: '/assets/sign_language.png' },
+    { name: 'Religious Education', icon: '/assets/cre.png' },
+    { name: 'Environmental Activities', icon: '/assets/envr.png' },
+    { name: 'Indigenous Language', icon: '/assets/indig.png' },
+    { name: 'Kenyan Sign Language', icon: '/assets/ksl.png' },
+    { name: 'Creative Activities', icon: '/assets/creative_act.png' },
 ];
 
 const pastoralInstruction: Subject = { name: 'Pastoral Instruction Programme', icon: '/assets/pastoral_instruction.png' };
