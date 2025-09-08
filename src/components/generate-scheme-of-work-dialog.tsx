@@ -23,8 +23,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
-import { Input } from "./ui/input";
-import { curriculumStructure } from "@/lib/curriculum-structure";
 
 // Grade 1
 import { grade1CreativeActivitiesCurriculum } from "@/curriculum/grade1-creative-activities";
@@ -79,52 +77,62 @@ import { pp1MathematicsActivitiesCurriculum } from "@/curriculum/pp1-mathematics
 import { pp2MathematicsActivitiesCurriculum } from "@/curriculum/pp2-mathematics-activities";
 
 
-// A reliable map to connect dropdown selections to the correct curriculum data.
 const curriculumMap: { [key: string]: any } = {
-  // PP1
-  'PP1-Christian Religious Education': pp1CreCurriculum,
-  'PP1-Creative Activities': pp1CreativeArtsCurriculum,
-  'PP1-Environmental Activities': pp1EnvironmentalActivitiesCurriculum,
-  'PP1-Language Activities': pp1LanguageActivitiesCurriculum,
-  'PP1-Mathematical Activities': pp1MathematicsActivitiesCurriculum,
-  // PP2
-  'PP2-Christian Religious Education': pp2CreCurriculum,
-  'PP2-Creative Activities': pp2CreativeArtsCurriculum,
-  'PP2-Environmental Activities': pp2EnvironmentalActivitiesCurriculum,
-  'PP2-Language Activities': pp2LanguageActivitiesCurriculum,
-  'PP2-Mathematical Activities': pp2MathematicsActivitiesCurriculum,
-  // Grade 1
-  'Grade 1-Christian Religious Education': grade1CreCurriculum,
-  'Grade 1-Creative Activities': grade1CreativeActivitiesCurriculum,
-  'Grade 1-Environmental Activities': grade1EnvironmentalActivitiesCurriculum,
-  'Grade 1-English Language Activities': grade1EnglishLanguageActivitiesCurriculum,
-  'Grade 1-Indigenous Language Activities': grade1IndigenousLanguageCurriculum,
-  'Grade 1-Kiswahili Language Activities': grade1KiswahiliLanguageActivitiesCurriculum,
-  'Grade 1-Mathematical Activities': grade1MathematicsActivitiesCurriculum,
-  // Grade 2
-  'Grade 2-Christian Religious Education': grade2CreCurriculum,
-  'Grade 2-Movement and Creative Activities': grade2CreativeActivitiesCurriculum,
-  'Grade 2-Environmental Activities': grade2EnvironmentalActivitiesCurriculum,
-  'Grade 2-English Language Activities': grade2EnglishLanguageActivitiesCurriculum,
-  'Grade 2-Indigenous Language Activities': grade2IndigenousLanguageCurriculum,
-  'Grade 2-Kiswahili Language Activities': grade2KiswahiliLanguageActivitiesCurriculum,
-  'Grade 2-Mathematical Activities': grade2MathematicsActivitiesCurriculum,
-  // Grade 3
-  'Grade 3-Christian Religious Education': grade3CreCurriculum,
-  'Grade 3-Movement and Creative Activities': grade3CreativeActivitiesCurriculum,
-  'Grade 3-Environmental Activities': grade3EnvironmentalActivitiesCurriculum,
-  'Grade 3-English Language Activities': grade3EnglishLanguageActivitiesCurriculum,
-  'Grade 3-Indigenous Language Activities': grade3IndigenousLanguageCurriculum,
-  'Grade 3-Kiswahili Language Activities': grade3KiswahiliLanguageActivitiesCurriculum,
-  'Grade 3-Mathematical Activities': grade3MathematicsActivitiesCurriculum,
-  // Grade 4
-  'Grade 4-Agriculture and Nutrition': grade4AgricultureAndNutritionCurriculum,
-  'Grade 4-Christian Religious Education': grade4CreCurriculum,
-  'Grade 4-Creative Arts': grade4CreativeArtsCurriculum,
-  'Grade 4-English': grade4EnglishLanguageActivitiesCurriculum,
-  'Grade 4-Indigenous Languages': grade4IndigenousLanguageCurriculum,
-  'Grade 4-Kiswahili': grade4KiswahiliLanguageActivitiesCurriculum,
-  'Grade 6-Social Studies': grade6SocialStudiesCurriculum,
+    // PP1
+    'PP1-Christian Religious Education': pp1CreCurriculum,
+    'PP1-Creative Activities': pp1CreativeArtsCurriculum,
+    'PP1-Environmental Activities': pp1EnvironmentalActivitiesCurriculum,
+    'PP1-Language Activities': pp1LanguageActivitiesCurriculum,
+    'PP1-Mathematical Activities': pp1MathematicsActivitiesCurriculum,
+    // PP2
+    'PP2-Christian Religious Education': pp2CreCurriculum,
+    'PP2-Creative Activities': pp2CreativeArtsCurriculum,
+    'PP2-Environmental Activities': pp2EnvironmentalActivitiesCurriculum,
+    'PP2-Language Activities': pp2LanguageActivitiesCurriculum,
+    'PP2-Mathematical Activities': pp2MathematicsActivitiesCurriculum,
+    // Grade 1
+    'Grade 1-Christian Religious Education': grade1CreCurriculum,
+    'Grade 1-Creative Activities': grade1CreativeActivitiesCurriculum,
+    'Grade 1-Environmental Activities': grade1EnvironmentalActivitiesCurriculum,
+    'Grade 1-English Language Activities': grade1EnglishLanguageActivitiesCurriculum,
+    'Grade 1-Indigenous Language Activities': grade1IndigenousLanguageCurriculum,
+    'Grade 1-Kiswahili Language Activities': grade1KiswahiliLanguageActivitiesCurriculum,
+    'Grade 1-Mathematical Activities': grade1MathematicsActivitiesCurriculum,
+    // Grade 2
+    'Grade 2-Christian Religious Education': grade2CreCurriculum,
+    'Grade 2-Creative Activities': grade2CreativeActivitiesCurriculum,
+    'Grade 2-Environmental Activities': grade2EnvironmentalActivitiesCurriculum,
+    'Grade 2-English Language Activities': grade2EnglishLanguageActivitiesCurriculum,
+    'Grade 2-Indigenous Language Activities': grade2IndigenousLanguageCurriculum,
+    'Grade 2-Kiswahili Language Activities': grade2KiswahiliLanguageActivitiesCurriculum,
+    'Grade 2-Mathematical Activities': grade2MathematicsActivitiesCurriculum,
+    // Grade 3
+    'Grade 3-Christian Religious Education': grade3CreCurriculum,
+    'Grade 3-Creative Activities': grade3CreativeActivitiesCurriculum,
+    'Grade 3-Environmental Activities': grade3EnvironmentalActivitiesCurriculum,
+    'Grade 3-English Language Activities': grade3EnglishLanguageActivitiesCurriculum,
+    'Grade 3-Indigenous Language Activities': grade3IndigenousLanguageCurriculum,
+    'Grade 3-Kiswahili Language Activities': grade3KiswahiliLanguageActivitiesCurriculum,
+    'Grade 3-Mathematical Activities': grade3MathematicsActivitiesCurriculum,
+    // Grade 4
+    'Grade 4-Agriculture and Nutrition': grade4AgricultureAndNutritionCurriculum,
+    'Grade 4-Christian Religious Education': grade4CreCurriculum,
+    'Grade 4-Creative Arts': grade4CreativeArtsCurriculum,
+    'Grade 4-English': grade4EnglishLanguageActivitiesCurriculum,
+    'Grade 4-Indigenous Languages': grade4IndigenousLanguageCurriculum,
+    'Grade 4-Kiswahili': grade4KiswahiliLanguageActivitiesCurriculum,
+    // Grade 6
+    'Grade 6-Social Studies': grade6SocialStudiesCurriculum,
+};
+
+const availableGrades = Array.from(new Set(Object.keys(curriculumMap).map(key => key.split('-')[0])));
+
+const getSubjectsForGrade = (grade: string) => {
+    if (!grade) return [];
+    const subjects = Object.keys(curriculumMap)
+        .filter(key => key.startsWith(`${grade}-`))
+        .map(key => key.split('-')[1]);
+    return Array.from(new Set(subjects));
 };
 
 
@@ -142,35 +150,15 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
   const [lessonsPerWeek, setLessonsPerWeek] = useState(5);
 
   // State for data-driven form
-  const [selectedMajorLevel, setSelectedMajorLevel] = useState("");
-  const [selectedSubLevel, setSelectedSubLevel] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedStrand, setSelectedStrand] = useState("");
   const [selectedSubStrandName, setSelectedSubStrandName] = useState("");
 
 
-  const availableSubLevels = useMemo(() => {
-    if (!selectedMajorLevel) return [];
-    return curriculumStructure.find(m => m.name === selectedMajorLevel)?.subLevels || [];
-  }, [selectedMajorLevel]);
-
-  const availableGrades = useMemo(() => {
-      if (!selectedSubLevel) return [];
-      return availableSubLevels.find(s => s.name === selectedSubLevel)?.grades || [];
-  }, [selectedSubLevel, availableSubLevels]);
-
   const availableSubjects = useMemo(() => {
-    if (!selectedGrade) return { core: [], optional: [] };
-    const gradeData = availableGrades.find(g => g.name === selectedGrade);
-    if (!gradeData) return { core: [], optional: [] };
-
-    const coreSubjects = gradeData.subjects.filter(s => s.type === 'Core');
-    const optionalSubjects = gradeData.subjects.filter(s => s.type === 'Optional');
-    
-    return { core: coreSubjects, optional: optionalSubjects };
-
-  }, [selectedGrade, availableGrades]);
+    return getSubjectsForGrade(selectedGrade);
+  }, [selectedGrade]);
 
   const curriculumData = useMemo(() => {
     if (!selectedGrade || !selectedSubject) return null;
@@ -292,8 +280,6 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
   const resetForm = () => {
       setGeneratedScheme('');
       setLoading(false);
-      setSelectedMajorLevel('');
-      setSelectedSubLevel('');
       setSelectedGrade('');
       setSelectedSubject('');
       setSelectedStrand('');
@@ -316,40 +302,14 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <form onSubmit={handleSubmit} className="space-y-4">
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                      <Label>Major Level</Label>
-                      <Select name="majorLevel" value={selectedMajorLevel} onValueChange={v => { setSelectedMajorLevel(v); setSelectedSubLevel(''); setSelectedGrade(''); setSelectedSubject(''); setSelectedStrand(''); setSelectedSubStrandName(''); }} required>
-                          <SelectTrigger><SelectValue placeholder="Select level..." /></SelectTrigger>
-                          <SelectContent>
-                              {curriculumStructure.map(level => (
-                                  <SelectItem key={level.name} value={level.name}>{level.name}</SelectItem>
-                              ))}
-                          </SelectContent>
-                      </Select>
-                  </div>
-                  <div className="space-y-2">
-                      <Label>Sub-Level</Label>
-                      <Select name="subLevel" value={selectedSubLevel} onValueChange={v => { setSelectedSubLevel(v); setSelectedGrade(''); setSelectedSubject(''); setSelectedStrand(''); setSelectedSubStrandName(''); }} required disabled={!selectedMajorLevel}>
-                          <SelectTrigger><SelectValue placeholder="Select sub-level..." /></SelectTrigger>
-                          <SelectContent>
-                              {availableSubLevels.map(level => (
-                                  <SelectItem key={level.name} value={level.name}>{level.name}</SelectItem>
-                              ))}
-                          </SelectContent>
-                      </Select>
-                  </div>
-                </div>
-
                 <div className="grid grid-cols-2 gap-4">
                      <div className="space-y-2">
                         <Label htmlFor="grade">Grade</Label>
-                        <Select name="grade" value={selectedGrade} onValueChange={v => { setSelectedGrade(v); setSelectedSubject(''); setSelectedStrand(''); setSelectedSubStrandName(''); }} required disabled={!selectedSubLevel}>
+                        <Select name="grade" value={selectedGrade} onValueChange={v => { setSelectedGrade(v); setSelectedSubject(''); setSelectedStrand(''); setSelectedSubStrandName(''); }} required>
                             <SelectTrigger><SelectValue placeholder="Select grade..." /></SelectTrigger>
                             <SelectContent>
                                 {availableGrades.map(g => (
-                                    <SelectItem key={g.name} value={g.name}>{g.name}</SelectItem>
+                                    <SelectItem key={g} value={g}>{g}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -359,8 +319,8 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                         <Select name="subject" value={selectedSubject} onValueChange={v => { setSelectedSubject(v); setSelectedStrand(''); setSelectedSubStrandName(''); }} required disabled={!selectedGrade}>
                            <SelectTrigger><SelectValue placeholder="Select subject..." /></SelectTrigger>
                            <SelectContent>
-                                {availableSubjects && availableSubjects.core.map(s => (
-                                  <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>
+                                {availableSubjects.map(s => (
+                                  <SelectItem key={s} value={s}>{s}</SelectItem>
                                 ))}
                            </SelectContent>
                         </Select>
