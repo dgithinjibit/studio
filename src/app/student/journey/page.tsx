@@ -11,74 +11,14 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import type { TeacherResource } from '@/lib/types';
-
-
-type Step = 'start' | 'level' | 'sub-level' | 'grade' | 'subject';
-
-const levels = [
-    { id: 'ms', name: 'Middle School' },
-    { id: 'ss', name: 'Senior School' },
-];
-
-const subLevelsMap: { [key: string]: { id: string; name: string }[] } = {
-    ms: [
-        { id: 'up', name: 'Upper Primary' },
-        { id: 'js', name: 'Junior Secondary' },
-    ],
-    ss: [] 
-};
-
-const gradesMap: { [key: string]: { id: string; name: string }[] } = {
-    up: [
-        { id: 'g4', name: 'Grade 4' },
-        { id: 'g5', name: 'Grade 5' },
-        { id: 'g6', name: 'Grade 6' },
-    ],
-    js: [
-        { id: 'g7', name: 'Grade 7' },
-        { id: 'g8', name: 'Grade 8' },
-        { id: 'g9', 'name': 'Grade 9' },
-    ],
-};
-
-type Subject = {
-    name: string;
-    icon: string;
-};
-
-const aiSubject: Subject = { name: 'AI', icon: '/assets/ai.png' };
-const blockchainSubject: Subject = { name: 'Blockchain', icon: '/assets/blockchain.png' };
-
-const commonSubjects: Subject[] = [
-    { name: 'English', icon: '/assets/english.png' },
-    { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
-    { name: 'Indigenous Language', icon: '/assets/indigenous_language.png' },
-    { name: 'Kiswahili', icon: '/assets/kiswahili.png' },
-    { name: 'Kenyan Sign Language', icon: '/assets/sign_language.png' },
-    { name: 'Religious Education', icon: '/assets/religious_education.png' },
-    { name: 'Environmental Activities', icon: '/assets/environmental_activities.png' },
-    { name: 'Creative Activities', icon: '/assets/creative_activities.png' },
-];
-
-const pastoralInstruction: Subject = { name: 'Pastoral Instruction Programme', icon: '/assets/pastoral_instruction.png' };
-
-const subjectsMap: { [key: string]: Subject[] } = {
-    g4: [...commonSubjects, aiSubject, blockchainSubject],
-    g5: [...commonSubjects, aiSubject, blockchainSubject],
-    g6: [...commonSubjects, aiSubject, blockchainSubject],
-    g7: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
-    g8: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
-    g9: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
-};
-
-const levelColors = ["bg-teal-500", "bg-amber-500"];
-const subLevelColors = ["bg-blue-500", "bg-green-500"];
-const gradeColors = ["bg-orange-500", "bg-lime-600", "bg-cyan-500", "bg-rose-500", "bg-indigo-500", "bg-pink-500"];
+import { levels, subLevelsMap, gradesMap, subjectsMap, Step } from '@/lib/journey-data';
 
 export default function StudentJourneyPage() {
     const router = useRouter();
     const { toast } = useToast();
-    const [step, setStep] = useState<Step>('start');
+    const [stepHistory, setStepHistory] = useState<Step[]>(['start']);
+    const currentStep = stepHistory[stepHistory.length - 1];
+    
     const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
     const [selectedSubLevel, setSelectedSubLevel] = useState<string | null>(null);
     const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
@@ -93,24 +33,32 @@ export default function StudentJourneyPage() {
         }
     }, []);
 
+    const navigateTo = (newStep: Step) => {
+        setStepHistory(prev => [...prev, newStep]);
+    };
+
+    const handleGoBack = useCallback(() => {
+        if (stepHistory.length > 1) {
+            setStepHistory(prev => prev.slice(0, -1));
+        } else {
+            router.push('/');
+        }
+    }, [stepHistory.length, router]);
+
     const handleLevelSelect = useCallback((levelId: string) => {
         setSelectedLevel(levelId);
-        if (subLevelsMap[levelId]?.length > 0) {
-            setStep('sub-level');
-        } else {
-             setStep('grade');
-        }
+        navigateTo(subLevelsMap[levelId]?.length > 0 ? 'sub-level' : 'grade');
     }, []);
     
     const handleSubLevelSelect = useCallback((subLevelId: string) => {
         setSelectedSubLevel(subLevelId);
-        setStep('grade');
+        navigateTo('grade');
     }, []);
 
     const handleGradeSelect = useCallback((gradeId: string) => {
         setSelectedGrade(gradeId);
         localStorage.setItem('studentGrade', gradeId);
-        setStep('subject');
+        navigateTo('subject');
     }, []);
     
     const handleSubjectSelect = useCallback((subjectName: string) => {
@@ -142,27 +90,9 @@ export default function StudentJourneyPage() {
             setIsSubmittingCode(false);
         }
     }
-
-    const handleGoBack = useCallback(() => {
-        if (step === 'subject') {
-            setStep('grade');
-        } else if (step === 'grade') {
-             if(selectedLevel && subLevelsMap[selectedLevel].length > 0) {
-                setStep('sub-level');
-            } else {
-                setStep('level');
-            }
-        } else if (step === 'sub-level') {
-            setStep('level');
-        } else if (step === 'level') {
-            setStep('start');
-        } else if (step === 'start') {
-            router.push('/');
-        }
-    }, [step, selectedLevel, router]);
     
     const renderContent = () => {
-        switch (step) {
+        switch (currentStep) {
             case 'start':
                 return (
                      <Card className="w-full bg-transparent border-none shadow-none">
@@ -187,7 +117,7 @@ export default function StudentJourneyPage() {
                                     </Button>
                                 </form>
                            </Card>
-                            <Card className="p-6 flex flex-col items-center justify-center text-center hover:bg-stone-50 transition-colors cursor-pointer" onClick={() => setStep('level')}>
+                            <Card className="p-6 flex flex-col items-center justify-center text-center hover:bg-stone-50 transition-colors cursor-pointer" onClick={() => navigateTo('level')}>
                                 <KeyRound className="w-12 h-12 text-accent mb-4" />
                                 <h3 className="font-bold text-xl mb-2">Explore on Your Own</h3>
                                 <p className="text-muted-foreground mb-4">Choose your grade and subject to chat with Mwalimu AI, your personal Socratic tutor.</p>
@@ -243,7 +173,7 @@ export default function StudentJourneyPage() {
                             {grades.map((grade, index) => (
                                 <Button 
                                     key={grade.id} 
-                                    className={`h-20 text-lg text-white font-bold text-shadow-sm shadow-lg transform transition-transform hover:scale-105 focus:scale-105 ${gradeColors[index % gradeColors.length]}`}
+                                    className={`h-20 text-lg text-white font-bold text-shadow-sm shadow-lg transform transition-transform hover:scale-105 focus:scale-105 bg-blue-500`}
                                     onClick={() => handleGradeSelect(grade.id)}
                                 >
                                     {grade.name}
@@ -264,7 +194,7 @@ export default function StudentJourneyPage() {
                             {subLevels.map((sub, index) => (
                                 <Button 
                                     key={sub.id} 
-                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus:scale-105 ${subLevelColors[index % subLevelColors.length]}`}
+                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus:scale-105 bg-green-500`}
                                     onClick={() => handleSubLevelSelect(sub.id)}
                                 >
                                     {sub.name}
@@ -286,7 +216,7 @@ export default function StudentJourneyPage() {
                             {levels.map((level, index) => (
                                 <Button 
                                     key={level.id} 
-                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus-scale-105 ${levelColors[index % levelColors.length]}`}
+                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus-scale-105 bg-teal-500`}
                                     onClick={() => handleLevelSelect(level.id)}
                                 >
                                     {level.name}
@@ -301,15 +231,10 @@ export default function StudentJourneyPage() {
     
     return (
         <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-[#F5F5DC] sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
-             <StudentHeader showBackButton={step !== 'start'} onBack={handleGoBack} />
+             <StudentHeader showBackButton={currentStep !== 'start'} onBack={handleGoBack} />
             <main className="flex-grow overflow-y-auto p-6 flex items-center">
                 {renderContent()}
             </main>
         </div>
     );
 }
-
-    
-
-
-
