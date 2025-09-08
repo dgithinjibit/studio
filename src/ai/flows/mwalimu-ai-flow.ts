@@ -239,7 +239,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
             if (subject.includes('IndigenousLanguageActivities')) curriculum = grade3IndigenousLanguageCurriculum;
             if (subject.includes('KiswahiliLanguageActivities')) curriculum = grade3KiswahiliLanguageActivitiesCurriculum;
             if (subject.includes('MathematicalActivities')) curriculum = grade3MathematicsActivitiesCurriculum;
-        } else if (grade === 'g4') {
+        } else if (grade === 'g4' || grade === 'g5') { // FIX: Added Grade 5 to use Grade 4 data
              if (subject.includes('AgricultureandNutrition')) curriculum = grade4AgricultureAndNutritionCurriculum;
             if (subject.includes('ChristianReligiousEducation')) curriculum = grade4CreCurriculum;
             if (subject.includes('CreativeArts')) curriculum = grade4CreativeArtsCurriculum;
@@ -255,7 +255,6 @@ const mwalimuAiTutorFlow = ai.defineFlow(
         }
     }
     
-    // Explicitly use the faster model for conversation
     const {output} = await ai.generate({
         model: 'googleai/gemini-2.5-flash',
         prompt: tutorPrompt.prompt,
@@ -265,3 +264,5 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    
