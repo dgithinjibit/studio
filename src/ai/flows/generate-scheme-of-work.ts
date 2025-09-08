@@ -59,11 +59,11 @@ You MUST use the following curriculum details to populate the table.
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS (KISWAHILI):**
-The final output MUST follow this exact Markdown table structure. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags. For lists within a cell, use a hyphen (-) for each item on a new line.
+The final output MUST follow this exact Markdown table structure. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. For lists within a cell, ensure each item is on a new line.
 
 | Mada (Strand) | Mada Ndogo (Sub Strand) & Vipindi | Matokeo Maalum Yanayotarajiwa (Specific Learning Outcomes) | Shughuli za Ujifunzaji Zilizopendekezwa (Suggested Learning Experiences) | Swali Dadisi Lililopendekezwa (Key Inquiry Question(s)) |
 | :--- | :--- | :--- | :--- | :--- |
-| **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list starting each item with a hyphen.] | [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list starting each item with a hyphen.] | [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list starting each item with a hyphen.] |
+| **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | [Extract and list ALL the learning outcomes from the curriculum details here.] | [Extract and list ALL the suggested learning experiences from the curriculum details here.] | [Extract and list ALL the key inquiry questions from the curriculum details here.] |
 `;
 
     const englishPrompt = `You are an expert curriculum developer in Kenya, creating a CBC-compliant Scheme of Work.
@@ -80,11 +80,11 @@ You MUST use the following curriculum details to populate the table.
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS:**
-The final output MUST be a single, well-formatted Markdown table. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags. For lists within a cell, use a hyphen (-) for each item on a new line. The table structure must be exactly as follows.
+The final output MUST be a single, well-formatted Markdown table. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. For lists within a cell, ensure each item is on a new line. The table structure must be exactly as follows.
 
 | Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **{{{strand}}}** | **{{{subStrand}}}** ({{{lessonsPerWeek}}} lessons) | [Extract and list ALL the learning outcomes from the curriculum details here as a bulleted list starting each item with a hyphen.] | [Extract and list ALL the suggested learning experiences from the curriculum details here as a bulleted list starting each item with a hyphen.] | [Extract and list ALL the key inquiry questions from the curriculum details here as a bulleted list starting each item with a hyphen.] | [Suggest a relevant assessment method, e.g., 'Observation', 'Oral questions', 'Portfolio'] | [This section MUST be left blank.] |
+| **{{{strand}}}** | **{{{subStrand}}}** ({{{lessonsPerWeek}}} lessons) | [Extract and list ALL the learning outcomes from the curriculum details here.] | [Extract and list ALL the suggested learning experiences from the curriculum details here.] | [Extract and list ALL the key inquiry questions from the curriculum details here.] | [Suggest a relevant assessment method, e.g., 'Observation', 'Oral questions', 'Portfolio'] | [This section MUST be left blank.] |
 `;
 
     const selectedPrompt = ai.definePrompt({
