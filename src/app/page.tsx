@@ -18,9 +18,9 @@ export default function HomePage() {
           <Image 
             src="/assets/sync.png" 
             alt="SyncSenta Logo"
-            width={96}
+            width={128}
             height={96}
-            className="w-24 h-24 mx-auto text-primary"
+            className="w-32 h-24 mx-auto text-primary"
             data-ai-hint="logo"
           />
           <CardTitle className="font-headline text-3xl mt-4">Welcome to SyncSenta</CardTitle>
