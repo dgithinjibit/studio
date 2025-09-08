@@ -16,7 +16,7 @@ export default function HomePage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Image 
-            src="/sync.png" 
+            src="/assets/sync.png" 
             alt="SyncSenta Logo"
             width={64}
             height={64}
