@@ -15,14 +15,6 @@ export default function HomePage() {
     <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <Image 
-            src="/assets/sync.png" 
-            alt="SyncSenta Logo"
-            width={128}
-            height={96}
-            className="w-32 h-24 mx-auto text-primary"
-            data-ai-hint="logo"
-          />
           <CardTitle className="font-headline text-3xl mt-4">Welcome to SyncSenta</CardTitle>
           <CardDescription>
             Your AI-powered partner for Kenyan education. Let's get started.
