@@ -143,10 +143,18 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
     }
     
     try {
-        const result = await generateLessonPlan(data);
-        if (result.lessonPlan) {
-            setGeneratedPlan(result.lessonPlan);
-        }
+        generateLessonPlan(data, (chunk) => {
+            setGeneratedPlan(prev => prev + chunk);
+        }).catch(error => {
+            console.error(error);
+            toast({
+                variant: "destructive",
+                title: "Error generating lesson plan",
+                description: "An unexpected error occurred. Please try again.",
+            });
+        }).finally(() => {
+            setLoading(false);
+        });
     } catch (error) {
         console.error(error);
         toast({
@@ -154,7 +162,6 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
             title: "Error generating lesson plan",
             description: "An unexpected error occurred. Please try again.",
         });
-    } finally {
         setLoading(false);
     }
   };
@@ -164,17 +171,20 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
     if (!improvementRequest.trim()) return;
 
     setImproving(true);
+    const originalPlan = generatedPlan;
+    setGeneratedPlan(""); // Clear the plan to show streaming for the improvement
+
     try {
-      const result = await improveLessonPlan({
-        lessonPlan: generatedPlan,
+      await improveLessonPlan({
+        lessonPlan: originalPlan,
         request: improvementRequest,
+      }, (chunk) => {
+          setGeneratedPlan(prev => prev + chunk);
       });
-      if (result.revisedLessonPlan) {
-        setGeneratedPlan(result.revisedLessonPlan);
-      }
       setImprovementRequest(""); // Clear input after submission
     } catch (error) {
       console.error(error);
+      setGeneratedPlan(originalPlan); // Restore original plan on error
       toast({
         variant: "destructive",
         title: "Error improving lesson plan",

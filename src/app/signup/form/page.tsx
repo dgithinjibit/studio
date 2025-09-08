@@ -2,7 +2,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useTransition } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,8 @@ function SignupFormComponent() {
     const searchParams = useSearchParams();
     const { toast } = useToast();
     const role = searchParams.get('role') as UserRole | null;
-    const [loading, setLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
+    const loading = isPending;
 
     const getTitle = () => {
         switch (role) {
@@ -40,7 +41,6 @@ function SignupFormComponent() {
 
     const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setLoading(true);
         
         const formData = new FormData(e.currentTarget);
         const fullName = formData.get('fullName') as string;
@@ -61,8 +61,9 @@ function SignupFormComponent() {
             description: "Welcome! We're redirecting you now.",
         });
         
-        // The router push will start the navigation. The loading state will remain until the new page loads.
-        router.push(getRedirectPath());
+        startTransition(() => {
+            router.push(getRedirectPath());
+        });
     };
 
     if (!role) {

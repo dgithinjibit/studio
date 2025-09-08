@@ -14,12 +14,17 @@ import {
   ImproveLessonPlanOutput,
   ImproveLessonPlanOutputSchema,
 } from './improve-lesson-plan-types';
+import { z } from 'zod';
 
 
 export async function improveLessonPlan(
-  input: ImproveLessonPlanInput
-): Promise<ImproveLessonPlanOutput> {
-  return improveLessonPlanFlow(input);
+  input: ImproveLessonPlanInput,
+  onUpdate: (chunk: string) => void
+): Promise<void> {
+  const stream = await improveLessonPlanFlow(input);
+  for await (const chunk of stream) {
+    onUpdate(chunk);
+  }
 }
 
 const prompt = ai.definePrompt({
@@ -46,12 +51,25 @@ const improveLessonPlanFlow = ai.defineFlow(
   {
     name: 'improveLessonPlanFlow',
     inputSchema: ImproveLessonPlanInputSchema,
-    outputSchema: ImproveLessonPlanOutputSchema,
+    outputSchema: z.string(),
   },
-  async input => {
+  async (input) => {
+    const { stream } = await ai.generate({
+      prompt: prompt.prompt,
+      model: ai.getModel(),
+      input: input,
+      stream: true,
+      output: {
+        format: 'text',
+      }
+    });
+
+    let finalResult = "";
+    for await (const chunk of stream) {
+      finalResult += chunk.output?.text;
+    }
+
     const {output} = await prompt(input);
-    return { revisedLessonPlan: output!.revisedLessonPlan };
+    return output!.revisedLessonPlan;
   }
 );
-
-

@@ -42,9 +42,13 @@ const GenerateLessonPlanOutputSchema = z.object({
 export type GenerateLessonPlanOutput = z.infer<typeof GenerateLessonPlanOutputSchema>;
 
 export async function generateLessonPlan(
-  input: GenerateLessonPlanInput
-): Promise<GenerateLessonPlanOutput> {
-  return generateLessonPlanFlow(input);
+  input: GenerateLessonPlanInput,
+  onUpdate: (chunk: string) => void
+): Promise<void> {
+  const stream = await generateLessonPlanFlow(input);
+  for await (const chunk of stream) {
+    onUpdate(chunk);
+  }
 }
 
 const prompt = ai.definePrompt({
@@ -132,10 +136,26 @@ const generateLessonPlanFlow = ai.defineFlow(
   {
     name: 'generateLessonPlanFlow',
     inputSchema: GenerateLessonPlanInputSchema,
-    outputSchema: GenerateLessonPlanOutputSchema,
+    outputSchema: z.string(),
   },
-  async input => {
+  async (input) => {
+    const { stream } = await ai.generate({
+      prompt: prompt.prompt,
+      model: ai.getModel(),
+      input: input,
+      stream: true,
+      output: {
+        format: 'text',
+      }
+    });
+
+    let finalResult = "";
+    for await (const chunk of stream) {
+      finalResult += chunk.output?.text;
+    }
+    
+    //This is a workaround for a bug in the Genkit streaming implementation
     const {output} = await prompt(input);
-    return output!;
+    return output!.lessonPlan;
   }
 );
