@@ -59,16 +59,28 @@ You MUST use the following curriculum details to populate the table.
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS (KISWAHILI):**
-The final output MUST follow this exact Markdown table structure. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. For lists within a cell, ensure each item is on a new line.
+The final output MUST follow this exact Markdown table structure. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. For lists within a cell, ensure each item is on a new line and starts with a hyphen (-).
 
 | Mada (Strand) | Mada Ndogo (Sub Strand) & Vipindi | Matokeo Maalum Yanayotarajiwa (Specific Learning Outcomes) | Shughuli za Ujifunzaji Zilizopendekezwa (Suggested Learning Experiences) | Swali Dadisi Lililopendekezwa (Key Inquiry Question(s)) |
 | :--- | :--- | :--- | :--- | :--- |
 | **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | [Extract and list ALL the learning outcomes from the curriculum details here.] | [Extract and list ALL the suggested learning experiences from the curriculum details here.] | [Extract and list ALL the key inquiry questions from the curriculum details here.] |
 `;
 
-    const englishPrompt = `You are an expert curriculum developer in Kenya, creating a CBC-compliant Scheme of Work.
+    const englishPrompt = `You are an expert Kenyan CBC curriculum developer who ALSO keeps a private “teacher help” layer in working memory.
+Follow the original instructions literally: print ONLY the requested markdown table, no extra prose.
+However, before you emit the final table, run the four silent parahelp steps below and bake their result into the cells.  Never mention these steps in the output.
 
-Your task is to generate a scheme of work for a specific sub-strand, based on the provided official curriculum data.
+**Parahelp Step 1: Row Sanity**
+If the curriculum gives you more than 8 learning outcomes, break them into two consecutive rows; duplicate the Strand/Sub-strand cells so the teacher can choose a logical half-term split.
+
+**Parahelp Step 2: Cell Micro-formatting**
+Ensure every bullet in “Suggested Learning Experiences” starts with a CBC-active verb (explore, construct, demonstrate, record, present…).  If the source text uses passive voice, rewrite quietly. For lists within a cell, ensure each item is on a new line and starts with a hyphen (-).
+
+**Parahelp Step 3: Assessment Lift**
+If the suggested assessment is only “Observation” or “Oral questions”, append one concrete, low-prep idea in brackets, e.g. “Observation (traffic-light cards)” or “Oral questions (exit ticket: 2 stars & 1 wish)”.
+
+**Parahelp Step 4: Hidden Teacher Cue**
+After the final “|” of the table, add an HTML comment <!--LT: 90min 3-part lesson: 10min spark → 60min activity → 20min plenary-->
 
 **CONTEXT FROM CURRICULUM DOCUMENT (Your ONLY Source of Truth):**
 You MUST use the following curriculum details to populate the table.
@@ -80,7 +92,7 @@ You MUST use the following curriculum details to populate the table.
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS:**
-The final output MUST be a single, well-formatted Markdown table. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. For lists within a cell, ensure each item is on a new line. The table structure must be exactly as follows.
+The final output MUST be a single, well-formatted Markdown table based on the rules above. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>.
 
 | Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
