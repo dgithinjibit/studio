@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -245,9 +246,9 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     }
     
     const contextString = `
-        Learning Outcomes: ${subStrandData.learning_outcomes.join('; ')}
-        Suggested Activities: ${subStrandData.suggested_activities.join('; ')}
-        Key Inquiry Question: ${subStrandData.key_inquiry_questions.join('; ')}
+        Learning Outcomes: ${subStrandData.learning_outcomes.join('\n- ')}
+        Suggested Activities: ${subStrandData.suggested_activities.join('\n- ')}
+        Key Inquiry Question: ${subStrandData.key_inquiry_questions.join('\n- ')}
     `;
 
     const data: GenerateSchemeOfWorkInput = {
