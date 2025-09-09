@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusCircle, MoreHorizontal, UserCheck, UserCog } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { AddTeacherDialog } from '@/components/add-teacher-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 const mockTeachingStaff = [
     { id: 't-1', name: 'Ms. Chidinma Okoro', tscNo: 'TSC-12345', role: 'English/Literature' },
@@ -26,10 +28,29 @@ export default function SchoolStaffPage() {
     const [teachingStaff, setTeachingStaff] = useState(mockTeachingStaff);
     const [nonTeachingStaff, setNonTeachingStaff] = useState(mockNonTeachingStaff);
     const [isAddTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
+    const { toast } = useToast();
 
     const handleAddTeacher = (teacher: { name: string; role: string }) => {
         const newTeacher = { ...teacher, id: `t-${Date.now()}`, tscNo: `TSC-${Math.floor(10000 + Math.random() * 90000)}` };
         setTeachingStaff(prev => [...prev, newTeacher]);
+    };
+
+    const handleDeleteTeacher = (id: string) => {
+        setTeachingStaff(prev => prev.filter(staff => staff.id !== id));
+        toast({
+            title: "Staff Member Removed",
+            description: "The teacher has been removed from the list.",
+            variant: "destructive"
+        });
+    };
+
+    const handleDeleteNonTeachingStaff = (id: string) => {
+        setNonTeachingStaff(prev => prev.filter(staff => staff.id !== id));
+        toast({
+            title: "Staff Member Removed",
+            description: "The non-teaching staff member has been removed from the list.",
+            variant: "destructive"
+        });
     };
     
     return (
@@ -37,7 +58,7 @@ export default function SchoolStaffPage() {
             <Tabs defaultValue="teaching">
                 <div className="flex items-center justify-between mb-4">
                     <div>
-                        <h1 className="font-headline text-3xl font-bold">Staff Management</h1>
+                        <h1 className="font-headline text-3xl font-bold">School Staff Management</h1>
                         <p className="text-muted-foreground">Manage all teaching and non-teaching staff at your school.</p>
                     </div>
                     <TabsList>
@@ -71,6 +92,7 @@ export default function SchoolStaffPage() {
                                         <TableHead>Name</TableHead>
                                         <TableHead>TSC No.</TableHead>
                                         <TableHead>Role/Subjects</TableHead>
+                                        <TableHead>Category</TableHead>
                                         <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -79,7 +101,8 @@ export default function SchoolStaffPage() {
                                         <TableRow key={staff.id}>
                                             <TableCell className="font-medium">{staff.name}</TableCell>
                                             <TableCell>{staff.tscNo}</TableCell>
-                                            <TableCell>{staff.role}</TableCell>
+                                            <TableCell><Badge variant="outline">{staff.role}</Badge></TableCell>
+                                            <TableCell><Badge variant="secondary">Teaching</Badge></TableCell>
                                             <TableCell className="text-right">
                                                  <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -90,7 +113,7 @@ export default function SchoolStaffPage() {
                                                     <DropdownMenuContent>
                                                         <DropdownMenuItem>View Details</DropdownMenuItem>
                                                         <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                         <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                                                         <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteTeacher(staff.id)}>Delete</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>
@@ -120,6 +143,7 @@ export default function SchoolStaffPage() {
                                     <TableRow>
                                         <TableHead>Name</TableHead>
                                         <TableHead>Role</TableHead>
+                                        <TableHead>Category</TableHead>
                                         <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -127,7 +151,8 @@ export default function SchoolStaffPage() {
                                     {nonTeachingStaff.map((staff) => (
                                         <TableRow key={staff.id}>
                                             <TableCell className="font-medium">{staff.name}</TableCell>
-                                            <TableCell>{staff.role}</TableCell>
+                                            <TableCell><Badge variant="outline">{staff.role}</Badge></TableCell>
+                                            <TableCell><Badge>Non-Teaching</Badge></TableCell>
                                             <TableCell className="text-right">
                                                  <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -138,7 +163,7 @@ export default function SchoolStaffPage() {
                                                     <DropdownMenuContent>
                                                         <DropdownMenuItem>View Details</DropdownMenuItem>
                                                         <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                         <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                                                         <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteNonTeachingStaff(staff.id)}>Delete</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>
