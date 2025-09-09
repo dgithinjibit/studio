@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -12,7 +11,8 @@ import {
   Users,
   Banknote,
   Megaphone,
-  Building2
+  Building2,
+  Package
 } from "lucide-react";
 import { useRole } from "@/hooks/use-role";
 
@@ -42,7 +42,7 @@ export function AppSidebar() {
   const countyAdminNavItems = [
       { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
       { href: "/dashboard/schools", icon: Building2, label: "Schools" },
-      { href: "/dashboard/county-resources", icon: Database, label: "Resource Management" },
+      { href: "/dashboard/county-resources", icon: Package, label: "Resource Management" },
       { href: "/dashboard/county-teachers", icon: Users, label: "Teacher Management" },
       { href: "/dashboard/county-finance", icon: Banknote, label: "Financial Oversight" },
       { href: "/dashboard/county-comms", icon: Megaphone, label: "Communications" },
