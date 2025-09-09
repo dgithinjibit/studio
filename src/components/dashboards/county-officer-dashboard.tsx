@@ -189,7 +189,7 @@ export function CountyOfficerDashboard() {
                 </CardContent>
             </Card>
 
-            <div className="lg:col-span-2 h-[560px]">
+            <div className="lg:col-span-2 h-[560px] bg-muted rounded-lg p-2">
                  <SchoolMap 
                     schools={schools} 
                     selectedSchool={hoveredSchool} 
