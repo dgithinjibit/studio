@@ -155,12 +155,14 @@ const generateLessonPlanFlow = ai.defineFlow(
       }
     });
 
+    // This is a streaming helper. It aggregates the chunks and returns the final result.
     let finalResult = "";
     for await (const chunk of stream) {
-      finalResult += chunk.output?.text;
+      finalResult += chunk.output?.text || "";
     }
     
     //This is a workaround for a bug in the Genkit streaming implementation
+    // The finalResult is what is actually streamed to the client, but we need to resolve the flow's promise.
     const {output} = await prompt(input);
     return output!.lessonPlan;
   }

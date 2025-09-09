@@ -14,6 +14,8 @@ import type { TeacherResource } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { ShareRoomDialog } from '@/components/share-room-dialog';
 import { useRouter } from 'next/navigation';
+import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function LearningLabRoomPage() {
     const params = useParams();
@@ -23,11 +25,20 @@ export default function LearningLabRoomPage() {
     const [isShareDialogOpen, setShareDialogOpen] = useState(false);
 
     useEffect(() => {
-        if (id) {
-            const allResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-            const foundRoom = allResources.find(r => r.id === id);
-            setRoom(foundRoom || null);
-        }
+        if (typeof id !== 'string') return;
+
+        const q = query(collection(db, "teacherResources"), where("joinCode", "==", id));
+        
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];
+                setRoom({ id: doc.id, ...doc.data() } as TeacherResource);
+            } else {
+                setRoom(null);
+            }
+        });
+
+        return () => unsubscribe();
     }, [id]);
 
     const handleDialogClose = () => {
@@ -160,7 +171,7 @@ export default function LearningLabRoomPage() {
             <ShareRoomDialog 
                 open={isShareDialogOpen}
                 onOpenChange={setShareDialogOpen}
-                joinCode={id as string}
+                joinCode={room.joinCode}
                 onDialogClose={handleDialogClose}
             />
         </>

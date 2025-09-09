@@ -178,7 +178,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                 </div>
                  <Button onClick={handleGenerateSummary} disabled={isSummaryLoading}>
                     {isSummaryLoading ? (
-                        <Sparkles className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
                          <Sparkles className="mr-2 h-4 w-4" />
                     )}

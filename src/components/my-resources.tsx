@@ -227,7 +227,7 @@ export function MyResources() {
                         </TableHeader>
                         <TableBody>
                             {learningLabs.length > 0 ? learningLabs.map(lab => (
-                                <TableRow key={lab.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/learning-lab/${lab.id}`)}>
+                                <TableRow key={lab.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/learning-lab/${lab.joinCode}`)}>
                                     <TableCell className="font-medium flex items-center gap-3">
                                         <Avatar className="h-8 w-8 border">
                                             <AvatarFallback className="bg-pink-50 text-pink-600 font-bold text-xs">{lab.title.charAt(0)}</AvatarFallback>
@@ -241,7 +241,7 @@ export function MyResources() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell>0</TableCell>
-                                    <TableCell><Badge variant="outline" className="font-mono">{lab.id}</Badge></TableCell>
+                                    <TableCell><Badge variant="outline" className="font-mono">{lab.joinCode}</Badge></TableCell>
                                     <TableCell>{format(new Date(lab.createdAt), 'PP p')}</TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="ghost" size="icon" onClick={(e) => handleDelete(lab, e)}>

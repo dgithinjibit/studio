@@ -1,9 +1,4 @@
 
-
-
-
-
-
 export type UserRole = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 export type User = {
@@ -80,6 +75,7 @@ export type TeacherResource = {
   url: string;
   createdAt: string;
   type: 'Lesson Plan' | 'Scheme of Work' | 'Rubric' | 'Worksheet' | 'Differentiated Worksheet' | 'AI Tutor Context' | 'Other';
+  joinCode: string;
 };
 
 export type Communication = {

@@ -13,6 +13,9 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import type { TeacherResource } from '@/lib/types';
 import { levels, subLevelsMap, gradesMap, subjectsMap, Step } from '@/lib/journey-data';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db, storage } from '@/lib/firebase';
+import { ref, getBytes } from 'firebase/storage';
 
 export default function StudentJourneyPage() {
     const router = useRouter();
@@ -69,17 +72,17 @@ export default function StudentJourneyPage() {
         setIsSubmittingCode(true);
 
         try {
-            const allResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
-            const tutorContextResource = allResources.find(r => r.id === teacherCode.trim() && r.type === 'AI Tutor Context');
+            const q = query(collection(db, "teacherResources"), where("joinCode", "==", teacherCode.trim()));
+            const querySnapshot = await getDocs(q);
             
-            if (tutorContextResource) {
-                // Assuming the URL points to a text file in storage
-                const response = await fetch(tutorContextResource.url);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch context');
-                }
-                const contextText = await response.text();
-                
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];
+                const tutorContextResource = doc.data() as TeacherResource;
+
+                const storageRef = ref(storage, tutorContextResource.url);
+                const bytes = await getBytes(storageRef);
+                const contextText = new TextDecoder().decode(bytes);
+
                 localStorage.setItem('ai_tutor_context_to_load', contextText);
                 toast({
                     title: "Teacher's Context Loaded!",

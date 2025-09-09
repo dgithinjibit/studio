@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,25 +15,43 @@ import { Badge } from '@/components/ui/badge';
 import type { TeachingStaff, NonTeachingStaff } from '@/lib/types';
 
 
-const mockTeachingStaff: TeachingStaff[] = [
+const initialTeachingStaff: TeachingStaff[] = [
     { id: 't-1', name: 'Ms. Chidinma Okoro', tscNo: 'TSC-12345', role: 'English/Literature', category: 'Teaching' },
     { id: 't-2', name: 'Mr. David Mwangi', tscNo: 'TSC-67890', role: 'Mathematics', category: 'Teaching' },
     { id: 't-3', name: 'Mrs. Fatuma Ali', tscNo: 'TSC-54321', role: 'Kiswahili/CRE', category: 'Teaching' },
 ];
 
-const mockNonTeachingStaff: NonTeachingStaff[] = [
+const initialNonTeachingStaff: NonTeachingStaff[] = [
     { id: 'nt-1', name: 'Mr. James Ochieng', role: 'Bursar', category: 'Non-Teaching' },
     { id: 'nt-2', name: 'Mrs. Alice Wambui', role: 'Secretary', category: 'Non-Teaching' },
     { id: 'nt-3', name: 'Mr. Peter Kamau', role: 'Groundsman', category: 'Non-Teaching' },
 ];
 
 export default function SchoolStaffPage() {
-    const [teachingStaff, setTeachingStaff] = useState(mockTeachingStaff);
-    const [nonTeachingStaff, setNonTeachingStaff] = useState(mockNonTeachingStaff);
+    const [teachingStaff, setTeachingStaff] = useState<TeachingStaff[]>([]);
+    const [nonTeachingStaff, setNonTeachingStaff] = useState<NonTeachingStaff[]>([]);
     const [isAddTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
     const [isAddNonTeachingDialogOpen, setAddNonTeachingDialogOpen] = useState(false);
     const [editingStaff, setEditingStaff] = useState<TeachingStaff | NonTeachingStaff | null>(null);
     const { toast } = useToast();
+
+    useEffect(() => {
+        const storedTeaching = localStorage.getItem('mockTeachingStaff');
+        if (storedTeaching) {
+            setTeachingStaff(JSON.parse(storedTeaching));
+        } else {
+            setTeachingStaff(initialTeachingStaff);
+            localStorage.setItem('mockTeachingStaff', JSON.stringify(initialTeachingStaff));
+        }
+
+        const storedNonTeaching = localStorage.getItem('mockNonTeachingStaff');
+        if (storedNonTeaching) {
+            setNonTeachingStaff(JSON.parse(storedNonTeaching));
+        } else {
+            setNonTeachingStaff(initialNonTeachingStaff);
+            localStorage.setItem('mockNonTeachingStaff', JSON.stringify(initialNonTeachingStaff));
+        }
+    }, []);
 
     const handleAddTeacher = (teacher: { name: string; role: string }) => {
         const newTeacher: TeachingStaff = { 
@@ -42,7 +60,9 @@ export default function SchoolStaffPage() {
             tscNo: `TSC-${Math.floor(10000 + Math.random() * 90000)}`,
             category: 'Teaching'
         };
-        setTeachingStaff(prev => [...prev, newTeacher]);
+        const updatedStaff = [...teachingStaff, newTeacher];
+        setTeachingStaff(updatedStaff);
+        localStorage.setItem('mockTeachingStaff', JSON.stringify(updatedStaff));
     };
     
     const handleAddNonTeachingStaff = (staff: { name: string; role: string }) => {
@@ -51,7 +71,9 @@ export default function SchoolStaffPage() {
             id: `nt-${Date.now()}`,
             category: 'Non-Teaching'
         };
-        setNonTeachingStaff(prev => [...prev, newStaff]);
+        const updatedStaff = [...nonTeachingStaff, newStaff];
+        setNonTeachingStaff(updatedStaff);
+        localStorage.setItem('mockNonTeachingStaff', JSON.stringify(updatedStaff));
         toast({
             title: "Staff Member Added",
             description: `${staff.name} has been added to the non-teaching staff list.`
@@ -59,7 +81,9 @@ export default function SchoolStaffPage() {
     };
 
     const handleDeleteTeacher = (id: string) => {
-        setTeachingStaff(prev => prev.filter(staff => staff.id !== id));
+        const updatedStaff = teachingStaff.filter(staff => staff.id !== id);
+        setTeachingStaff(updatedStaff);
+        localStorage.setItem('mockTeachingStaff', JSON.stringify(updatedStaff));
         toast({
             title: "Staff Member Removed",
             description: "The teacher has been removed from the list.",
@@ -69,9 +93,13 @@ export default function SchoolStaffPage() {
     
     const handleUpdateStaff = (updatedStaff: TeachingStaff | NonTeachingStaff) => {
         if (updatedStaff.category === 'Teaching') {
-            setTeachingStaff(prev => prev.map(staff => staff.id === updatedStaff.id ? (updatedStaff as TeachingStaff) : staff));
+            const updatedList = teachingStaff.map(staff => staff.id === updatedStaff.id ? (updatedStaff as TeachingStaff) : staff);
+            setTeachingStaff(updatedList);
+            localStorage.setItem('mockTeachingStaff', JSON.stringify(updatedList));
         } else {
-            setNonTeachingStaff(prev => prev.map(staff => staff.id === updatedStaff.id ? (updatedStaff as NonTeachingStaff) : staff));
+            const updatedList = nonTeachingStaff.map(staff => staff.id === updatedStaff.id ? (updatedStaff as NonTeachingStaff) : staff);
+            setNonTeachingStaff(updatedList);
+            localStorage.setItem('mockNonTeachingStaff', JSON.stringify(updatedList));
         }
         setEditingStaff(null);
         toast({
@@ -81,7 +109,9 @@ export default function SchoolStaffPage() {
     };
 
     const handleDeleteNonTeachingStaff = (id: string) => {
-        setNonTeachingStaff(prev => prev.filter(staff => staff.id !== id));
+        const updatedStaff = nonTeachingStaff.filter(staff => staff.id !== id);
+        setNonTeachingStaff(updatedStaff);
+        localStorage.setItem('mockNonTeachingStaff', JSON.stringify(updatedStaff));
         toast({
             title: "Staff Member Removed",
             description: "The non-teaching staff member has been removed from the list.",
@@ -239,5 +269,3 @@ export default function SchoolStaffPage() {
         </>
     );
 }
-
-    
