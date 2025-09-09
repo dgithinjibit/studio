@@ -36,10 +36,13 @@ export function AddTransactionDialog({ open, onOpenChange, onAddTransaction }: A
     if (!newTransaction.description || !newTransaction.amount || !newTransaction.category || !newTransaction.status) return;
     
     setLoading(true);
-    onAddTransaction(newTransaction);
-    setLoading(false);
-    onOpenChange(false);
-    e.currentTarget.reset();
+    // Simulate async operation
+    setTimeout(() => {
+        onAddTransaction(newTransaction);
+        setLoading(false);
+        onOpenChange(false);
+        e.currentTarget.reset();
+    }, 500);
   };
 
   return (
@@ -75,7 +78,7 @@ export function AddTransactionDialog({ open, onOpenChange, onAddTransaction }: A
                   </div>
                  <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                     <Select name="category" required defaultValue={categories[0]}>
+                     <Select name="category" required>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
@@ -89,7 +92,7 @@ export function AddTransactionDialog({ open, onOpenChange, onAddTransaction }: A
                </div>
                 <div className="space-y-2">
                     <Label htmlFor="status">Status</Label>
-                     <Select name="status" required defaultValue={statuses[0]}>
+                     <Select name="status" required>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a status" />
                         </SelectTrigger>

@@ -68,11 +68,11 @@ export default function SchoolFinancePage() {
                         <TableBody>
                             {transactions.map((transaction) => (
                                 <TableRow key={transaction.id}>
-                                    <TableCell>{transaction.date}</TableCell>
+                                    <TableCell>{new Date(transaction.date).toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })}</TableCell>
                                     <TableCell className="font-medium">{transaction.description}</TableCell>
                                     <TableCell><Badge variant="outline">{transaction.category}</Badge></TableCell>
                                     <TableCell>
-                                        <Badge variant={transaction.status === 'Completed' ? 'secondary' : 'destructive'}>
+                                        <Badge variant={transaction.status === 'Completed' ? 'secondary' : transaction.status === 'Pending Approval' ? 'destructive' : 'default'}>
                                             {transaction.status}
                                         </Badge>
                                     </TableCell>
