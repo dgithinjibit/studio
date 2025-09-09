@@ -6,13 +6,15 @@ import dynamic from 'next/dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, MapPin, Package, Bell, University, Users, Banknote, Megaphone, Search } from 'lucide-react';
+import { Loader2, Sparkles, MapPin, Bell, Megaphone, Search, Send } from 'lucide-react';
 import type { SchoolResource, Communication, School } from '@/lib/types';
 import { mockSchools } from '@/lib/mock-data';
 import { generateCountySummary } from '@/ai/flows/generate-county-summary';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
+import { AddCommunicationDialog } from '../add-communication-dialog';
+import { useRouter } from 'next/navigation';
 
 const SchoolMap = dynamic(() => import('../school-map'), {
   ssr: false,
@@ -23,8 +25,9 @@ export function CountyOfficerDashboard() {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [schools, setSchools] = useState<School[]>([]);
-
+  const [isAddCommDialogOpen, setAddCommDialogOpen] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     setSchools(mockSchools);
@@ -56,8 +59,33 @@ export function CountyOfficerDashboard() {
       setLoading(false);
     }
   };
+  
+  const onCommunicationUpdated = () => {
+    window.dispatchEvent(new CustomEvent('communication-update'));
+    router.push('/dashboard/county-comms');
+  }
+
+  const handleAddCommunication = (comm: Omit<Communication, 'id' | 'date' | 'acknowledged'>) => {
+    const countyOfficerName = localStorage.getItem('userName') || 'County Officer';
+    const newComm: Communication = {
+      id: `comm_${Date.now()}`,
+      ...comm,
+      date: new Date(),
+      acknowledged: false,
+      sender: countyOfficerName,
+    };
+    
+    const existingComms: Communication[] = JSON.parse(localStorage.getItem('mockCommunications') || '[]');
+    localStorage.setItem('mockCommunications', JSON.stringify([newComm, ...existingComms]));
+    onCommunicationUpdated();
+    toast({
+        title: "Announcement Sent",
+        description: `Your announcement "${comm.title}" has been sent to ${comm.recipient}.`,
+    });
+  };
 
   return (
+    <>
     <div className="space-y-6">
         <div className="flex items-center justify-between">
             <div>
@@ -106,7 +134,10 @@ export function CountyOfficerDashboard() {
                     <CardDescription>Send announcements to all school administrators.</CardDescription>
                 </CardHeader>
                  <CardContent>
-                    <Button className="w-full">Broadcast New Communication</Button>
+                    <Button className="w-full" onClick={() => setAddCommDialogOpen(true)}>
+                        <Send className="mr-2"/>
+                        Broadcast New Communication
+                    </Button>
                  </CardContent>
             </Card>
         </div>
@@ -162,5 +193,7 @@ export function CountyOfficerDashboard() {
             </div>
         </div>
     </div>
+    <AddCommunicationDialog open={isAddCommDialogOpen} onOpenChange={setAddCommDialogOpen} onAddCommunication={handleAddCommunication} />
+    </>
   );
 }
