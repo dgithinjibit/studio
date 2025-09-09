@@ -9,10 +9,10 @@ import { useRole } from '@/hooks/use-role';
 import Link from 'next/link';
 
 const roles = [
-    { name: "I'm a Student", description: "Start your interactive learning journey with AI.", icon: User, role: 'student' },
-    { name: "I'm a Teacher", description: "Access AI tools to create resources and manage classes.", icon: Briefcase, role: 'teacher' },
-    { name: "I'm a School Head", description: "Get operational insights and manage your institution.", icon: Building2, role: 'school_head' },
-    { name: "I'm a County Officer", description: "View county-wide analytics and resource distribution.", icon: Shield, role: 'county_officer' }
+    { name: "I'm a Student", description: "Start your interactive learning journey with AI.", role: 'student' },
+    { name: "I'm a Teacher", description: "Access AI tools to create resources and manage classes.", role: 'teacher' },
+    { name: "I'm a School Head", description: "Get operational insights and manage your institution.", role: 'school_head' },
+    { name: "I'm a County Officer", description: "View county-wide analytics and resource distribution.", role: 'county_officer' }
 ];
 
 export default function SignupRoleSelectionPage() {
@@ -35,15 +35,13 @@ export default function SignupRoleSelectionPage() {
                     </CardHeader>
                     <CardContent className="grid md:grid-cols-2 gap-4">
                         {roles.map(roleInfo => {
-                            const Icon = roleInfo.icon;
                             return (
                                 <Card 
                                     key={roleInfo.role} 
                                     className="p-6 hover:bg-muted/50 hover:shadow-lg transition-all cursor-pointer flex flex-col text-center items-center"
                                     onClick={() => handleRoleSelection(roleInfo.role as UserRole)}
                                 >
-                                    <Icon className="w-12 h-12 text-primary mb-4" />
-                                    <h3 className="font-bold text-lg">{roleInfo.name}</h3>
+                                    <h3 className="font-bold text-lg mb-2">{roleInfo.name}</h3>
                                     <p className="text-sm text-muted-foreground mt-1 flex-grow">{roleInfo.description}</p>
                                     <Button variant="ghost" className="mt-4 text-primary">
                                         Continue as {roleInfo.role.replace('_', ' ')}
