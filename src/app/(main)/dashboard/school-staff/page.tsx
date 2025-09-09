@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle, MoreHorizontal, UserCheck, UserCog } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { AddTeacherDialog } from '@/components/add-teacher-dialog';
+import { AddStaffDialog } from '@/components/add-staff-dialog';
 import { EditStaffDialog } from '@/components/edit-staff-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +31,7 @@ export default function SchoolStaffPage() {
     const [teachingStaff, setTeachingStaff] = useState(mockTeachingStaff);
     const [nonTeachingStaff, setNonTeachingStaff] = useState(mockNonTeachingStaff);
     const [isAddTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
+    const [isAddNonTeachingDialogOpen, setAddNonTeachingDialogOpen] = useState(false);
     const [editingStaff, setEditingStaff] = useState<TeachingStaff | NonTeachingStaff | null>(null);
     const { toast } = useToast();
 
@@ -42,6 +43,19 @@ export default function SchoolStaffPage() {
             category: 'Teaching'
         };
         setTeachingStaff(prev => [...prev, newTeacher]);
+    };
+    
+    const handleAddNonTeachingStaff = (staff: { name: string; role: string }) => {
+        const newStaff: NonTeachingStaff = {
+            ...staff,
+            id: `nt-${Date.now()}`,
+            category: 'Non-Teaching'
+        };
+        setNonTeachingStaff(prev => [...prev, newStaff]);
+        toast({
+            title: "Staff Member Added",
+            description: `${staff.name} has been added to the non-teaching staff list.`
+        });
     };
 
     const handleDeleteTeacher = (id: string) => {
@@ -154,7 +168,7 @@ export default function SchoolStaffPage() {
                                 <CardTitle>Non-Teaching Staff</CardTitle>
                                 <CardDescription>A list of all administrative and support staff.</CardDescription>
                             </div>
-                            <Button>
+                            <Button onClick={() => setAddNonTeachingDialogOpen(true)}>
                                 <PlusCircle className="mr-2" />
                                 Add New Member
                             </Button>
@@ -198,10 +212,20 @@ export default function SchoolStaffPage() {
                 </TabsContent>
             </Tabs>
 
-            <AddTeacherDialog 
+            <AddStaffDialog 
                 open={isAddTeacherDialogOpen}
                 onOpenChange={setAddTeacherDialogOpen}
-                onAddTeacher={handleAddTeacher}
+                onAddStaff={handleAddTeacher}
+                title="Add New Teacher"
+                description="Enter the details for the new teaching staff member."
+            />
+            
+            <AddStaffDialog
+                open={isAddNonTeachingDialogOpen}
+                onOpenChange={setAddNonTeachingDialogOpen}
+                onAddStaff={handleAddNonTeachingStaff}
+                title="Add Non-Teaching Staff Member"
+                description="Enter the details for the new support staff member."
             />
 
             {editingStaff && (
@@ -215,3 +239,5 @@ export default function SchoolStaffPage() {
         </>
     );
 }
+
+    
