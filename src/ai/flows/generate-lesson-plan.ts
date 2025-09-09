@@ -114,7 +114,7 @@ By the end of the lesson the learner should be able to:
 
 ### Lesson Development (25 Minutes)
 **Step 1: [Activity Title] (10 mins)**
-- [Describe the first activity. What will the teacher do? What will the learners do? How does it align with the learning objectives? Be specific and learner-centered.]
+- [Describe the first activity. What will the teacher do? What will the learner do? How does it align with the learning objectives? Be specific and learner-centered.]
 
 **Step 2: [Activity Title] (10 mins)**
 - [Describe the second activity. Focus on learner-centered participation, collaboration, or a hands-on task.]
@@ -123,7 +123,7 @@ By the end of the lesson the learner should be able to:
 - [Describe the third activity, possibly a group discussion, quick presentation, or review.]
 
 ### Conclusion (5 Minutes)
-- [How will you summarize the key points and assess understanding? What is the key takeaway?]
+- [How will you summarize the key points and assess understanding? What is the key takeaway for the learner?]
 
 ---
 
