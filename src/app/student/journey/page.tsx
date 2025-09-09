@@ -16,6 +16,15 @@ import { levels, subLevelsMap, gradesMap, subjectsMap, Step } from '@/lib/journe
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db, storage } from '@/lib/firebase';
 import { ref, getBytes } from 'firebase/storage';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+
+const subjectColors = [
+    'bg-blue-500', 'bg-green-500', 'bg-orange-500', 'bg-purple-500', 
+    'bg-red-500', 'bg-yellow-500', 'bg-pink-500', 'bg-teal-500',
+    'bg-indigo-500', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500'
+];
+
 
 export default function StudentJourneyPage() {
     const router = useRouter();
@@ -157,21 +166,18 @@ export default function StudentJourneyPage() {
                             <CardDescription className="text-stone-600">What would you like to learn about today in {gradeName}?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                           {subjects.map((subject) => (
+                           {subjects.map((subject, index) => (
                                 <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
                                     <Card 
-                                        className="relative group overflow-hidden rounded-lg cursor-pointer aspect-square text-white"
+                                        className="relative group overflow-hidden rounded-lg cursor-pointer aspect-square text-white flex flex-col justify-end p-4 transition-all hover:shadow-lg"
                                     >
-                                        <Image
-                                            src={subject.icon}
-                                            alt={subject.name}
-                                            fill
-                                            className="object-cover group-hover:scale-110 transition-transform duration-300"
-                                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-                                        <div className="absolute bottom-0 left-0 right-0 p-4">
-                                            <h3 className="font-bold text-lg opacity-50 group-hover:opacity-100 transition-opacity">{subject.name}</h3>
+                                        <div className={cn("absolute inset-0", subjectColors[index % subjectColors.length])} />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                        <div className="relative z-10">
+                                            <Avatar className="h-12 w-12 mb-2 border-2 border-white/50">
+                                                <AvatarFallback className="bg-white/20 text-xl font-bold">{subject.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <h3 className="font-bold text-lg">{subject.name}</h3>
                                         </div>
                                     </Card>
                                 </Link>
