@@ -49,7 +49,7 @@ export default function SchoolMap({ schools, selectedSchool, onSchoolSelect, cli
         latitude: -1.2921,
         zoom: 6
       }}
-      style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }}
+      style={{ width: '100%', height: '100%', borderRadius: '0.5rem', background: 'transparent' }}
       mapStyle={`https://api.maptiler.com/maps/streets-v2-dark/style.json?key=${MAPTILER_TOKEN}`}
       mapboxAccessToken={null} // Set to null as we are not using Mapbox
       crossOrigin="anonymous"
