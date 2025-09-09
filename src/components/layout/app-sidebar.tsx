@@ -9,7 +9,12 @@ import {
   HelpCircle,
   Library,
   Database,
+  Users,
+  Banknote,
+  Megaphone,
+  Building2
 } from "lucide-react";
+import { useRole } from "@/hooks/use-role";
 
 import {
   Sidebar,
@@ -24,14 +29,46 @@ import {
 import { SyncSentaLogo } from "@/components/icons";
 
 export function AppSidebar() {
+  const { role } = useRole();
 
-  const navItems = [
+  const teacherNavItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/dashboard/tools", icon: Bot, label: "Teacher Tools" },
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab" },
     { href: "/dashboard/reports", icon: Library, label: "My Library" },
     { href: "/dashboard/curriculum", icon: Database, label: "Curriculum" },
   ];
+  
+  const countyAdminNavItems = [
+      { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      { href: "/dashboard/schools", icon: Building2, label: "Schools" },
+      { href: "/dashboard/county-resources", icon: Database, label: "Resource Management" },
+      { href: "/dashboard/county-teachers", icon: Users, label: "Teacher Management" },
+      { href: "/dashboard/county-finance", icon: Banknote, label: "Financial Oversight" },
+      { href: "/dashboard/county-comms", icon: Megaphone, label: "Communications" },
+  ]
+  
+  const schoolHeadNavItems = [
+       { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+       { href: "/dashboard/reports", icon: Library, label: "School Reports" },
+       { href: "/dashboard/county-teachers", icon: Users, label: "Staff Management" },
+       { href: "/dashboard/county-finance", icon: Banknote, label: "School Finance" },
+  ]
+
+  const getNavItems = () => {
+    switch (role) {
+        case 'county_officer':
+            return countyAdminNavItems;
+        case 'school_head':
+            return schoolHeadNavItems;
+        case 'teacher':
+        default:
+            return teacherNavItems;
+    }
+  }
+
+  const navItems = getNavItems();
+
 
   return (
     <Sidebar>

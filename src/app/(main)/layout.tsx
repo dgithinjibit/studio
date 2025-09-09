@@ -4,10 +4,16 @@
 import type { ReactNode } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { RoleProvider } from "@/components/providers/role-provider";
 import { AppHeader } from "@/components/layout/app-header";
+import { useRole } from "@/hooks/use-role";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
+  const { role } = useRole();
+
+  if (role === 'student') {
+    return <>{children}</>;
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
