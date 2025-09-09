@@ -7,7 +7,7 @@ import type { School } from '@/lib/types';
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-const MAPBOX_TOKEN = "pk.eyJ1IjoiZWR1cGxleCIsImEiOiJjbHh6M3F2NnMwOXNqMmtwZ3M3NmdsZWhsIn0.PNbK6xhD47iY4Cg3M2Y74A";
+const MAPTILER_TOKEN = "oOP6aDKvl1yVX2dicS80";
 
 interface SchoolMapProps {
   schools: School[];
@@ -16,10 +16,10 @@ interface SchoolMapProps {
 export default function SchoolMap({ schools }: SchoolMapProps) {
   const [popupInfo, setPopupInfo] = useState<School | null>(null);
 
-  if (!MAPBOX_TOKEN) {
+  if (!MAPTILER_TOKEN) {
     return (
       <div className="flex items-center justify-center h-full bg-muted rounded-lg">
-        <p className="text-muted-foreground">Mapbox token is not configured. Please add it to your .env file.</p>
+        <p className="text-muted-foreground">Map API key is not configured. Please add it to your .env file.</p>
       </div>
     );
   }
@@ -32,8 +32,8 @@ export default function SchoolMap({ schools }: SchoolMapProps) {
         zoom: 8
       }}
       style={{ width: '100%', height: '100%' }}
-      mapStyle="mapbox://styles/mapbox/streets-v11"
-      mapboxAccessToken={MAPBOX_TOKEN}
+      mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${MAPTILER_TOKEN}`}
+      mapboxAccessToken={null} // Set to null as we are not using Mapbox
       crossOrigin="anonymous"
     >
       {schools.map(school => (
