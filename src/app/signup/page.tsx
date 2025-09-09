@@ -1,31 +1,22 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Shield, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 import { useRole } from '@/hooks/use-role';
 import Link from 'next/link';
-import Image from 'next/image';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 const roles = [
-    { name: "I'm a Student", description: "Start your interactive learning journey with AI.", role: 'student', icon: '/assets/stud.png' },
-    { name: "I'm a Teacher", description: "Access AI tools to create resources and manage classes.", role: 'teacher', icon: '/assets/teach.png' },
-    { name: "I'm a School Head", description: "Get operational insights and manage your institution.", role: 'school_head', icon: 'Shield' },
-    { name: "I'm a County Officer", description: "View county-wide analytics and resource distribution.", role: 'county_officer', icon: '/assets/countydir.png' }
+    { name: "I'm a Student", description: "Start your interactive learning journey with AI.", role: 'student', color: 'bg-orange-500' },
+    { name: "I'm a Teacher", description: "Access AI tools to create resources and manage classes.", role: 'teacher', color: 'bg-blue-500' },
+    { name: "I'm a School Head", description: "Get operational insights and manage your institution.", role: 'school_head', color: 'bg-green-500' },
+    { name: "I'm a County Officer", description: "View county-wide analytics and resource distribution.", role: 'county_officer', color: 'bg-purple-500' }
 ];
-
-const renderIcon = (icon: string) => {
-    if (icon.startsWith('/assets/')) {
-        return <Image src={icon} alt="" width={48} height={48} className="mb-4" />;
-    }
-    // For now, only Shield is a non-path icon
-    if (icon === 'Shield') {
-        return <Shield className="w-12 h-12 text-primary mb-4" />;
-    }
-    return null;
-}
 
 
 export default function SignupRoleSelectionPage() {
@@ -51,16 +42,22 @@ export default function SignupRoleSelectionPage() {
                             return (
                                 <Card 
                                     key={roleInfo.role} 
-                                    className="p-6 hover:bg-muted/50 hover:shadow-lg transition-all cursor-pointer flex flex-col text-center items-center"
+                                    className="relative group overflow-hidden rounded-lg cursor-pointer flex flex-col text-center items-center p-6 text-white transition-all hover:shadow-lg hover:-translate-y-1"
                                     onClick={() => handleRoleSelection(roleInfo.role as UserRole)}
                                 >
-                                    {renderIcon(roleInfo.icon)}
-                                    <h3 className="font-bold text-lg mb-2">{roleInfo.name}</h3>
-                                    <p className="text-sm text-muted-foreground mt-1 flex-grow">{roleInfo.description}</p>
-                                    <Button variant="ghost" className="mt-4 text-primary">
-                                        Continue as {roleInfo.role.replace('_', ' ')}
-                                        <ArrowRight className="ml-2 w-4 h-4" />
-                                    </Button>
+                                     <div className={cn("absolute inset-0", roleInfo.color)} />
+                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                     <div className="relative z-10 flex flex-col items-center flex-grow">
+                                        <Avatar className="h-16 w-16 mb-4 border-2 border-white/50">
+                                            <AvatarFallback className="bg-white/20 text-2xl font-bold">{roleInfo.name.charAt(4).toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                        <h3 className="font-bold text-lg mb-2">{roleInfo.name}</h3>
+                                        <p className="text-sm text-white/80 mt-1 flex-grow">{roleInfo.description}</p>
+                                        <Button variant="ghost" className="mt-4 text-white hover:bg-white/20 hover:text-white">
+                                            Continue as {roleInfo.role.replace('_', ' ')}
+                                            <ArrowRight className="ml-2 w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </Card>
                             )
                         })}
