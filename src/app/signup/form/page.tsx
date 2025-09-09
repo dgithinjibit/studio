@@ -128,6 +128,17 @@ function SignupFormComponent() {
                                     </Select>
                                 </div>
                             )}
+
+                            <div className="text-center text-xs text-muted-foreground px-2">
+                                By creating an account, I agree to SyncSenta’s{' '}
+                                <Link href="/terms" className="underline hover:text-primary">
+                                    Terms of Use
+                                </Link>
+                                {' '}and{' '}
+                                <Link href="/terms" className="underline hover:text-primary">
+                                    Privacy Policy
+                                </Link>.
+                            </div>
                             
                             <Button type="submit" className="w-full" disabled={loading}>
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
