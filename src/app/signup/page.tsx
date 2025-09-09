@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -7,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { User, Shield, Briefcase, Building2, ArrowRight } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 import { useRole } from '@/hooks/use-role';
+import Link from 'next/link';
 
 const roles = [
     { name: "I'm a Student", description: "Start your interactive learning journey with AI.", icon: User, role: 'student' },
@@ -26,33 +26,38 @@ export default function SignupRoleSelectionPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
-            <Card className="w-full max-w-2xl">
-                <CardHeader className="text-center">
-                    <CardTitle className="font-headline text-3xl">Choose Your Role</CardTitle>
-                    <CardDescription>Select the account type that best describes you to get started.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-4">
-                    {roles.map(roleInfo => {
-                        const Icon = roleInfo.icon;
-                        return (
-                            <Card 
-                                key={roleInfo.role} 
-                                className="p-6 hover:bg-muted/50 hover:shadow-lg transition-all cursor-pointer flex flex-col text-center items-center"
-                                onClick={() => handleRoleSelection(roleInfo.role as UserRole)}
-                            >
-                                <Icon className="w-12 h-12 text-primary mb-4" />
-                                <h3 className="font-bold text-lg">{roleInfo.name}</h3>
-                                <p className="text-sm text-muted-foreground mt-1 flex-grow">{roleInfo.description}</p>
-                                <Button variant="ghost" className="mt-4 text-primary">
-                                    Continue as {roleInfo.role.replace('_', ' ')}
-                                    <ArrowRight className="ml-2 w-4 h-4" />
-                                </Button>
-                            </Card>
-                        )
-                    })}
-                </CardContent>
-            </Card>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+             <main className="flex-grow flex items-center justify-center">
+                <Card className="w-full max-w-2xl">
+                    <CardHeader className="text-center">
+                        <CardTitle className="font-headline text-3xl">Choose Your Role</CardTitle>
+                        <CardDescription>Select the account type that best describes you to get started.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid md:grid-cols-2 gap-4">
+                        {roles.map(roleInfo => {
+                            const Icon = roleInfo.icon;
+                            return (
+                                <Card 
+                                    key={roleInfo.role} 
+                                    className="p-6 hover:bg-muted/50 hover:shadow-lg transition-all cursor-pointer flex flex-col text-center items-center"
+                                    onClick={() => handleRoleSelection(roleInfo.role as UserRole)}
+                                >
+                                    <Icon className="w-12 h-12 text-primary mb-4" />
+                                    <h3 className="font-bold text-lg">{roleInfo.name}</h3>
+                                    <p className="text-sm text-muted-foreground mt-1 flex-grow">{roleInfo.description}</p>
+                                    <Button variant="ghost" className="mt-4 text-primary">
+                                        Continue as {roleInfo.role.replace('_', ' ')}
+                                        <ArrowRight className="ml-2 w-4 h-4" />
+                                    </Button>
+                                </Card>
+                            )
+                        })}
+                    </CardContent>
+                </Card>
+            </main>
+            <footer className="p-4 text-center text-xs text-muted-foreground">
+                @ 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+            </footer>
         </div>
     );
 }
