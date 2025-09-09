@@ -67,4 +67,3 @@ export default function DashboardPage() {
              return <TeacherDashboard teacher={mockTeacher} />;
     }
 }
-
