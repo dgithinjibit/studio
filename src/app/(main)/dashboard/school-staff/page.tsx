@@ -9,29 +9,38 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusCircle, MoreHorizontal, UserCheck, UserCog } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { AddTeacherDialog } from '@/components/add-teacher-dialog';
+import { EditStaffDialog } from '@/components/edit-staff-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import type { TeachingStaff, NonTeachingStaff } from '@/lib/types';
 
-const mockTeachingStaff = [
-    { id: 't-1', name: 'Ms. Chidinma Okoro', tscNo: 'TSC-12345', role: 'English/Literature' },
-    { id: 't-2', name: 'Mr. David Mwangi', tscNo: 'TSC-67890', role: 'Mathematics' },
-    { id: 't-3', name: 'Mrs. Fatuma Ali', tscNo: 'TSC-54321', role: 'Kiswahili/CRE' },
+
+const mockTeachingStaff: TeachingStaff[] = [
+    { id: 't-1', name: 'Ms. Chidinma Okoro', tscNo: 'TSC-12345', role: 'English/Literature', category: 'Teaching' },
+    { id: 't-2', name: 'Mr. David Mwangi', tscNo: 'TSC-67890', role: 'Mathematics', category: 'Teaching' },
+    { id: 't-3', name: 'Mrs. Fatuma Ali', tscNo: 'TSC-54321', role: 'Kiswahili/CRE', category: 'Teaching' },
 ];
 
-const mockNonTeachingStaff = [
-    { id: 'nt-1', name: 'Mr. James Ochieng', role: 'Bursar' },
-    { id: 'nt-2', name: 'Mrs. Alice Wambui', role: 'Secretary' },
-    { id: 'nt-3', name: 'Mr. Peter Kamau', role: 'Groundsman' },
+const mockNonTeachingStaff: NonTeachingStaff[] = [
+    { id: 'nt-1', name: 'Mr. James Ochieng', role: 'Bursar', category: 'Non-Teaching' },
+    { id: 'nt-2', name: 'Mrs. Alice Wambui', role: 'Secretary', category: 'Non-Teaching' },
+    { id: 'nt-3', name: 'Mr. Peter Kamau', role: 'Groundsman', category: 'Non-Teaching' },
 ];
 
 export default function SchoolStaffPage() {
     const [teachingStaff, setTeachingStaff] = useState(mockTeachingStaff);
     const [nonTeachingStaff, setNonTeachingStaff] = useState(mockNonTeachingStaff);
     const [isAddTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
+    const [editingStaff, setEditingStaff] = useState<TeachingStaff | NonTeachingStaff | null>(null);
     const { toast } = useToast();
 
     const handleAddTeacher = (teacher: { name: string; role: string }) => {
-        const newTeacher = { ...teacher, id: `t-${Date.now()}`, tscNo: `TSC-${Math.floor(10000 + Math.random() * 90000)}` };
+        const newTeacher: TeachingStaff = { 
+            ...teacher, 
+            id: `t-${Date.now()}`, 
+            tscNo: `TSC-${Math.floor(10000 + Math.random() * 90000)}`,
+            category: 'Teaching'
+        };
         setTeachingStaff(prev => [...prev, newTeacher]);
     };
 
@@ -41,6 +50,19 @@ export default function SchoolStaffPage() {
             title: "Staff Member Removed",
             description: "The teacher has been removed from the list.",
             variant: "destructive"
+        });
+    };
+    
+    const handleUpdateStaff = (updatedStaff: TeachingStaff | NonTeachingStaff) => {
+        if (updatedStaff.category === 'Teaching') {
+            setTeachingStaff(prev => prev.map(staff => staff.id === updatedStaff.id ? (updatedStaff as TeachingStaff) : staff));
+        } else {
+            setNonTeachingStaff(prev => prev.map(staff => staff.id === updatedStaff.id ? (updatedStaff as NonTeachingStaff) : staff));
+        }
+        setEditingStaff(null);
+        toast({
+            title: "Staff Details Updated",
+            description: `${updatedStaff.name}'s information has been successfully updated.`
         });
     };
 
@@ -102,7 +124,7 @@ export default function SchoolStaffPage() {
                                             <TableCell className="font-medium">{staff.name}</TableCell>
                                             <TableCell>{staff.tscNo}</TableCell>
                                             <TableCell><Badge variant="outline">{staff.role}</Badge></TableCell>
-                                            <TableCell><Badge variant="secondary">Teaching</Badge></TableCell>
+                                            <TableCell><Badge variant="secondary">{staff.category}</Badge></TableCell>
                                             <TableCell className="text-right">
                                                  <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -112,7 +134,7 @@ export default function SchoolStaffPage() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent>
                                                         <DropdownMenuItem>View Details</DropdownMenuItem>
-                                                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => setEditingStaff(staff)}>Edit</DropdownMenuItem>
                                                          <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteTeacher(staff.id)}>Delete</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -152,7 +174,7 @@ export default function SchoolStaffPage() {
                                         <TableRow key={staff.id}>
                                             <TableCell className="font-medium">{staff.name}</TableCell>
                                             <TableCell><Badge variant="outline">{staff.role}</Badge></TableCell>
-                                            <TableCell><Badge>Non-Teaching</Badge></TableCell>
+                                            <TableCell><Badge>{staff.category}</Badge></TableCell>
                                             <TableCell className="text-right">
                                                  <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -162,7 +184,7 @@ export default function SchoolStaffPage() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent>
                                                         <DropdownMenuItem>View Details</DropdownMenuItem>
-                                                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => setEditingStaff(staff)}>Edit</DropdownMenuItem>
                                                          <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteNonTeachingStaff(staff.id)}>Delete</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -181,6 +203,15 @@ export default function SchoolStaffPage() {
                 onOpenChange={setAddTeacherDialogOpen}
                 onAddTeacher={handleAddTeacher}
             />
+
+            {editingStaff && (
+                <EditStaffDialog
+                    open={!!editingStaff}
+                    onOpenChange={(isOpen) => !isOpen && setEditingStaff(null)}
+                    staffMember={editingStaff}
+                    onUpdateStaff={handleUpdateStaff}
+                />
+            )}
         </>
     );
 }

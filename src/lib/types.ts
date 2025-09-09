@@ -1,6 +1,7 @@
 
 
 
+
 export type UserRole = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 export type User = {
@@ -95,3 +96,18 @@ export type SchoolResource = {
   quantity: number;
   dateAllocated: string;
 };
+
+export type TeachingStaff = {
+    id: string;
+    name: string;
+    tscNo: string;
+    role: string;
+    category: 'Teaching';
+}
+
+export type NonTeachingStaff = {
+    id: string;
+    name: string;
+    role: string;
+    category: 'Non-Teaching';
+}
