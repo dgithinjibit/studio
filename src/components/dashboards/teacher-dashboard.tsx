@@ -1,9 +1,9 @@
 
 "use client";
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, ChevronRight, Plus, Bot, Sparkles, Users } from "lucide-react";
+import { BookOpen, MoreHorizontal, Plus, Bot, Sparkles, Users, Edit, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AddClassDialog } from '@/components/add-class-dialog';
 import {
@@ -14,13 +14,28 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import type { Teacher, ClassInfo, TeacherResource, Student } from '@/lib/types';
+import type { Teacher, ClassInfo, Student, TeacherResource } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
-import { mockTeacher } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary';
 import { cn } from '@/lib/utils';
-
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface TeacherDashboardProps {
     teacher: Teacher;
@@ -30,24 +45,24 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     const [teacher, setTeacher] = useState<Teacher>(initialTeacher);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
+    const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
     const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
     const [summary, setSummary] = useState('');
     const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
 
     useEffect(() => {
-        // Load teacher data from localStorage if it exists
         const storedTeacher = localStorage.getItem('mockTeacher');
         if (storedTeacher) {
             setTeacher(JSON.parse(storedTeacher));
         } else {
             setTeacher(initialTeacher);
+            localStorage.setItem('mockTeacher', JSON.stringify(initialTeacher));
         }
     }, [initialTeacher]);
     
     useEffect(() => {
         if (teacher.classes.length > 0 && !selectedClass) {
-            // Find the class in the current teacher state to ensure data is fresh
             const currentSelectedClass = teacher.classes.find(c => c.id === (selectedClass?.id || teacher.classes[0].id));
             setSelectedClass(currentSelectedClass || teacher.classes[0]);
         }
@@ -59,7 +74,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         performance: c.performance 
     }));
     
-    const handleClassSelect = (classInfo: ClassInfo) => {
+    const openAttendance = (classInfo: ClassInfo) => {
         setSelectedClass(classInfo);
         setAttendanceDialogOpen(true);
     };
@@ -83,24 +98,50 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         updateTeacherState({ ...teacher, classes: updatedClasses });
     };
     
-    const handleAddClass = (className: string, color: string) => {
-        const newClass: ClassInfo = {
-            id: `class_${Date.now()}`,
-            name: className,
-            performance: 75, // Default performance
-            students: [],
-            color: color,
-        };
-
-        const updatedClasses = [...teacher.classes, newClass];
+    const handleSaveClass = (classDetails: { name: string, color: string }, classId?: string) => {
+        let updatedClasses;
+        if (classId) {
+            // Editing existing class
+            updatedClasses = teacher.classes.map(c => 
+                c.id === classId ? { ...c, ...classDetails } : c
+            );
+             toast({
+                title: "Class Updated",
+                description: `"${classDetails.name}" has been updated.`,
+            })
+        } else {
+            // Adding new class
+            const newClass: ClassInfo = {
+                id: `class_${Date.now()}`,
+                name: classDetails.name,
+                performance: 75,
+                students: [],
+                color: classDetails.color,
+            };
+            updatedClasses = [...teacher.classes, newClass];
+            toast({
+                title: "Class Added",
+                description: `"${classDetails.name}" has been added to your hub.`,
+            })
+        }
         updateTeacherState({ ...teacher, classes: updatedClasses });
-        
+        setEditingClass(null);
+    };
+    
+    const handleDeleteClass = (classId: string) => {
+        const updatedClasses = teacher.classes.filter(c => c.id !== classId);
+        updateTeacherState({ ...teacher, classes: updatedClasses });
         toast({
-            title: "Class Added",
-            description: `"${className}" has been added to your hub.`,
-        })
+            variant: "destructive",
+            title: "Class Deleted",
+            description: "The class has been removed from your hub.",
+        });
     };
 
+    const openEditDialog = (classInfo: ClassInfo) => {
+        setEditingClass(classInfo);
+        setAddClassDialogOpen(true);
+    };
 
     const handleGenerateSummary = async () => {
         setIsSummaryLoading(true);
@@ -201,15 +242,15 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                                 </CardTitle>
                                 <CardDescription>View your classes and take attendance.</CardDescription>
                             </div>
-                            <Button variant="outline" size="sm" onClick={() => setAddClassDialogOpen(true)}>
+                            <Button variant="outline" size="sm" onClick={() => { setEditingClass(null); setAddClassDialogOpen(true); }}>
                                 <Plus className="mr-2 h-4 w-4" />
                                 Add Class
                             </Button>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-2">
                             {teacher.classes.map(c => (
-                                <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleClassSelect(c)}>
-                                    <div className="flex items-center gap-4">
+                                <div key={c.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                                    <div className="flex items-center gap-4 cursor-pointer" onClick={() => openAttendance(c)}>
                                         <Avatar className="h-12 w-12 border-2 border-primary/20">
                                             <AvatarFallback className={cn("text-white font-bold", c.color)}>{c.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
@@ -218,9 +259,39 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                                             <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
                                         </div>
                                     </div>
-                                    <Button variant="ghost" size="icon">
-                                        <ChevronRight className="w-5 h-5" />
-                                    </Button>
+                                     <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal className="w-5 h-5" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <DropdownMenuItem onClick={() => openEditDialog(c)}>
+                                                <Edit className="mr-2 h-4 w-4" />
+                                                Edit Class
+                                            </DropdownMenuItem>
+                                             <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="ghost" className="w-full justify-start text-sm font-normal text-destructive hover:bg-destructive/10 hover:text-destructive px-2 py-1.5 rounded-sm relative flex cursor-default select-none items-center gap-2">
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Delete Class
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This action cannot be undone. This will permanently delete the class "{c.name}" and all of its associated data.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDeleteClass(c.id)}>Delete</AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             ))}
                         </CardContent>
@@ -228,7 +299,12 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                 </div>
             </div>
              
-             <AddClassDialog open={isAddClassDialogOpen} onOpenChange={setAddClassDialogOpen} onAddClass={handleAddClass} />
+             <AddClassDialog 
+                open={isAddClassDialogOpen} 
+                onOpenChange={setAddClassDialogOpen} 
+                onSaveClass={handleSaveClass}
+                initialData={editingClass}
+             />
 
              {selectedClass && (
                  <DigitalAttendanceRegister 
@@ -242,5 +318,3 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         </>
     );
 }
-
-    

@@ -1,18 +1,20 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { ClassInfo } from '@/lib/types';
 
 interface AddClassDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddClass: (className: string, color: string) => void;
+  onSaveClass: (classDetails: { name: string; color: string }, classId?: string) => void;
+  initialData?: ClassInfo | null;
 }
 
 const colors = [
@@ -20,30 +22,44 @@ const colors = [
   'bg-red-500', 'bg-yellow-500', 'bg-pink-500', 'bg-teal-500'
 ];
 
-export function AddClassDialog({ open, onOpenChange, onAddClass }: AddClassDialogProps) {
+export function AddClassDialog({ open, onOpenChange, onSaveClass, initialData }: AddClassDialogProps) {
   const [className, setClassName] = useState('');
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+        setClassName(initialData.name);
+        setSelectedColor(initialData.color);
+    } else {
+        setClassName('');
+        setSelectedColor(colors[0]);
+    }
+  }, [initialData]);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!className.trim()) return;
     
     setLoading(true);
-    onAddClass(className, selectedColor);
+    onSaveClass({ name: className, color: selectedColor }, initialData?.id);
     setLoading(false);
     onOpenChange(false);
-    setClassName('');
-    setSelectedColor(colors[0]);
   };
+
+  const dialogTitle = initialData ? 'Edit Class' : 'Add a New Class';
+  const dialogDescription = initialData 
+    ? "Update the name and color for this class." 
+    : "Enter the name for your new class and choose a color. You can add students later.";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a New Class</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>
-            Enter the name for your new class and choose a color. You can add students later.
+            {dialogDescription}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -80,7 +96,7 @@ export function AddClassDialog({ open, onOpenChange, onAddClass }: AddClassDialo
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Add Class
+                Save
               </Button>
             </DialogFooter>
         </form>
