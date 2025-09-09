@@ -239,13 +239,14 @@ const mwalimuAiTutorFlow = ai.defineFlow(
             if (subject.includes('IndigenousLanguageActivities')) curriculum = grade3IndigenousLanguageCurriculum;
             if (subject.includes('KiswahiliLanguageActivities')) curriculum = grade3KiswahiliLanguageActivitiesCurriculum;
             if (subject.includes('MathematicalActivities')) curriculum = grade3MathematicsActivitiesCurriculum;
-        } else if (grade === 'g4' || grade === 'g5') { // FIX: Added Grade 5 to use Grade 4 data
-             if (subject.includes('AgricultureandNutrition')) curriculum = grade4AgricultureAndNutritionCurriculum;
-            if (subject.includes('ChristianReligiousEducation')) curriculum = grade4CreCurriculum;
+        } else if (grade === 'g4' || grade === 'g5') {
+            if (subject.includes('AgricultureandNutrition')) curriculum = grade4AgricultureAndNutritionCurriculum;
+            if (subject.includes('ChristianReligiousEducation') || subject.includes('ReligiousEducation')) curriculum = grade4CreCurriculum;
             if (subject.includes('CreativeArts')) curriculum = grade4CreativeArtsCurriculum;
             if (subject.includes('English')) curriculum = grade4EnglishLanguageActivitiesCurriculum;
             if (subject.includes('IndigenousLanguages')) curriculum = grade4IndigenousLanguageCurriculum;
             if (subject.includes('Kiswahili')) curriculum = grade4KiswahiliLanguageActivitiesCurriculum;
+            if (subject.includes('SocialStudies')) curriculum = grade6SocialStudiesCurriculum; // Use Grade 6 for now
         } else if (grade === 'g6') {
              if (subject.includes('SocialStudies')) curriculum = grade6SocialStudiesCurriculum;
         }
@@ -264,5 +265,3 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    
