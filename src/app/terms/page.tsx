@@ -17,52 +17,97 @@ export default function TermsAndConditionsPage() {
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Terms and Conditions</CardTitle>
-                    <CardDescription>Last updated: September 09, 2025</CardDescription>
+                    <CardTitle className="font-headline text-3xl">Terms and Conditions for SyncSenta</CardTitle>
+                    <CardDescription>Last updated: September 9, 2025</CardDescription>
                 </CardHeader>
                 <CardContent className="prose prose-sm max-w-none text-muted-foreground">
                     <p>
-                        <strong>Disclaimer:</strong> This is a template and not legal advice. You should consult with a legal professional to create terms and conditions that are appropriate for your specific situation.
+                        <strong>Disclaimer:</strong> This document is for informational purposes only and does not constitute legal advice. You must consult with a qualified legal professional to ensure these terms are appropriate for your specific business model and comply with all applicable laws and regulations.
                     </p>
 
-                    <h2>1. Introduction</h2>
+                    <h2>1. Introduction and Acceptance of Terms</h2>
                     <p>
-                        Welcome to SyncSenta ("we", "our", "us"). These Terms and Conditions govern your use of our application and services. By accessing or using our service, you agree to be bound by these terms. If you disagree with any part of the terms, then you may not access the service.
+                        Welcome to SyncSenta ("the Application," "the Service," "we," "us," or "our"). The Service is an application owned and operated by dantedone ("the Company").
+                    </p>
+                    <p>
+                        By creating an account, accessing, or using the Service in any manner, you, the user ("you," "your"), acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions ("Terms"), our Privacy Policy, and any other policies or guidelines referenced herein. If you do not agree to these Terms in their entirety, you are expressly prohibited from using the Service and must discontinue use immediately.
                     </p>
 
-                    <h2>2. Intellectual Property</h2>
+                    <h2>2. Intellectual Property Rights</h2>
                     <p>
-                        The Service and its original content, features, and functionality are and will remain the exclusive property of dantedone and its licensors. The Service is protected by copyright, trademark, and other laws of both Kenya and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of dantedone.
+                        The Service, its entire contents, features, and functionality—including but not limited to all information, software, code, algorithms, text, displays, graphics, images, video, and audio, and the design, selection, and arrangement thereof—are owned by the Company, its licensors, or other providers of such material. These are protected by international and Kenyan copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.
+                    </p>
+                     <p>
+                        SyncSenta's name, logo, and all related names, logos, product and service names, designs, and slogans are trademarks of the Company or its affiliates or licensors. You may not use such marks without our prior written permission. All other names, logos, product and service names, designs, and slogans on this Service are the trademarks of their respective owners.
                     </p>
 
-                    <h2>3. User Accounts</h2>
-                    <p>
-                        When you create an account with us, you must provide us with information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.
-                    </p>
 
-                    <h2>4. Content</h2>
+                    <h2>3. User Accounts and Responsibilities</h2>
                     <p>
-                        Our Service allows you to post, link, store, share and otherwise make available certain information, text, graphics, videos, or other material ("Content"). You are responsible for the Content that you post on or through the Service, including its legality, reliability, and appropriateness.
+                        <strong>Account Creation:</strong> When you create an account, you represent and warrant that all information you provide is truthful, accurate, complete, and current. You are solely responsible for all activities that occur under your account, whether or not you authorized the activity.
+                    </p>
+                    <p>
+                        <strong>Account Security:</strong> You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password. You agree not to disclose your password to any third party. You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account. We will not be liable for any loss or damage arising from your failure to comply with this security obligation.
+                    </p>
+                     <p>
+                        <strong>User Conduct:</strong> You agree not to use the Service in any way that is unlawful, fraudulent, or malicious. This includes, but is not limited to:
+                    </p>
+                    <ul>
+                        <li>Uploading or transmitting any data that contains viruses, Trojan horses, worms, or any other harmful code.</li>
+                        <li>Attempting to gain unauthorized access to our servers, systems, or data.</li>
+                        <li>Interfering with the proper working of the Service.</li>
+                        <li>Engaging in any activity that could damage, disable, or impair the Service.</li>
+                    </ul>
+
+                    <h2>4. User-Generated Content</h2>
+                    <p>
+                        <strong>Content Responsibility:</strong> You are solely responsible for all Content that you upload, post, or otherwise make available on the Service. This includes ensuring that your Content is legal, accurate, and does not infringe on the intellectual property, privacy, or publicity rights of any third party.
+                    </p>
+                    <p>
+                        <strong>Content License:</strong> By posting Content, you grant the Company a non-exclusive, royalty-free, perpetual, worldwide, and sublicensable license to use, reproduce, modify, adapt, publish, translate, create derivative works from, distribute, and display such Content in any media. This license is necessary for us to operate and improve the Service.
+                    </p>
+                     <p>
+                        <strong>Content Disclaimer:</strong> We do not pre-screen or monitor user Content. We are not responsible for the accuracy, completeness, or legality of any Content posted by users. We reserve the right to remove or modify any Content at our sole discretion, without prior notice.
                     </p>
                     
-                     <h2>5. Limitation of Liability</h2>
+                    <h2>5. Termination of Service</h2>
                     <p>
-                        In no event shall dantedone, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.
+                       We may terminate or suspend your account and deny access to the Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the Service will cease immediately. If you wish to terminate your account, you may simply discontinue using the Service.
                     </p>
 
-                    <h2>6. Governing Law</h2>
+                     <h2>6. Limitation of Liability and Disclaimer of Warranties</h2>
                     <p>
-                        These Terms shall be governed and construed in accordance with the laws of Kenya, without regard to its conflict of law provisions.
+                        <strong>Limitation of Liability:</strong> To the maximum extent permitted by law, in no event shall the Company, its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from:
+                    </p>
+                     <ul>
+                        <li>Your access to, use of, or inability to access or use the Service;</li>
+                        <li>Any conduct or Content of any third party on the Service;</li>
+                        <li>Any Content obtained from the Service; and</li>
+                        <li>Unauthorized access, use, or alteration of your transmissions or Content.</li>
+                    </ul>
+                    <p>
+                        <strong>Disclaimer of Warranties:</strong> The Service is provided on an "AS IS" and "AS AVAILABLE" basis. We make no representations or warranties of any kind, express or implied, as to the operation of the Service or the information, Content, materials, or products included on the Service. You expressly agree that your use of the Service is at your sole risk.
+                    </p>
+
+                     <h2>7. Indemnification</h2>
+                    <p>
+                        You agree to defend, indemnify, and hold harmless the Company, its affiliates, licensors, and service providers, and its and their respective officers, directors, employees, contractors, agents, licensors, suppliers, successors, and assigns from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or relating to your violation of these Terms or your use of the Service, including, but not limited to, your User Content, any use of the Service's content, services, and products other than as expressly authorized in these Terms.
+                    </p>
+
+
+                    <h2>8. Governing Law and Dispute Resolution</h2>
+                    <p>
+                        These Terms shall be governed by and construed in accordance with the laws of the Republic of Kenya, without regard to its conflict of law provisions. Any dispute, claim, or controversy arising out of or relating to these Terms or the breach, termination, enforcement, interpretation, or validity thereof, shall be resolved exclusively by the competent courts located in Nairobi, Kenya.
                     </p>
                     
-                    <h2>7. Changes</h2>
+                    <h2>9. Changes to Terms</h2>
                     <p>
-                        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.
+                        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will provide at least thirty (30) days' notice prior to any new terms taking effect. By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, you are no longer authorized to use the Service.
                     </p>
 
-                    <h2>8. Contact Us</h2>
+                    <h2>10. Contact Us</h2>
                     <p>
-                        If you have any questions about these Terms, please contact us.
+                        If you have any questions about these Terms, please contact us by email at <a href="mailto:danterub@proton.me" className="text-primary hover:underline">danterub@proton.me</a>.
                     </p>
 
                 </CardContent>
