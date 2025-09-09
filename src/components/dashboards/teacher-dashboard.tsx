@@ -70,7 +70,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
 
 
     const chartData = teacher.classes.map(c => ({ 
-        name: c.name.replace(' English', '').replace(' Literature', ''), 
+        name: c.name, 
         performance: c.performance 
     }));
     
