@@ -32,7 +32,6 @@ const prompt = ai.definePrompt({
 ---
 - **Total Teachers:** {{schoolData.teacherCount}}
 - **Total Students:** {{schoolData.studentCount}}
-- **Student-Teacher Ratio:** {{eval "schoolData.studentCount / schoolData.teacherCount" orelse=0 format="0.0"}}:1
 - **School-Wide Average Attendance:** {{schoolData.averageAttendance}}%
 
 **Class Details:**
