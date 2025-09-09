@@ -21,42 +21,48 @@ const teacherTools = [
         description: "Create complete Schemes of Work from curriculum data.",
         icon: CalendarDays,
         action: "Open Schemer",
-        dialog: "schemeOfWork"
+        dialog: "schemeOfWork",
+        path: "@/components/generate-scheme-of-work-dialog"
     },
     {
         title: "Lesson Plan Generator",
         description: "Create CBC-aligned lesson plans",
         icon: FilePen,
         action: "Open Lesson Plan Generator",
-        dialog: "lessonPlan"
+        dialog: "lessonPlan",
+        path: "@/components/generate-lesson-plan-dialog"
     },
     {
         title: "Worksheet Generator",
         description: "Generate printable worksheets",
         icon: ClipboardList,
         action: "Open Worksheet Generator",
-        dialog: "worksheet"
+        dialog: "worksheet",
+        path: "@/components/generate-worksheet-dialog"
     },
     {
         title: "Differentiation Station",
         description: "Adapt worksheets for all learners",
         icon: CopySlash,
         action: "Open Differentiation Station",
-        dialog: "differentiate"
+        dialog: "differentiate",
+        path: "@/components/differentiate-worksheet-dialog"
     },
     {
         title: "Rubric Generator",
         description: "Create custom rubrics",
         icon: GraduationCap,
         action: "Open Rubric Generator",
-        dialog: "rubric"
+        dialog: "rubric",
+        path: "@/components/generate-rubric-dialog"
     },
     {
         title: "Email to Family",
         description: "Generate professional parent communications",
         icon: Mail,
         action: "Open Email to Family",
-        dialog: null
+        dialog: null,
+        path: null
     }
 ];
 
@@ -83,6 +89,12 @@ export default function TeacherToolsPage() {
             openDialog(dialog as keyof typeof dialogState);
         }
     };
+    
+    const onMouseEnter = (path: string | null) => {
+        if (path) {
+            router.prefetch(path);
+        }
+    }
 
     const onResourceSaved = () => {
         // We need to dispatch a custom event to tell the MyResources component to update
@@ -111,7 +123,12 @@ export default function TeacherToolsPage() {
                                     <CardDescription>{tool.description}</CardDescription>
                                 </CardHeader>
                                 <CardFooter className="mt-auto">
-                                    <Button variant="secondary" className="w-full" onClick={() => handleToolClick(tool.dialog)}>
+                                    <Button 
+                                        variant="secondary" 
+                                        className="w-full" 
+                                        onClick={() => handleToolClick(tool.dialog)}
+                                        onMouseEnter={() => onMouseEnter(tool.path)}
+                                    >
                                         {tool.action}
                                     </Button>
                                 </CardFooter>
