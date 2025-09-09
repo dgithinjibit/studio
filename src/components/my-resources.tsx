@@ -366,5 +366,3 @@ export function MyResources() {
         </div>
     );
 }
-
-    
