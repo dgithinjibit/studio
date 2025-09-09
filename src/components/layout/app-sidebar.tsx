@@ -51,7 +51,7 @@ export function AppSidebar() {
   const schoolHeadNavItems = [
        { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
        { href: "/dashboard/reports", icon: Library, label: "School Reports" },
-       { href: "/dashboard/county-teachers", icon: Users, label: "Staff Management" },
+       { href: "/dashboard/school-staff", icon: Users, label: "Staff Management" },
        { href: "/dashboard/county-finance", icon: Banknote, label: "School Finance" },
   ]
 
