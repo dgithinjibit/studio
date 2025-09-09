@@ -3,6 +3,7 @@
 
 
 
+
 export type UserRole = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 export type User = {
@@ -24,6 +25,7 @@ export type ClassInfo = {
     name: string;
     performance: number;
     students: Student[];
+    color: string;
 };
 
 export type Teacher = {

@@ -19,6 +19,7 @@ import { DigitalAttendanceRegister } from '@/components/digital-attendance-regis
 import { mockTeacher } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary';
+import { cn } from '@/lib/utils';
 
 
 interface TeacherDashboardProps {
@@ -82,12 +83,13 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         updateTeacherState({ ...teacher, classes: updatedClasses });
     };
     
-    const handleAddClass = (className: string) => {
+    const handleAddClass = (className: string, color: string) => {
         const newClass: ClassInfo = {
             id: `class_${Date.now()}`,
             name: className,
             performance: 75, // Default performance
             students: [],
+            color: color,
         };
 
         const updatedClasses = [...teacher.classes, newClass];
@@ -209,7 +211,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                                 <div key={c.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleClassSelect(c)}>
                                     <div className="flex items-center gap-4">
                                         <Avatar className="h-12 w-12 border-2 border-primary/20">
-                                            <AvatarFallback className="bg-primary/10 text-primary font-bold">{c.name.charAt(0)}</AvatarFallback>
+                                            <AvatarFallback className={cn("text-white font-bold", c.color)}>{c.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <div>
                                             <p className="font-bold">{c.name}</p>
