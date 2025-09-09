@@ -15,6 +15,7 @@ import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { AddCommunicationDialog } from '../add-communication-dialog';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 const SchoolMap = dynamic(() => import('../school-map'), {
   ssr: false,
@@ -25,6 +26,7 @@ export function CountyOfficerDashboard() {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [schools, setSchools] = useState<School[]>([]);
+  const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
   const [isAddCommDialogOpen, setAddCommDialogOpen] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -143,21 +145,21 @@ export function CountyOfficerDashboard() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-5">
-            <div className="lg:col-span-3">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Schools Management</CardTitle>
-                        <CardDescription>Overview of all schools in the county. Click 'View' for a detailed drill-down.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                         <div className="mb-4">
-                            <div className="relative">
-                                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="Search schools..." className="pl-8" />
-                            </div>
+            <Card className="lg:col-span-3">
+                <CardHeader>
+                    <CardTitle>Schools Management</CardTitle>
+                    <CardDescription>Overview of all schools in the county. Click 'View' for a detailed drill-down.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                     <div className="mb-4">
+                        <div className="relative">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="Search schools..." className="pl-8" />
                         </div>
+                    </div>
+                    <div className="max-h-[400px] overflow-y-auto">
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="sticky top-0 bg-card">
                                 <TableRow>
                                     <TableHead>School Name</TableHead>
                                     <TableHead>Status</TableHead>
@@ -165,8 +167,13 @@ export function CountyOfficerDashboard() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {schools.slice(0, 5).map(school => (
-                                    <TableRow key={school.id}>
+                                {schools.map(school => (
+                                    <TableRow 
+                                        key={school.id}
+                                        onMouseEnter={() => setSelectedSchool(school)}
+                                        onMouseLeave={() => setSelectedSchool(null)}
+                                        className={cn("transition-colors", selectedSchool?.id === school.id ? "bg-muted/80" : "")}
+                                    >
                                         <TableCell className="font-medium">{school.name}</TableCell>
                                         <TableCell><Badge variant="outline">Active</Badge></TableCell>
                                         <TableCell className="text-right">
@@ -176,20 +183,12 @@ export function CountyOfficerDashboard() {
                                 ))}
                             </TableBody>
                         </Table>
-                    </CardContent>
-                </Card>
-            </div>
+                    </div>
+                </CardContent>
+            </Card>
 
-            <div className="lg:col-span-2">
-                <Card className="h-[500px]">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><MapPin className="text-destructive" /> County School Map</CardTitle>
-                        <CardDescription>Geographic distribution of schools.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[400px]">
-                        <SchoolMap schools={schools} />
-                    </CardContent>
-                </Card>
+            <div className="lg:col-span-2 h-[560px]">
+                 <SchoolMap schools={schools} selectedSchool={selectedSchool} onSchoolSelect={setSelectedSchool} />
             </div>
         </div>
     </div>

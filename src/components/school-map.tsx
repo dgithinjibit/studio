@@ -6,14 +6,17 @@ import Map, { Marker, Popup } from 'react-map-gl';
 import type { School } from '@/lib/types';
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { cn } from '@/lib/utils';
 
 const MAPTILER_TOKEN = "oOP6aDKvl1yVX2dicS80";
 
 interface SchoolMapProps {
   schools: School[];
+  selectedSchool: School | null;
+  onSchoolSelect: (school: School | null) => void;
 }
 
-export default function SchoolMap({ schools }: SchoolMapProps) {
+export default function SchoolMap({ schools, selectedSchool, onSchoolSelect }: SchoolMapProps) {
   const [popupInfo, setPopupInfo] = useState<School | null>(null);
 
   if (!MAPTILER_TOKEN) {
@@ -29,10 +32,10 @@ export default function SchoolMap({ schools }: SchoolMapProps) {
       initialViewState={{
         longitude: 36.8219, // Centered on Nairobi
         latitude: -1.2921,
-        zoom: 8
+        zoom: 6
       }}
-      style={{ width: '100%', height: '100%' }}
-      mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${MAPTILER_TOKEN}`}
+      style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }}
+      mapStyle={`https://api.maptiler.com/maps/backdrop/style.json?key=${MAPTILER_TOKEN}`}
       mapboxAccessToken={null} // Set to null as we are not using Mapbox
       crossOrigin="anonymous"
     >
@@ -46,7 +49,17 @@ export default function SchoolMap({ schools }: SchoolMapProps) {
             setPopupInfo(school);
           }}
         >
-          <MapPin className="text-primary cursor-pointer" size={24} />
+            <div 
+                className={cn(
+                    "w-4 h-4 rounded-full bg-primary border-2 border-primary-foreground shadow-lg cursor-pointer transition-all duration-300",
+                    "hover:scale-125",
+                    selectedSchool?.id === school.id ? "scale-150 ring-4 ring-primary/50" : ""
+                )}
+                onMouseEnter={() => onSchoolSelect(school)}
+                onMouseLeave={() => onSchoolSelect(null)}
+            >
+                 <div className={cn("w-full h-full rounded-full bg-primary animate-pulse", selectedSchool?.id === school.id ? "animation-delay-0" : "animation-delay-[2s]")} />
+            </div>
         </Marker>
       ))}
 
@@ -57,10 +70,11 @@ export default function SchoolMap({ schools }: SchoolMapProps) {
           latitude={Number(popupInfo.latitude)}
           onClose={() => setPopupInfo(null)}
           closeOnClick={false}
+          className="font-body"
         >
-          <div>
+          <div className="text-foreground">
             <h3 className="font-bold">{popupInfo.name}</h3>
-            <p>County ID: {popupInfo.countyId}</p>
+            <p className="text-xs">County ID: {popupInfo.countyId}</p>
           </div>
         </Popup>
       )}
