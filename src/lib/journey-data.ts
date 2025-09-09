@@ -39,7 +39,7 @@ const commonSubjects: Subject[] = [
     { name: 'English', icon: '/assets/english-icon.png' },
     { name: 'Kiswahili', icon: '/assets/kisw.png' },
     { name: 'Mathematics', icon: '/assets/mathematics.png' },
-    { name: 'Social Studies', icon: '/assets/social_studies.png' },
+    { name: 'Social Studies', icon: '/assets/social.png' },
     { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
     { name: 'Religious Education', icon: '/assets/cre.png' },
     { name: 'Environmental Activities', icon: '/assets/envr.png' },
