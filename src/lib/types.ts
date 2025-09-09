@@ -2,6 +2,7 @@
 
 
 
+
 export type UserRole = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 export type User = {
@@ -110,4 +111,13 @@ export type NonTeachingStaff = {
     name: string;
     role: string;
     category: 'Non-Teaching';
+}
+
+export type Transaction = {
+    id: string;
+    date: string;
+    description: string;
+    amount: number;
+    category: string;
+    status: string;
 }
