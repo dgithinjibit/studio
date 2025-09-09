@@ -44,6 +44,7 @@ import { grade4CreativeArtsCurriculum } from '@/curriculum/grade4-creative-arts'
 import { grade4EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade4-english-language-activities';
 import { grade4IndigenousLanguageCurriculum } from '@/curriculum/grade4-indigenous-language';
 import { grade4KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade4-kiswahili-language-activities';
+import { grade4ReligiousEducationCurriculum } from '@/curriculum/grade4-religious-education';
 import { grade6SocialStudiesCurriculum } from '@/curriculum/grade6-social-studies';
 
 
@@ -241,7 +242,8 @@ const mwalimuAiTutorFlow = ai.defineFlow(
             if (subject.includes('MathematicalActivities')) curriculum = grade3MathematicsActivitiesCurriculum;
         } else if (grade === 'g4' || grade === 'g5') {
             if (subject.includes('AgricultureandNutrition')) curriculum = grade4AgricultureAndNutritionCurriculum;
-            if (subject.includes('ChristianReligiousEducation') || subject.includes('ReligiousEducation')) curriculum = grade4CreCurriculum;
+            if (subject.includes('ChristianReligiousEducation')) curriculum = grade4CreCurriculum;
+            if (subject.includes('ReligiousEducation')) curriculum = grade4ReligiousEducationCurriculum;
             if (subject.includes('CreativeArts')) curriculum = grade4CreativeArtsCurriculum;
             if (subject.includes('English')) curriculum = grade4EnglishLanguageActivitiesCurriculum;
             if (subject.includes('IndigenousLanguages')) curriculum = grade4IndigenousLanguageCurriculum;
