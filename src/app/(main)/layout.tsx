@@ -20,7 +20,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       <AppSidebar />
       <SidebarInset className="flex flex-col">
           <AppHeader />
-           <main className="p-4 md:p-6">
+           <main className="p-4 md:p-6 flex-grow">
               {children}
           </main>
           <footer className="mt-auto p-4 text-center text-xs text-muted-foreground">

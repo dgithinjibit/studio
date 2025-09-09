@@ -85,64 +85,69 @@ function SignupFormComponent() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
-            <Card className="w-full max-w-lg relative">
-                 <Link href="/signup" passHref>
-                    <Button variant="ghost" size="icon" className="absolute top-3 left-3">
-                        <ArrowLeft className="h-5 w-5" />
-                         <span className="sr-only">Back to role selection</span>
-                    </Button>
-                </Link>
-                <CardHeader className="text-center pt-12">
-                    <CardTitle className="font-headline text-2xl">{getTitle()}</CardTitle>
-                    <CardDescription>Join SyncSenta to revolutionize your learning and teaching.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSignup} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="fullName">Full Name</Label>
-                            <Input id="fullName" name="fullName" placeholder="Asha Juma" required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" name="email" type="email" placeholder="m@example.com" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address." />
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input id="password" name="password" type="password" required />
-                        </div>
-                        
-                        {role === 'county_officer' && (
-                             <div className="space-y-2">
-                                <Label htmlFor="county">County</Label>
-                                <Select name="county" required>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select your county" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {mockCounties.map(county => (
-                                            <SelectItem key={county.id} value={county.id}>{county.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        )}
-                        
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {loading ? 'Creating Account...' : 'Create Account'}
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+            <main className="flex-grow flex items-center justify-center">
+                <Card className="w-full max-w-lg relative">
+                    <Link href="/signup" passHref>
+                        <Button variant="ghost" size="icon" className="absolute top-3 left-3">
+                            <ArrowLeft className="h-5 w-5" />
+                            <span className="sr-only">Back to role selection</span>
                         </Button>
-                    </form>
-                </CardContent>
-                 <CardFooter className="flex flex-col gap-4 text-center">
-                    <p className="text-xs text-muted-foreground">
-                        Already have an account?{' '}
-                        <Link href="/login" className="underline font-medium hover:text-primary">
-                            Sign In
-                        </Link>
-                    </p>
-                </CardFooter>
-            </Card>
+                    </Link>
+                    <CardHeader className="text-center pt-12">
+                        <CardTitle className="font-headline text-2xl">{getTitle()}</CardTitle>
+                        <CardDescription>Join SyncSenta to revolutionize your learning and teaching.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handleSignup} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="fullName">Full Name</Label>
+                                <Input id="fullName" name="fullName" placeholder="Asha Juma" required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input id="email" name="email" type="email" placeholder="m@example.com" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address." />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="password">Password</Label>
+                                <Input id="password" name="password" type="password" required />
+                            </div>
+                            
+                            {role === 'county_officer' && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="county">County</Label>
+                                    <Select name="county" required>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select your county" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {mockCounties.map(county => (
+                                                <SelectItem key={county.id} value={county.id}>{county.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+                            
+                            <Button type="submit" className="w-full" disabled={loading}>
+                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {loading ? 'Creating Account...' : 'Create Account'}
+                            </Button>
+                        </form>
+                    </CardContent>
+                    <CardFooter className="flex flex-col gap-4 text-center">
+                        <p className="text-xs text-muted-foreground">
+                            Already have an account?{' '}
+                            <Link href="/login" className="underline font-medium hover:text-primary">
+                                Sign In
+                            </Link>
+                        </p>
+                    </CardFooter>
+                </Card>
+            </main>
+             <footer className="p-4 text-center text-xs text-muted-foreground">
+                @ 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+            </footer>
         </div>
     );
 }
