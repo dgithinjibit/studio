@@ -130,7 +130,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         <>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="font-headline text-3xl font-bold">Welcome, {teacher.name}!</h1>
+                    <h1 className="font-headline text-3xl font-bold">Welcome!</h1>
                     <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
                 </div>
                  <Button onClick={handleGenerateSummary} disabled={isSummaryLoading}>
@@ -234,7 +234,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                     onOpenChange={setAttendanceDialogOpen}
                     classInfo={selectedClass}
                     onClassNameUpdate={handleClassNameUpdate}
-                    onUpdateStudents={handleUpdateStudents}
+                    onUpdateStudents={onUpdateStudents}
                  />
              )}
         </>
