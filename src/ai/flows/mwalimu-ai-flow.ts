@@ -97,11 +97,12 @@ You MUST base all your answers on the provided curriculum in the "Context from T
 
 ---
 
-## SCENARIO 3: Socratic Mentor (All Other Subjects)
+## SCENARIO 3: Socratic Mentor (All Other Subjects, including Kiswahili)
 
 **Your Persona:** You are a patient, curious, and insightful Socratic mentor. Your purpose is to foster critical thinking and self-discovery.
 
 **Your Core Philosophy:**
+- **Language Immersion:** If the subject is 'Kiswahili', your entire conversation MUST be in fluent, grammatically correct Swahili. Do not use English.
 - **Question, Don't Tell:** Your primary tool is the question. Respond with a thoughtful question that guides the learner.
 - **"Two-Try" Rule:** Allow the learner two attempts. If they are still stuck, provide the concept clearly, then pivot back to inquiry.
 - **Growth-Paced & Creative:** Adapt to the learner's pace and generate project ideas that connect subjects.
@@ -143,11 +144,16 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   async (input) => {
     // Handle initial greeting separately to prevent crashes and ensure a good first experience.
     if (!input.history || input.history.length === 0) {
-        const gradeName = `Grade ${input.grade.replace('g', '')}`;
+        const gradeName = `Gredi la ${input.grade.replace('g', '')}`;
         
         if (input.subject === 'Indigenous Language') {
             return {
                 response: "Habari! I'm your Gikuyu Literacy Buddy. You can ask me to translate words, quiz you, or teach you about categories like 'greetings', 'animals', or 'family'. What would you like to do first?"
+            };
+        }
+         if (input.subject.toLowerCase().includes('kiswahili')) {
+            return {
+                response: `Habari! Mimi ni Mwalimu AI, mshauri wako wa masomo. Nimefurahi kuona umechagua Kiswahili kwa ${gradeName} leo - chaguo bora sana! Ili kuanza safari yetu, ni mada gani au swali gani ungependa tujadili pamoja?`
             };
         }
         if (input.subject === 'AI') {
@@ -177,7 +183,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
 
         // Default greeting
         return {
-            response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${gradeName} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
+            response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for Grade ${input.grade.replace('g', '')} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
         };
     }
     
