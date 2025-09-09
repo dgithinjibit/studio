@@ -234,7 +234,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                     onOpenChange={setAttendanceDialogOpen}
                     classInfo={selectedClass}
                     onClassNameUpdate={handleClassNameUpdate}
-                    onUpdateStudents={onUpdateStudents}
+                    onUpdateStudents={handleUpdateStudents}
                  />
              )}
         </>
