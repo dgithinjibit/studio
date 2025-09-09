@@ -105,9 +105,10 @@ You MUST base all your answers on the provided curriculum in the "Context from T
 - **Question, Don't Tell:** Your primary tool is the question. Respond with a thoughtful question that guides the learner.
 - **"Two-Try" Rule:** Allow the learner two attempts. If they are still stuck, provide the concept clearly, then pivot back to inquiry.
 - **Growth-Paced & Creative:** Adapt to the learner's pace and generate project ideas that connect subjects.
+- **Grounding Rule:** If the 'Teacher Context' is available, you MUST base all your Socratic questions, explanations, and answers on it. If a student's question cannot be answered using ONLY the provided context, you must respond with: "That's an interesting question! It seems to be outside the materials for this topic. Shall we explore something from the curriculum?" Do not attempt to answer it using external knowledge.
 
 **Your Knowledge Source:**
-Base your Socratic questions and answers on the "Context from Teacher's Materials" if it's available. If the context is empty or doesn't apply, you may use your general knowledge but state that it is not from the teacher's materials.
+Base your Socratic questions and answers on the "Context from Teacher's Materials" if it's available. If the context is empty, state that the teacher has not provided specific materials for this topic and you can discuss it generally.
 
 ---
 
@@ -117,7 +118,7 @@ Base your Socratic questions and answers on the "Context from Teacher's Material
 **Grade:** {{grade}}
 
 {{#if teacherContext}}
-### Context from Teacher's Materials:
+### Context from Teacher's Materials (Your ONLY Knowledge Source):
 ---
 {{{teacherContext}}}
 ---
@@ -221,7 +222,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
             if (subject.includes('CreativeActivities')) curriculum = grade1CreativeActivitiesCurriculum;
             if (subject.includes('EnglishLanguageActivities')) curriculum = grade1EnglishLanguageActivitiesCurriculum;
             if (subject.includes('EnvironmentalActivities')) curriculum = grade1EnvironmentalActivitiesCurriculum;
-            if (subject.includes('IndigenousLanguageActivities')) curriculum = grade1IndigenousLanguageCurriculum;
+            if (subject.includes('IndigenousLanguage')) curriculum = grade1IndigenousLanguageCurriculum;
             if (subject.includes('KiswahiliLanguageActivities')) curriculum = grade1KiswahiliLanguageActivitiesCurriculum;
             if (subject.includes('MathematicalActivities')) curriculum = grade1MathematicsActivitiesCurriculum;
         } else if (grade === 'g2') {
@@ -229,7 +230,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
             if (subject.includes('CreativeActivities')) curriculum = grade2CreativeActivitiesCurriculum;
             if (subject.includes('EnglishLanguageActivities')) curriculum = grade2EnglishLanguageActivitiesCurriculum;
             if (subject.includes('EnvironmentalActivities')) curriculum = grade2EnvironmentalActivitiesCurriculum;
-            if (subject.includes('IndigenousLanguageActivities')) curriculum = grade2IndigenousLanguageCurriculum;
+            if (subject.includes('IndigenousLanguage')) curriculum = grade2IndigenousLanguageCurriculum;
             if (subject.includes('KiswahiliLanguageActivities')) curriculum = grade2KiswahiliLanguageActivitiesCurriculum;
             if (subject.includes('MathematicalActivities')) curriculum = grade2MathematicsActivitiesCurriculum;
         } else if (grade === 'g3') {
@@ -237,13 +238,12 @@ const mwalimuAiTutorFlow = ai.defineFlow(
             if (subject.includes('CreativeActivities')) curriculum = grade3CreativeActivitiesCurriculum;
             if (subject.includes('EnglishLanguageActivities')) curriculum = grade3EnglishLanguageActivitiesCurriculum;
             if (subject.includes('EnvironmentalActivities')) curriculum = grade3EnvironmentalActivitiesCurriculum;
-            if (subject.includes('IndigenousLanguageActivities')) curriculum = grade3IndigenousLanguageCurriculum;
+            if (subject.includes('IndigenousLanguage')) curriculum = grade3IndigenousLanguageCurriculum;
             if (subject.includes('KiswahiliLanguageActivities')) curriculum = grade3KiswahiliLanguageActivitiesCurriculum;
             if (subject.includes('MathematicalActivities')) curriculum = grade3MathematicsActivitiesCurriculum;
         } else if (grade === 'g4' || grade === 'g5') {
             if (subject.includes('AgricultureandNutrition')) curriculum = grade4AgricultureAndNutritionCurriculum;
-            if (subject.includes('ChristianReligiousEducation')) curriculum = grade4CreCurriculum;
-            if (subject.includes('ReligiousEducation')) curriculum = grade4ReligiousEducationCurriculum;
+            if (subject.includes('ChristianReligiousEducation') || subject.includes('ReligiousEducation')) curriculum = grade4ReligiousEducationCurriculum;
             if (subject.includes('CreativeArts')) curriculum = grade4CreativeArtsCurriculum;
             if (subject.includes('English')) curriculum = grade4EnglishLanguageActivitiesCurriculum;
             if (subject.includes('IndigenousLanguages')) curriculum = grade4IndigenousLanguageCurriculum;
@@ -258,12 +258,9 @@ const mwalimuAiTutorFlow = ai.defineFlow(
         }
     }
     
-    const {output} = await ai.generate({
-        model: 'googleai/gemini-2.5-flash',
-        prompt: tutorPrompt.prompt,
-        input: flowInput,
-        output: { schema: MwalimuAiTutorOutputSchema }
-    });
+    const {output} = await tutorPrompt(flowInput);
     return output!;
   }
 );
+
+    
