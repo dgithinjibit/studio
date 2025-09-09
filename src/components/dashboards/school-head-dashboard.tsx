@@ -11,7 +11,7 @@ import { Loader2, Sparkles, Users, BookOpen, Package, Bell, Send } from 'lucide-
 import type { TeacherResource, Communication } from '@/lib/types';
 import { mockTeacher } from '@/lib/mock-data';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
-import { AddTeacherDialog } from '../add-teacher-dialog';
+import { AddStaffDialog } from '../add-staff-dialog';
 import { AddCommunicationDialog } from '../add-communication-dialog';
 import { format } from 'date-fns';
 
@@ -209,7 +209,13 @@ export function SchoolHeadDashboard() {
             </Card>
         </div>
     </div>
-    <AddTeacherDialog open={isAddTeacherDialogOpen} onOpenChange={setAddTeacherDialogOpen} onAddTeacher={handleAddTeacher} />
+    <AddStaffDialog 
+        open={isAddTeacherDialogOpen} 
+        onOpenChange={setAddTeacherDialogOpen} 
+        onAddStaff={handleAddTeacher}
+        title="Add New Teacher"
+        description="Enter the details for the new teaching staff member."
+    />
     <AddCommunicationDialog open={isAddCommDialogOpen} onOpenChange={setAddCommDialogOpen} onAddCommunication={handleAddCommunication} />
     </>
   );
