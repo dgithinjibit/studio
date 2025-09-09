@@ -9,13 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { PlayCircle, Users, BarChart2, Settings, MessageSquare, Search } from "lucide-react";
+import { PlayCircle, Users, BarChart2, Settings, MessageSquare, Search, Video } from "lucide-react";
 import type { TeacherResource } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { ShareRoomDialog } from '@/components/share-room-dialog';
 import { useRouter } from 'next/navigation';
 import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Link from 'next/link';
 
 export default function LearningLabRoomPage() {
     const params = useParams();
@@ -76,6 +77,12 @@ export default function LearningLabRoomPage() {
                                 <Button onClick={() => setShareDialogOpen(true)}>
                                     <Users className="mr-2" />
                                     Invite Students
+                                </Button>
+                                 <Button asChild>
+                                    <Link href={`/dashboard/learning-lab/${id}/meet`}>
+                                        <Video className="mr-2" />
+                                        Start Video Call
+                                    </Link>
                                 </Button>
                             </div>
                         </div>
