@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useState } from 'react';
-import Map, { Marker, Popup } from 'react-map-gl';
+import { useState, useRef, useEffect } from 'react';
+import Map, { Marker, Popup, MapRef } from 'react-map-gl';
 import type { School } from '@/lib/types';
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -14,10 +14,24 @@ interface SchoolMapProps {
   schools: School[];
   selectedSchool: School | null;
   onSchoolSelect: (school: School | null) => void;
+  clickedSchool: School | null;
 }
 
-export default function SchoolMap({ schools, selectedSchool, onSchoolSelect }: SchoolMapProps) {
+export default function SchoolMap({ schools, selectedSchool, onSchoolSelect, clickedSchool }: SchoolMapProps) {
   const [popupInfo, setPopupInfo] = useState<School | null>(null);
+  const mapRef = useRef<MapRef>(null);
+
+  useEffect(() => {
+    if (clickedSchool && mapRef.current) {
+        mapRef.current.flyTo({
+            center: [clickedSchool.longitude, clickedSchool.latitude],
+            zoom: 14,
+            duration: 2000,
+            essential: true,
+        });
+    }
+  }, [clickedSchool]);
+
 
   if (!MAPTILER_TOKEN) {
     return (
@@ -29,13 +43,14 @@ export default function SchoolMap({ schools, selectedSchool, onSchoolSelect }: S
 
   return (
     <Map
+      ref={mapRef}
       initialViewState={{
         longitude: 36.8219, // Centered on Nairobi
         latitude: -1.2921,
         zoom: 6
       }}
       style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }}
-      mapStyle={`https://api.maptiler.com/maps/backdrop/style.json?key=${MAPTILER_TOKEN}`}
+      mapStyle={`https://api.maptiler.com/maps/streets-v2-dark/style.json?key=${MAPTILER_TOKEN}`}
       mapboxAccessToken={null} // Set to null as we are not using Mapbox
       crossOrigin="anonymous"
     >
@@ -46,7 +61,15 @@ export default function SchoolMap({ schools, selectedSchool, onSchoolSelect }: S
           latitude={school.latitude}
           onClick={e => {
             e.originalEvent.stopPropagation();
-            setPopupInfo(school);
+            onSchoolSelect(school);
+            if (mapRef.current) {
+                mapRef.current.flyTo({
+                    center: [school.longitude, school.latitude],
+                    zoom: 14,
+                    duration: 2000,
+                    essential: true,
+                });
+            }
           }}
         >
             <div 
@@ -62,22 +85,6 @@ export default function SchoolMap({ schools, selectedSchool, onSchoolSelect }: S
             </div>
         </Marker>
       ))}
-
-      {popupInfo && (
-        <Popup
-          anchor="top"
-          longitude={Number(popupInfo.longitude)}
-          latitude={Number(popupInfo.latitude)}
-          onClose={() => setPopupInfo(null)}
-          closeOnClick={false}
-          className="font-body"
-        >
-          <div className="text-foreground">
-            <h3 className="font-bold">{popupInfo.name}</h3>
-            <p className="text-xs">County ID: {popupInfo.countyId}</p>
-          </div>
-        </Popup>
-      )}
     </Map>
   );
 }

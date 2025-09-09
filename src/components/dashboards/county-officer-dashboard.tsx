@@ -26,7 +26,8 @@ export function CountyOfficerDashboard() {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [schools, setSchools] = useState<School[]>([]);
-  const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
+  const [hoveredSchool, setHoveredSchool] = useState<School | null>(null);
+  const [clickedSchool, setClickedSchool] = useState<School | null>(null);
   const [isAddCommDialogOpen, setAddCommDialogOpen] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -148,7 +149,7 @@ export function CountyOfficerDashboard() {
             <Card className="lg:col-span-3">
                 <CardHeader>
                     <CardTitle>Schools Management</CardTitle>
-                    <CardDescription>Overview of all schools in the county. Click 'View' for a detailed drill-down.</CardDescription>
+                    <CardDescription>Overview of all schools in the county. Click a school to fly to its location.</CardDescription>
                 </CardHeader>
                 <CardContent>
                      <div className="mb-4">
@@ -170,9 +171,10 @@ export function CountyOfficerDashboard() {
                                 {schools.map(school => (
                                     <TableRow 
                                         key={school.id}
-                                        onMouseEnter={() => setSelectedSchool(school)}
-                                        onMouseLeave={() => setSelectedSchool(null)}
-                                        className={cn("transition-colors", selectedSchool?.id === school.id ? "bg-muted/80" : "")}
+                                        onMouseEnter={() => setHoveredSchool(school)}
+                                        onMouseLeave={() => setHoveredSchool(null)}
+                                        onClick={() => setClickedSchool(school)}
+                                        className={cn("transition-colors cursor-pointer", hoveredSchool?.id === school.id ? "bg-muted/80" : "")}
                                     >
                                         <TableCell className="font-medium">{school.name}</TableCell>
                                         <TableCell><Badge variant="outline">Active</Badge></TableCell>
@@ -188,7 +190,12 @@ export function CountyOfficerDashboard() {
             </Card>
 
             <div className="lg:col-span-2 h-[560px]">
-                 <SchoolMap schools={schools} selectedSchool={selectedSchool} onSchoolSelect={setSelectedSchool} />
+                 <SchoolMap 
+                    schools={schools} 
+                    selectedSchool={hoveredSchool} 
+                    onSchoolSelect={setHoveredSchool}
+                    clickedSchool={clickedSchool} 
+                 />
             </div>
         </div>
     </div>
