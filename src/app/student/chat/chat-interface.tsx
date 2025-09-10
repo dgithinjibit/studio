@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
 import { classroomCompass } from '@/ai/flows/classroom-compass-flow';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, Video } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
+import { useRouter } from 'next/navigation';
 
 type Message = {
     role: 'user' | 'model';
@@ -21,10 +22,12 @@ interface ChatInterfaceProps {
     grade: string;
     onBack: () => void;
     teacherContext?: string;
+    roomId?: string;
 }
 
-export default function ChatInterface({ subject, grade, onBack, teacherContext }: ChatInterfaceProps) {
+export default function ChatInterface({ subject, grade, onBack, teacherContext, roomId }: ChatInterfaceProps) {
     const gradeName = `Grade ${grade.replace('g', '')}`
+    const router = useRouter();
     
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
@@ -72,6 +75,12 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext }
         }
     }, [messages]);
 
+    const handleJoinVideoCall = () => {
+        if (roomId) {
+            router.push(`/dashboard/learning-lab/${roomId}/meet`);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim() || loading) return;
@@ -114,6 +123,8 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext }
                      <StudentHeader 
                         showBackButton={!!onBack} 
                         onBack={onBack!} 
+                        showVideoCallButton={tutorMode === 'compass'}
+                        onJoinVideoCall={handleJoinVideoCall}
                      />
                      <div className="text-center pt-2">
                         <CardTitle className="font-headline text-2xl text-stone-800">

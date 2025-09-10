@@ -38,6 +38,7 @@ export default function StudentChatPage() {
     const [chatParams, setChatParams] = useState<{
         subject: string;
         grade: string;
+        roomId?: string; // The joinCode which is the ID for the room
         teacherContext?: string;
     } | null>(null);
 
@@ -48,16 +49,19 @@ export default function StudentChatPage() {
         
         // This is the special context loaded when a user enters a teacher's code.
         const teacherContext = localStorage.getItem('ai_tutor_context_to_load') || undefined;
+        const roomId = localStorage.getItem('ai_tutor_room_id') || undefined;
 
         setChatParams({
             subject,
             grade,
+            roomId,
             teacherContext
         });
 
         // Clean up the temporary context key so it's not used again accidentally.
         if (teacherContext) {
             localStorage.removeItem('ai_tutor_context_to_load');
+            localStorage.removeItem('ai_tutor_room_id');
         }
 
     }, [params.subject, searchParams]);
@@ -76,6 +80,7 @@ export default function StudentChatPage() {
                 <ChatInterface 
                     subject={chatParams.subject}
                     grade={chatParams.grade}
+                    roomId={chatParams.roomId}
                     onBack={handleBack}
                     teacherContext={chatParams.teacherContext}
                 />

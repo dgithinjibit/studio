@@ -88,11 +88,14 @@ export default function StudentJourneyPage() {
                 const doc = querySnapshot.docs[0];
                 const tutorContextResource = doc.data() as TeacherResource;
 
+                // The URL in Firestore is the full download URL, we need the path
                 const storageRef = ref(storage, tutorContextResource.url);
                 const bytes = await getBytes(storageRef);
                 const contextText = new TextDecoder().decode(bytes);
 
                 localStorage.setItem('ai_tutor_context_to_load', contextText);
+                localStorage.setItem('ai_tutor_room_id', tutorContextResource.joinCode);
+                
                 toast({
                     title: "Teacher's Context Loaded!",
                     description: "Launching the Classroom Compass. Your AI guide is ready.",
@@ -136,10 +139,12 @@ export default function StudentJourneyPage() {
                                     <Input 
                                         placeholder="Enter Teacher Code" 
                                         value={teacherCode} 
-                                        onChange={(e) => setTeacherCode(e.target.value)} 
+                                        onChange={(e) => setTeacherCode(e.target.value.toUpperCase())} 
                                         disabled={isSubmittingCode}
+                                        maxLength={7}
+                                        className="uppercase tracking-widest font-mono text-center"
                                     />
-                                    <Button type="submit" size="icon" disabled={isSubmittingCode}>
+                                    <Button type="submit" size="icon" disabled={isSubmittingCode || teacherCode.length < 6}>
                                         {isSubmittingCode ? <Loader2 className="animate-spin" /> : <ArrowRight />}
                                     </Button>
                                 </form>

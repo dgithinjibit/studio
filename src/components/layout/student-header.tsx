@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { User, ArrowLeft, LogOut, Settings } from 'lucide-react';
+import { User, ArrowLeft, LogOut, Settings, Video } from 'lucide-react';
 import { ProfileDialog } from './profile-dialog';
 import {
   DropdownMenu,
@@ -19,9 +19,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 interface StudentHeaderProps {
   showBackButton: boolean;
   onBack: () => void;
+  showVideoCallButton?: boolean;
+  onJoinVideoCall?: () => void;
 }
 
-export function StudentHeader({ showBackButton, onBack }: StudentHeaderProps) {
+export function StudentHeader({ showBackButton, onBack, showVideoCallButton = false, onJoinVideoCall }: StudentHeaderProps) {
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [studentFirstName, setStudentFirstName] = useState('Student');
   const router = useRouter();
@@ -52,7 +54,13 @@ export function StudentHeader({ showBackButton, onBack }: StudentHeaderProps) {
                     I’m Mwalimu AI, your friendly Socratic Mentor.
                 </p>
             </div>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2">
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                {showVideoCallButton && (
+                    <Button onClick={onJoinVideoCall} className="bg-green-500 hover:bg-green-600">
+                        <Video className="mr-2" />
+                        Join Video Call
+                    </Button>
+                )}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                          <Button
