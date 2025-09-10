@@ -12,10 +12,10 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 const roles = [
-    { name: "I'm a Student", description: "Start your interactive learning journey with AI.", role: 'student', color: 'bg-orange-500' },
-    { name: "I'm a Teacher", description: "Access AI tools to create resources and manage classes.", role: 'teacher', color: 'bg-blue-500' },
-    { name: "I'm a School Head", description: "Get operational insights and manage your institution.", role: 'school_head', color: 'bg-green-500' },
-    { name: "I'm a County Officer", description: "View county-wide analytics and resource distribution.", role: 'county_officer', color: 'bg-purple-500' }
+    { name: "I'm a Student", description: "Start your interactive learning journey with AI.", role: 'student', color: 'bg-orange-500', avatarLetter: 'A' },
+    { name: "I'm a Teacher", description: "Access AI tools to create resources and manage classes.", role: 'teacher', color: 'bg-blue-500', avatarLetter: 'T' },
+    { name: "I'm a School Head", description: "Get operational insights and manage your institution.", role: 'school_head', color: 'bg-green-500', avatarLetter: 'H' },
+    { name: "I'm a County Officer", description: "View county-wide analytics and resource distribution.", role: 'county_officer', color: 'bg-purple-500', avatarLetter: 'C' }
 ];
 
 
@@ -49,7 +49,7 @@ export default function SignupRoleSelectionPage() {
                                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                      <div className="relative z-10 flex flex-col items-center flex-grow">
                                         <Avatar className="h-16 w-16 mb-4 border-2 border-white/50">
-                                            <AvatarFallback className="bg-white/20 text-2xl font-bold">{roleInfo.name.charAt(4).toUpperCase()}</AvatarFallback>
+                                            <AvatarFallback className="bg-white/20 text-2xl font-bold">{roleInfo.avatarLetter}</AvatarFallback>
                                         </Avatar>
                                         <h3 className="font-bold text-lg mb-2">{roleInfo.name}</h3>
                                         <p className="text-sm text-white/80 mt-1 flex-grow">{roleInfo.description}</p>

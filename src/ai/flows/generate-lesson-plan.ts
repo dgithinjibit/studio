@@ -37,133 +37,83 @@ const GenerateLessonPlanInputSchema = z.object({
 export type GenerateLessonPlanInput = z.infer<typeof GenerateLessonPlanInputSchema>;
 
 const GenerateLessonPlanOutputSchema = z.object({
-  lessonPlan: z.string().describe('The generated lesson plan in Markdown format.'),
+  lessonPlan: z.string().describe('The generated lesson plan in a document format.'),
 });
 export type GenerateLessonPlanOutput = z.infer<typeof GenerateLessonPlanOutputSchema>;
 
 export async function generateLessonPlan(
-  input: GenerateLessonPlanInput,
-  onUpdate: (chunk: string) => void
-): Promise<void> {
-  const stream = await generateLessonPlanFlow(input);
-  for await (const chunk of stream) {
-    onUpdate(chunk);
-  }
+  input: GenerateLessonPlanInput
+): Promise<GenerateLessonPlanOutput> {
+    return generateLessonPlanFlow(input);
 }
-
-const prompt = ai.definePrompt({
-  name: 'generateLessonPlanPrompt',
-  input: {schema: GenerateLessonPlanInputSchema},
-  output: {schema: GenerateLessonPlanOutputSchema},
-  prompt: `You are an expert curriculum developer in Kenya, creating a detailed, CBC-compliant lesson plan.
-
-{{#if schemeOfWorkContext}}
----
-**CONTEXT: SCHEME OF WORK**
-You MUST use the following Scheme of Work as the primary source of truth for creating the lesson plan. The lesson plan should be for one specific lesson outlined within this scheme. Extract all necessary details from the scheme.
-{{{schemeOfWorkContext}}}
----
-**Instruction:** Based on the scheme, select one lesson and create a detailed lesson plan for it.
-{{else}}
-**Instruction:** Generate a standard lesson plan based on the core details provided by the user.
-{{/if}}
-
-**FORMATTING INSTRUCTIONS:**
-Generate the lesson plan in Markdown. The structure MUST be as follows:
-
-## Administrative Details
-| | | | |
-| :--- | :--- | :--- | :--- |
-| **School** | {{school}} | **Date** | {{current_date format="DD/MM/YYYY"}} |
-| **Learning Area** | {{subject}} | **Time** | 8.00-8.40 am |
-| **Year** | {{year}} | **Grade** | {{gradeLevel}} |
-| **Term** | {{term}} | **Roll** | {{roll}} |
-| **Teacher's Name** | {{teacherName}} | **TSC No.** | |
-
----
-
-## Lesson Details
-
-**Strand:** {{strand}}
-**Sub Strand:** {{subStrand}}
-
-**Lesson Learning outcomes:**
-By the end of the lesson the learner should be able to:
-{{#if schemeOfWorkContext}}
-- **Knowledge:** [Analyze the learning outcomes from the scheme and write the knowledge-based outcome here. Example: Identify different types of lines.]
-- **Skill:** [Analyze the learning outcomes from the scheme and write the skill-based outcome here. Example: Model straight lines using sticks, plasticine or clay.]
-- **Attitude:** [Analyze the learning outcomes from the scheme and write the attitude-based outcome here. Example: Appreciate the roles of straight lines in the environment.]
-{{else}}
-{{{learningObjectives}}}
-{{/if}}
-
-**Key Inquiry Question(s):**
-- [Generate 1-2 relevant inquiry questions based on the topic]
-
----
-
-## Learning Resources
-- [List relevant learning resources based on the topic and activities]
-
----
-
-## Organization of Learning
-
-### Introduction (5 Minutes)
-- [Detail an engaging introduction. How will you link to the previous lesson? What is the hook?]
-
-### Lesson Development (25 Minutes)
-**Step 1: [Activity Title] (10 mins)**
-- [Describe the first activity. What will the teacher do? What will the learner do? How does it align with the learning objectives? Be specific and learner-centered.]
-
-**Step 2: [Activity Title] (10 mins)**
-- [Describe the second activity. Focus on learner-centered participation, collaboration, or a hands-on task.]
-
-**Step 3: [Activity Title] (5 mins)**
-- [Describe the third activity, possibly a group discussion, quick presentation, or review.]
-
-### Conclusion (5 Minutes)
-- [How will you summarize the key points and assess understanding? What is the key takeaway for the learner?]
-
----
-
-## Assessment
-- [Describe the specific assessment method to be used (e.g., Observation, Checklist, Oral questions, Peer-assessment).]
-
----
-
-## Teacher's Reflection
-- [Leave this section blank for the teacher to fill in after the lesson.]
-`,
-});
-
 
 const generateLessonPlanFlow = ai.defineFlow(
   {
     name: 'generateLessonPlanFlow',
     inputSchema: GenerateLessonPlanInputSchema,
-    outputSchema: z.string(),
+    outputSchema: GenerateLessonPlanOutputSchema,
   },
   async (input) => {
-    const { stream } = await ai.generate({
-      prompt: prompt.prompt,
-      model: ai.getModel(),
-      input: input,
-      stream: true,
-      output: {
-        format: 'text',
-      }
+    const prompt = ai.definePrompt({
+      name: 'generateLessonPlanPrompt',
+      input: {schema: GenerateLessonPlanInputSchema},
+      output: {schema: GenerateLessonPlanOutputSchema},
+      prompt: `You are an expert Kenyan CBC curriculum developer.
+
+      {{#if schemeOfWorkContext}}
+      ---
+      **CONTEXT: SCHEME OF WORK**
+      You MUST use the following Scheme of Work as the primary source of truth to create a lesson plan document.
+      {{{schemeOfWorkContext}}}
+      ---
+      {{/if}}
+
+      **CRITICAL FORMATTING INSTRUCTIONS:**
+      The final output MUST be a well-structured document. Do NOT use Markdown tables.
+      Use Markdown headings (##), bold text, and bullet points for structure.
+
+      ## Administrative Details
+      - **School:** {{#if school}}{{school}}{{else}}Grace View Primary School{{/if}}
+      - **Year:** {{#if year}}{{year}}{{else}}2025{{/if}}
+      - **Term:** {{#if term}}{{term}}{{else}}2{{/if}}
+      - **Roll:** {{#if roll}}{{roll}}{{else}}Boys: 20, Girls: 20{{/if}}
+      - **Teacher:** {{#if teacherName}}{{teacherName}}{{else}}Daniel{{/if}}
+      - **Subject:** {{subject}}
+      - **Date:** {{current_date format="DD/MM/YYYY"}}
+      - **Time:** [Specify Time]
+
+      ## Lesson Details
+      - **Strand:** {{#if strand}}{{strand}}{{else}}[Extract from Scheme]{{/if}}
+      - **Sub Strand:** {{#if subStrand}}{{subStrand}}{{else}}[Extract from Scheme]{{/if}}
+      - **Learning Outcomes:** By the end of the lesson, the learner should be able to:
+          - {{#if schemeOfWorkContext}}[Analyze and list the specific learning outcomes from the scheme]{{else}}{{{learningObjectives}}}{{/if}}
+      - **Key Inquiry Question(s):**
+          - {{#if schemeOfWorkContext}}[Extract the key inquiry questions from the scheme]{{else}}[Generate relevant questions]{{/if}}
+
+      ## Learning Resources
+      - {{#if schemeOfWorkContext}}[List all resources mentioned in the Scheme of Work]{{else}}[List relevant resources]{{/if}}
+
+      ## Organization of Learning
+
+      ### Introduction (5 Minutes)
+      - [Detail an engaging introduction. How will you link to the previous lesson? What is the hook?]
+
+      ### Lesson Development (25 Minutes)
+      - **Step 1:** [Describe the first activity. What will the teacher do? What will the learner do?]
+      - **Step 2:** [Describe the second activity.]
+      - **Step 3:** [Describe the third activity.]
+
+      ### Conclusion (5 Minutes)
+      - [How will you summarize the key points and assess understanding?]
+
+      ## Extended Activity
+      - [Suggest a brief, relevant activity for learners to do at home or after the lesson.]
+
+      ## Teacher's Reflection
+      - [This section MUST be left blank for the teacher to fill in.]`,
     });
 
-    // This is a streaming helper. It aggregates the chunks and returns the final result.
-    let finalResult = "";
-    for await (const chunk of stream) {
-      finalResult += chunk.output?.text || "";
-    }
-    
-    //This is a workaround for a bug in the Genkit streaming implementation
-    // The finalResult is what is actually streamed to the client, but we need to resolve the flow's promise.
     const {output} = await prompt(input);
-    return output!.lessonPlan;
+    return output!;
   }
 );
