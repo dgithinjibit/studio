@@ -28,7 +28,7 @@ import {
   SidebarFooter,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { SyncSentaLogo } from "@/components/icons";
+import Image from "next/image";
 
 export function AppSidebar() {
   const { role } = useRole();
@@ -77,7 +77,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <SyncSentaLogo className="w-8 h-8 text-primary" />
+          <Image src="/sync.png" alt="SyncSenta Logo" width={32} height={32} />
           <div className="flex flex-col">
             <h2 className="font-headline text-lg font-semibold tracking-tight">SyncSenta</h2>
           </div>
