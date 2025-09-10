@@ -16,7 +16,7 @@ export default function JitsiMeetPage() {
             return;
         }
 
-        const domain = 'meet.jit.si';
+        const domain = process.env.NEXT_PUBLIC_JITSI_DOMAIN || 'meet.jit.si';
         const options = {
             roomName: `SyncSenta-Room-${roomId}`,
             width: '100%',
