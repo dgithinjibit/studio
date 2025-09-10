@@ -13,7 +13,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell } from "recharts"
 import type { Teacher, ClassInfo, Student, TeacherResource } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 import { useToast } from '@/hooks/use-toast';
@@ -40,6 +40,18 @@ import {
 interface TeacherDashboardProps {
     teacher: Teacher;
 }
+
+// Utility to convert tailwind color classes to hex codes
+const tailwindColorToHex: { [key: string]: string } = {
+    'bg-blue-500': '#3b82f6',
+    'bg-green-500': '#22c55e',
+    'bg-orange-500': '#f97316',
+    'bg-purple-500': '#8b5cf6',
+    'bg-red-500': '#ef4444',
+    'bg-yellow-500': '#eab308',
+    'bg-pink-500': '#ec4899',
+    'bg-teal-500': '#14b8a6',
+};
 
 export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardProps) {
     const [teacher, setTeacher] = useState<Teacher>(initialTeacher);
@@ -71,7 +83,8 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
 
     const chartData = teacher.classes.map(c => ({ 
         name: c.name, 
-        performance: c.performance 
+        performance: c.performance,
+        fill: tailwindColorToHex[c.color] || '#8884d8' // Use hex color, fallback to default
     }));
     
     const openAttendance = (classInfo: ClassInfo) => {
@@ -221,11 +234,14 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                         <ChartContainer config={{}} className="w-full h-full">
                             <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
                                 <CartesianGrid vertical={false} />
-                                <XAxis dataKey="name" tickLine={false} axisLine={false} />
+                                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                                 <YAxis tickLine={false} axisLine={false} domain={[60, 100]} />
                                 <ChartTooltip content={<ChartTooltipContent />} />
-                                <ChartLegend content={<ChartLegendContent />} />
-                                <Bar dataKey="performance" fill="hsl(var(--primary))" radius={8} />
+                                <Bar dataKey="performance" radius={8}>
+                                    {chartData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                                    ))}
+                                </Bar>
                             </BarChart>
                             </ChartContainer>
                         </CardContent>
