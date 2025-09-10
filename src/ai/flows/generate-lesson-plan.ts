@@ -58,19 +58,19 @@ const generateLessonPlanFlow = ai.defineFlow(
       name: 'generateLessonPlanPrompt',
       input: {schema: GenerateLessonPlanInputSchema},
       output: {schema: GenerateLessonPlanOutputSchema},
-      prompt: `You are an expert Kenyan CBC curriculum developer.
+      prompt: `You are an expert Kenyan CBC curriculum developer, tasked with creating a functional and detailed lesson plan document.
 
       {{#if schemeOfWorkContext}}
       ---
       **CONTEXT: SCHEME OF WORK**
-      You MUST use the following Scheme of Work as the primary source of truth to create a lesson plan document.
+      You MUST use the following Scheme of Work as the primary source of truth to create the lesson plan document.
       {{{schemeOfWorkContext}}}
       ---
       {{/if}}
 
       **CRITICAL FORMATTING INSTRUCTIONS:**
       The final output MUST be a well-structured document. Do NOT use Markdown tables.
-      Use Markdown headings (##), bold text, and bullet points for structure.
+      Use Markdown headings (##), bold text, and bullet points (-) for structure.
 
       ## Administrative Details
       - **School:** {{#if school}}{{school}}{{else}}Grace View Primary School{{/if}}
@@ -80,37 +80,37 @@ const generateLessonPlanFlow = ai.defineFlow(
       - **Teacher:** {{#if teacherName}}{{teacherName}}{{else}}Daniel{{/if}}
       - **Subject:** {{subject}}
       - **Date:** {{current_date format="DD/MM/YYYY"}}
-      - **Time:** [Specify Time]
+      - **Time:** 45 Minutes
 
       ## Lesson Details
       - **Strand:** {{#if strand}}{{strand}}{{else}}[Extract from Scheme]{{/if}}
       - **Sub Strand:** {{#if subStrand}}{{subStrand}}{{else}}[Extract from Scheme]{{/if}}
       - **Learning Outcomes:** By the end of the lesson, the learner should be able to:
-          - {{#if schemeOfWorkContext}}[Analyze and list the specific learning outcomes from the scheme]{{else}}{{{learningObjectives}}}{{/if}}
+          - {{#if schemeOfWorkContext}}Extract and list ALL the specific learning outcomes from the provided scheme of work.{{else}}{{{learningObjectives}}}{{/if}}
       - **Key Inquiry Question(s):**
-          - {{#if schemeOfWorkContext}}[Extract the key inquiry questions from the scheme]{{else}}[Generate relevant questions]{{/if}}
+          - {{#if schemeOfWorkContext}}Extract and list ALL the key inquiry questions from the scheme.{{else}}Generate 1-2 relevant inquiry questions for the topic.{{/if}}
 
       ## Learning Resources
-      - {{#if schemeOfWorkContext}}[List all resources mentioned in the Scheme of Work]{{else}}[List relevant resources]{{/if}}
+      - {{#if schemeOfWorkContext}}Extract and list ALL the learning resources mentioned in the scheme.{{else}}Suggest relevant learning resources for the topic.{{/if}}
 
       ## Organization of Learning
 
       ### Introduction (5 Minutes)
-      - [Detail an engaging introduction. How will you link to the previous lesson? What is the hook?]
+      - **Generate an engaging introduction for a lesson on "{{topic}}".** Link it to potential previous knowledge and provide a hook to capture learners' interest (e.g., a story, a question, a short activity).
 
       ### Lesson Development (25 Minutes)
-      - **Step 1:** [Describe the first activity. What will the teacher do? What will the learner do?]
-      - **Step 2:** [Describe the second activity.]
-      - **Step 3:** [Describe the third activity.]
+      - **Step 1:** Based on the 'Suggested Learning Experiences' from the scheme, **describe the first detailed, learner-centered activity.** Specify the teacher's role (e.g., facilitate, guide, provide materials) and the learner's role (e.g., discuss in pairs, create, explore).
+      - **Step 2:** **Describe a second, collaborative activity** that builds on the first step, encouraging teamwork and deeper exploration of the topic.
+      - **Step 3:** **Describe a third activity,** such as having groups present their findings, a gallery walk to review work, or a class discussion to synthesize the learning.
 
       ### Conclusion (5 Minutes)
-      - [How will you summarize the key points and assess understanding?]
+      - **Summarize the key learning points for "{{topic}}".** Describe how you will assess immediate understanding (e.g., by asking the Key Inquiry Question or using an exit ticket).
 
       ## Extended Activity
-      - [Suggest a brief, relevant activity for learners to do at home or after the lesson.]
+      - **Suggest a simple, creative, and relevant take-home activity** for the learners that reinforces the lesson's outcomes.
 
       ## Teacher's Reflection
-      - [This section MUST be left blank for the teacher to fill in.]`,
+      - [This section MUST be left blank for the teacher to fill in after the lesson.]`,
     });
 
     const {output} = await prompt(input);
