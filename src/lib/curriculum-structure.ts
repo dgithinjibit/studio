@@ -66,25 +66,25 @@ export const curriculumStructure: MajorLevel[] = [
                     {
                         name: 'Grade 2',
                         subjects: [
+                           { name: 'Creative Activities', type: 'Core' },
                            { name: 'English Language Activities', type: 'Core' },
+                           { name: 'Indigenous Language Activities', type: 'Core' },
                            { name: 'Kiswahili Language Activities', type: 'Core' },
                            { name: 'Mathematical Activities', type: 'Core' },
                            { name: 'Environmental Activities', type: 'Core' },
-                           { name: 'Movement and Creative Activities', type: 'Core' },
                            { name: 'Christian Religious Education', type: 'Core' },
-                           { name: 'Indigenous Language Activities', type: 'Core' },
                         ]
                     },
                      {
                         name: 'Grade 3',
                         subjects: [
+                           { name: 'Creative Activities', type: 'Core' },
                            { name: 'English Language Activities', type: 'Core' },
+                           { name: 'Indigenous Language Activities', type: 'Core' },
                            { name: 'Kiswahili Language Activities', type: 'Core' },
                            { name: 'Mathematical Activities', type: 'Core' },
                            { name: 'Environmental Activities', type: 'Core' },
-                           { name: 'Movement and Creative Activities', type: 'Core' },
                            { name: 'Christian Religious Education', type: 'Core' },
-                           { name: 'Indigenous Language Activities', type: 'Core' },
                         ]
                     }
                 ]
