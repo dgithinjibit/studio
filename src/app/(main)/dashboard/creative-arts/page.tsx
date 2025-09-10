@@ -61,28 +61,24 @@ const NetballSkillsModule = () => (
                 <AccordionTrigger>Phase 1: Stance</AccordionTrigger>
                 <AccordionContent>
                   <p className="mb-2 text-muted-foreground">Stand with feet shoulder-width apart, knees slightly bent, and body balanced.</p>
-                  <Progress value={80} className="w-[60%]" />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
                 <AccordionTrigger>Phase 2: Grip</AccordionTrigger>
                 <AccordionContent>
                     <p className="mb-2 text-muted-foreground">Hold the ball with both hands, fingers spread comfortably behind the ball.</p>
-                    <Progress value={65} className="w-[60%]" />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-3">
                 <AccordionTrigger>Phase 3: Execution</AccordionTrigger>
                 <AccordionContent>
                     <p className="mb-2 text-muted-foreground">Bring the ball overhead with bent elbows, then extend arms forward and release with a flick of the wrists.</p>
-                    <Progress value={40} className="w-[60%]" />
                 </AccordionContent>
               </AccordionItem>
                <AccordionItem value="item-4">
                 <AccordionTrigger>Phase 4: Follow-through</AccordionTrigger>
                 <AccordionContent>
                     <p className="mb-2 text-muted-foreground">Arms should follow the path of the ball towards the target.</p>
-                    <Progress value={20} className="w-[60%]" />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
