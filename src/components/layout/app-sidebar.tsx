@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -12,7 +13,8 @@ import {
   Banknote,
   Megaphone,
   Building2,
-  Package
+  Package,
+  Palette
 } from "lucide-react";
 import { useRole } from "@/hooks/use-role";
 
@@ -37,6 +39,7 @@ export function AppSidebar() {
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab" },
     { href: "/dashboard/reports", icon: Library, label: "My Library" },
     { href: "/dashboard/curriculum", icon: Database, label: "Curriculum" },
+    { href: "/dashboard/creative-arts", icon: Palette, label: "Creative Arts" },
   ];
   
   const countyAdminNavItems = [
