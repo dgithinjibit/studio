@@ -3,6 +3,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { RoleProvider } from '@/components/providers/role-provider';
+import { app } from '@/lib/firebase'; // Ensure Firebase is initialized
 
 export const metadata: Metadata = {
   title: 'SyncSenta',

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { app, db } from '@/lib/firebase'; // Import app instance
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -22,12 +22,12 @@ export default function AuthForm({ isSignUp }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const auth = getAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    const auth = getAuth(app); // Get auth from the initialized app
 
     try {
       if (isSignUp) {
@@ -61,7 +61,7 @@ export default function AuthForm({ isSignUp }: AuthFormProps) {
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
             <div className="text-center">
                 <Image 
-                    src="/logo.png" 
+                    src="/sync.png" 
                     alt="App Logo" 
                     width={80} 
                     height={80}
