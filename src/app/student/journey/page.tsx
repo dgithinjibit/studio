@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -16,15 +16,14 @@ import { levels, subLevelsMap, gradesMap, subjectsMap, Step } from '@/lib/journe
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db, storage } from '@/lib/firebase';
 import { ref, getBytes } from 'firebase/storage';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { Suspense } from 'react';
 
 
-export default function StudentJourneyPage() {
+function StudentJourneyContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { toast } = useToast();
-    const [stepHistory, setStepHistory] = useState<Step[]>(['start']);
-    const currentStep = stepHistory[stepHistory.length - 1];
     
     const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
     const [selectedSubLevel, setSelectedSubLevel] = useState<string | null>(null);
@@ -32,11 +31,40 @@ export default function StudentJourneyPage() {
     const [studentFirstName, setStudentFirstName] = useState('Student');
     const [teacherCode, setTeacherCode] = useState('');
     const [isSubmittingCode, setIsSubmittingCode] = useState(false);
+    
+    const initialStep = (searchParams.get('step') as Step) || 'start';
+
+    const getInitialHistory = (step: Step): Step[] => {
+        const grade = localStorage.getItem('studentGrade');
+        const subLevel = grade ? Object.keys(gradesMap).find(key => gradesMap[key].some(g => g.id === grade)) : null;
+        const level = subLevel ? Object.keys(subLevelsMap).find(key => subLevelsMap[key].some(sl => sl.id === subLevel)) : null;
+
+        if (step === 'subject' && grade && subLevel && level) {
+            setSelectedGrade(grade);
+            setSelectedSubLevel(subLevel);
+            setSelectedLevel(level);
+            return ['start', 'level', 'sub-level', 'grade', 'subject'];
+        }
+        return ['start'];
+    };
+
+    const [stepHistory, setStepHistory] = useState<Step[]>(getInitialHistory(initialStep));
+    const currentStep = stepHistory[stepHistory.length - 1];
 
     useEffect(() => {
         const name = localStorage.getItem('studentName');
         if (name) {
             setStudentFirstName(name.split(' ')[0]);
+        }
+        const grade = localStorage.getItem('studentGrade');
+        if (grade) {
+            setSelectedGrade(grade);
+            const subLevel = Object.keys(gradesMap).find(key => gradesMap[key].some(g => g.id === grade));
+            if (subLevel) {
+                setSelectedSubLevel(subLevel);
+                 const level = Object.keys(subLevelsMap).find(key => subLevelsMap[key].some(sl => sl.id === subLevel));
+                 if(level) setSelectedLevel(level);
+            }
         }
     }, []);
 
@@ -82,7 +110,6 @@ export default function StudentJourneyPage() {
                 const doc = querySnapshot.docs[0];
                 const tutorContextResource = doc.data() as TeacherResource;
 
-                // The URL in Firestore is the full download URL, we need the path
                 const storageRef = ref(storage, tutorContextResource.url);
                 const bytes = await getBytes(storageRef);
                 const contextText = new TextDecoder().decode(bytes);
@@ -262,4 +289,12 @@ export default function StudentJourneyPage() {
             </main>
         </div>
     );
+}
+
+export default function StudentJourneyPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <StudentJourneyContent />
+        </Suspense>
+    )
 }
