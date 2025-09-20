@@ -68,11 +68,15 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
             setTeacher(parsedTeacher);
             if (parsedTeacher.classes.length > 0) {
               setSelectedClass(parsedTeacher.classes[0]);
+            } else {
+              setSelectedClass(null);
             }
         } else {
             setTeacher(initialTeacher);
              if (initialTeacher.classes.length > 0) {
               setSelectedClass(initialTeacher.classes[0]);
+            } else {
+                setSelectedClass(null);
             }
             localStorage.setItem('mockTeacher', JSON.stringify(initialTeacher));
         }
@@ -80,8 +84,8 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     
     useEffect(() => {
         if (teacher.classes.length > 0 && !selectedClass) {
-            const currentSelectedClass = teacher.classes.find(c => c.id === (selectedClass?.id || teacher.classes[0].id));
-            setSelectedClass(currentSelectedClass || teacher.classes[0]);
+            const currentSelectedClass = teacher.classes.find(c => c.id === (selectedClass?.id || teacher.classes[0]?.id));
+            setSelectedClass(currentSelectedClass || teacher.classes[0] || null);
         }
          // If selectedClass exists but is no longer in the teacher's classes list (e.g., deleted), reset it
         if (selectedClass && !teacher.classes.some(c => c.id === selectedClass.id)) {
@@ -195,7 +199,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         <>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="font-headline text-3xl font-bold">Welcome!</h1>
+                    <h1 className="font-headline text-3xl font-bold">Welcome, Teacher!</h1>
                     <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
                 </div>
                  <Button onClick={handleGenerateSummary} disabled={isSummaryLoading}>

@@ -2,10 +2,11 @@
 "use client";
 
 import type { Teacher, UserRole } from '@/lib/types';
-import { mockTeacher } from '@/lib/mock-data';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/hooks/use-role';
+import { useState, useEffect } from 'react';
+import { mockTeacher } from '@/lib/mock-data';
 
 const TeacherDashboard = dynamic(() => 
     import('@/components/dashboards/teacher-dashboard').then(mod => mod.TeacherDashboard),
@@ -55,16 +56,29 @@ const DashboardSkeleton = () => (
 
 export default function DashboardPage() {
     const { role } = useRole();
+    const [teacherData, setTeacherData] = useState<Teacher | null>(null);
+
+    useEffect(() => {
+        if (role === 'teacher') {
+            const storedTeacher = localStorage.getItem('mockTeacher');
+            if (storedTeacher) {
+                setTeacherData(JSON.parse(storedTeacher));
+            } else {
+                setTeacherData(mockTeacher);
+                localStorage.setItem('mockTeacher', JSON.stringify(mockTeacher));
+            }
+        }
+    }, [role]);
 
     switch (role) {
         case 'teacher':
-            return <TeacherDashboard teacher={mockTeacher} />;
+            return teacherData ? <TeacherDashboard teacher={teacherData} /> : <DashboardSkeleton />;
         case 'school_head':
             return <SchoolHeadDashboard />;
         case 'county_officer':
             return <CountyOfficerDashboard />;
         default:
-             // Default to teacher dashboard, but in a real app you might want a different fallback or an error page.
-             return <TeacherDashboard teacher={mockTeacher} />;
+             // Default to teacher dashboard skeleton while loading role, or an error page.
+             return <DashboardSkeleton />;
     }
 }

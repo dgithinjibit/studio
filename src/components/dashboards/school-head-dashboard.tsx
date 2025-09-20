@@ -9,12 +9,12 @@ import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Users, BookOpen, Package, Bell, Send, PlusCircle } from 'lucide-react';
 import type { TeacherResource, Communication, SchoolResource } from '@/lib/types';
-import { mockTeacher } from '@/lib/mock-data';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
 import { AddStaffDialog } from '../add-staff-dialog';
 import { AddCommunicationDialog } from '../add-communication-dialog';
 import { AddResourceDialog } from '../add-resource-dialog';
 import { format } from 'date-fns';
+import { mockTeacher } from '@/lib/mock-data';
 
 
 export function SchoolHeadDashboard() {
@@ -65,8 +65,8 @@ export function SchoolHeadDashboard() {
                 teacherCount: 25,
                 studentCount: 500,
                 averageAttendance: 92,
-                classes: mockTeacher.classes,
-                resources: teacherResources.map(({title, type}) => ({title, type})),
+                classes: mockTeacher.classes, // Using mock for now
+                resources: schoolResources.map(({resourceName, schoolName, quantity}) => ({title: resourceName, type: `Allocated to ${schoolName} (x${quantity})`})),
             }
         });
         setResponse(result.response);
