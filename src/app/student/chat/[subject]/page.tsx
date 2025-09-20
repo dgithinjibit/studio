@@ -65,7 +65,7 @@ export default function StudentChatPage() {
             localStorage.removeItem('ai_tutor_room_id');
         }
 
-    }, [params.subject, searchParams]);
+    }, [params.subject]);
 
     const handleBack = () => {
         router.push('/student/journey?step=subject');

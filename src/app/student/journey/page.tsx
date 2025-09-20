@@ -32,42 +32,35 @@ function StudentJourneyContent() {
     const [teacherCode, setTeacherCode] = useState('');
     const [isSubmittingCode, setIsSubmittingCode] = useState(false);
     
-    const initialStep = (searchParams.get('step') as Step) || 'start';
+    const initialStepFromParams = (searchParams.get('step') as Step) || 'start';
 
-    const getInitialHistory = (step: Step): Step[] => {
-        const grade = localStorage.getItem('studentGrade');
-        const subLevel = grade ? Object.keys(gradesMap).find(key => gradesMap[key].some(g => g.id === grade)) : null;
-        const level = subLevel ? Object.keys(subLevelsMap).find(key => subLevelsMap[key].some(sl => sl.id === subLevel)) : null;
-
-        if (step === 'subject' && grade && subLevel && level) {
-            setSelectedGrade(grade);
-            setSelectedSubLevel(subLevel);
-            setSelectedLevel(level);
-            return ['start', 'level', 'sub-level', 'grade', 'subject'];
-        }
-        return ['start'];
-    };
-
-    const [stepHistory, setStepHistory] = useState<Step[]>(getInitialHistory(initialStep));
+    const [stepHistory, setStepHistory] = useState<Step[]>(['start']);
     const currentStep = stepHistory[stepHistory.length - 1];
 
     useEffect(() => {
+        // This effect runs ONLY on the client, after the component has mounted.
+        // It's safe to access localStorage here.
         const name = localStorage.getItem('studentName');
         if (name) {
             setStudentFirstName(name.split(' ')[0]);
         }
+        
         const grade = localStorage.getItem('studentGrade');
-        if (grade) {
-            setSelectedGrade(grade);
+        if (initialStepFromParams === 'subject' && grade) {
             const subLevel = Object.keys(gradesMap).find(key => gradesMap[key].some(g => g.id === grade));
-            if (subLevel) {
-                setSelectedSubLevel(subLevel);
-                 const level = Object.keys(subLevelsMap).find(key => subLevelsMap[key].some(sl => sl.id === subLevel));
-                 if(level) setSelectedLevel(level);
-            }
-        }
-    }, []);
+            const level = subLevel ? Object.keys(subLevelsMap).find(key => subLevelsMap[key].some(sl => sl.id === subLevel)) : null;
 
+            if (level && subLevel) {
+                 setSelectedLevel(level);
+                 setSelectedSubLevel(subLevel);
+                 setSelectedGrade(grade);
+                 setStepHistory(['start', 'level', 'sub-level', 'grade', 'subject']);
+            }
+        } else {
+             setStepHistory([initialStepFromParams]);
+        }
+    }, [initialStepFromParams]);
+    
     const navigateTo = (newStep: Step) => {
         setStepHistory(prev => [...prev, newStep]);
     };
@@ -184,7 +177,7 @@ function StudentJourneyContent() {
                 );
             case 'subject':
                  const subjects = selectedGrade ? (subjectsMap[selectedGrade] || []) : [];
-                 const gradeName = `Grade ${selectedGrade?.replace('g', '')}`
+                 const gradeName = selectedGrade ? `Grade ${selectedGrade.replace('g', '')}` : '';
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                          <CardHeader>
