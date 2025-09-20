@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { mockCounties } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 function SignupFormComponent() {
     const router = useRouter();
@@ -20,6 +21,7 @@ function SignupFormComponent() {
     const { toast } = useToast();
     const role = searchParams.get('role') as UserRole | null;
     const [isPending, startTransition] = useTransition();
+    const [termsAccepted, setTermsAccepted] = useState(false);
     const loading = isPending;
 
     const getTitle = () => {
@@ -129,18 +131,25 @@ function SignupFormComponent() {
                                 </div>
                             )}
 
-                            <div className="text-center text-xs text-muted-foreground px-2">
-                                By creating an account, I agree to SyncSenta’s{' '}
-                                <Link href="/terms" className="underline hover:text-primary">
-                                    Terms of Use
-                                </Link>
-                                {' '}and{' '}
-                                <Link href="/terms" className="underline hover:text-primary">
-                                    Privacy Policy
-                                </Link>.
+                            <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                    id="terms" 
+                                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                                    checked={termsAccepted}
+                                />
+                                <Label htmlFor="terms" className="text-xs text-muted-foreground">
+                                    By creating an account, I agree to SyncSenta’s{' '}
+                                    <Link href="/terms" className="underline hover:text-primary" target="_blank">
+                                        Terms of Use
+                                    </Link>
+                                    {' '}and{' '}
+                                    <Link href="/terms" className="underline hover:text-primary" target="_blank">
+                                        Privacy Policy
+                                    </Link>.
+                                </Label>
                             </div>
                             
-                            <Button type="submit" className="w-full" disabled={loading}>
+                            <Button type="submit" className="w-full" disabled={loading || !termsAccepted}>
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {loading ? 'Creating Account...' : 'Create Account'}
                             </Button>
