@@ -17,6 +17,8 @@ import {
 import { kikuyuDictionary } from '@/lib/kikuyu-dictionary';
 import { aiCurriculum } from '@/lib/ai-curriculum';
 import { blockchainCurriculum } from '@/lib/blockchain-curriculum';
+
+// Grade 1
 import { grade1CreCurriculum } from '@/curriculum/grade1-cre';
 import { grade1CreativeActivitiesCurriculum } from '@/curriculum/grade1-creative-activities';
 import { grade1EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade1-english-language-activities';
@@ -24,6 +26,8 @@ import { grade1EnvironmentalActivitiesCurriculum } from '@/curriculum/grade1-env
 import { grade1IndigenousLanguageCurriculum } from '@/curriculum/grade1-indigenous-language';
 import { grade1KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade1-kiswahili-language-activities';
 import { grade1MathematicsActivitiesCurriculum } from '@/curriculum/grade1-mathematics-activities';
+
+// Grade 2
 import { grade2CreCurriculum } from '@/curriculum/grade2-cre';
 import { grade2CreativeActivitiesCurriculum } from '@/curriculum/grade2-creative-activities';
 import { grade2EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade2-english-language-activities';
@@ -31,6 +35,8 @@ import { grade2EnvironmentalActivitiesCurriculum } from '@/curriculum/grade2-env
 import { grade2IndigenousLanguageCurriculum } from '@/curriculum/grade2-indigenous-language';
 import { grade2KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade2-kiswahili-language-activities';
 import { grade2MathematicsActivitiesCurriculum } from '@/curriculum/grade2-mathematics-activities';
+
+// Grade 3
 import { grade3CreCurriculum } from '@/curriculum/grade3-cre';
 import { grade3CreativeActivitiesCurriculum } from '@/curriculum/grade3-creative-activities';
 import { grade3EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade3-english-language-activities';
@@ -38,6 +44,8 @@ import { grade3EnvironmentalActivitiesCurriculum } from '@/curriculum/grade3-env
 import { grade3IndigenousLanguageCurriculum } from '@/curriculum/grade3-indigenous-language';
 import { grade3KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade3-kiswahili-language-activities';
 import { grade3MathematicsActivitiesCurriculum } from '@/curriculum/grade3-mathematics-activities';
+
+// Grade 4
 import { grade4AgricultureAndNutritionCurriculum } from '@/curriculum/grade4-agriculture-and-nutrition';
 import { grade4CreCurriculum } from '@/curriculum/grade4-cre';
 import { grade4CreativeArtsCurriculum } from '@/curriculum/grade4-creative-arts';
@@ -147,6 +155,62 @@ Based on the subject, conversation history, and your instructions for the releva
 `,
 });
 
+const getCurriculumForSubject = (grade: string, subject: string) => {
+    const sanitizedSubject = subject.replace(/\s+/g, '');
+
+    const gradeCurricula: { [key: string]: any } = {
+        g1: {
+            ChristianReligiousEducation: grade1CreCurriculum,
+            CreativeActivities: grade1CreativeActivitiesCurriculum,
+            EnglishLanguageActivities: grade1EnglishLanguageActivitiesCurriculum,
+            EnvironmentalActivities: grade1EnvironmentalActivitiesCurriculum,
+            IndigenousLanguageActivities: grade1IndigenousLanguageCurriculum,
+            KiswahiliLanguageActivities: grade1KiswahiliLanguageActivitiesCurriculum,
+            MathematicalActivities: grade1MathematicsActivitiesCurriculum,
+        },
+        g2: {
+            ChristianReligiousEducation: grade2CreCurriculum,
+            CreativeActivities: grade2CreativeActivitiesCurriculum,
+            EnglishLanguageActivities: grade2EnglishLanguageActivitiesCurriculum,
+            EnvironmentalActivities: grade2EnvironmentalActivitiesCurriculum,
+            IndigenousLanguageActivities: grade2IndigenousLanguageCurriculum,
+            KiswahiliLanguageActivities: grade2KiswahiliLanguageActivitiesCurriculum,
+            MathematicalActivities: grade2MathematicsActivitiesCurriculum,
+        },
+        g3: {
+            ChristianReligiousEducation: grade3CreCurriculum,
+            CreativeActivities: grade3CreativeActivitiesCurriculum,
+            EnglishLanguageActivities: grade3EnglishLanguageActivitiesCurriculum,
+            EnvironmentalActivities: grade3EnvironmentalActivitiesCurriculum,
+            IndigenousLanguageActivities: grade3IndigenousLanguageCurriculum,
+            KiswahiliLanguageActivities: grade3KiswahiliLanguageActivitiesCurriculum,
+            MathematicalActivities: grade3MathematicsActivitiesCurriculum,
+        },
+        g4: {
+            AgricultureandNutrition: grade4AgricultureAndNutritionCurriculum,
+            ReligiousEducation: grade4ReligiousEducationCurriculum,
+            CreativeArts: grade4CreativeArtsCurriculum,
+            English: grade4EnglishLanguageActivitiesCurriculum,
+            IndigenousLanguages: grade4IndigenousLanguageCurriculum,
+            Kiswahili: grade4KiswahiliLanguageActivitiesCurriculum,
+            SocialStudies: grade6SocialStudiesCurriculum, // Using Grade 6 as placeholder
+        },
+        g5: { // Assuming G5 uses G4 curriculum for this prototype
+            AgricultureandNutrition: grade4AgricultureAndNutritionCurriculum,
+            ReligiousEducation: grade4ReligiousEducationCurriculum,
+            CreativeArts: grade4CreativeArtsCurriculum,
+            English: grade4EnglishLanguageActivitiesCurriculum,
+            IndigenousLanguages: grade4IndigenousLanguageCurriculum,
+            Kiswahili: grade4KiswahiliLanguageActivitiesCurriculum,
+            SocialStudies: grade6SocialStudiesCurriculum,
+        },
+        g6: {
+            SocialStudies: grade6SocialStudiesCurriculum,
+        }
+    };
+
+    return gradeCurricula[grade]?.[sanitizedSubject] || null;
+}
 
 const mwalimuAiTutorFlow = ai.defineFlow(
   {
@@ -155,9 +219,9 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
-    // Handle initial greeting separately to prevent crashes and ensure a good first experience.
+    // Handle initial greeting separately to ensure a good first experience.
     if (!input.history || input.history.length === 0) {
-        const gradeName = `Gredi la ${input.grade.replace('g', '')}`;
+        const gradeName = `Grade ${input.grade.replace('g', '')}`;
         
         if (input.subject === 'Indigenous Language') {
             return {
@@ -196,7 +260,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
 
         // Default greeting
         return {
-            response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for Grade ${input.grade.replace('g', '')} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
+            response: `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${gradeName} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`
         };
     }
     
@@ -232,45 +296,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
       }
     } else {
         // Dynamically load the curriculum data based on grade and subject
-        const grade = input.grade;
-        const subject = input.subject.replace(/\s+/g, ''); // Remove spaces for matching
-        let curriculum: any = null;
-
-        if (grade === 'g1') {
-            if (subject.includes('ChristianReligiousEducation')) curriculum = grade1CreCurriculum;
-            if (subject.includes('CreativeActivities')) curriculum = grade1CreativeActivitiesCurriculum;
-            if (subject.includes('EnglishLanguageActivities')) curriculum = grade1EnglishLanguageActivitiesCurriculum;
-            if (subject.includes('EnvironmentalActivities')) curriculum = grade1EnvironmentalActivitiesCurriculum;
-            if (subject.includes('IndigenousLanguage')) curriculum = grade1IndigenousLanguageCurriculum;
-            if (subject.includes('KiswahiliLanguageActivities')) curriculum = grade1KiswahiliLanguageActivitiesCurriculum;
-            if (subject.includes('MathematicalActivities')) curriculum = grade1MathematicsActivitiesCurriculum;
-        } else if (grade === 'g2') {
-             if (subject.includes('ChristianReligiousEducation')) curriculum = grade2CreCurriculum;
-            if (subject.includes('CreativeActivities')) curriculum = grade2CreativeActivitiesCurriculum;
-            if (subject.includes('EnglishLanguageActivities')) curriculum = grade2EnglishLanguageActivitiesCurriculum;
-            if (subject.includes('EnvironmentalActivities')) curriculum = grade2EnvironmentalActivitiesCurriculum;
-            if (subject.includes('IndigenousLanguage')) curriculum = grade2IndigenousLanguageCurriculum;
-            if (subject.includes('KiswahiliLanguageActivities')) curriculum = grade2KiswahiliLanguageActivitiesCurriculum;
-            if (subject.includes('MathematicalActivities')) curriculum = grade2MathematicsActivitiesCurriculum;
-        } else if (grade === 'g3') {
-             if (subject.includes('ChristianReligiousEducation')) curriculum = grade3CreCurriculum;
-            if (subject.includes('CreativeActivities')) curriculum = grade3CreativeActivitiesCurriculum;
-            if (subject.includes('EnglishLanguageActivities')) curriculum = grade3EnglishLanguageActivitiesCurriculum;
-            if (subject.includes('EnvironmentalActivities')) curriculum = grade3EnvironmentalActivitiesCurriculum;
-            if (subject.includes('IndigenousLanguage')) curriculum = grade3IndigenousLanguageCurriculum;
-            if (subject.includes('KiswahiliLanguageActivities')) curriculum = grade3KiswahiliLanguageActivitiesCurriculum;
-            if (subject.includes('MathematicalActivities')) curriculum = grade3MathematicsActivitiesCurriculum;
-        } else if (grade === 'g4' || grade === 'g5') {
-            if (subject.includes('AgricultureandNutrition')) curriculum = grade4AgricultureAndNutritionCurriculum;
-            if (subject.includes('ChristianReligiousEducation') || subject.includes('ReligiousEducation')) curriculum = grade4ReligiousEducationCurriculum;
-            if (subject.includes('CreativeArts')) curriculum = grade4CreativeArtsCurriculum;
-            if (subject.includes('English')) curriculum = grade4EnglishLanguageActivitiesCurriculum;
-            if (subject.includes('IndigenousLanguages')) curriculum = grade4IndigenousLanguageCurriculum;
-            if (subject.includes('Kiswahili')) curriculum = grade4KiswahiliLanguageActivitiesCurriculum;
-            if (subject.includes('SocialStudies')) curriculum = grade6SocialStudiesCurriculum; // Use Grade 6 for now
-        } else if (grade === 'g6') {
-             if (subject.includes('SocialStudies')) curriculum = grade6SocialStudiesCurriculum;
-        }
+        const curriculum = getCurriculumForSubject(input.grade, input.subject);
 
         if (curriculum) {
             flowInput.teacherContext = `Curriculum for ${input.grade} ${input.subject}:\n${JSON.stringify(curriculum, null, 2)}`;

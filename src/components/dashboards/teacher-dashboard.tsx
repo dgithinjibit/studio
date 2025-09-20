@@ -64,9 +64,16 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     useEffect(() => {
         const storedTeacher = localStorage.getItem('mockTeacher');
         if (storedTeacher) {
-            setTeacher(JSON.parse(storedTeacher));
+            const parsedTeacher = JSON.parse(storedTeacher);
+            setTeacher(parsedTeacher);
+            if (parsedTeacher.classes.length > 0) {
+              setSelectedClass(parsedTeacher.classes[0]);
+            }
         } else {
             setTeacher(initialTeacher);
+             if (initialTeacher.classes.length > 0) {
+              setSelectedClass(initialTeacher.classes[0]);
+            }
             localStorage.setItem('mockTeacher', JSON.stringify(initialTeacher));
         }
     }, [initialTeacher]);
@@ -75,6 +82,10 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         if (teacher.classes.length > 0 && !selectedClass) {
             const currentSelectedClass = teacher.classes.find(c => c.id === (selectedClass?.id || teacher.classes[0].id));
             setSelectedClass(currentSelectedClass || teacher.classes[0]);
+        }
+         // If selectedClass exists but is no longer in the teacher's classes list (e.g., deleted), reset it
+        if (selectedClass && !teacher.classes.some(c => c.id === selectedClass.id)) {
+            setSelectedClass(teacher.classes.length > 0 ? teacher.classes[0] : null);
         }
     }, [teacher.classes, selectedClass]);
 

@@ -3,25 +3,10 @@
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MyResources } from "@/components/my-resources";
-import { Library, BarChart2 } from "lucide-react";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { useEffect, useState } from "react";
-import type { TeacherResource } from "@/lib/types";
+import { BarChart2 } from "lucide-react";
 import { useRole } from "@/hooks/use-role";
 
 function TeacherResourcesView() {
-    const [resources, setResources] = useState<TeacherResource[]>([]);
-    
-    useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
-             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TeacherResource[];
-            setResources(resourcesData);
-        });
-
-        return () => unsubscribe();
-    }, []);
-
     return (
         <div>
             <div className="mb-6">
@@ -61,6 +46,6 @@ export default function ReportsPage() {
         return <SchoolHeadReportsView />;
     }
 
-    // Default to teacher view
+    // Default to teacher view for teachers and any other role
     return <TeacherResourcesView />;
 }

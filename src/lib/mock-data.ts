@@ -1,6 +1,5 @@
 
 
-
 import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication } from './types';
 
 export const mockUsers: User[] = [
@@ -42,7 +41,7 @@ export const mockTeacher: Teacher = {
         { id: 'class_2', name: 'Form 2 English', performance: 82, students: form2EnglishStudents, color: 'bg-green-500' },
         { id: 'class_3', name: 'Form 2 Literature', performance: 78, students: form2LitStudents, color: 'bg-orange-500' },
     ],
-    totalStudents: 12,
+    totalStudents: form1Students.length + form2EnglishStudents.length + form2LitStudents.length,
 };
 
 

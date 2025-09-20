@@ -64,6 +64,7 @@ export default function DashboardPage() {
         case 'county_officer':
             return <CountyOfficerDashboard />;
         default:
+             // Default to teacher dashboard, but in a real app you might want a different fallback or an error page.
              return <TeacherDashboard teacher={mockTeacher} />;
     }
 }
