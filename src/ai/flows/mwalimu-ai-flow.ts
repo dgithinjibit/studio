@@ -228,6 +228,13 @@ const mwalimuAiTutorFlow = ai.defineFlow(
                 response: "Habari! I'm your Gikuyu Literacy Buddy. You can ask me to translate words, quiz you, or teach you about categories like 'greetings', 'animals', or 'family'. What would you like to do first?"
             };
         }
+
+        if (input.subject.toLowerCase().includes('english') && (input.grade === 'g1' || input.grade === 'g2')) {
+             return {
+                response: "That's a great topic to explore! When we think about 'nouns', we're often talking about the 'things' around us. To get us started, what are some of the 'things' you can see in your classroom right now?"
+            }
+        }
+        
          if (input.subject.toLowerCase().includes('kiswahili')) {
             return {
                 response: `Habari! Mimi ni Mwalimu AI, mshauri wako wa masomo. Nimefurahi kuona umechagua Kiswahili kwa ${gradeName} leo - chaguo bora sana! Ili kuanza safari yetu, ni mada gani au swali gani ungependa tujadili pamoja?`
