@@ -29,12 +29,10 @@ export async function getServerUser(): Promise<Partial<User> | null> {
     const name = userNameCookie?.value;
 
     if (!role || !name) {
-        // This is a safe fallback for this application's context,
-        // for example, when no user is logged in.
-        return {
-            name: "Teacher",
-            role: "teacher"
-        };
+        // If no role or name is found in the cookies, return null.
+        // The UI will handle this by showing a loading state or redirecting.
+        // DO NOT return a default user object here.
+        return null;
     }
 
     return {

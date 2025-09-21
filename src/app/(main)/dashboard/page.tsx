@@ -42,6 +42,7 @@ export default async function DashboardPage() {
             return <CountyOfficerDashboard />;
         default:
             // This is a safe fallback for any unexpected roles
-            return <TeacherDashboard />;
+            // For example, if a student somehow lands here.
+            return <DashboardSkeleton />;
     }
 }
