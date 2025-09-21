@@ -1,4 +1,3 @@
-
 "use client";
 
 import dynamic from 'next/dynamic';
@@ -28,7 +27,6 @@ const CountyOfficerDashboard = dynamic(() =>
         loading: () => <DashboardSkeleton /> 
     }
 );
-
 
 const DashboardSkeleton = () => (
     <div className="space-y-6">
