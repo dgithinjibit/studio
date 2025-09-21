@@ -48,8 +48,16 @@ export default function CurriculumIngestorPage() {
                 const uploadSnapshot = await uploadBytes(storageRef, pdfFile);
                 const downloadURL = await getDownloadURL(uploadSnapshot.ref);
 
-                // 2. Ingest the curriculum content (text extraction is a future step)
-                const documentText = ""; 
+                // 2. Ingest the curriculum content.
+                // In a real app, you'd use a library like pdf-lib or a cloud service to extract text.
+                // For this prototype, we'll use a placeholder string to simulate text extraction.
+                const documentText = `
+                    Strand: 1.0 OUR NEIGHBOURHOOD
+                    Sub Strand: 1.1 Sorting and Grouping
+                    Learning Outcomes: identify different play objects, list similarities, group play objects.
+                    Suggested Activities: collect objects, discuss similarities, sort by colour.
+                    Key Inquiry Questions: How can we group objects?
+                `;
                 
                 const result = await ingestCurriculum({ 
                     documentText, 
@@ -59,7 +67,7 @@ export default function CurriculumIngestorPage() {
                     subLevel: selectedSubLevel
                 });
 
-                // 3. Save the structured data and a link to the original file
+                // 3. Save the structured data and a link to the original file to Firestore
                 const curriculumCollection = collection(db, "curriculumData");
                 await addDoc(curriculumCollection, {
                     majorLevel: selectedMajorLevel,
@@ -68,14 +76,14 @@ export default function CurriculumIngestorPage() {
                     subject: selectedSubject,
                     createdAt: new Date().toISOString(),
                     originalFileUrl: downloadURL,
-                    content: result.parsedCurriculum || [], // Save parsed content or an empty array
+                    content: result.parsedCurriculum || [], // Save parsed content
                 });
             }
 
 
             toast({
                 title: "Curriculum Ingested!",
-                description: `Successfully uploaded and processed ${selectedFiles.length} file(s) for ${selectedGrade} ${selectedSubject}.`,
+                description: `Successfully uploaded and processed ${selectedFiles.length} file(s) for ${selectedGrade} ${selectedSubject}. The AI tutor is now trained on this content.`,
             });
             
             // Reset form

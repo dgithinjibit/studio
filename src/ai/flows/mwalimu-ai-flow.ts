@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview A Socratic AI tutor named Mwalimu AI.
+ * @fileOverview A Socratic AI tutor named Mwalimu AI that dynamically uses ingested curriculum data.
  *
  * - mwalimuAiTutor - A function that powers a Socratic dialogue with a student.
  */
@@ -17,43 +17,8 @@ import {
 import { kikuyuDictionary } from '@/lib/kikuyu-dictionary';
 import { aiCurriculum } from '@/lib/ai-curriculum';
 import { blockchainCurriculum } from '@/lib/blockchain-curriculum';
-
-// Grade 1
-import { grade1CreCurriculum } from '@/curriculum/grade1-cre';
-import { grade1CreativeActivitiesCurriculum } from '@/curriculum/grade1-creative-activities';
-import { grade1EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade1-english-language-activities';
-import { grade1EnvironmentalActivitiesCurriculum } from '@/curriculum/grade1-environmental-activities';
-import { grade1IndigenousLanguageCurriculum } from '@/curriculum/grade1-indigenous-language';
-import { grade1KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade1-kiswahili-language-activities';
-import { grade1MathematicsActivitiesCurriculum } from '@/curriculum/grade1-mathematics-activities';
-
-// Grade 2
-import { grade2CreCurriculum } from '@/curriculum/grade2-cre';
-import { grade2CreativeActivitiesCurriculum } from '@/curriculum/grade2-creative-activities';
-import { grade2EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade2-english-language-activities';
-import { grade2EnvironmentalActivitiesCurriculum } from '@/curriculum/grade2-environmental-activities';
-import { grade2IndigenousLanguageCurriculum } from '@/curriculum/grade2-indigenous-language';
-import { grade2KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade2-kiswahili-language-activities';
-import { grade2MathematicsActivitiesCurriculum } from '@/curriculum/grade2-mathematics-activities';
-
-// Grade 3
-import { grade3CreCurriculum } from '@/curriculum/grade3-cre';
-import { grade3CreativeActivitiesCurriculum } from '@/curriculum/grade3-creative-activities';
-import { grade3EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade3-english-language-activities';
-import { grade3EnvironmentalActivitiesCurriculum } from '@/curriculum/grade3-environmental-activities';
-import { grade3IndigenousLanguageCurriculum } from '@/curriculum/grade3-indigenous-language';
-import { grade3KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade3-kiswahili-language-activities';
-import { grade3MathematicsActivitiesCurriculum } from '@/curriculum/grade3-mathematics-activities';
-
-// Grade 4
-import { grade4AgricultureAndNutritionCurriculum } from '@/curriculum/grade4-agriculture-and-nutrition';
-import { grade4CreCurriculum } from '@/curriculum/grade4-cre';
-import { grade4CreativeArtsCurriculum } from '@/curriculum/grade4-creative-arts';
-import { grade4EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade4-english-language-activities';
-import { grade4IndigenousLanguageCurriculum } from '@/curriculum/grade4-indigenous-language';
-import { grade4KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade4-kiswahili-language-activities';
-import { grade4ReligiousEducationCurriculum } from '@/curriculum/grade4-religious-education';
-import { grade6SocialStudiesCurriculum } from '@/curriculum/grade6-social-studies';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 
 
 export async function mwalimuAiTutor(
@@ -155,62 +120,32 @@ Based on the subject, conversation history, and your instructions for the releva
 `,
 });
 
-const getCurriculumForSubject = (grade: string, subject: string) => {
-    const sanitizedSubject = subject.replace(/\s+/g, '');
+const getCurriculumFromFirestore = async (grade: string, subject: string): Promise<string | null> => {
+    try {
+        const curriculumCollection = collection(db, "curriculumData");
+        const q = query(
+            curriculumCollection, 
+            where("grade", "==", grade), 
+            where("subject", "==", subject),
+            limit(1)
+        );
 
-    const gradeCurricula: { [key: string]: any } = {
-        g1: {
-            ChristianReligiousEducation: grade1CreCurriculum,
-            CreativeActivities: grade1CreativeActivitiesCurriculum,
-            EnglishLanguageActivities: grade1EnglishLanguageActivitiesCurriculum,
-            EnvironmentalActivities: grade1EnvironmentalActivitiesCurriculum,
-            IndigenousLanguageActivities: grade1IndigenousLanguageCurriculum,
-            KiswahiliLanguageActivities: grade1KiswahiliLanguageActivitiesCurriculum,
-            MathematicalActivities: grade1MathematicsActivitiesCurriculum,
-        },
-        g2: {
-            ChristianReligiousEducation: grade2CreCurriculum,
-            CreativeActivities: grade2CreativeActivitiesCurriculum,
-            EnglishLanguageActivities: grade2EnglishLanguageActivitiesCurriculum,
-            EnvironmentalActivities: grade2EnvironmentalActivitiesCurriculum,
-            IndigenousLanguageActivities: grade2IndigenousLanguageCurriculum,
-            KiswahiliLanguageActivities: grade2KiswahiliLanguageActivitiesCurriculum,
-            MathematicalActivities: grade2MathematicsActivitiesCurriculum,
-        },
-        g3: {
-            ChristianReligiousEducation: grade3CreCurriculum,
-            CreativeActivities: grade3CreativeActivitiesCurriculum,
-            EnglishLanguageActivities: grade3EnglishLanguageActivitiesCurriculum,
-            EnvironmentalActivities: grade3EnvironmentalActivitiesCurriculum,
-            IndigenousLanguageActivities: grade3IndigenousLanguageCurriculum,
-            KiswahiliLanguageActivities: grade3KiswahiliLanguageActivitiesCurriculum,
-            MathematicalActivities: grade3MathematicsActivitiesCurriculum,
-        },
-        g4: {
-            AgricultureandNutrition: grade4AgricultureAndNutritionCurriculum,
-            ReligiousEducation: grade4ReligiousEducationCurriculum,
-            CreativeArts: grade4CreativeArtsCurriculum,
-            English: grade4EnglishLanguageActivitiesCurriculum,
-            IndigenousLanguages: grade4IndigenousLanguageCurriculum,
-            Kiswahili: grade4KiswahiliLanguageActivitiesCurriculum,
-            SocialStudies: grade6SocialStudiesCurriculum, // Using Grade 6 as placeholder
-        },
-        g5: { // Assuming G5 uses G4 curriculum for this prototype
-            AgricultureandNutrition: grade4AgricultureAndNutritionCurriculum,
-            ReligiousEducation: grade4ReligiousEducationCurriculum,
-            CreativeArts: grade4CreativeArtsCurriculum,
-            English: grade4EnglishLanguageActivitiesCurriculum,
-            IndigenousLanguages: grade4IndigenousLanguageCurriculum,
-            Kiswahili: grade4KiswahiliLanguageActivitiesCurriculum,
-            SocialStudies: grade6SocialStudiesCurriculum,
-        },
-        g6: {
-            SocialStudies: grade6SocialStudiesCurriculum,
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const data = doc.data();
+            // The 'content' field should hold the structured curriculum data.
+            // We'll stringify it to pass it as context.
+            return JSON.stringify(data.content, null, 2);
         }
-    };
-
-    return gradeCurricula[grade]?.[sanitizedSubject] || null;
+        return null;
+    } catch (error) {
+        console.error("Error fetching curriculum from Firestore:", error);
+        return null;
+    }
 }
+
 
 const mwalimuAiTutorFlow = ai.defineFlow(
   {
@@ -274,6 +209,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     // The history is now passed directly from the UI, no modification needed.
     const flowInput: MwalimuAiTutorInput = { ...input };
     
+    // Dynamic context loading
     if (flowInput.subject === 'AI') {
       flowInput.teacherContext = `AI Curriculum:\n${aiCurriculum}`;
     }
@@ -284,9 +220,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
       const categories = Object.keys(kikuyuDictionary) as Array<keyof typeof kikuyuDictionary>;
       let foundCategory: keyof typeof kikuyuDictionary | null = null;
       
-      // Find which category the user is asking about
       for (const category of categories) {
-        // Look for the category name (e.g. 'body_parts' -> 'body parts') in the user's message
         if (input.currentMessage.toLowerCase().includes(category.replace(/_/g, ' '))) {
           foundCategory = category;
           break;
@@ -294,19 +228,18 @@ const mwalimuAiTutorFlow = ai.defineFlow(
       }
 
       if (foundCategory) {
-        // If a category is found, provide ONLY that category's data.
         const categoryData = kikuyuDictionary[foundCategory];
         flowInput.teacherContext = `The user is asking about the '${foundCategory}' category. Here is the relevant vocabulary:\n${JSON.stringify(categoryData, null, 2)}`;
       } else {
-        // If no specific category is mentioned, provide the list of available categories to guide the user.
         flowInput.teacherContext = `The user has not asked for a specific category. Let them know what categories are available to learn from: ${categories.map(c => c.replace(/_/g, ' ')).join(', ')}. Do not list any words yet.`;
       }
     } else {
-        // Dynamically load the curriculum data based on grade and subject
-        const curriculum = getCurriculumForSubject(input.grade, input.subject);
+        // Dynamically load the curriculum data from Firestore
+        const gradeName = `Grade ${input.grade.replace('g', '')}`;
+        const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
 
-        if (curriculum) {
-            flowInput.teacherContext = `Curriculum for ${input.grade} ${input.subject}:\n${JSON.stringify(curriculum, null, 2)}`;
+        if (firestoreCurriculum) {
+            flowInput.teacherContext = `Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
         }
     }
     
