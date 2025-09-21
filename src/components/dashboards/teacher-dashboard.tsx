@@ -33,11 +33,9 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
-interface TeacherDashboardProps {
-    teacher: Teacher;
-}
+} from "@/components/ui/alert-dialog";
+import { mockTeacher } from '@/lib/mock-data';
+import { Skeleton } from '../ui/skeleton';
 
 // Utility to convert tailwind color classes to hex codes
 const tailwindColorToHex: { [key: string]: string } = {
@@ -51,8 +49,29 @@ const tailwindColorToHex: { [key: string]: string } = {
     'bg-teal-500': '#14b8a6',
 };
 
-export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardProps) {
-    const [teacher, setTeacher] = useState<Teacher>(initialTeacher);
+const DashboardSkeleton = () => (
+    <div className="space-y-6">
+        <div className="flex items-center justify-between">
+            <div>
+                <Skeleton className="h-8 w-64 mb-2" />
+                <Skeleton className="h-4 w-80" />
+            </div>
+            <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+                <Skeleton className="h-[350px] w-full" />
+            </div>
+            <div className="lg:col-span-1">
+                <Skeleton className="h-[350px] w-full" />
+            </div>
+        </div>
+    </div>
+);
+
+
+export function TeacherDashboard() {
+    const [teacher, setTeacher] = useState<Teacher | null>(null);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
@@ -63,33 +82,34 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
 
     useEffect(() => {
         const storedTeacher = localStorage.getItem('mockTeacher');
+        let teacherData;
         if (storedTeacher) {
-            const parsedTeacher = JSON.parse(storedTeacher);
-            setTeacher(parsedTeacher);
-            if (!selectedClass && parsedTeacher.classes.length > 0) {
-              setSelectedClass(parsedTeacher.classes[0]);
-            }
+            teacherData = JSON.parse(storedTeacher);
         } else {
-            setTeacher(initialTeacher);
-             if (!selectedClass && initialTeacher.classes.length > 0) {
-              setSelectedClass(initialTeacher.classes[0]);
-            }
-            localStorage.setItem('mockTeacher', JSON.stringify(initialTeacher));
+            teacherData = mockTeacher;
+            localStorage.setItem('mockTeacher', JSON.stringify(mockTeacher));
         }
-    }, [initialTeacher, selectedClass]);
-    
+        setTeacher(teacherData);
+
+        if (!selectedClass && teacherData.classes.length > 0) {
+            setSelectedClass(teacherData.classes[0]);
+        }
+    }, [selectedClass]);
+
     useEffect(() => {
-         // If selectedClass exists but is no longer in the teacher's classes list (e.g., deleted), reset it
-        if (selectedClass && !teacher.classes.some(c => c.id === selectedClass.id)) {
+        if (selectedClass && teacher && !teacher.classes.some(c => c.id === selectedClass.id)) {
             setSelectedClass(teacher.classes.length > 0 ? teacher.classes[0] : null);
         }
-    }, [teacher.classes, selectedClass]);
-
+    }, [teacher, selectedClass]);
+    
+    if (!teacher) {
+        return <DashboardSkeleton />;
+    }
 
     const chartData = teacher.classes.map(c => ({ 
         name: c.name, 
         performance: c.performance,
-        fill: tailwindColorToHex[c.color] || '#8884d8' // Use hex color, fallback to default
+        fill: tailwindColorToHex[c.color] || '#8884d8'
     }));
     
     const openAttendance = (classInfo: ClassInfo) => {
@@ -120,7 +140,6 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         let updatedClasses;
         let updatedTeacher;
         if (classId) {
-            // Editing existing class
             updatedClasses = teacher.classes.map(c => 
                 c.id === classId ? { ...c, ...classDetails } : c
             );
@@ -130,7 +149,6 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                 description: `"${classDetails.name}" has been updated.`,
             })
         } else {
-            // Adding new class
             const newClass: ClassInfo = {
                 id: `class_${Date.now()}`,
                 name: classDetails.name,

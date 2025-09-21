@@ -1,12 +1,9 @@
 
 "use client";
 
-import type { Teacher } from '@/lib/types';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/hooks/use-role';
-import { useState, useEffect } from 'react';
-import { mockTeacher } from '@/lib/mock-data';
 
 const TeacherDashboard = dynamic(() => 
     import('@/components/dashboards/teacher-dashboard').then(mod => mod.TeacherDashboard),
@@ -56,25 +53,11 @@ const DashboardSkeleton = () => (
 
 export default function DashboardPage() {
     const { role } = useRole();
-    const [teacherData, setTeacherData] = useState<Teacher | null>(null);
-
-    useEffect(() => {
-        // This effect is specific to the teacher role and loads their data.
-        if (role === 'teacher') {
-            const storedTeacher = localStorage.getItem('mockTeacher');
-            if (storedTeacher) {
-                setTeacherData(JSON.parse(storedTeacher));
-            } else {
-                setTeacherData(mockTeacher);
-                localStorage.setItem('mockTeacher', JSON.stringify(mockTeacher));
-            }
-        }
-    }, [role]);
 
     // This switch statement correctly routes users to their designated dashboard.
     switch (role) {
         case 'teacher':
-            return teacherData ? <TeacherDashboard teacher={teacherData} /> : <DashboardSkeleton />;
+            return <TeacherDashboard />;
         case 'school_head':
             return <SchoolHeadDashboard />;
         case 'county_officer':
