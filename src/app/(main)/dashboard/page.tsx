@@ -41,7 +41,7 @@ export default async function DashboardPage() {
         case 'county_officer':
             return <CountyOfficerDashboard />;
         default:
-            // Default to teacher dashboard as a safe fallback for any unexpected roles
+            // This is a safe fallback for any unexpected roles
             return <TeacherDashboard />;
     }
 }

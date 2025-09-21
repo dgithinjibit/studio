@@ -29,8 +29,8 @@ export async function getServerUser(): Promise<Partial<User> | null> {
     const name = userNameCookie?.value;
 
     if (!role || !name) {
-        // This simulates a user who is not logged in or has no role.
-        // Defaulting to 'teacher' is a safe fallback for this application's context.
+        // This is a safe fallback for this application's context,
+        // for example, when no user is logged in.
         return {
             name: "Teacher",
             role: "teacher"
