@@ -101,10 +101,10 @@ export function AppSidebar() {
         <SidebarSeparator />
         <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Teacher Guide">
+                <SidebarMenuButton asChild tooltip="Guide">
                 <Link href="/dashboard/guide" prefetch={true}>
                     <HelpCircle />
-                    <span>Teacher Guide</span>
+                    <span>Guide</span>
                 </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
