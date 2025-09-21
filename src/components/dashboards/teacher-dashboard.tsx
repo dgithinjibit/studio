@@ -94,7 +94,7 @@ export function TeacherDashboard() {
         if (!selectedClass && teacherData.classes.length > 0) {
             setSelectedClass(teacherData.classes[0]);
         }
-    }, [selectedClass]);
+    }, []);
 
     useEffect(() => {
         if (selectedClass && teacher && !teacher.classes.some(c => c.id === selectedClass.id)) {
