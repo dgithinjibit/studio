@@ -21,6 +21,7 @@ import '@/ai/flows/school-head-consultant-types.ts';
 import '@/ai/flows/generate-county-summary.ts';
 import '@/ai/flows/generate-county-summary-types.ts';
 import '@/ai/flows/ingest-curriculum.ts';
+import '@/ai/flows/generate-family-email.ts';
 import '@/curriculum/pp1-mathematics-activities.ts';
 import '@/curriculum/pp1-language-activities.ts';
 import '@/curriculum/pp2-environmental-activities.ts';
@@ -61,4 +62,5 @@ import '@/curriculum/grade4-religious-education.ts';
     
 
     
+
 

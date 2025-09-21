@@ -13,6 +13,7 @@ const GenerateSchemeOfWorkDialog = dynamic(() => import('@/components/generate-s
 const GenerateRubricDialog = dynamic(() => import('@/components/generate-rubric-dialog').then(mod => mod.GenerateRubricDialog));
 const GenerateWorksheetDialog = dynamic(() => import('@/components/generate-worksheet-dialog').then(mod => mod.GenerateWorksheetDialog));
 const DifferentiateWorksheetDialog = dynamic(() => import('@/components/differentiate-worksheet-dialog').then(mod => mod.DifferentiateWorksheetDialog));
+const GenerateFamilyEmailDialog = dynamic(() => import('@/components/generate-family-email-dialog').then(mod => mod.GenerateFamilyEmailDialog));
 
 
 const teacherTools = [
@@ -61,8 +62,8 @@ const teacherTools = [
         description: "Generate professional parent communications",
         icon: Mail,
         action: "Open Email to Family",
-        dialog: null,
-        path: null
+        dialog: "familyEmail",
+        path: "@/components/generate-family-email-dialog"
     }
 ];
 
@@ -72,7 +73,8 @@ export default function TeacherToolsPage() {
         schemeOfWork: false,
         rubric: false,
         worksheet: false,
-        differentiate: false
+        differentiate: false,
+        familyEmail: false
     });
     const router = useRouter();
 
@@ -162,6 +164,10 @@ export default function TeacherToolsPage() {
                 open={dialogState.differentiate} 
                 onOpenChange={(open) => !open && closeDialog('differentiate')} 
                 onResourceSaved={onResourceSaved} 
+            />}
+            {dialogState.familyEmail && <GenerateFamilyEmailDialog
+                open={dialogState.familyEmail}
+                onOpenChange={(open) => !open && closeDialog('familyEmail')}
             />}
         </>
     );
