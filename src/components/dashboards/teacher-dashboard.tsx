@@ -66,27 +66,19 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         if (storedTeacher) {
             const parsedTeacher = JSON.parse(storedTeacher);
             setTeacher(parsedTeacher);
-            if (parsedTeacher.classes.length > 0) {
+            if (!selectedClass && parsedTeacher.classes.length > 0) {
               setSelectedClass(parsedTeacher.classes[0]);
-            } else {
-              setSelectedClass(null);
             }
         } else {
             setTeacher(initialTeacher);
-             if (initialTeacher.classes.length > 0) {
+             if (!selectedClass && initialTeacher.classes.length > 0) {
               setSelectedClass(initialTeacher.classes[0]);
-            } else {
-                setSelectedClass(null);
             }
             localStorage.setItem('mockTeacher', JSON.stringify(initialTeacher));
         }
-    }, [initialTeacher]);
+    }, [initialTeacher, selectedClass]);
     
     useEffect(() => {
-        if (teacher.classes.length > 0 && !selectedClass) {
-            const currentSelectedClass = teacher.classes.find(c => c.id === (selectedClass?.id || teacher.classes[0]?.id));
-            setSelectedClass(currentSelectedClass || teacher.classes[0] || null);
-        }
          // If selectedClass exists but is no longer in the teacher's classes list (e.g., deleted), reset it
         if (selectedClass && !teacher.classes.some(c => c.id === selectedClass.id)) {
             setSelectedClass(teacher.classes.length > 0 ? teacher.classes[0] : null);
@@ -126,11 +118,13 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
     
     const handleSaveClass = (classDetails: { name: string, color: string }, classId?: string) => {
         let updatedClasses;
+        let updatedTeacher;
         if (classId) {
             // Editing existing class
             updatedClasses = teacher.classes.map(c => 
                 c.id === classId ? { ...c, ...classDetails } : c
             );
+             updatedTeacher = { ...teacher, classes: updatedClasses };
              toast({
                 title: "Class Updated",
                 description: `"${classDetails.name}" has been updated.`,
@@ -145,12 +139,13 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                 color: classDetails.color,
             };
             updatedClasses = [...teacher.classes, newClass];
+            updatedTeacher = { ...teacher, classes: updatedClasses };
             toast({
                 title: "Class Added",
                 description: `"${classDetails.name}" has been added to your hub.`,
             })
         }
-        updateTeacherState({ ...teacher, classes: updatedClasses });
+        updateTeacherState(updatedTeacher);
         setEditingClass(null);
     };
     
