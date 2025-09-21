@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useEffect, useState, Suspense } from 'react';
@@ -31,39 +32,21 @@ const ChatSkeleton = () => (
 
 export default function StudentChatPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const params = useParams();
     
-    // We need to manage state for all the possible parameters.
-    // This allows the ChatInterface to be rendered dynamically based on what's available.
     const [chatParams, setChatParams] = useState<{
         subject: string;
         grade: string;
-        roomId?: string; // The joinCode which is the ID for the room
-        teacherContext?: string;
     } | null>(null);
 
     useEffect(() => {
-        // This effect runs on the client side to retrieve all necessary data from localStorage.
         const subject = decodeURIComponent((params.subject as string) || 'General');
         const grade = localStorage.getItem('studentGrade') || 'g4';
         
-        // This is the special context loaded when a user enters a teacher's code.
-        const teacherContext = localStorage.getItem('ai_tutor_context_to_load') || undefined;
-        const roomId = localStorage.getItem('ai_tutor_room_id') || undefined;
-
         setChatParams({
             subject,
             grade,
-            roomId,
-            teacherContext
         });
-
-        // Clean up the temporary context key so it's not used again accidentally.
-        if (teacherContext) {
-            localStorage.removeItem('ai_tutor_context_to_load');
-            localStorage.removeItem('ai_tutor_room_id');
-        }
 
     }, [params.subject]);
 
@@ -81,9 +64,7 @@ export default function StudentChatPage() {
                 <ChatInterface 
                     subject={chatParams.subject}
                     grade={chatParams.grade}
-                    roomId={chatParams.roomId}
                     onBack={handleBack}
-                    teacherContext={chatParams.teacherContext}
                 />
             </Suspense>
         </div>

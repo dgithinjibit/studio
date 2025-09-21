@@ -1,7 +1,8 @@
 
+
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +18,30 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db, storage } from '@/lib/firebase';
 import { ref, getBytes } from 'firebase/storage';
 import { cn } from '@/lib/utils';
-import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+const ChatInterface = dynamic(() => import('../chat/chat-interface'), {
+    ssr: false,
+    loading: () => <ChatSkeleton />
+});
+
+const ChatSkeleton = () => (
+    <div className="flex h-full w-full items-center justify-center bg-[#F5F5DC]">
+         <div className="w-full h-full flex flex-col shadow-2xl bg-white/50 border-stone-200">
+            <Skeleton className="h-32 w-full border-b border-stone-200" />
+            <div className="flex-1 p-6 space-y-4">
+                <Skeleton className="h-16 w-3/4" />
+                <div className="flex justify-end">
+                    <Skeleton className="h-12 w-1/2" />
+                </div>
+                <Skeleton className="h-24 w-4/5" />
+            </div>
+            <Skeleton className="h-20 w-full border-t border-stone-200" />
+        </div>
+    </div>
+);
 
 
 function StudentJourneyContent() {
@@ -31,6 +55,10 @@ function StudentJourneyContent() {
     const [studentFirstName, setStudentFirstName] = useState('Student');
     const [teacherCode, setTeacherCode] = useState('');
     const [isSubmittingCode, setIsSubmittingCode] = useState(false);
+
+    // State for launching the AI tutor
+    const [tutorContext, setTutorContext] = useState<string | null>(null);
+    const [tutorRoomId, setTutorRoomId] = useState<string | null>(null);
     
     const initialStepFromParams = (searchParams.get('step') as Step) || 'start';
 
@@ -38,8 +66,6 @@ function StudentJourneyContent() {
     const currentStep = stepHistory[stepHistory.length - 1];
 
     useEffect(() => {
-        // This effect runs ONLY on the client, after the component has mounted.
-        // It's safe to access localStorage here.
         const name = localStorage.getItem('studentName');
         if (name) {
             setStudentFirstName(name.split(' ')[0]);
@@ -72,6 +98,15 @@ function StudentJourneyContent() {
             router.push('/');
         }
     }, [stepHistory.length, router]);
+    
+     const handleCompassBack = () => {
+        // This function specifically handles returning from the Compass chat view
+        setTutorContext(null);
+        setTutorRoomId(null);
+        // We can go back to the start, or wherever is appropriate
+        setStepHistory(['start']);
+    };
+
 
     const handleLevelSelect = useCallback((levelId: string) => {
         setSelectedLevel(levelId);
@@ -96,37 +131,40 @@ function StudentJourneyContent() {
         setIsSubmittingCode(true);
 
         try {
-            const q = query(collection(db, "teacherResources"), where("joinCode", "==", teacherCode.trim()));
+            const q = query(collection(db, "teacherResources"), where("joinCode", "==", teacherCode.trim().toUpperCase()));
             const querySnapshot = await getDocs(q);
             
             if (!querySnapshot.empty) {
                 const doc = querySnapshot.docs[0];
                 const tutorContextResource = doc.data() as TeacherResource;
 
-                const storageRef = ref(storage, tutorContextResource.url);
-                const bytes = await getBytes(storageRef);
-                const contextText = new TextDecoder().decode(bytes);
-
-                localStorage.setItem('ai_tutor_context_to_load', contextText);
-                localStorage.setItem('ai_tutor_room_id', tutorContextResource.joinCode);
+                // Download the context content from the URL specified in Firestore
+                const response = await fetch(tutorContextResource.url);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch context file from storage.');
+                }
+                const contextText = await response.text();
                 
                 toast({
-                    title: "Teacher's Context Loaded!",
+                    title: "Teacher's Room Found!",
                     description: "Launching the Classroom Compass. Your AI guide is ready.",
                 });
-                router.push(`/student/chat/teacher-context`);
 
+                // Set state to render the chat interface directly
+                setTutorContext(contextText);
+                setTutorRoomId(tutorContextResource.joinCode);
+                
             } else {
                 toast({
                     variant: 'destructive',
                     title: "Invalid Code",
-                    description: "The code you entered does not match any AI Tutor context. Please check the code and try again.",
+                    description: "The code you entered does not match any AI Tutor room. Please check the code and try again.",
                 });
             }
         } catch (error) {
              toast({
                 variant: 'destructive',
-                title: "Error Loading Context",
+                title: "Error Loading Room",
                 description: "Could not load the teacher's materials. Please try again.",
             });
             console.error("Error handling teacher code:", error);
@@ -135,6 +173,23 @@ function StudentJourneyContent() {
         }
     }
     
+    // If tutorContext is set, render the ChatInterface instead of the journey steps.
+    if (tutorContext) {
+        return (
+             <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-[#F5F5DC] sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
+                <Suspense fallback={<ChatSkeleton />}>
+                    <ChatInterface 
+                        subject="Teacher's Context" // Subject can be generic
+                        grade={localStorage.getItem('studentGrade') || 'g4'} // Use stored grade
+                        roomId={tutorRoomId!}
+                        onBack={handleCompassBack}
+                        teacherContext={tutorContext}
+                    />
+                </Suspense>
+             </div>
+        )
+    }
+
     const renderContent = () => {
         switch (currentStep) {
             case 'start':
@@ -147,7 +202,7 @@ function StudentJourneyContent() {
                         <CardContent className="grid md:grid-cols-2 gap-6">
                            <Card className="p-6 flex flex-col items-center justify-center text-center">
                                 <LinkIcon className="w-12 h-12 text-primary mb-4" />
-                                <h3 className="font-bold text-xl mb-2">Join a Teacher's Session</h3>
+                                <h3 className="font-bold text-xl mb-2">Join a Teacher's Room</h3>
                                 <p className="text-muted-foreground mb-4">Enter a code from your teacher to start a guided lesson with the Classroom Compass.</p>
                                 <form onSubmit={handleTeacherCodeSubmit} className="w-full flex items-center gap-2">
                                     <Input 
