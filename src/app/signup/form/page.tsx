@@ -14,6 +14,7 @@ import { mockCounties } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { updateUserRoleCookie } from '@/lib/auth';
 
 function SignupFormComponent() {
     const router = useRouter();
@@ -41,22 +42,23 @@ function SignupFormComponent() {
         }
     }
 
-    const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!role) return;
         
         const formData = new FormData(e.currentTarget);
         const fullName = formData.get('fullName') as string;
         const email = formData.get('email') as string;
 
-        // Persist user's details for personalization
+        // Persist user's details for personalization in localStorage
         localStorage.setItem('userName', fullName);
         localStorage.setItem('userEmail', email);
-        if (role) {
-            localStorage.setItem('userRole', role);
-        }
         if (role === 'student') {
             localStorage.setItem('studentName', fullName);
         }
+
+        // CORRECTLY set the role in a server-side cookie
+        await updateUserRoleCookie(role, fullName);
 
         toast({
             title: "Account Created!",
@@ -65,6 +67,7 @@ function SignupFormComponent() {
         
         startTransition(() => {
             router.push(getRedirectPath());
+            router.refresh(); // Important: refreshes server components to read the new cookie
         });
     };
 
