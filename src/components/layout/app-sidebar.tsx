@@ -1,6 +1,4 @@
 
-"use client";
-
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -16,7 +14,8 @@ import {
   Package,
   Palette
 } from "lucide-react";
-import { useRole } from "@/hooks/use-role";
+import { cookies } from 'next/headers';
+import type { UserRole } from "@/lib/types";
 
 import {
   Sidebar,
@@ -31,7 +30,8 @@ import {
 import Image from "next/image";
 
 export function AppSidebar() {
-  const { role } = useRole();
+  const cookieStore = cookies();
+  const role = cookieStore.get('userRole')?.value as UserRole | undefined;
 
   const teacherNavItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },

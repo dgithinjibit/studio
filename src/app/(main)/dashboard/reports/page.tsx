@@ -1,10 +1,9 @@
 
-"use client";
-
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MyResources } from "@/components/my-resources";
 import { BarChart2 } from "lucide-react";
-import { useRole } from "@/hooks/use-role";
+import { getServerUser } from "@/lib/auth";
+import type { UserRole } from "@/lib/types";
 
 function TeacherResourcesView() {
     return (
@@ -39,8 +38,9 @@ function SchoolHeadReportsView() {
     )
 }
 
-export default function ReportsPage() {
-    const { role } = useRole();
+export default async function ReportsPage() {
+    const user = await getServerUser();
+    const role = user?.role as UserRole;
 
     if (role === 'school_head') {
         return <SchoolHeadReportsView />;

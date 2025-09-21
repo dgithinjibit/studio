@@ -1,33 +1,9 @@
 
-"use client";
-
-import dynamic from 'next/dynamic';
+import { getServerUser } from '@/lib/auth';
+import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-dashboard';
+import { SchoolHeadDashboard } from '@/components/dashboards/school-head-dashboard';
+import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRole } from '@/hooks/use-role';
-
-const TeacherDashboard = dynamic(() => 
-    import('@/components/dashboards/teacher-dashboard').then(mod => mod.TeacherDashboard),
-    { 
-        ssr: false,
-        loading: () => <DashboardSkeleton /> 
-    }
-);
-
-const SchoolHeadDashboard = dynamic(() =>
-    import('@/components/dashboards/school-head-dashboard').then(mod => mod.SchoolHeadDashboard),
-    { 
-        ssr: false,
-        loading: () => <DashboardSkeleton /> 
-    }
-);
-
-const CountyOfficerDashboard = dynamic(() =>
-    import('@/components/dashboards/county-officer-dashboard').then(mod => mod.CountyOfficerDashboard),
-    { 
-        ssr: false,
-        loading: () => <DashboardSkeleton /> 
-    }
-);
 
 const DashboardSkeleton = () => (
     <div className="space-y-6">
@@ -50,11 +26,14 @@ const DashboardSkeleton = () => (
 );
 
 
-export default function DashboardPage() {
-    const { role } = useRole();
+export default async function DashboardPage() {
+    const user = await getServerUser();
 
-    // This switch statement correctly routes users to their designated dashboard.
-    switch (role) {
+    if (!user || !user.role) {
+        return <DashboardSkeleton />;
+    }
+
+    switch (user.role) {
         case 'teacher':
             return <TeacherDashboard />;
         case 'school_head':
@@ -62,7 +41,7 @@ export default function DashboardPage() {
         case 'county_officer':
             return <CountyOfficerDashboard />;
         default:
-             // Default to a skeleton while the role is loading.
-             return <DashboardSkeleton />;
+            // Default to teacher dashboard as a safe fallback for any unexpected roles
+            return <TeacherDashboard />;
     }
 }

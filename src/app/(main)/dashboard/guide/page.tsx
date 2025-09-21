@@ -1,9 +1,8 @@
 
-"use client";
-
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { HelpCircle, Bot, FlaskConical, Share2, Eye, UserCog, Banknote, Megaphone } from 'lucide-react';
-import { useRole } from "@/hooks/use-role";
+import { getServerUser } from "@/lib/auth";
+import type { UserRole } from "@/lib/types";
 
 function TeacherGuide() {
   return (
@@ -202,8 +201,9 @@ function SchoolHeadGuide() {
 }
 
 
-export default function GuidePage() {
-    const { role } = useRole();
+export default async function GuidePage() {
+    const user = await getServerUser();
+    const role = user?.role as UserRole;
 
     return (
         <div className="space-y-6">
@@ -211,4 +211,3 @@ export default function GuidePage() {
         </div>
     );
 }
-

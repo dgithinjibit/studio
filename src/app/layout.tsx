@@ -2,7 +2,6 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
-import { RoleProvider } from '@/components/providers/role-provider';
 import { app } from '@/lib/firebase'; // Ensure Firebase is initialized
 
 export const metadata: Metadata = {
@@ -26,9 +25,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <RoleProvider>
-            {children}
-        </RoleProvider>
+        {children}
         <Toaster />
       </body>
     </html>

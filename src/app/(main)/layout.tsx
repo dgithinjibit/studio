@@ -1,15 +1,15 @@
 
-"use client";
-
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppHeader } from "@/components/layout/app-header";
-import { useRole } from "@/hooks/use-role";
 import Link from "next/link";
+import type { UserRole } from "@/lib/types";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
-  const { role } = useRole();
+  const cookieStore = cookies();
+  const role = cookieStore.get('userRole')?.value as UserRole | undefined;
 
   if (role === 'student') {
     return <>{children}</>;

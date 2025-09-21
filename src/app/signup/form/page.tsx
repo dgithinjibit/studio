@@ -57,7 +57,7 @@ function SignupFormComponent() {
             localStorage.setItem('studentName', fullName);
         }
 
-        // CORRECTLY set the role in a server-side cookie
+        // Set the role in a server-side cookie
         await updateUserRoleCookie(role, fullName);
 
         toast({
