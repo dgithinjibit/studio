@@ -12,7 +12,7 @@ function TeacherGuide() {
         <CardHeader>
           <CardTitle className="flex items-center gap-3 font-headline text-3xl">
             <HelpCircle className="w-8 h-8 text-primary" />
-            SyncSenta Teacher Guide
+            SyncSenta Guide
           </CardTitle>
           <CardDescription>
             Your quick start guide to using the powerful AI tools at your fingertips. Keep it simple!
@@ -110,7 +110,7 @@ function SchoolHeadGuide() {
         <CardHeader>
           <CardTitle className="flex items-center gap-3 font-headline text-3xl">
             <HelpCircle className="w-8 h-8 text-primary" />
-            SyncSenta School Head Guide
+            SyncSenta Guide
           </CardTitle>
           <CardDescription>
             A quick guide to your dashboard's key strategic and operational tools.

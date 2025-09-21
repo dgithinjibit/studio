@@ -27,7 +27,12 @@ const ProfileDialog = dynamic(() =>
 const getTitleFromPath = (path: string) => {
     const segments = path.split('/').filter(Boolean);
     if (segments.length === 0) return 'Welcome';
+    
     const lastSegment = segments[segments.length - 1];
+
+    if (lastSegment === 'guide') {
+        return 'Guide';
+    }
     
     // Capitalize first letter and replace dashes with spaces
     return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ');
