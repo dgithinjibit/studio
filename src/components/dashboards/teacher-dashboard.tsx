@@ -32,7 +32,6 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
 interface TeacherDashboardProps {
@@ -116,7 +115,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
         updateTeacherState({ ...teacher, classes: updatedClasses });
     };
     
-    const handleSaveClass = (classDetails: { name: string, color: string }, classId?: string) => {
+    const handleSaveClass = (classDetails: { name: string; color: string; students: Student[] }, classId?: string) => {
         let updatedClasses;
         let updatedTeacher;
         if (classId) {
@@ -135,7 +134,7 @@ export function TeacherDashboard({ teacher: initialTeacher }: TeacherDashboardPr
                 id: `class_${Date.now()}`,
                 name: classDetails.name,
                 performance: 75,
-                students: [],
+                students: classDetails.students,
                 color: classDetails.color,
             };
             updatedClasses = [...teacher.classes, newClass];
