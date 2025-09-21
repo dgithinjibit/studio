@@ -43,13 +43,16 @@ export function AppHeader() {
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [userName, setUserName] = useState('User');
   const [userEmail, setUserEmail] = useState('user@example.com');
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [title, setTitle] = useState('Dashboard');
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
     const storedEmail = localStorage.getItem('userEmail');
+    const storedAvatar = localStorage.getItem('userAvatar');
     if (storedName) setUserName(storedName);
     if (storedEmail) setUserEmail(storedEmail);
+    if (storedAvatar) setUserAvatar(storedAvatar);
   }, []);
   
   useEffect(() => {
@@ -70,7 +73,7 @@ export function AppHeader() {
               className="relative h-10 w-10 rounded-full"
             >
               <Avatar className="h-10 w-10">
-                <AvatarImage src="/assets/prof.png" alt="User Avatar" />
+                <AvatarImage src={userAvatar || undefined} alt="User Avatar" />
                 <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
             </Button>

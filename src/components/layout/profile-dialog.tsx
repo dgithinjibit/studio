@@ -21,21 +21,22 @@ const defaultUser = {
     fullName: 'User',
     email: 'user@example.com',
     school: 'SyncSenta School',
-    avatar: 'https://github.com/shadcn.png'
 };
 
 export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
     const { toast } = useToast();
     const [userName, setUserName] = useState(defaultUser.fullName);
     const [userEmail, setUserEmail] = useState(defaultUser.email);
-    const [userAvatar, setUserAvatar] = useState(defaultUser.avatar);
+    const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
     useEffect(() => {
         if (open) {
             const storedName = localStorage.getItem('userName') || defaultUser.fullName;
             const storedEmail = localStorage.getItem('userEmail') || defaultUser.email;
+            const storedAvatar = localStorage.getItem('userAvatar');
             setUserName(storedName);
             setUserEmail(storedEmail);
+            setUserAvatar(storedAvatar);
         }
     }, [open]);
 
@@ -45,6 +46,9 @@ export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenCha
         const newFullName = formData.get('fullName') as string;
         
         localStorage.setItem('userName', newFullName);
+        if (userAvatar) {
+            localStorage.setItem('userAvatar', userAvatar);
+        }
         // Also update studentName if it exists, for consistency
         if (localStorage.getItem('studentName')) {
             localStorage.setItem('studentName', newFullName);
@@ -89,7 +93,7 @@ export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenCha
                             <div className="relative group">
                                 <label htmlFor="picture" className="cursor-pointer">
                                     <Avatar className="h-24 w-24">
-                                        <AvatarImage src={userAvatar} alt={userName} />
+                                        <AvatarImage src={userAvatar || undefined} alt={userName} />
                                         <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
                                     </Avatar>
                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">

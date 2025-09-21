@@ -26,12 +26,17 @@ interface StudentHeaderProps {
 export function StudentHeader({ showBackButton, onBack, showVideoCallButton = false, onJoinVideoCall }: StudentHeaderProps) {
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [studentFirstName, setStudentFirstName] = useState('Student');
+  const [studentAvatar, setStudentAvatar] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const name = localStorage.getItem('studentName');
+    const avatar = localStorage.getItem('userAvatar');
     if (name) {
         setStudentFirstName(name.split(' ')[0]);
+    }
+    if (avatar) {
+        setStudentAvatar(avatar);
     }
   }, []);
 
@@ -68,7 +73,7 @@ export function StudentHeader({ showBackButton, onBack, showVideoCallButton = fa
                             className="flex items-center gap-2 rounded-full h-12 px-4 bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800"
                           >
                             <Avatar className="h-8 w-8">
-                               <AvatarImage src="/assets/prof.png" alt="Profile Picture" />
+                               <AvatarImage src={studentAvatar || undefined} alt="Profile Picture" />
                                <AvatarFallback>{studentFirstName.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span>Profile</span>
