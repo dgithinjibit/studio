@@ -7,6 +7,8 @@ import type { School } from '@/lib/types';
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { cn } from '@/lib/utils';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 const MAPTILER_TOKEN = "oOP6aDKvl1yVX2dicS80";
 
@@ -44,6 +46,7 @@ export default function SchoolMap({ schools, selectedSchool, onSchoolSelect, cli
   return (
     <Map
       ref={mapRef}
+      mapLib={maplibregl}
       initialViewState={{
         longitude: 36.8219, // Centered on Nairobi
         latitude: -1.2921,
