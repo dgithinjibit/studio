@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import { FilePen, ClipboardList, CalendarDays, CopySlash, GraduationCap, Mail, Loader2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
-const GenerateLessonPlanDialog = dynamic(() => import('@/components/generate-lesson-plan-dialog').then(mod => mod.GenerateLessonPlanDialog));
-const GenerateSchemeOfWorkDialog = dynamic(() => import('@/components/generate-scheme-of-work-dialog').then(mod => mod.GenerateSchemeOfWorkDialog));
-const GenerateRubricDialog = dynamic(() => import('@/components/generate-rubric-dialog').then(mod => mod.GenerateRubricDialog));
-const GenerateWorksheetDialog = dynamic(() => import('@/components/generate-worksheet-dialog').then(mod => mod.GenerateWorksheetDialog));
-const DifferentiateWorksheetDialog = dynamic(() => import('@/components/differentiate-worksheet-dialog').then(mod => mod.DifferentiateWorksheetDialog));
-const GenerateFamilyEmailDialog = dynamic(() => import('@/components/generate-family-email-dialog').then(mod => mod.GenerateFamilyEmailDialog));
+const GenerateLessonPlanDialog = dynamic(() => import('@/components/generate-lesson-plan-dialog'), { ssr: false });
+const GenerateSchemeOfWorkDialog = dynamic(() => import('@/components/generate-scheme-of-work-dialog'), { ssr: false });
+const GenerateRubricDialog = dynamic(() => import('@/components/generate-rubric-dialog'), { ssr: false });
+const GenerateWorksheetDialog = dynamic(() => import('@/components/generate-worksheet-dialog'), { ssr: false });
+const DifferentiateWorksheetDialog = dynamic(() => import('@/components/differentiate-worksheet-dialog'), { ssr: false });
+const GenerateFamilyEmailDialog = dynamic(() => import('@/components/generate-family-email-dialog'), { ssr: false });
 
 
 const teacherTools = [

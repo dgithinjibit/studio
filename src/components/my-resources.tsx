@@ -28,7 +28,7 @@ import { storage, db } from '@/lib/firebase';
 import { ref, getBytes, deleteObject } from 'firebase/storage';
 import { doc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 
-const GenerateLessonPlanDialog = dynamic(() => import('@/components/generate-lesson-plan-dialog').then(mod => mod.GenerateLessonPlanDialog));
+const GenerateLessonPlanDialog = dynamic(() => import('@/components/generate-lesson-plan-dialog'), { ssr: false });
 
 
 export function MyResources() {

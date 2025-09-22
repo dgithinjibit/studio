@@ -18,10 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings } from "lucide-react";
 import dynamic from 'next/dynamic';
 
-const ProfileDialog = dynamic(() => 
-    import('./profile-dialog').then(mod => mod.ProfileDialog),
-    { ssr: false }
-);
+const ProfileDialog = dynamic(() => import('./profile-dialog'), { ssr: false });
 
 
 const getTitleFromPath = (path: string) => {
