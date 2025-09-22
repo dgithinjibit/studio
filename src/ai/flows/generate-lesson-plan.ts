@@ -96,18 +96,18 @@ const generateLessonPlanFlow = ai.defineFlow(
       ## Organization of Learning
 
       ### Introduction (5 Minutes)
-      - **Generate an engaging introduction for a lesson on "{{topic}}".** Link it to potential previous knowledge and provide a hook to capture learners' interest (e.g., a story, a question, a short activity).
+      - **Learner is guided to:** engage in a brief, interactive activity related to "{{topic}}". For example, a quick poll, a think-pair-share question, or watching a short, relevant video clip to spark curiosity.
 
       ### Lesson Development (25 Minutes)
-      - **Step 1:** Based on the 'Suggested Learning Experiences' from the scheme, **describe the first detailed, learner-centered activity.** Specify the teacher's role (e.g., facilitate, guide, provide materials) and the learner's role (e.g., discuss in pairs, create, explore).
-      - **Step 2:** **Describe a second, collaborative activity** that builds on the first step, encouraging teamwork and deeper exploration of the topic.
-      - **Step 3:** **Describe a third activity,** such as having groups present their findings, a gallery walk to review work, or a class discussion to synthesize the learning.
+      - **Step 1:** **Learner is guided to:** participate in the first core activity based on the 'Suggested Learning Experiences' from the scheme. This should be a practical, hands-on task. (e.g., "in groups, collect and prepare locally available materials...").
+      - **Step 2:** **Learner is guided to:** collaborate with peers on a second activity that builds upon the first. This step should involve discussion, creation, or problem-solving. (e.g., "practice the skill of... in pairs", "assemble tools and materials...").
+      - **Step 3:** **Learner is guided to:** present or share their work from the previous step. This could be a gallery walk, a short group presentation, or a demonstration of the skill learned.
 
       ### Conclusion (5 Minutes)
-      - **Summarize the key learning points for "{{topic}}".** Describe how you will assess immediate understanding (e.g., by asking the Key Inquiry Question or using an exit ticket).
+      - **Learner is guided to:** summarize the main takeaways of the lesson by answering the Key Inquiry Question(s) and share what they found most interesting or challenging.
 
       ## Extended Activity
-      - **Suggest a simple, creative, and relevant take-home activity** for the learners that reinforces the lesson's outcomes.
+      - **Learner is guided to:** undertake a simple, creative, and relevant take-home activity that reinforces the lesson's outcomes.
 
       ## Teacher's Reflection
       - [This section MUST be left blank for the teacher to fill in after the lesson.]`,
