@@ -26,17 +26,11 @@ export const grade5CreativeArtsCurriculum = {
             "appraise peers’ performance in a relay"
           ],
           suggested_activities: [
-            "collect appropriate locally available materials for plaiting a rope (sisal, leather, recycled bag, old fabric)",
-            "explore actual and virtual samples of plaited basketry items",
-            "prepare and decorate the material for plaiting by dyeing / painting",
-            "plait a 3 strand rope for skipping",
-            "use the skipping rope for warm-up before skill demonstration",
-            "improvise a baton stick from locally available resources (cutting, peeling the bark, drying, decorate by painting, smoking, incising)",
-            "explain/demonstrate the skill of baton exchange",
-            "practise the skill of baton exchange in a relay race while safely maintaining own lane",
-            "participate in a relay race",
-            "sing the three verses of the East African Community Anthem observing etiquette",
-            "discuss the East African Community Anthem focussing on message, value and occasions when it is performed"
+            "**Lesson 1-3: Rope Craft & Preparation.** Learner is guided to: collect and prepare locally available materials (sisal, old fabric) for plaiting. Practice dyeing/painting materials for decoration. Master the 3-strand plaiting technique by creating sample plaits before making a full skipping rope.",
+            "**Lesson 4-6: Baton Craft & Safety.** Learner is guided to: safely source and cut appropriate sticks for a baton. Practice peeling, drying, and thoroughly smoothening the baton to prevent splinters. Decorate the baton using painting or incising techniques for better grip and visibility.",
+            "**Lesson 7-9: Baton Exchange Drills.** Learner is guided to: practice the visual baton exchange technique in pairs while walking, then jogging. Focus on hand positioning ('V' shape) and calling out. Practice the non-visual exchange, focusing on auditory cues and timing. Use the previously made skipping ropes for warm-up drills.",
+            "**Lesson 10-12: Relay Race Simulation.** Learner is guided to: practice baton exchange within a marked lane to learn lane discipline. Participate in short, mock relay races in groups, combining the start, run, and exchange. Appraise peers on their technique, focusing on one positive element and one area for improvement.",
+            "**Lesson 13-15: Anthem and Culminating Event.** Learner is guided to: learn the words and etiquette for the East African Community Anthem. Practice singing all three verses with correct posture. Hold a final class relay event where they perform the anthem before competing, simulating a real athletics meet."
           ],
           key_inquiry_questions: [
             "How is a relay performed?",
