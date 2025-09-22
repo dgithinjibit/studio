@@ -62,6 +62,9 @@ import { grade4IndigenousLanguageCurriculum } from "@/curriculum/grade4-indigeno
 import { grade4KiswahiliLanguageActivitiesCurriculum } from "@/curriculum/grade4-kiswahili-language-activities";
 
 
+// Grade 5
+import { grade5CreativeArtsCurriculum } from "@/curriculum/grade5-creative-arts";
+
 // Grade 6
 import { grade6SocialStudiesCurriculum } from "@/curriculum/grade6-social-studies";
 
@@ -122,6 +125,8 @@ const curriculumMap: { [key: string]: any } = {
     'Grade 4-English': grade4EnglishLanguageActivitiesCurriculum,
     'Grade 4-Indigenous Languages': grade4IndigenousLanguageCurriculum,
     'Grade 4-Kiswahili': grade4KiswahiliLanguageActivitiesCurriculum,
+    // Grade 5
+    'Grade 5-Creative Arts': grade5CreativeArtsCurriculum,
     // Grade 6
     'Grade 6-Social Studies': grade6SocialStudiesCurriculum,
 };
@@ -132,7 +137,7 @@ const getSubjectsForGrade = (grade: string) => {
     if (!grade) return [];
     const subjects = Object.keys(curriculumMap)
         .filter(key => key.startsWith(`${grade}-`))
-        .map(key => key.split('-')[1]);
+        .map(key => key.split('-').slice(1).join('-'));
     return Array.from(new Set(subjects));
 };
 
@@ -143,7 +148,7 @@ interface GenerateSchemeOfWorkDialogProps {
     onResourceSaved: () => void;
 }
 
-export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved }: GenerateSchemeOfWorkDialogProps) {
+export default function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved }: GenerateSchemeOfWorkDialogProps) {
   const [loading, setLoading] = useState(false);
   const [generatedScheme, setGeneratedScheme] = useState("");
   const [currentSubStrand, setCurrentSubStrand] = useState("");
@@ -172,7 +177,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
 
   const availableSubStrands = useMemo(() => {
     if (selectedStrand) {
-      const strand = availableStrands.find(s => s.title === selectedStrand);
+      const strand = availableStrands.find((s: any) => s.title === selectedStrand);
       return strand?.sub_strands || [];
     }
     return [];
@@ -203,7 +208,8 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
           title: `${currentSubStrand} - Scheme of Work`,
           url: downloadURL,
           createdAt: new Date().toISOString(),
-          type: 'Scheme of Work'
+          type: 'Scheme of Work',
+          joinCode: ''
         };
 
         await addDoc(collection(db, "teacherResources"), newResource);
@@ -233,7 +239,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
     setLoading(true);
     setGeneratedScheme("");
 
-    const subStrandData = availableSubStrands.find(ss => ss.title === selectedSubStrandName);
+    const subStrandData = availableSubStrands.find((ss: any) => ss.title === selectedSubStrandName);
     
     if (!subStrandData) {
         toast({
@@ -245,18 +251,17 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
         return;
     }
     
-    const contextString = `
-        Learning Outcomes: ${subStrandData.learning_outcomes.join('\n- ')}
-        Suggested Activities: ${subStrandData.suggested_activities.join('\n- ')}
-        Key Inquiry Question: ${subStrandData.key_inquiry_questions.join('\n- ')}
-    `;
+    // Construct the context string by serializing the sub-strand data
+    const contextString = Object.entries(subStrandData)
+        .map(([key, value]) => `**${key}:**\n${Array.isArray(value) ? value.join('\n- ') : value}`)
+        .join('\n\n');
 
     const data: GenerateSchemeOfWorkInput = {
       subject: selectedSubject,
       grade: selectedGrade,
       strand: selectedStrand,
       subStrand: selectedSubStrandName,
-      lessonsPerWeek: lessonsPerWeek.toString(),
+      lessonsPerWeek: subStrandData.lessons || lessonsPerWeek.toString(),
       schemeOfWorkContext: contextString, 
     };
     setCurrentSubStrand(data.subStrand);
@@ -294,7 +299,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
             resetForm();
         }
     }}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl">Schemer: Single Sub-Strand</DialogTitle>
           <DialogDescription>
@@ -333,7 +338,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                     <Select name="strand" value={selectedStrand} onValueChange={v => { setSelectedStrand(v); setSelectedSubStrandName(''); }} required disabled={!curriculumData}>
                         <SelectTrigger><SelectValue placeholder="Select a strand..." /></SelectTrigger>
                         <SelectContent>
-                            {availableStrands.map(s => (
+                            {availableStrands.map((s: any) => (
                                 <SelectItem key={s.title} value={s.title}>{s.title}</SelectItem>
                             ))}
                         </SelectContent>
@@ -345,7 +350,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                     <Select name="subStrand" value={selectedSubStrandName} onValueChange={setSelectedSubStrandName} required disabled={!selectedStrand}>
                         <SelectTrigger><SelectValue placeholder="Select a sub-strand..." /></SelectTrigger>
                         <SelectContent>
-                            {availableSubStrands.map(ss => (
+                            {availableSubStrands.map((ss: any) => (
                                 <SelectItem key={ss.title} value={ss.title}>{ss.title}</SelectItem>
                             ))}
                         </SelectContent>
@@ -354,7 +359,7 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                 
                 <div>
                     <Label htmlFor="lessonsPerWeek">Number of Lessons: {lessonsPerWeek}</Label>
-                    <Slider id="lessonsPerWeek" name="lessonsPerWeek" min={1} max={10} step={1} value={[lessonsPerWeek]} onValueChange={(value) => setLessonsPerWeek(value[0])} />
+                    <Slider id="lessonsPerWeek" name="lessonsPerWeek" min={1} max={15} step={1} value={[lessonsPerWeek]} onValueChange={(value) => setLessonsPerWeek(value[0])} />
                 </div>
                 
                 <DialogFooter className="pt-4">
@@ -364,8 +369,8 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                     </Button>
                 </DialogFooter>
             </form>
-             <div className="border-l border-border pl-8">
-                <div className="flex justify-between items-center mb-2">
+             <div className="border-l border-border pl-8 flex flex-col">
+                <div className="flex justify-between items-center mb-2 flex-shrink-0">
                     <h3 className="font-bold">Generated Scheme of Work:</h3>
                     {generatedScheme && (
                          <div className="flex items-center gap-2">
@@ -379,21 +384,23 @@ export function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResourceSaved
                         </div>
                     )}
                 </div>
-                {loading && (
-                    <div className="flex items-center justify-center h-full">
-                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                    </div>
-                )}
-                {generatedScheme && (
-                    <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 overflow-auto h-[500px] border rounded-md p-2">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{generatedScheme}</ReactMarkdown>
-                    </div>
-                )}
-                 {!loading && !generatedScheme && (
-                    <div className="flex items-center justify-center h-full text-muted-foreground text-center p-8 bg-muted/50 rounded-lg">
-                        <p>Your generated scheme of work will appear here once you fill out the form and click "Generate".</p>
-                    </div>
-                )}
+                <div className="flex-grow overflow-auto">
+                    {loading && (
+                        <div className="flex items-center justify-center h-full">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        </div>
+                    )}
+                    {generatedScheme && (
+                        <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 overflow-auto border rounded-md p-2">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{generatedScheme}</ReactMarkdown>
+                        </div>
+                    )}
+                     {!loading && !generatedScheme && (
+                        <div className="flex items-center justify-center h-full text-muted-foreground text-center p-8 bg-muted/50 rounded-lg">
+                            <p>Your generated scheme of work will appear here once you fill out the form and click "Generate".</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
       </DialogContent>

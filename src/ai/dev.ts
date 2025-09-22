@@ -58,9 +58,11 @@ import '@/curriculum/grade4-english-language-activities.ts';
 import '@/curriculum/grade3-creative-activities.ts';
 import '@/curriculum/grade4-kiswahili-language-activities.ts';
 import '@/curriculum/grade4-religious-education.ts';
+import '@/curriculum/grade5-creative-arts.ts';
 
     
 
     
+
 
 

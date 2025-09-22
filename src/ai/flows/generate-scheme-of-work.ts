@@ -18,7 +18,7 @@ const GenerateSchemeOfWorkInputSchema = z.object({
   strand: z.string().describe('The main curriculum strand. This should be the main title.'),
   subStrand: z.string().describe('The sub-strand or specific topic area.'),
   lessonsPerWeek: z.string().describe('The number of lessons to be taught each week for this sub-strand.'),
-  schemeOfWorkContext: z.string().optional().describe('A string containing the Learning Outcomes, Suggested Activities, and Key Inquiry Questions for the sub-strand.')
+  schemeOfWorkContext: z.string().optional().describe('A string containing the Learning Outcomes, Suggested Activities, Key Inquiry Questions, and other curriculum details for the sub-strand.')
 });
 export type GenerateSchemeOfWorkInput = z.infer<typeof GenerateSchemeOfWorkInputSchema>;
 
@@ -66,24 +66,10 @@ The final output MUST follow this exact Markdown table structure. Do NOT add any
 | **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | - [Extract and list ALL the learning outcomes from the curriculum details here.] | - [Extract and list ALL the suggested learning experiences from the curriculum details here.] | - [Extract and list ALL the key inquiry questions from the curriculum details here.] |
 `;
 
-    const englishPrompt = `You are an expert Kenyan CBC curriculum developer who ALSO keeps a private “teacher help” layer in working memory.
-Follow the original instructions literally: print ONLY the requested markdown table, no extra prose.
-However, before you emit the final table, run the four silent parahelp steps below and bake their result into the cells.  Never mention these steps in the output.
-
-**Parahelp Step 1: Row Sanity**
-If the curriculum gives you more than 8 learning outcomes, break them into two consecutive rows; duplicate the Strand/Sub-strand cells so the teacher can choose a logical half-term split.
-
-**Parahelp Step 2: Cell Micro-formatting**
-Ensure every bullet in “Suggested Learning Experiences” starts with a CBC-active verb (explore, construct, demonstrate, record, present…).  If the source text uses passive voice, rewrite quietly. For lists within a cell, ensure each item is on a new line and starts with a hyphen (-).
-
-**Parahelp Step 3: Assessment Lift**
-If the suggested assessment is only “Observation” or “Oral questions”, append one concrete, low-prep idea in brackets, e.g. “Observation (traffic-light cards)” or “Oral questions (exit ticket: 2 stars & 1 wish)”.
-
-**Parahelp Step 4: Hidden Teacher Cue**
-After the final “|” of the table, add an HTML comment <!--LT: 90min 3-part lesson: 10min spark → 60min activity → 20min plenary-->
+    const englishPrompt = `You are an expert Kenyan CBC curriculum developer. Your task is to generate a comprehensive, single-row Scheme of Work in a Markdown table format.
 
 **CONTEXT FROM CURRICULUM DOCUMENT (Your ONLY Source of Truth):**
-You MUST use the following curriculum details to populate the table.
+You MUST use the following curriculum details to populate the table. Do not add any information not present in this context.
 - **Subject:** {{{subject}}}
 - **Grade:** {{{grade}}}
 - **Strand:** {{{strand}}}
@@ -92,13 +78,11 @@ You MUST use the following curriculum details to populate the table.
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS:**
-The final output MUST be a single, well-formatted Markdown table based on the rules above. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>.
+The final output MUST be a single, well-formatted Markdown table with the following columns. Ensure that all data from the "Curriculum Details" is correctly placed into the corresponding columns of the table. For lists within a cell, ensure each item is on a new line and starts with a hyphen (-).
 
-**FINAL FORMAT RULE:** print the table with genuine pipe-delimited columns and at least one hyphen-row \`|---|---|...|\` so it renders with full vertical & horizontal borders in every Markdown viewer.
-
-| Strand | Sub Strand | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Assessment | Reflection |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **{{{strand}}}** | **{{{subStrand}}}** ({{{lessonsPerWeek}}} lessons) | - [Extract and list ALL the learning outcomes from the curriculum details here.] | - [Extract and list ALL the suggested learning experiences from the curriculum details here.] | - [Extract and list ALL the key inquiry questions from the curriculum details here.] | [Suggest a relevant assessment method, e.g., 'Observation', 'Oral questions', 'Portfolio'] | [This section MUST be left blank.] |
+| Strand | Sub Strand (Lessons) | Specific Learning Outcomes | Suggested Learning Experiences | Key Inquiry Question(s) | Core Competencies | Values | Pertinent and Contemporary Issues (PCIs) | Link to other subjects |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **{{{strand}}}** | **{{{subStrand}}}** ({{{lessonsPerWeek}}} lessons) | [Extract and list ALL 'learning_outcomes' here.] | [Extract and list ALL 'suggested_activities' here.] | [Extract and list ALL 'key_inquiry_questions' here.] | [Extract and list ALL 'core_competencies' here.] | [Extract and list ALL 'values' here.] | [Extract and list ALL 'pcis' here.] | [Extract and list ALL 'links_to_other_subjects' here.] |
 `;
 
     const selectedPrompt = ai.definePrompt({
