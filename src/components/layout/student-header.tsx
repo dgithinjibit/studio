@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { User, ArrowLeft, LogOut, Settings, Video } from 'lucide-react';
-import { ProfileDialog } from './profile-dialog';
+import ProfileDialog from './profile-dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,

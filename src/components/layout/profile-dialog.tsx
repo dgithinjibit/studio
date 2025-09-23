@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -23,7 +22,7 @@ const defaultUser = {
     school: 'SyncSenta School',
 };
 
-export function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
+export default function ProfileDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
     const { toast } = useToast();
     const [userName, setUserName] = useState(defaultUser.fullName);
     const [userEmail, setUserEmail] = useState(defaultUser.email);
