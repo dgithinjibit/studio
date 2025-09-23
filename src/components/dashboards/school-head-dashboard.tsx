@@ -13,19 +13,19 @@ import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
 import { AddStaffDialog } from '../add-staff-dialog';
 import { AddCommunicationDialog } from '../add-communication-dialog';
 import { format } from 'date-fns';
-import { mockTeacher, mockSchools } from '@/lib/mock-data';
+import { mockTeacher, mockSchools, initialTeachingStaff, initialNonTeachingStaff } from '@/lib/mock-data';
 import { useRouter } from 'next/navigation';
 
 
 export function SchoolHeadDashboard() {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] =useState('');
+  const [response, setResponse] = useState('');
   const { toast } = useToast();
   const [schoolResources, setSchoolResources] = useState<SchoolResource[]>([]);
   const [isAddTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
-  const [isAddCommDialogOpen, setAddCommDialogOpen] =useState(false);
-  const [teachers, setTeachers] = useState<(TeachingStaff | NonTeachingStaff)[]>([]);
+  const [isAddCommDialogOpen, setAddCommDialogOpen] = useState(false);
+  const [teachers, setTeachers] = useState<(TeachingStaff)[]>([]);
   const [communications, setCommunications] = useState<Communication[]>([]);
   const router = useRouter();
 
@@ -39,6 +39,8 @@ export function SchoolHeadDashboard() {
     const storedTeachers = localStorage.getItem('mockTeachingStaff');
     if (storedTeachers) {
         setTeachers(JSON.parse(storedTeachers));
+    } else {
+        setTeachers(initialTeachingStaff);
     }
     const storedComms = localStorage.getItem('mockCommunications');
      if (storedComms) {
@@ -60,9 +62,9 @@ export function SchoolHeadDashboard() {
         const result = await schoolHeadConsultant({
             question,
             schoolData: {
-                teacherCount: 25,
-                studentCount: 500,
-                averageAttendance: 92,
+                teacherCount: teachers.length,
+                studentCount: 500, // Mock data
+                averageAttendance: 92, // Mock data
                 classes: mockTeacher.classes, // Using mock for now
                 resources: schoolResources.map(({resourceName, schoolName, quantity}) => ({title: resourceName, type: `Allocated to ${schoolName} (x${quantity})`})),
             }
@@ -110,6 +112,7 @@ export function SchoolHeadDashboard() {
     const updatedComms = [newComm, ...communications];
     setCommunications(updatedComms);
     localStorage.setItem('mockCommunications', JSON.stringify(updatedComms));
+    window.dispatchEvent(new Event('communication-update'));
     toast({
         title: "Announcement Sent",
         description: `Your announcement "${comm.title}" has been sent to ${comm.recipient}.`,
@@ -238,5 +241,3 @@ export function SchoolHeadDashboard() {
     </>
   );
 }
-
-    

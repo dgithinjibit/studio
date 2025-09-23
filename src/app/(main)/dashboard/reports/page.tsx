@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MyResources } from "@/components/my-resources";
 import { BarChart2, Megaphone, Send } from "lucide-react";
@@ -39,7 +39,16 @@ function SchoolHeadReportsView() {
           sender: schoolHeadName,
         };
         
-        const existingComms: Communication[] = JSON.parse(localStorage.getItem('mockCommunications') || '[]').map((c: any) => ({...c, date: new Date(c.date)}));
+        let existingComms: Communication[] = [];
+        const storedComms = localStorage.getItem('mockCommunications');
+        if (storedComms) {
+            try {
+                existingComms = JSON.parse(storedComms).map((c: any) => ({...c, date: new Date(c.date)}));
+            } catch (e) {
+                console.error("Error parsing mockCommunications from localStorage", e);
+            }
+        }
+        
         localStorage.setItem('mockCommunications', JSON.stringify([newComm, ...existingComms]));
 
         toast({
@@ -108,18 +117,26 @@ function SchoolHeadReportsView() {
 }
 
 // This is an async component because it needs to fetch the user role on the server.
-export default async function ReportsPage() {
-    // We need to determine the role on the server to decide which view to render.
-    // However, the component itself needs to be a client component to use state and hooks.
-    // This is a common pattern in Next.js App Router.
-    const user = await getServerUser();
-    const role = user?.role as UserRole;
+export default function ReportsPage() {
+    // We use a state to hold the role, and determine it on the client side.
+    // This avoids issues with server-side rendering mismatches.
+    const [role, setRole] = useState<UserRole | null>(null);
+
+    useEffect(() => {
+        // This is a workaround to get the role on the client, as `getServerUser` can only be used in Server Components.
+        // In a real app, you'd use a proper client-side auth context.
+        const fetchRole = async () => {
+             const user = await getServerUser();
+             setRole(user?.role as UserRole);
+        }
+        fetchRole();
+    }, []);
+
 
     if (role === 'school_head') {
         return <SchoolHeadReportsView />;
     }
 
-    // Default to teacher view for teachers and any other role
+    // Default to teacher view for teachers and any other role, or while loading
     return <TeacherResourcesView />;
 }
-    
