@@ -1,33 +1,20 @@
+
 'use server';
 
 /**
  * @fileOverview Generates a summary of an AI-generated report for a school, for county officers.
  *
  * - generateReportSummary - A function that generates the report summary.
- * - GenerateReportSummaryInput - The input type for the generateReportSummary function.
- * - GenerateReportSummaryOutput - The return type for the generateReportSummary function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+    GenerateReportSummaryInput,
+    GenerateReportSummaryInputSchema,
+    GenerateReportSummaryOutput,
+    GenerateReportSummaryOutputSchema
+} from './generate-report-summary-types';
 
-const GenerateReportSummaryInputSchema = z.object({
-  reportText: z
-    .string()
-    .describe('The complete text of the AI-generated report.'),
-});
-export type GenerateReportSummaryInput = z.infer<
-  typeof GenerateReportSummaryInputSchema
->;
-
-const GenerateReportSummaryOutputSchema = z.object({
-  summary: z
-    .string()
-    .describe('A concise summary of the AI-generated report.'),
-});
-export type GenerateReportSummaryOutput = z.infer<
-  typeof GenerateReportSummaryOutputSchema
->;
 
 export async function generateReportSummary(
   input: GenerateReportSummaryInput

@@ -5,25 +5,16 @@
  * @fileOverview AI agent to generate a draft worksheet.
  *
  * - generateWorksheet - A function that handles the worksheet generation process.
- * - GenerateWorksheetInput - The input type for the generateWorksheet function.
- * - GenerateWorksheetOutput - The return type for the generateWorksheet function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+    GenerateWorksheetInput,
+    GenerateWorksheetInputSchema,
+    GenerateWorksheetOutput,
+    GenerateWorksheetOutputSchema
+} from './generate-worksheet-types';
 
-const GenerateWorksheetInputSchema = z.object({
-  grade: z.string().describe("The grade level for the worksheet (e.g., 'Grade 5')."),
-  subject: z.string().describe("The subject of the worksheet (e.g., 'Science')."),
-  topic: z.string().describe("The topic for the worksheet (e.g., 'The Solar System')."),
-  numQuestions: z.string().describe("The number of questions to generate for the worksheet."),
-});
-export type GenerateWorksheetInput = z.infer<typeof GenerateWorksheetInputSchema>;
-
-const GenerateWorksheetOutputSchema = z.object({
-  worksheet: z.string().describe('The generated worksheet in Markdown format, including a title, instructions, and questions.'),
-});
-export type GenerateWorksheetOutput = z.infer<typeof GenerateWorksheetOutputSchema>;
 
 export async function generateWorksheet(
   input: GenerateWorksheetInput

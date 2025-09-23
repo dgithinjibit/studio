@@ -5,27 +5,16 @@
  * @fileOverview AI agent to generate a draft Scheme of Work based on official curriculum data.
  *
  * - generateSchemeOfWork - A function that handles the scheme of work generation process.
- * - GenerateSchemeOfWorkInput - The input type for the generateSchemeOfWork function.
- * - GenerateSchemeOfWorkOutput - The return type for the generateSchemeOfWork function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+    GenerateSchemeOfWorkInput,
+    GenerateSchemeOfWorkInputSchema,
+    GenerateSchemeOfWorkOutput,
+    GenerateSchemeOfWorkOutputSchema
+} from './generate-scheme-of-work-types';
 
-const GenerateSchemeOfWorkInputSchema = z.object({
-  subject: z.string().describe('The subject for the scheme of work.'),
-  grade: z.string().describe('The grade level for the scheme of work.'),
-  strand: z.string().describe('The main curriculum strand. This should be the main title.'),
-  subStrand: z.string().describe('The sub-strand or specific topic area.'),
-  lessonsPerWeek: z.string().describe('The number of lessons to be taught each week for this sub-strand.'),
-  schemeOfWorkContext: z.string().optional().describe('A string containing the Learning Outcomes, Suggested Activities, Key Inquiry Questions, and other curriculum details for the sub-strand.')
-});
-export type GenerateSchemeOfWorkInput = z.infer<typeof GenerateSchemeOfWorkInputSchema>;
-
-const GenerateSchemeOfWorkOutputSchema = z.object({
-  schemeOfWork: z.string().describe('The generated scheme of work in a structured Markdown table format, based on the official curriculum design.'),
-});
-export type GenerateSchemeOfWorkOutput = z.infer<typeof GenerateSchemeOfWorkOutputSchema>;
 
 export async function generateSchemeOfWork(
   input: GenerateSchemeOfWorkInput

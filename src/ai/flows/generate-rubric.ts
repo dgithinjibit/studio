@@ -5,28 +5,16 @@
  * @fileOverview AI agent to generate a custom rubric for an assignment.
  *
  * - generateRubric - A function that handles the rubric generation process.
- * - GenerateRubricInput - The input type for the generateRubric function.
- * - GenerateRubricOutput - The return type for the generateRubric function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+    GenerateRubricInput,
+    GenerateRubricInputSchema,
+    GenerateRubricOutput,
+    GenerateRubricOutputSchema
+} from './generate-rubric-types';
 
-const GenerateRubricInputSchema = z.object({
-  grade: z.string().describe("The grade level for the assignment (e.g., '5th Grade')."),
-  levels: z.string().describe("The number of performance levels for the rubric (e.g., '3')."),
-  learningObjective: z.string().describe("The learning objective or standard (e.g., 'SWBAT write an argumentative essay')."),
-  assignmentDescription: z.string().describe("A brief description of the student assignment."),
-  criteria: z.string().optional().describe("Specific categories or criteria to include in the rubric (e.g., 'Include supporting arguments')."),
-  standards: z.string().optional().describe("Any specific educational standards to align with (e.g., 'CCSS', 'TEKS')."),
-  webSearch: z.boolean().optional().describe("Whether to use web search to inform the rubric generation."),
-});
-export type GenerateRubricInput = z.infer<typeof GenerateRubricInputSchema>;
-
-const GenerateRubricOutputSchema = z.object({
-  rubric: z.string().describe('The generated rubric in a structured Markdown table format.'),
-});
-export type GenerateRubricOutput = z.infer<typeof GenerateRubricOutputSchema>;
 
 export async function generateRubric(
   input: GenerateRubricInput
