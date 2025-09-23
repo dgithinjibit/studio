@@ -29,11 +29,19 @@ export function CountyOfficerDashboard() {
   const [hoveredSchool, setHoveredSchool] = useState<School | null>(null);
   const [clickedSchool, setClickedSchool] = useState<School | null>(null);
   const [isAddCommDialogOpen, setAddCommDialogOpen] = useState(false);
+  const [communications, setCommunications] = useState<Communication[]>([]);
   const { toast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
     setSchools(mockSchools);
+    const storedComms = localStorage.getItem('mockCommunications');
+     if (storedComms) {
+        const parsedComms = JSON.parse(storedComms);
+        if (Array.isArray(parsedComms)) {
+            setCommunications(parsedComms.map((c: any) => ({...c, date: new Date(c.date)})));
+        }
+    }
   }, []);
 
   const handleGenerateSummary = async () => {
@@ -78,8 +86,9 @@ export function CountyOfficerDashboard() {
       sender: countyOfficerName,
     };
     
-    const existingComms: Communication[] = JSON.parse(localStorage.getItem('mockCommunications') || '[]');
-    localStorage.setItem('mockCommunications', JSON.stringify([newComm, ...existingComms]));
+    const updatedComms = [newComm, ...communications];
+    setCommunications(updatedComms);
+    localStorage.setItem('mockCommunications', JSON.stringify(updatedComms));
     onCommunicationUpdated();
     toast({
         title: "Announcement Sent",
@@ -203,3 +212,4 @@ export function CountyOfficerDashboard() {
     </>
   );
 }
+    

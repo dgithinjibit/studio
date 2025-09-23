@@ -39,7 +39,7 @@ function SchoolHeadReportsView() {
           sender: schoolHeadName,
         };
         
-        const existingComms: Communication[] = JSON.parse(localStorage.getItem('mockCommunications') || '[]');
+        const existingComms: Communication[] = JSON.parse(localStorage.getItem('mockCommunications') || '[]').map((c: any) => ({...c, date: new Date(c.date)}));
         localStorage.setItem('mockCommunications', JSON.stringify([newComm, ...existingComms]));
 
         toast({
@@ -48,8 +48,8 @@ function SchoolHeadReportsView() {
         });
         
         setAddCommDialogOpen(false);
-        // Optionally, redirect to a page where they can see the announcement log
-        // router.push('/dashboard/communications');
+        // Dispatch an event to notify other components of the update
+        window.dispatchEvent(new CustomEvent('communication-update'));
     };
 
     return (
@@ -122,6 +122,4 @@ export default async function ReportsPage() {
     // Default to teacher view for teachers and any other role
     return <TeacherResourcesView />;
 }
-
-
     

@@ -13,19 +13,8 @@ import { EditStaffDialog } from '@/components/edit-staff-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import type { TeachingStaff, NonTeachingStaff } from '@/lib/types';
+import { initialTeachingStaff, initialNonTeachingStaff } from '@/lib/mock-data';
 
-
-const initialTeachingStaff: TeachingStaff[] = [
-    { id: 't-1', name: 'Ms. Chidinma Okoro', tscNo: 'TSC-12345', role: 'English/Literature', category: 'Teaching' },
-    { id: 't-2', name: 'Mr. David Mwangi', tscNo: 'TSC-67890', role: 'Mathematics', category: 'Teaching' },
-    { id: 't-3', name: 'Mrs. Fatuma Ali', tscNo: 'TSC-54321', role: 'Kiswahili/CRE', category: 'Teaching' },
-];
-
-const initialNonTeachingStaff: NonTeachingStaff[] = [
-    { id: 'nt-1', name: 'Mr. James Ochieng', role: 'Bursar', category: 'Non-Teaching' },
-    { id: 'nt-2', name: 'Mrs. Alice Wambui', role: 'Secretary', category: 'Non-Teaching' },
-    { id: 'nt-3', name: 'Mr. Peter Kamau', role: 'Groundsman', category: 'Non-Teaching' },
-];
 
 export default function SchoolStaffPage() {
     const [teachingStaff, setTeachingStaff] = useState<TeachingStaff[]>([]);
@@ -63,6 +52,10 @@ export default function SchoolStaffPage() {
         const updatedStaff = [...teachingStaff, newTeacher];
         setTeachingStaff(updatedStaff);
         localStorage.setItem('mockTeachingStaff', JSON.stringify(updatedStaff));
+        toast({
+            title: "Teacher Added",
+            description: `${teacher.name} has been added to the teaching staff list.`
+        });
     };
     
     const handleAddNonTeachingStaff = (staff: { name: string; role: string }) => {
@@ -269,5 +262,4 @@ export default function SchoolStaffPage() {
         </>
     );
 }
-
     

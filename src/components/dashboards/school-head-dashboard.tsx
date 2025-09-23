@@ -13,7 +13,7 @@ import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
 import { AddStaffDialog } from '../add-staff-dialog';
 import { AddCommunicationDialog } from '../add-communication-dialog';
 import { format } from 'date-fns';
-import { mockTeacher, mockSchools, mockCommunications } from '@/lib/mock-data';
+import { mockTeacher, mockSchools } from '@/lib/mock-data';
 import { useRouter } from 'next/navigation';
 
 
@@ -42,7 +42,10 @@ export function SchoolHeadDashboard() {
     }
     const storedComms = localStorage.getItem('mockCommunications');
      if (storedComms) {
-        setCommunications(JSON.parse(storedComms).map((c: any) => ({...c, date: new Date(c.date)})));
+        const parsedComms = JSON.parse(storedComms);
+        if (Array.isArray(parsedComms)) {
+            setCommunications(parsedComms.map((c: any) => ({...c, date: new Date(c.date)})));
+        }
     }
   }, []);
 
@@ -235,7 +238,5 @@ export function SchoolHeadDashboard() {
     </>
   );
 }
-
-    
 
     
