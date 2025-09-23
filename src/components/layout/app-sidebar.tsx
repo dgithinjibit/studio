@@ -49,14 +49,14 @@ export function AppSidebar() {
       { href: "/dashboard/county-teachers", icon: Users, label: "Teacher Management" },
       { href: "/dashboard/county-finance", icon: Banknote, label: "Financial Oversight" },
       { href: "/dashboard/county-comms", icon: Megaphone, label: "Communications" },
-  ]
+  ];
   
   const schoolHeadNavItems = [
        { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
        { href: "/dashboard/reports", icon: Library, label: "School Reports" },
        { href: "/dashboard/school-staff", icon: Users, label: "Staff Management" },
        { href: "/dashboard/school-finance", icon: Banknote, label: "School Finance" },
-  ]
+  ];
 
   let navItems;
 
