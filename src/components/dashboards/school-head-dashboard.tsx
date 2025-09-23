@@ -12,7 +12,6 @@ import type { TeacherResource, Communication, SchoolResource, TeachingStaff, Non
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
 import { AddStaffDialog } from '../add-staff-dialog';
 import { AddCommunicationDialog } from '../add-communication-dialog';
-import { AddResourceDialog } from '../add-resource-dialog';
 import { format } from 'date-fns';
 import { mockTeacher, mockSchools, mockCommunications } from '@/lib/mock-data';
 import { useRouter } from 'next/navigation';
@@ -26,7 +25,6 @@ export function SchoolHeadDashboard() {
   const [schoolResources, setSchoolResources] = useState<SchoolResource[]>([]);
   const [isAddTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
   const [isAddCommDialogOpen, setAddCommDialogOpen] =useState(false);
-  const [isAddResourceDialogOpen, setAddResourceDialogOpen] = useState(false);
   const [teachers, setTeachers] = useState<(TeachingStaff | NonTeachingStaff)[]>([]);
   const [communications, setCommunications] = useState<Communication[]>([]);
   const router = useRouter();
@@ -112,23 +110,6 @@ export function SchoolHeadDashboard() {
     toast({
         title: "Announcement Sent",
         description: `Your announcement "${comm.title}" has been sent to ${comm.recipient}.`,
-    });
-  };
-
-  const handleAddResource = (newResource: Omit<SchoolResource, 'id' | 'dateAllocated'>) => {
-    const resourceToAdd: SchoolResource = {
-      ...newResource,
-      id: `res_${Date.now()}`,
-      dateAllocated: new Date().toISOString(),
-    };
-    
-    const updatedResources = [resourceToAdd, ...schoolResources];
-    setSchoolResources(updatedResources);
-    localStorage.setItem('schoolResources', JSON.stringify(updatedResources));
-    
-    toast({
-      title: "Resource Logged",
-      description: `${newResource.quantity} of ${newResource.resourceName} allocated to ${newResource.schoolName}.`,
     });
   };
 
@@ -254,5 +235,3 @@ export function SchoolHeadDashboard() {
     </>
   );
 }
-
-    
