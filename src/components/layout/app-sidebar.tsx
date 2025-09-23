@@ -71,7 +71,7 @@ export function AppSidebar() {
       navItems = countyAdminNavItems;
       break;
     default:
-      // Default to a minimal or empty nav if role is not defined
+      // Default to a minimal or empty nav if role is not defined or on initial load
       navItems = [
         { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
       ];
