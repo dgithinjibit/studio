@@ -8,13 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Users, BookOpen, Package, Bell, Send, PlusCircle } from 'lucide-react';
-import type { TeacherResource, Communication, SchoolResource } from '@/lib/types';
+import type { TeacherResource, Communication, SchoolResource, TeachingStaff, NonTeachingStaff } from '@/lib/types';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
 import { AddStaffDialog } from '../add-staff-dialog';
 import { AddCommunicationDialog } from '../add-communication-dialog';
 import { AddResourceDialog } from '../add-resource-dialog';
 import { format } from 'date-fns';
-import { mockTeacher } from '@/lib/mock-data';
+import { mockTeacher, mockSchools, mockCommunications } from '@/lib/mock-data';
+import { useRouter } from 'next/navigation';
 
 
 export function SchoolHeadDashboard() {
@@ -22,26 +23,22 @@ export function SchoolHeadDashboard() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] =useState('');
   const { toast } = useToast();
-  const [teacherResources, setTeacherResources] = useState<TeacherResource[]>([]);
   const [schoolResources, setSchoolResources] = useState<SchoolResource[]>([]);
   const [isAddTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
   const [isAddCommDialogOpen, setAddCommDialogOpen] =useState(false);
   const [isAddResourceDialogOpen, setAddResourceDialogOpen] = useState(false);
-  const [teachers, setTeachers] = useState<{name: string, role: string}[]>([]);
+  const [teachers, setTeachers] = useState<(TeachingStaff | NonTeachingStaff)[]>([]);
   const [communications, setCommunications] = useState<Communication[]>([]);
+  const router = useRouter();
 
 
    useEffect(() => {
     // In a real app, this data would be fetched from a database like Firestore
-    const storedTeacherResources = localStorage.getItem('teacherResources');
-    if (storedTeacherResources) {
-      setTeacherResources(JSON.parse(storedTeacherResources));
-    }
     const storedSchoolResources = localStorage.getItem('schoolResources');
     if (storedSchoolResources) {
       setSchoolResources(JSON.parse(storedSchoolResources));
     }
-    const storedTeachers = localStorage.getItem('mockTeachers');
+    const storedTeachers = localStorage.getItem('mockTeachingStaff');
     if (storedTeachers) {
         setTeachers(JSON.parse(storedTeachers));
     }
@@ -83,9 +80,16 @@ export function SchoolHeadDashboard() {
   };
 
   const handleAddTeacher = (teacher: { name: string; role: string }) => {
-    const updatedTeachers = [...teachers, teacher];
+    const newTeacher: TeachingStaff = { 
+        id: `t-${Date.now()}`, 
+        name: teacher.name,
+        role: teacher.role,
+        tscNo: `TSC-${Math.floor(10000 + Math.random() * 90000)}`,
+        category: 'Teaching'
+    };
+    const updatedTeachers = [...teachers, newTeacher];
     setTeachers(updatedTeachers);
-    localStorage.setItem('mockTeachers', JSON.stringify(updatedTeachers));
+    localStorage.setItem('mockTeachingStaff', JSON.stringify(updatedTeachers));
     toast({
         title: "Teacher Added",
         description: `${teacher.name} has been added to the staff list.`,
@@ -201,15 +205,14 @@ export function SchoolHeadDashboard() {
                          <p className="text-sm text-muted-foreground text-center py-4">No teachers added.</p>
                     )}
                 </CardContent>
+                 <CardFooter>
+                    <Button variant="ghost" className="w-full" onClick={() => router.push('/dashboard/school-staff')}>View All Staff</Button>
+                </CardFooter>
             </Card>
 
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle className="flex items-center gap-2"><Package /> Resources</CardTitle>
-                    <Button variant="outline" size="sm" onClick={() => setAddResourceDialogOpen(true)}>
-                         <PlusCircle className="mr-2"/>
-                        Add
-                    </Button>
                 </CardHeader>
                  <CardContent className="space-y-2">
                     {schoolResources.length > 0 ? schoolResources.slice(0, 4).map(res => (
@@ -248,11 +251,8 @@ export function SchoolHeadDashboard() {
         description="Enter the details for the new teaching staff member."
     />
     <AddCommunicationDialog open={isAddCommDialogOpen} onOpenChange={setAddCommDialogOpen} onAddCommunication={handleAddCommunication} />
-    <AddResourceDialog 
-        open={isAddResourceDialogOpen}
-        onOpenChange={setAddResourceDialogOpen}
-        onAddResource={handleAddResource}
-    />
     </>
   );
 }
+
+    
