@@ -91,20 +91,20 @@ export default function SchoolStaffPage() {
         });
     };
     
-    const handleUpdateStaff = (updatedStaff: TeachingStaff | NonTeachingStaff) => {
-        if (updatedStaff.category === 'Teaching') {
-            const updatedList = teachingStaff.map(staff => staff.id === updatedStaff.id ? (updatedStaff as TeachingStaff) : staff);
+    const handleUpdateStaff = (updatedStaffMember: TeachingStaff | NonTeachingStaff) => {
+        if (updatedStaffMember.category === 'Teaching') {
+            const updatedList = teachingStaff.map(staff => staff.id === updatedStaffMember.id ? (updatedStaffMember as TeachingStaff) : staff);
             setTeachingStaff(updatedList);
             localStorage.setItem('mockTeachingStaff', JSON.stringify(updatedList));
         } else {
-            const updatedList = nonTeachingStaff.map(staff => staff.id === updatedStaff.id ? (updatedStaff as NonTeachingStaff) : staff);
+            const updatedList = nonTeachingStaff.map(staff => staff.id === updatedStaffMember.id ? (updatedStaffMember as NonTeachingStaff) : staff);
             setNonTeachingStaff(updatedList);
             localStorage.setItem('mockNonTeachingStaff', JSON.stringify(updatedList));
         }
         setEditingStaff(null);
         toast({
             title: "Staff Details Updated",
-            description: `${updatedStaff.name}'s information has been successfully updated.`
+            description: `${updatedStaffMember.name}'s information has been successfully updated.`
         });
     };
 
@@ -269,3 +269,5 @@ export default function SchoolStaffPage() {
         </>
     );
 }
+
+    
