@@ -58,19 +58,25 @@ export function AppSidebar() {
        { href: "/dashboard/school-finance", icon: Banknote, label: "School Finance" },
   ]
 
-  const getNavItems = () => {
-    switch (role) {
-        case 'county_officer':
-            return countyAdminNavItems;
-        case 'school_head':
-            return schoolHeadNavItems;
-        case 'teacher':
-        default:
-            return teacherNavItems;
-    }
-  }
+  let navItems;
 
-  const navItems = getNavItems();
+  switch (role) {
+    case 'teacher':
+      navItems = teacherNavItems;
+      break;
+    case 'school_head':
+      navItems = schoolHeadNavItems;
+      break;
+    case 'county_officer':
+      navItems = countyAdminNavItems;
+      break;
+    default:
+      // Default to a minimal or empty nav if role is not defined
+      navItems = [
+        { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      ];
+      break;
+  }
 
 
   return (
