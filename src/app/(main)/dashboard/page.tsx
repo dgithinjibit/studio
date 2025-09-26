@@ -4,6 +4,7 @@ import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-d
 import { SchoolHeadDashboard } from '@/components/dashboards/school-head-dashboard';
 import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { redirect } from 'next/navigation';
 
 const DashboardSkeleton = () => (
     <div className="space-y-6">
@@ -30,7 +31,9 @@ export default async function DashboardPage() {
     const user = await getServerUser();
 
     if (!user || !user.role) {
-        return <DashboardSkeleton />;
+       // This can happen on first load or if cookies are cleared.
+       // Redirecting to login is a safe fallback.
+       return redirect('/login');
     }
 
     switch (user.role) {
@@ -41,8 +44,7 @@ export default async function DashboardPage() {
         case 'county_officer':
             return <CountyOfficerDashboard />;
         default:
-            // This is a safe fallback for any unexpected roles
-            // For example, if a student somehow lands here.
-            return <DashboardSkeleton />;
+             // For any other roles (like student) that shouldn't be here.
+            return redirect('/login');
     }
 }

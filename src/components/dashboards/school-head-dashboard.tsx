@@ -221,7 +221,7 @@ export function SchoolHeadDashboard() {
                     {communications.length > 0 ? communications.slice(0, 4).map(comm => (
                          <div key={comm.id} className="text-sm p-2 bg-muted/50 rounded-lg">
                             <p className="font-medium truncate">{comm.title}</p>
-                            <p className="text-xs text-muted-foreground">To: {comm.recipient} on {format(comm.date, 'MMM d')}</p>
+                            <p className="text-xs text-muted-foreground">To: {comm.recipient} on {format(new Date(comm.date), 'MMM d')}</p>
                         </div>
                     )) : (
                         <p className="text-sm text-muted-foreground text-center py-4">No communications sent.</p>

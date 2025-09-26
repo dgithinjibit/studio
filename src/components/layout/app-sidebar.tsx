@@ -72,9 +72,7 @@ export function AppSidebar() {
       break;
     default:
       // Default to a minimal or empty nav if role is not defined or on initial load
-      navItems = [
-        { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-      ];
+      navItems = [];
       break;
   }
 
