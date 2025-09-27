@@ -16,12 +16,9 @@ const DashboardSkeleton = () => (
             <Skeleton className="h-10 w-32" />
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-                <Skeleton className="h-[350px] w-full" />
-            </div>
-            <div className="lg:col-span-1">
-                <Skeleton className="h-[350px] w-full" />
-            </div>
+            <Skeleton className="h-[350px] w-full" />
+            <Skeleton className="h-[350px] w-full" />
+            <Skeleton className="h-[350px] w-full" />
         </div>
     </div>
 );
@@ -31,8 +28,9 @@ export default async function DashboardPage() {
     const user = await getServerUser();
 
     if (!user || !user.role) {
-       // This can happen on first load or if cookies are cleared.
-       // Redirecting to login is a safe fallback.
+       // If the role can't be determined server-side (e.g., cookie not set yet),
+       // it's safer to redirect to login. The signup flow ensures the cookie is set
+       // before a hard navigation to this page.
        return redirect('/login');
     }
 
@@ -43,8 +41,11 @@ export default async function DashboardPage() {
             return <SchoolHeadDashboard />;
         case 'county_officer':
             return <CountyOfficerDashboard />;
+        case 'student':
+            // Students should not be on this dashboard. Redirect them to their journey.
+            return redirect('/student/journey');
         default:
-             // For any other roles (like student) that shouldn't be here.
+             // For any other roles or undefined states.
             return redirect('/login');
     }
 }

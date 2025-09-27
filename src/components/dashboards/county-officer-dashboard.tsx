@@ -37,9 +37,13 @@ export function CountyOfficerDashboard() {
     setSchools(mockSchools);
     const storedComms = localStorage.getItem('mockCommunications');
      if (storedComms) {
-        const parsedComms = JSON.parse(storedComms);
-        if (Array.isArray(parsedComms)) {
-            setCommunications(parsedComms.map((c: any) => ({...c, date: new Date(c.date)})));
+        try {
+            const parsedComms = JSON.parse(storedComms);
+            if (Array.isArray(parsedComms)) {
+                setCommunications(parsedComms.map((c: any) => ({...c, date: new Date(c.date)})));
+            }
+        } catch(e) {
+            console.error("Error parsing comms from localStorage", e);
         }
     }
   }, []);

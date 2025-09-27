@@ -44,11 +44,29 @@ export function SchoolHeadDashboard() {
     }
     const storedComms = localStorage.getItem('mockCommunications');
      if (storedComms) {
-        const parsedComms = JSON.parse(storedComms);
-        if (Array.isArray(parsedComms)) {
-            setCommunications(parsedComms.map((c: any) => ({...c, date: new Date(c.date)})));
+        try {
+          const parsedComms = JSON.parse(storedComms);
+          if (Array.isArray(parsedComms)) {
+              setCommunications(parsedComms.map((c: any) => ({...c, date: new Date(c.date)})));
+          }
+        } catch(e) {
+          console.error("Error parsing mockCommunications", e);
         }
     }
+
+    const handleCommUpdate = () => {
+        const updatedComms = localStorage.getItem('mockCommunications');
+        if(updatedComms) {
+          try {
+            setCommunications(JSON.parse(updatedComms).map((c:any) => ({...c, date: new Date(c.date)})));
+          } catch(e) {
+            console.error("Error parsing mockCommunications on update", e);
+          }
+        }
+    };
+    window.addEventListener('communication-update', handleCommUpdate);
+    return () => window.removeEventListener('communication-update', handleCommUpdate);
+
   }, []);
 
   const handleAskConsultant = async (e: React.FormEvent) => {
@@ -112,7 +130,7 @@ export function SchoolHeadDashboard() {
     const updatedComms = [newComm, ...communications];
     setCommunications(updatedComms);
     localStorage.setItem('mockCommunications', JSON.stringify(updatedComms));
-    window.dispatchEvent(new Event('communication-update'));
+    window.dispatchEvent(new CustomEvent('communication-update'));
     toast({
         title: "Announcement Sent",
         description: `Your announcement "${comm.title}" has been sent to ${comm.recipient}.`,
@@ -127,7 +145,7 @@ export function SchoolHeadDashboard() {
                 <h1 className="font-headline text-3xl font-bold">School Head's Dashboard</h1>
                 <p className="text-muted-foreground">Operational overview and strategic tools for your school.</p>
             </div>
-            <Button onClick={() => setAddCommDialogOpen(true)}>
+            <Button onClick={() => router.push('/dashboard/reports')}>
                 <Send className="mr-2" />
                 New Announcement
             </Button>
@@ -177,9 +195,9 @@ export function SchoolHeadDashboard() {
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle className="flex items-center gap-2"><Users /> Teachers</CardTitle>
-                    <Button variant="outline" size="sm" onClick={() => setAddTeacherDialogOpen(true)}>
+                    <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/school-staff')}>
                         <PlusCircle className="mr-2"/>
-                        Add
+                        Manage
                     </Button>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -205,12 +223,15 @@ export function SchoolHeadDashboard() {
                     {schoolResources.length > 0 ? schoolResources.slice(0, 4).map(res => (
                          <div key={res.id} className="text-sm p-2 bg-muted/50 rounded-lg">
                             <p className="font-medium truncate">{res.resourceName} (x{res.quantity})</p>
-                            <p className="text-xs text-muted-foreground">Allocated on {format(new Date(res.dateAllocated), 'PP')}</p>
+                            <p className="text-xs text-muted-foreground">Allocated to {res.schoolName}</p>
                         </div>
                     )) : (
-                         <p className="text-sm text-muted-foreground text-center py-4">No resources logged.</p>
+                         <p className="text-sm text-muted-foreground text-center py-4">No resources logged for this school.</p>
                     )}
                 </CardContent>
+                 <CardFooter>
+                    <p className="text-xs text-muted-foreground">Resources are logged by County Officer.</p>
+                </CardFooter>
             </Card>
             
              <Card>
@@ -221,23 +242,18 @@ export function SchoolHeadDashboard() {
                     {communications.length > 0 ? communications.slice(0, 4).map(comm => (
                          <div key={comm.id} className="text-sm p-2 bg-muted/50 rounded-lg">
                             <p className="font-medium truncate">{comm.title}</p>
-                            <p className="text-xs text-muted-foreground">To: {comm.recipient} on {format(new Date(comm.date), 'MMM d')}</p>
+                            <p className="text-xs text-muted-foreground">From: {comm.sender} on {format(new Date(comm.date), 'MMM d')}</p>
                         </div>
                     )) : (
-                        <p className="text-sm text-muted-foreground text-center py-4">No communications sent.</p>
+                        <p className="text-sm text-muted-foreground text-center py-4">No communications received.</p>
                     )}
                 </CardContent>
+                  <CardFooter>
+                    <Button variant="ghost" className="w-full" onClick={() => router.push('/dashboard/reports')}>View All Communications</Button>
+                </CardFooter>
             </Card>
         </div>
     </div>
-    <AddStaffDialog 
-        open={isAddTeacherDialogOpen} 
-        onOpenChange={setAddTeacherDialogOpen} 
-        onAddStaff={handleAddTeacher}
-        title="Add New Teacher"
-        description="Enter the details for the new teaching staff member."
-    />
-    <AddCommunicationDialog open={isAddCommDialogOpen} onOpenChange={setAddCommDialogOpen} onAddCommunication={handleAddCommunication} />
     </>
   );
 }

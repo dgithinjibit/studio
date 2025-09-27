@@ -25,7 +25,7 @@ export default function SignupPage() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-            <main className="flex-grow flex items-center justify-center">
+            <main className="flex-grow flex items-center justify-center p-4">
                 <Card className="w-full max-w-4xl">
                     <CardHeader className="text-center">
                         <CardTitle className="font-headline text-2xl">Choose Your Role</CardTitle>
@@ -65,7 +65,7 @@ export default function SignupPage() {
                 </Card>
             </main>
              <footer className="p-4 text-center text-xs text-muted-foreground">
-                @ 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+                © 2024 EduCloud Kenya. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
             </footer>
         </div>
     );

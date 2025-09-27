@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import Image from 'next/image';
+import { SyncSentaLogo } from '@/components/icons';
 
 export default function HomePage() {
   const router = useRouter();
@@ -16,7 +16,8 @@ export default function HomePage() {
       <main className="flex-grow flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="font-headline text-3xl mt-4">Welcome to SyncSenta</CardTitle>
+             <SyncSentaLogo className="w-16 h-16 mx-auto text-primary" />
+            <CardTitle className="font-headline text-3xl mt-4">Welcome to EduCloud Kenya</CardTitle>
             <CardDescription>
               Your AI-powered partner for Kenyan education. Let's get started.
             </CardDescription>
@@ -38,7 +39,7 @@ export default function HomePage() {
         </Card>
       </main>
       <footer className="p-4 text-center text-xs text-muted-foreground">
-          @ 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+          © 2024 EduCloud Kenya. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
       </footer>
     </div>
   );

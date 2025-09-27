@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
+import { SyncSentaLogo } from '@/components/icons';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -24,7 +25,7 @@ export default function LoginPage() {
             title: "Login Successful",
             description: "Welcome back! Redirecting you to your dashboard.",
         });
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
     };
 
     return (
@@ -32,7 +33,8 @@ export default function LoginPage() {
             <main className="flex-grow flex items-center justify-center">
                 <Card className="w-full max-w-sm">
                     <CardHeader className="text-center">
-                        <CardTitle className="font-headline text-2xl">Welcome Back to SyncSenta</CardTitle>
+                         <SyncSentaLogo className="w-12 h-12 mx-auto text-primary" />
+                        <CardTitle className="font-headline text-2xl">Welcome Back to EduCloud</CardTitle>
                         <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -70,7 +72,7 @@ export default function LoginPage() {
                 </Card>
             </main>
              <footer className="p-4 text-center text-xs text-muted-foreground">
-                @ 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+                © 2024 EduCloud Kenya. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
             </footer>
         </div>
     );

@@ -44,7 +44,7 @@ function SignupFormComponent() {
 
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!role) return;
+        if (!role || !termsAccepted) return;
         
         startTransition(async () => {
             const formData = new FormData(e.currentTarget);
@@ -67,6 +67,7 @@ function SignupFormComponent() {
             });
             
             // Use window.location.href for a full page reload to ensure cookie is set
+            // before navigating to the protected dashboard page.
             window.location.href = getRedirectPath();
         });
     };
@@ -101,7 +102,7 @@ function SignupFormComponent() {
                     </Link>
                     <CardHeader className="text-center pt-12">
                         <CardTitle className="font-headline text-2xl">{getTitle()}</CardTitle>
-                        <CardDescription>Join SyncSenta to revolutionize your learning and teaching.</CardDescription>
+                        <CardDescription>Join EduCloud to revolutionize your learning and teaching.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSignup} className="space-y-4">
@@ -141,7 +142,7 @@ function SignupFormComponent() {
                                     checked={termsAccepted}
                                 />
                                 <Label htmlFor="terms" className="text-xs text-muted-foreground">
-                                    By creating an account, I agree to SyncSenta’s{' '}
+                                    By creating an account, I agree to EduCloud’s{' '}
                                     <Link href="/terms" className="underline hover:text-primary" target="_blank">
                                         Terms of Use
                                     </Link>
@@ -169,7 +170,7 @@ function SignupFormComponent() {
                 </Card>
             </main>
              <footer className="p-4 text-center text-xs text-muted-foreground">
-                @ 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+                © 2024 EduCloud Kenya. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
             </footer>
         </div>
     );

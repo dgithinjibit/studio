@@ -27,7 +27,7 @@ import {
   SidebarFooter,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import Image from "next/image";
+import { SyncSentaLogo } from "../icons";
 
 export function AppSidebar() {
   const cookieStore = cookies();
@@ -42,6 +42,13 @@ export function AppSidebar() {
     { href: "/dashboard/creative-arts", icon: Palette, label: "Creative Arts" },
   ];
   
+  const schoolHeadNavItems = [
+       { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+       { href: "/dashboard/reports", icon: Library, label: "School Reports" },
+       { href: "/dashboard/school-staff", icon: Users, label: "Staff Management" },
+       { href: "/dashboard/school-finance", icon: Banknote, label: "School Finance" },
+  ];
+
   const countyAdminNavItems = [
       { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
       { href: "/dashboard/schools", icon: Building2, label: "Schools" },
@@ -49,13 +56,6 @@ export function AppSidebar() {
       { href: "/dashboard/county-teachers", icon: Users, label: "Teacher Management" },
       { href: "/dashboard/county-finance", icon: Banknote, label: "Financial Oversight" },
       { href: "/dashboard/county-comms", icon: Megaphone, label: "Communications" },
-  ];
-  
-  const schoolHeadNavItems = [
-       { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-       { href: "/dashboard/reports", icon: Library, label: "School Reports" },
-       { href: "/dashboard/school-staff", icon: Users, label: "Staff Management" },
-       { href: "/dashboard/school-finance", icon: Banknote, label: "School Finance" },
   ];
 
   let navItems;
@@ -71,19 +71,19 @@ export function AppSidebar() {
       navItems = countyAdminNavItems;
       break;
     default:
-      // Default to a minimal or empty nav if role is not defined or on initial load
-      navItems = [];
+      // A safe default for when the role isn't determined yet.
+      // This prevents errors during the initial render before the cookie is read.
+      navItems = [{ href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" }];
       break;
   }
-
 
   return (
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <Image src="/sync.png" alt="SyncSenta Logo" width={32} height={32} />
+          <SyncSentaLogo className="w-8 h-8" />
           <div className="flex flex-col">
-            <h2 className="font-headline text-lg font-semibold tracking-tight">SyncSenta</h2>
+            <h2 className="font-headline text-lg font-semibold tracking-tight">EduCloud</h2>
           </div>
         </div>
       </SidebarHeader>

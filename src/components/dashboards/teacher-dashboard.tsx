@@ -36,6 +36,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { mockTeacher } from '@/lib/mock-data';
 import { Skeleton } from '../ui/skeleton';
+import { Loader2 } from 'lucide-react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 // Utility to convert tailwind color classes to hex codes
 const tailwindColorToHex: { [key: string]: string } = {
@@ -79,6 +82,7 @@ export function TeacherDashboard() {
     const [summary, setSummary] = useState('');
     const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
+    const [allResources, setAllResources] = useState<TeacherResource[]>([]);
 
     useEffect(() => {
         const storedTeacher = localStorage.getItem('mockTeacher');
@@ -94,6 +98,13 @@ export function TeacherDashboard() {
         if (!selectedClass && teacherData.classes.length > 0) {
             setSelectedClass(teacherData.classes[0]);
         }
+
+        const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
+            const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
+            setAllResources(resourcesData);
+        });
+
+        return () => unsubscribe();
     }, []);
 
     useEffect(() => {
@@ -185,7 +196,6 @@ export function TeacherDashboard() {
     const handleGenerateSummary = async () => {
         setIsSummaryLoading(true);
         setSummary('');
-        const allResources: TeacherResource[] = JSON.parse(localStorage.getItem("teacherResources") || "[]");
         const relevantResources = allResources.map(({ title, type }) => ({ title, type }));
         const classes = teacher.classes.map(({ name }) => ({ name }));
 
@@ -243,7 +253,7 @@ export function TeacherDashboard() {
                             <Bot className="w-6 h-6 text-accent" /> AI Teaching Assistant
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-grow">
+                    <CardContent>
                         <p className="text-sm text-foreground">{summary}</p>
                     </CardContent>
                 </Card>
