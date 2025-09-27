@@ -176,12 +176,12 @@ export function TeacherDashboard() {
 
     return (
         <>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
                 <div>
                     <h1 className="font-headline text-3xl font-bold">Welcome, {teacher.name}!</h1>
                     <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
                 </div>
-                 <Button onClick={handleGenerateSummary} disabled={isSummaryLoading}>
+                 <Button onClick={handleGenerateSummary} disabled={isSummaryLoading} className="w-full md:w-auto">
                     {isSummaryLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     Generate Dashboard Summary
                 </Button>
@@ -211,7 +211,7 @@ export function TeacherDashboard() {
                 </Card>
             )}
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                     <Card>
                         <CardHeader>
