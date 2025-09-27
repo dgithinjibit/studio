@@ -12,9 +12,11 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const role = cookieStore.get('userRole')?.value as UserRole | undefined;
 
   if (role === 'student') {
+    // For students, render only the children without the main dashboard layout
     return <>{children}</>;
   }
 
+  // For all other roles, render the full dashboard layout with sidebar and header
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -24,7 +26,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
               {children}
           </main>
           <footer className="mt-auto p-4 text-center text-xs text-muted-foreground">
-            @ 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+            © 2025 EduCloud Kenya. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
           </footer>
       </SidebarInset>
     </SidebarProvider>
