@@ -3,44 +3,23 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, MoreHorizontal, Plus, Bot, Sparkles, Users, Edit, Trash2 } from "lucide-react";
+import { BookOpen, MoreHorizontal, Plus, Bot, Sparkles, Users, Edit, Trash2, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AddClassDialog } from '@/components/add-class-dialog';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell } from "recharts"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell } from "recharts";
 import type { Teacher, ClassInfo, Student, TeacherResource } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 import { useToast } from '@/hooks/use-toast';
 import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary';
 import { cn } from '@/lib/utils';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { mockTeacher } from '@/lib/mock-data';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Skeleton } from '../ui/skeleton';
-import { Loader2 } from 'lucide-react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { getTeacherData, saveClass, deleteClass } from '@/lib/teacher-service';
 
-// Utility to convert tailwind color classes to hex codes
 const tailwindColorToHex: { [key: string]: string } = {
     'bg-blue-500': '#3b82f6',
     'bg-green-500': '#22c55e',
@@ -72,7 +51,6 @@ const DashboardSkeleton = () => (
     </div>
 );
 
-
 export function TeacherDashboard() {
     const [teacher, setTeacher] = useState<Teacher | null>(null);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
@@ -83,21 +61,21 @@ export function TeacherDashboard() {
     const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedTeacher = localStorage.getItem('mockTeacher');
-        let teacherData;
-        if (storedTeacher) {
-            teacherData = JSON.parse(storedTeacher);
-        } else {
-            teacherData = mockTeacher;
-            localStorage.setItem('mockTeacher', JSON.stringify(mockTeacher));
-        }
-        setTeacher(teacherData);
+        const fetchTeacherData = async () => {
+            const data = await getTeacherData('usr_3'); // Hardcoded teacher ID for now
+            if (data) {
+                setTeacher(data);
+                if (!selectedClass && data.classes.length > 0) {
+                    setSelectedClass(data.classes[0]);
+                }
+            }
+            setLoading(false);
+        };
 
-        if (!selectedClass && teacherData.classes.length > 0) {
-            setSelectedClass(teacherData.classes[0]);
-        }
+        fetchTeacherData();
 
         const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
@@ -113,7 +91,7 @@ export function TeacherDashboard() {
         }
     }, [teacher, selectedClass]);
     
-    if (!teacher) {
+    if (loading || !teacher) {
         return <DashboardSkeleton />;
     }
 
@@ -127,65 +105,44 @@ export function TeacherDashboard() {
         setSelectedClass(classInfo);
         setAttendanceDialogOpen(true);
     };
-    
-    const updateTeacherState = (newTeacherState: Teacher) => {
-        setTeacher(newTeacherState);
-        localStorage.setItem('mockTeacher', JSON.stringify(newTeacherState));
-    };
 
-    const handleUpdateStudents = (classId: string, newStudents: Student[]) => {
-        const updatedClasses = teacher.classes.map(c => 
-            c.id === classId ? { ...c, students: newStudents } : c
-        );
-        updateTeacherState({ ...teacher, classes: updatedClasses });
-    };
-
-    const handleClassNameUpdate = (classId: string, newName: string) => {
-        const updatedClasses = teacher.classes.map(c => 
-            c.id === classId ? { ...c, name: newName } : c
-        );
-        updateTeacherState({ ...teacher, classes: updatedClasses });
-    };
-    
-    const handleSaveClass = (classDetails: { name: string; color: string; students: Student[] }, classId?: string) => {
-        let updatedClasses;
-        let updatedTeacher;
-        if (classId) {
-            updatedClasses = teacher.classes.map(c => 
-                c.id === classId ? { ...c, ...classDetails } : c
-            );
-             updatedTeacher = { ...teacher, classes: updatedClasses };
-             toast({
-                title: "Class Updated",
-                description: `"${classDetails.name}" has been updated.`,
-            })
-        } else {
-            const newClass: ClassInfo = {
-                id: `class_${Date.now()}`,
-                name: classDetails.name,
-                performance: 75,
-                students: classDetails.students,
-                color: classDetails.color,
-            };
-            updatedClasses = [...teacher.classes, newClass];
-            updatedTeacher = { ...teacher, classes: updatedClasses };
+    const handleSaveClass = async (classDetails: { name: string; color: string; students: Student[] }, classId?: string) => {
+        if (!teacher) return;
+        setLoading(true);
+        try {
+            const updatedTeacher = await saveClass(teacher.id, { ...classDetails, id: classId || '' });
+            setTeacher(updatedTeacher);
+            setEditingClass(null);
+            setAddClassDialogOpen(false);
             toast({
-                title: "Class Added",
-                description: `"${classDetails.name}" has been added to your hub.`,
-            })
+                title: classId ? "Class Updated" : "Class Added",
+                description: `"${classDetails.name}" has been successfully saved.`,
+            });
+        } catch (error) {
+            console.error("Error saving class:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not save the class." });
+        } finally {
+            setLoading(false);
         }
-        updateTeacherState(updatedTeacher);
-        setEditingClass(null);
     };
     
-    const handleDeleteClass = (classId: string) => {
-        const updatedClasses = teacher.classes.filter(c => c.id !== classId);
-        updateTeacherState({ ...teacher, classes: updatedClasses });
-        toast({
-            variant: "destructive",
-            title: "Class Deleted",
-            description: "The class has been removed from your hub.",
-        });
+    const handleDeleteClass = async (classId: string) => {
+        if (!teacher) return;
+        setLoading(true);
+        try {
+            const updatedTeacher = await deleteClass(teacher.id, classId);
+            setTeacher(updatedTeacher);
+            toast({
+                variant: "destructive",
+                title: "Class Deleted",
+                description: "The class has been removed from your hub.",
+            });
+        } catch (error) {
+            console.error("Error deleting class:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not delete the class." });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const openEditDialog = (classInfo: ClassInfo) => {
@@ -217,25 +174,20 @@ export function TeacherDashboard() {
         }
     };
 
-
     return (
         <>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="font-headline text-3xl font-bold">Welcome, Teacher!</h1>
+                    <h1 className="font-headline text-3xl font-bold">Welcome, {teacher.name}!</h1>
                     <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
                 </div>
                  <Button onClick={handleGenerateSummary} disabled={isSummaryLoading}>
-                    {isSummaryLoading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                         <Sparkles className="mr-2 h-4 w-4" />
-                    )}
+                    {isSummaryLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     Generate Dashboard Summary
                 </Button>
             </div>
 
-             {isSummaryLoading && (
+            {isSummaryLoading && (
                 <Card className="mb-6">
                     <CardContent className="p-4">
                         <div className="flex items-center gap-2 text-muted-foreground">
@@ -284,7 +236,6 @@ export function TeacherDashboard() {
                     </Card>
                 </div>
                 
-
                 <div className="lg:col-span-1">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
@@ -363,10 +314,12 @@ export function TeacherDashboard() {
                     open={isAttendanceDialogOpen}
                     onOpenChange={setAttendanceDialogOpen}
                     classInfo={selectedClass}
-                    onClassNameUpdate={handleClassNameUpdate}
-                    onUpdateStudents={handleUpdateStudents}
+                    onClassNameUpdate={() => {}}
+                    onUpdateStudents={() => {}}
                  />
              )}
         </>
     );
 }
+
+    
