@@ -46,28 +46,28 @@ function SignupFormComponent() {
         e.preventDefault();
         if (!role) return;
         
-        const formData = new FormData(e.currentTarget);
-        const fullName = formData.get('fullName') as string;
-        const email = formData.get('email') as string;
+        startTransition(async () => {
+            const formData = new FormData(e.currentTarget);
+            const fullName = formData.get('fullName') as string;
+            const email = formData.get('email') as string;
 
-        // Persist user's details for personalization in localStorage
-        localStorage.setItem('userName', fullName);
-        localStorage.setItem('userEmail', email);
-        if (role === 'student') {
-            localStorage.setItem('studentName', fullName);
-        }
+            // Persist user's details for personalization in localStorage
+            localStorage.setItem('userName', fullName);
+            localStorage.setItem('userEmail', email);
+            if (role === 'student') {
+                localStorage.setItem('studentName', fullName);
+            }
 
-        // Set the role in a server-side cookie
-        await updateUserRoleCookie(role, fullName);
+            // Set the role in a server-side cookie
+            await updateUserRoleCookie(role, fullName);
 
-        toast({
-            title: "Account Created!",
-            description: "Welcome! We're redirecting you now.",
-        });
-        
-        startTransition(() => {
-            router.push(getRedirectPath());
-            router.refresh(); // Important: refreshes server components to read the new cookie
+            toast({
+                title: "Account Created!",
+                description: "Welcome! We're redirecting you now.",
+            });
+            
+            // Use window.location.href for a full page reload to ensure cookie is set
+            window.location.href = getRedirectPath();
         });
     };
 
