@@ -83,7 +83,7 @@ export function AppSidebar() {
         <div className="flex items-center gap-2">
           <SyncSentaLogo className="w-8 h-8" />
           <div className="flex flex-col">
-            <h2 className="font-headline text-lg font-semibold tracking-tight">EduCloud</h2>
+            <h2 className="font-headline text-lg font-semibold tracking-tight">SyncSenta</h2>
           </div>
         </div>
       </SidebarHeader>

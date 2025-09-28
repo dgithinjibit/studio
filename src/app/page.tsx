@@ -17,7 +17,7 @@ export default function HomePage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
              <SyncSentaLogo className="w-16 h-16 mx-auto text-primary" />
-            <CardTitle className="font-headline text-3xl mt-4">Welcome to EduCloud Kenya</CardTitle>
+            <CardTitle className="font-headline text-3xl mt-4">Welcome to SyncSenta</CardTitle>
             <CardDescription>
               Your AI-powered partner for Kenyan education. Let's get started.
             </CardDescription>
@@ -39,7 +39,7 @@ export default function HomePage() {
         </Card>
       </main>
       <footer className="p-4 text-center text-xs text-muted-foreground">
-          © 2024 EduCloud Kenya. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+          © 2024 SyncSenta. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
       </footer>
     </div>
   );

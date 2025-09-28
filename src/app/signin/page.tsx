@@ -70,7 +70,7 @@ export default function SignInPage() {
                 </Card>
             </main>
              <footer className="p-4 text-center text-xs text-muted-foreground">
-                @ 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+                © 2024 SyncSenta. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
             </footer>
         </div>
     );

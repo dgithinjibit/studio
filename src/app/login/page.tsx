@@ -34,7 +34,7 @@ export default function LoginPage() {
                 <Card className="w-full max-w-sm">
                     <CardHeader className="text-center">
                          <SyncSentaLogo className="w-12 h-12 mx-auto text-primary" />
-                        <CardTitle className="font-headline text-2xl">Welcome Back to EduCloud</CardTitle>
+                        <CardTitle className="font-headline text-2xl">Welcome Back to SyncSenta</CardTitle>
                         <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -72,7 +72,7 @@ export default function LoginPage() {
                 </Card>
             </main>
              <footer className="p-4 text-center text-xs text-muted-foreground">
-                © 2024 EduCloud Kenya. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+                © 2024 SyncSenta. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
             </footer>
         </div>
     );

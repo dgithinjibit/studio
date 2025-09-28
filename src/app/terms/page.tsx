@@ -19,7 +19,7 @@ export default function TermsAndConditionsPage() {
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Terms and Conditions for EduCloud Kenya</CardTitle>
+                    <CardTitle className="font-headline text-3xl">Terms and Conditions for SyncSenta</CardTitle>
                     <CardDescription>Last updated: July 31, 2024</CardDescription>
                 </CardHeader>
                 <CardContent className="prose prose-sm max-w-none text-muted-foreground">
@@ -29,7 +29,7 @@ export default function TermsAndConditionsPage() {
 
                     <h2>1. Introduction and Acceptance of Terms</h2>
                     <p>
-                        Welcome to EduCloud Kenya ("the Application," "the Service," "we," "us," or "our"). The Service is an application owned and operated by the project creators ("the Company").
+                        Welcome to SyncSenta ("the Application," "the Service," "we," "us," or "our"). The Service is an application owned and operated by the project creators ("the Company").
                     </p>
                     <p>
                         By creating an account, accessing, or using the Service in any manner, you, the user ("you," "your"), acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions ("Terms"), our Privacy Policy, and any other policies or guidelines referenced herein. If you do not agree to these Terms in their entirety, you are expressly prohibited from using the Service and must discontinue use immediately.
@@ -40,7 +40,7 @@ export default function TermsAndConditionsPage() {
                         The Service, its entire contents, features, and functionality—including but not limited to all information, software, code, algorithms, text, displays, graphics, images, video, and audio, and the design, selection, and arrangement thereof—are owned by the Company, its licensors, or other providers of such material. These are protected by international and Kenyan copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.
                     </p>
                      <p>
-                        EduCloud Kenya's name, logo, and all related names, logos, product and service names, designs, and slogans are trademarks of the Company or its affiliates or licensors. You may not use such marks without our prior written permission. All other names, logos, product and service names, designs, and slogans on this Service are the trademarks of their respective owners.
+                        SyncSenta's name, logo, and all related names, logos, product and service names, designs, and slogans are trademarks of the Company or its affiliates or licensors. You may not use such marks without our prior written permission. All other names, logos, product and service names, designs, and slogans on this Service are the trademarks of their respective owners.
                     </p>
 
 
