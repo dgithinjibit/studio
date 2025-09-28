@@ -65,15 +65,23 @@ export function TeacherDashboard() {
 
     useEffect(() => {
         const fetchTeacherData = async () => {
-            // TODO: Replace 'usr_3' with a dynamic ID from an authentication context.
-            const data = await getTeacherData('usr_3'); 
-            if (data) {
-                setTeacher(data);
-                if (!selectedClass && data.classes.length > 0) {
-                    setSelectedClass(data.classes[0]);
+            try {
+                // TODO: Replace 'usr_3' with a dynamic ID from an authentication context.
+                const data = await getTeacherData('usr_3'); 
+                if (data) {
+                    setTeacher(data);
+                    if (!selectedClass && data.classes.length > 0) {
+                        setSelectedClass(data.classes[0]);
+                    }
+                } else {
+                     toast({ variant: "destructive", title: "Could Not Load Teacher Data", description: "Please ensure data has been seeded at /api/seed."});
                 }
+            } catch (error) {
+                console.error("Failed to fetch teacher data:", error);
+                toast({ variant: "destructive", title: "Error", description: "Could not fetch teacher data from the database." });
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         fetchTeacherData();
@@ -81,6 +89,9 @@ export function TeacherDashboard() {
         const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
             setAllResources(resourcesData);
+        }, (error) => {
+            console.error("Failed to subscribe to resources:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not connect to resource library." });
         });
 
         return () => unsubscribe();
@@ -212,8 +223,8 @@ export function TeacherDashboard() {
                 </Card>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2">
+             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>Class Performance</CardTitle>
@@ -237,7 +248,7 @@ export function TeacherDashboard() {
                     </Card>
                 </div>
                 
-                <div className="md:col-span-1">
+                 <div className="lg:col-span-1">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
@@ -321,4 +332,5 @@ export function TeacherDashboard() {
              )}
         </>
     );
-}
+
+    
