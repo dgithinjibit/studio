@@ -65,7 +65,8 @@ export function TeacherDashboard() {
 
     useEffect(() => {
         const fetchTeacherData = async () => {
-            const data = await getTeacherData('usr_3'); // Hardcoded teacher ID for now
+            // TODO: Replace 'usr_3' with a dynamic ID from an authentication context.
+            const data = await getTeacherData('usr_3'); 
             if (data) {
                 setTeacher(data);
                 if (!selectedClass && data.classes.length > 0) {
@@ -211,8 +212,8 @@ export function TeacherDashboard() {
                 </Card>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>Class Performance</CardTitle>
@@ -236,7 +237,7 @@ export function TeacherDashboard() {
                     </Card>
                 </div>
                 
-                <div className="lg:col-span-1">
+                <div className="md:col-span-1">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
@@ -321,5 +322,3 @@ export function TeacherDashboard() {
         </>
     );
 }
-
-    
