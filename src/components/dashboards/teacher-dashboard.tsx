@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Skeleton } from '../ui/skeleton';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, doc, getDoc, setDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getTeacherData, saveClass, deleteClass } from '@/lib/teacher-service';
 
@@ -65,16 +65,20 @@ export function TeacherDashboard() {
 
     useEffect(() => {
         const fetchTeacherData = async () => {
+            setLoading(true);
             try {
-                // TODO: Replace 'usr_3' with a dynamic ID from an authentication context.
-                const data = await getTeacherData('usr_3'); 
-                if (data) {
+                // We always fetch data for the mock teacher ID 'usr_3'
+                const teacherRef = doc(db, 'teachers', 'usr_3');
+                const teacherSnap = await getDoc(teacherRef);
+
+                if (teacherSnap.exists()) {
+                    const data = teacherSnap.data() as Teacher;
                     setTeacher(data);
                     if (!selectedClass && data.classes.length > 0) {
                         setSelectedClass(data.classes[0]);
                     }
                 } else {
-                     toast({ variant: "destructive", title: "Could Not Load Teacher Data", description: "Please ensure data has been seeded at /api/seed."});
+                     toast({ variant: "destructive", title: "Could Not Load Teacher Data", description: "Please ensure data has been seeded by visiting /api/seed in your browser.", duration: 10000 });
                 }
             } catch (error) {
                 console.error("Failed to fetch teacher data:", error);
@@ -95,7 +99,8 @@ export function TeacherDashboard() {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [toast]);
+
 
     useEffect(() => {
         if (selectedClass && teacher && !teacher.classes.some(c => c.id === selectedClass.id)) {
