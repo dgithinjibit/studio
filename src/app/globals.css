@@ -4,15 +4,15 @@
 
 @layer base {
   :root {
-    --background: 0 0% 94%; /* Light theme bg */
-    --foreground: 250 17% 6%; /* Light theme text */
+    --background: 0 0% 94%;
+    --foreground: 250 17% 6%;
     --card: 0 0% 100%;
     --card-foreground: 250 17% 6%;
     --popover: 0 0% 100%;
     --popover-foreground: 250 17% 6%;
-    --primary: 169 80% 40%; /* Darker Primary for light mode */
+    --primary: 169 80% 40%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 300 80% 40%; /* Darker Secondary for light mode */
+    --secondary: 300 80% 40%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 90%;
     --muted-foreground: 250 10% 40%;
