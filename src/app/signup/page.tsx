@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,10 +19,19 @@ const roles = [
 
 export default function SignupPage() {
     const router = useRouter();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const handleRoleSelect = (role: Role) => {
         router.push(`/signup/form?role=${role}`);
     };
+
+    if (!isMounted) {
+        return null;
+    }
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background">
