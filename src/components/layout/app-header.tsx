@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Settings, Moon, Sun } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import dynamic from 'next/dynamic';
-import { useTheme } from 'next-themes';
 
 const ProfileDialog = dynamic(() => import('./profile-dialog'), { ssr: false });
 
@@ -42,7 +41,6 @@ export function AppHeader() {
   const [userEmail, setUserEmail] = useState('user@example.com');
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [title, setTitle] = useState('Dashboard');
-  const { setTheme, theme } = useTheme();
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
@@ -64,15 +62,6 @@ export function AppHeader() {
         <div className="flex-1">
           <h1 className="text-lg font-semibold md:text-2xl font-headline">{title}</h1>
         </div>
-        <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-        >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

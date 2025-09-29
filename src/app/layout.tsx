@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { app } from '@/lib/firebase'; // Ensure Firebase is initialized
 import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
 
 export const metadata: Metadata = {
   title: 'SyncSenta',
@@ -33,6 +34,7 @@ export default function RootLayout({
         >
           {children}
           <Toaster />
+          <ThemeToggleButton />
         </ThemeProvider>
       </body>
     </html>
