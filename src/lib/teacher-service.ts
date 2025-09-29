@@ -77,5 +77,3 @@ export const deleteClass = async (teacherId: string, classId: string): Promise<T
         classes: teacherData.classes.filter(c => c.id !== classId)
     };
 };
-
-    
