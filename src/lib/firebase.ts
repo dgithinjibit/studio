@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: "educloud-kenya.appspot.com",
   messagingSenderId: "1083742475824",
   appId: "1:1083742475824:web:a69902b69297ad4dea3ff5",
-  measurementId: ""
+  measurementId: "G-40Q2Q2149K"
 };
 
 // Initialize Firebase
