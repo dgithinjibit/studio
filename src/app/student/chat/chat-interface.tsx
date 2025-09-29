@@ -117,9 +117,9 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     };
 
     return (
-        <div className="flex h-full w-full items-center justify-center bg-[#F5F5DC]">
-            <Card className="w-full h-full flex flex-col shadow-2xl bg-white/50 border-stone-200">
-                <CardHeader className='border-b border-stone-200'>
+        <div className="flex h-full w-full items-center justify-center bg-background">
+            <Card className="w-full h-full flex flex-col shadow-2xl bg-card/50 border-border">
+                <CardHeader className='border-b border-border'>
                      <StudentHeader 
                         showBackButton={!!onBack} 
                         onBack={onBack!} 
@@ -127,7 +127,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                         onJoinVideoCall={handleJoinVideoCall}
                      />
                      <div className="text-center pt-2">
-                        <CardTitle className="font-headline text-2xl text-stone-800">
+                        <CardTitle className="font-headline text-2xl text-foreground">
                             {tutorMode === 'compass' ? 'Classroom Compass' : `Mwalimu AI: ${subject}`} ({gradeName})
                         </CardTitle>
                     </div>
@@ -137,14 +137,14 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                         <div className="p-6 space-y-4">
                             {messages.map((message, index) => (
                                 <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[75%] p-3 rounded-lg ${message.role === 'user' ? 'bg-orange-500 text-white' : 'bg-green-100 text-green-900'}`}>
+                                    <div className={`max-w-[75%] p-3 rounded-lg ${message.role === 'user' ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'}`}>
                                         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                                     </div>
                                 </div>
                             ))}
                              {loading && messages.length === 0 && (
                                 <div className="flex justify-start">
-                                    <div className="max-w-[75%] p-3 rounded-lg bg-green-100/80 flex items-center text-green-900/80">
+                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted/80 flex items-center text-muted-foreground/80">
                                         <Loader2 className="h-5 w-5 animate-spin" />
                                         <span className="ml-2 text-sm">AI Tutor is thinking...</span>
                                     </div>
@@ -152,26 +152,26 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                             )}
                              {loading && messages.length > 0 && (
                                 <div className="flex justify-start">
-                                    <div className="max-w-[75%] p-3 rounded-lg bg-green-100/80 flex items-center">
-                                        <Loader2 className="h-5 w-5 animate-spin text-green-900/80" />
+                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted/80 flex items-center">
+                                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/80" />
                                     </div>
                                 </div>
                             )}
                         </div>
                     </ScrollArea>
                 </CardContent>
-                <CardFooter className="p-4 border-t border-stone-200">
+                <CardFooter className="p-4 border-t border-border">
                     <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
                         <Input
                             id="message"
                             placeholder="Ask a question..."
-                            className="flex-1 bg-white border-stone-300 focus:border-orange-500 focus:ring-orange-500"
+                            className="flex-1 bg-background border-input focus:border-primary focus:ring-primary"
                             autoComplete="off"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             disabled={loading}
                         />
-                        <Button type="submit" size="icon" disabled={loading || !input.trim()} className="bg-orange-500 hover:bg-orange-600 text-white">
+                        <Button type="submit" size="icon" disabled={loading || !input.trim()} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                             <Send className="h-4 w-4" />
                             <span className="sr-only">Send</span>
                         </Button>
