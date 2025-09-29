@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { User, Shield, School, Building } from "lucide-react";
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+
 
 type Role = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
