@@ -76,11 +76,15 @@ export function MyResources() {
         event.stopPropagation();
         try {
             // Delete from Firestore using the document ID (resource.id)
-            await deleteDoc(doc(db, "teacherResources", resource.id));
+            if (resource.id) {
+                await deleteDoc(doc(db, "teacherResources", resource.id));
+            }
 
-            // Delete from Storage using the full URL
-            const storageRef = ref(storage, resource.url);
-            await deleteObject(storageRef);
+            // Delete from Storage using the full URL if it exists
+            if (resource.url) {
+                const storageRef = ref(storage, resource.url);
+                await deleteObject(storageRef);
+            }
             
             toast({
                 title: "Item Deleted",
@@ -97,8 +101,9 @@ export function MyResources() {
         }
     };
     
-    const handleCopy = (content: string, event: React.MouseEvent) => {
+    const handleCopy = (content: string | undefined, event: React.MouseEvent) => {
         event.stopPropagation();
+        if (!content) return;
         navigator.clipboard.writeText(content).then(() => {
             toast({
                 title: "Copied to Clipboard",
@@ -106,8 +111,16 @@ export function MyResources() {
         });
     };
 
-    const handleGenerateLessonPlan = async (resourceUrl: string, event: React.MouseEvent) => {
+    const handleGenerateLessonPlan = async (resourceUrl: string | undefined, event: React.MouseEvent) => {
         event.stopPropagation();
+        if (!resourceUrl) {
+             toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Resource URL is missing.',
+            });
+            return;
+        }
         try {
             const storageRef = ref(storage, resourceUrl);
             const bytes = await getBytes(storageRef);
@@ -286,19 +299,45 @@ export function MyResources() {
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <div className="p-4 bg-muted/50 rounded-md">
-                                        <p className="text-xs text-muted-foreground mb-2">A preview of the document is not available. Download the file to view its content.</p>
-                                        <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
-                                            {resource.type === 'Scheme of Work' && (
-                                                <Button variant="default" size="sm" onClick={(e) => handleGenerateLessonPlan(resource.url, e)}>
-                                                    <FilePen className="mr-2 h-4 w-4" />
-                                                    Generate Lesson Plan
-                                                </Button>
-                                            )}
-                                            <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource, e)}>
-                                                <Trash2 className="mr-2 h-4 w-4"/>
-                                                Delete
-                                            </Button>
-                                        </div>
+                                        {!resource.url && resource.content ? (
+                                            <>
+                                                <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-pre:bg-transparent prose-pre:p-0">
+                                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{resource.content}</ReactMarkdown>
+                                                </div>
+                                                <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
+                                                    {resource.type === 'Scheme of Work' && (
+                                                        <Button variant="default" size="sm" onClick={(e) => handleGenerateLessonPlan(resource.url, e)}>
+                                                            <FilePen className="mr-2 h-4 w-4" />
+                                                            Generate Lesson Plan
+                                                        </Button>
+                                                    )}
+                                                    <Button variant="outline" size="sm" onClick={(e) => handleCopy(resource.content, e)}>
+                                                        <Copy className="mr-2 h-4 w-4" />
+                                                        Copy
+                                                    </Button>
+                                                    <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource, e)}>
+                                                        <Trash2 className="mr-2 h-4 w-4"/>
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p className="text-xs text-muted-foreground mb-2">A preview of the document is not available. Download the file to view its content.</p>
+                                                <div className="flex items-center justify-end gap-2 border-t pt-2 mt-2">
+                                                    {resource.type === 'Scheme of Work' && (
+                                                        <Button variant="default" size="sm" onClick={(e) => handleGenerateLessonPlan(resource.url, e)}>
+                                                            <FilePen className="mr-2 h-4 w-4" />
+                                                            Generate Lesson Plan
+                                                        </Button>
+                                                    )}
+                                                    <Button variant="destructive" size="sm" onClick={(e) => handleDelete(resource, e)}>
+                                                        <Trash2 className="mr-2 h-4 w-4"/>
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>

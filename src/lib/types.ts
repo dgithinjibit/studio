@@ -72,7 +72,8 @@ export type School = {
 export type TeacherResource = {
   id: string;
   title: string;
-  url: string;
+  content?: string; // Restored as optional
+  url?: string;
   createdAt: string;
   type: 'Lesson Plan' | 'Scheme of Work' | 'Rubric' | 'Worksheet' | 'Differentiated Worksheet' | 'AI Tutor Context' | 'Other';
   joinCode: string;
