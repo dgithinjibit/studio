@@ -35,15 +35,13 @@ function SignupFormComponent() {
         }
     };
     
-    // The Server Action will handle redirection. We just need to handle the form data.
+    // The Server Action will handle redirection.
     const signupAction = async (formData: FormData) => {
         if (!role || !termsAccepted) return;
 
         const fullName = formData.get('fullName') as string;
         const email = formData.get('email') as string;
 
-        // Persist user's details for personalization in localStorage
-        // This is a client-side effect that can happen before the server action
         localStorage.setItem('userName', fullName);
         localStorage.setItem('userEmail', email);
         if (role === 'student') {
@@ -51,19 +49,9 @@ function SignupFormComponent() {
         }
         
         startTransition(async () => {
-            try {
-                await signupUser(role, formData);
-                toast({
-                    title: "Account Created!",
-                    description: "Welcome! We're redirecting you now.",
-                });
-            } catch (error) {
-                 toast({
-                    variant: "destructive",
-                    title: "Signup Failed",
-                    description: "An unexpected error occurred. Please try again.",
-                });
-            }
+            // The `signupUser` action redirects, so we don't need a `try/catch` here.
+            // An error during the server action will be handled by Next.js's error boundary.
+            await signupUser(role, formData);
         });
     };
 
