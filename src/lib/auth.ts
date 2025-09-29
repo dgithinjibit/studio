@@ -3,18 +3,31 @@
 
 import type { User, UserRole } from './types';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 /**
- * A Server Action to set the user's role and name in cookies.
- * This is the correct way to bridge state from client-side actions (like signup)
- * to server-side rendering.
+ * A Server Action to set the user's role and name in cookies and redirect.
+ * This is bound directly to the signup form.
  */
-export async function updateUserRoleCookie(role: UserRole, name: string) {
+export async function signupUser(role: UserRole, formData: FormData) {
+  const fullName = formData.get('fullName') as string;
+
+  if (!role || !fullName) {
+    // Handle error case, maybe redirect back with an error message
+    return;
+  }
+  
   const cookieStore = cookies();
   cookieStore.set('userRole', role, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-  cookieStore.set('userName', name, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-}
+  cookieStore.set('userName', fullName, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
+  // Redirect after setting cookies
+  if (role === 'student') {
+    redirect('/student/journey');
+  } else {
+    redirect('/dashboard');
+  }
+}
 
 // In a real application, this would involve validating a session cookie,
 // database lookups, etc. For this prototype, we simulate it by

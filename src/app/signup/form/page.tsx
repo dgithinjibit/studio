@@ -14,7 +14,7 @@ import { mockCounties } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { updateUserRoleCookie } from '@/lib/auth';
+import { signupUser } from '@/lib/auth';
 
 function SignupFormComponent() {
     const router = useRouter();
@@ -35,40 +35,35 @@ function SignupFormComponent() {
         }
     };
     
-    const getRedirectPath = () => {
-         switch (role) {
-            case 'student': return "/student/journey";
-            default: return "/dashboard";
-        }
-    }
-
-    const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    // The Server Action will handle redirection. We just need to handle the form data.
+    const signupAction = async (formData: FormData) => {
         if (!role || !termsAccepted) return;
+
+        const fullName = formData.get('fullName') as string;
+        const email = formData.get('email') as string;
+
+        // Persist user's details for personalization in localStorage
+        // This is a client-side effect that can happen before the server action
+        localStorage.setItem('userName', fullName);
+        localStorage.setItem('userEmail', email);
+        if (role === 'student') {
+            localStorage.setItem('studentName', fullName);
+        }
         
         startTransition(async () => {
-            const formData = new FormData(e.currentTarget);
-            const fullName = formData.get('fullName') as string;
-            const email = formData.get('email') as string;
-
-            // Persist user's details for personalization in localStorage
-            localStorage.setItem('userName', fullName);
-            localStorage.setItem('userEmail', email);
-            if (role === 'student') {
-                localStorage.setItem('studentName', fullName);
+            try {
+                await signupUser(role, formData);
+                toast({
+                    title: "Account Created!",
+                    description: "Welcome! We're redirecting you now.",
+                });
+            } catch (error) {
+                 toast({
+                    variant: "destructive",
+                    title: "Signup Failed",
+                    description: "An unexpected error occurred. Please try again.",
+                });
             }
-
-            // Set the role in a server-side cookie
-            await updateUserRoleCookie(role, fullName);
-
-            toast({
-                title: "Account Created!",
-                description: "Welcome! We're redirecting you now.",
-            });
-            
-            // Use window.location.href for a full page reload to ensure cookie is set
-            // before navigating to the protected dashboard page.
-            window.location.href = getRedirectPath();
         });
     };
 
@@ -105,7 +100,7 @@ function SignupFormComponent() {
                         <CardDescription>Join SyncSenta to revolutionize your learning and teaching.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSignup} className="space-y-4">
+                        <form action={signupAction} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="fullName">Full Name</Label>
                                 <Input id="fullName" name="fullName" placeholder="Asha Juma" required />
@@ -170,7 +165,7 @@ function SignupFormComponent() {
                 </Card>
             </main>
              <footer className="p-4 text-center text-xs text-muted-foreground">
-                © 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+                © 2025 dantedone All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
             </footer>
         </div>
     );
