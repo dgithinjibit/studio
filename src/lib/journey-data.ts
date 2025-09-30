@@ -1,5 +1,5 @@
 
-export type Step = 'start' | 'level' | 'sub-level' | 'grade' | 'subject';
+export type Step = 'start' | 'level' | 'sub-level' | 'grade' | 'subject' | 'recommended-courses';
 
 export const levels = [
     { id: 'ms', name: 'Middle School' },
@@ -32,8 +32,11 @@ type Subject = {
     icon: string;
 };
 
-const aiSubject: Subject = { name: 'AI', icon: '/assets/ai.png' };
-const blockchainSubject: Subject = { name: 'Blockchain', icon: '/assets/bc.png' };
+export const recommendedSubjects: Subject[] = [
+    { name: 'AI', icon: '/assets/ai.png' },
+    { name: 'Blockchain', icon: '/assets/bc.png' },
+    { name: 'Financial Literacy', icon: '/assets/fin-lit.png' },
+];
 
 const commonSubjects: Subject[] = [
     { name: 'English', icon: '/assets/english-icon.png' },
@@ -51,10 +54,10 @@ const commonSubjects: Subject[] = [
 const pastoralInstruction: Subject = { name: 'Pastoral Instruction Programme', icon: '/assets/pastoral_instruction.png' };
 
 export const subjectsMap: { [key: string]: Subject[] } = {
-    g4: [...commonSubjects, aiSubject, blockchainSubject],
-    g5: [...commonSubjects, aiSubject, blockchainSubject],
-    g6: [...commonSubjects, aiSubject, blockchainSubject],
-    g7: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
-    g8: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
-    g9: [...commonSubjects, pastoralInstruction, aiSubject, blockchainSubject],
+    g4: [...commonSubjects],
+    g5: [...commonSubjects],
+    g6: [...commonSubjects],
+    g7: [...commonSubjects, pastoralInstruction],
+    g8: [...commonSubjects, pastoralInstruction],
+    g9: [...commonSubjects, pastoralInstruction],
 };

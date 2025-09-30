@@ -6,13 +6,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2, Award } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import type { TeacherResource } from '@/lib/types';
-import { levels, subLevelsMap, gradesMap, subjectsMap, Step } from '@/lib/journey-data';
+import { levels, subLevelsMap, gradesMap, subjectsMap, Step, recommendedSubjects } from '@/lib/journey-data';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db, storage } from '@/lib/firebase';
 import { ref, getBytes } from 'firebase/storage';
@@ -198,7 +198,7 @@ function StudentJourneyContent() {
                             <CardTitle className="text-stone-800">Choose Your Path</CardTitle>
                             <CardDescription className="text-stone-600">How would you like to start your learning session today?</CardDescription>
                         </CardHeader>
-                        <CardContent className="grid md:grid-cols-2 gap-6">
+                        <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                            <Card className="p-6 flex flex-col items-center justify-center text-center">
                                 <LinkIcon className="w-12 h-12 text-primary mb-4" />
                                 <h3 className="font-bold text-xl mb-2">Join a Teacher's Room</h3>
@@ -219,13 +219,49 @@ function StudentJourneyContent() {
                            </Card>
                             <Card className="p-6 flex flex-col items-center justify-center text-center hover:bg-stone-50 transition-colors cursor-pointer" onClick={() => navigateTo('level')}>
                                 <KeyRound className="w-12 h-12 text-accent mb-4" />
-                                <h3 className="font-bold text-xl mb-2">Explore on Your Own</h3>
+                                <h3 className="font-bold text-xl mb-2">Explore Your Subjects</h3>
                                 <p className="text-muted-foreground mb-4">Choose your grade and subject to chat with Mwalimu AI, your personal Socratic tutor.</p>
                                 <Button className="w-full">
                                     Start Exploring
                                     <ArrowRight className="ml-2" />
                                 </Button>
                            </Card>
+                             <Card className="p-6 flex flex-col items-center justify-center text-center hover:bg-stone-50 transition-colors cursor-pointer" onClick={() => navigateTo('recommended-courses')}>
+                                <Award className="w-12 h-12 text-yellow-500 mb-4" />
+                                <h3 className="font-bold text-xl mb-2">Recommended Courses</h3>
+                                <p className="text-muted-foreground mb-4">Dive into specialized topics like AI, Blockchain, and Financial Literacy with expert tutors.</p>
+                                <Button className="w-full" variant="secondary">
+                                    View Courses
+                                    <ArrowRight className="ml-2" />
+                                </Button>
+                           </Card>
+                        </CardContent>
+                    </Card>
+                );
+            case 'recommended-courses':
+                 return (
+                    <Card className="w-full bg-transparent border-none shadow-none">
+                         <CardHeader>
+                            <CardTitle className="text-stone-800">Explore Recommended Courses</CardTitle>
+                            <CardDescription className="text-stone-600">These specialized modules are designed to give you an edge. Choose one to begin.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                           {recommendedSubjects.map((subject) => (
+                                <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
+                                    <Card 
+                                        className="group overflow-hidden rounded-lg cursor-pointer flex flex-col justify-center items-center p-4 transition-all hover:shadow-lg bg-card h-48 md:h-56"
+                                    >
+                                        <Image 
+                                            src={subject.icon} 
+                                            alt={`${subject.name} icon`} 
+                                            width={80} 
+                                            height={80} 
+                                            className="h-20 w-20 md:h-24 md:w-24 mb-4 object-contain" 
+                                        />
+                                        <h3 className="font-bold text-lg md:text-xl text-foreground text-center">{subject.name}</h3>
+                                    </Card>
+                                </Link>
+                            ))}
                         </CardContent>
                     </Card>
                 );
@@ -242,18 +278,16 @@ function StudentJourneyContent() {
                            {subjects.map((subject, index) => (
                                 <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
                                     <Card 
-                                        className="group overflow-hidden rounded-lg cursor-pointer aspect-square text-white flex flex-col justify-end p-4 transition-all hover:shadow-lg bg-card"
+                                        className="group overflow-hidden rounded-lg cursor-pointer flex flex-col justify-center items-center p-4 transition-all hover:shadow-lg bg-card h-48"
                                     >
-                                        <div className="relative z-10 flex flex-col items-center text-center">
-                                            <Image 
-                                                src={subject.icon} 
-                                                alt={`${subject.name} icon`} 
-                                                width={64} 
-                                                height={64} 
-                                                className="h-16 w-16 mb-2 object-contain" 
-                                            />
-                                            <h3 className="font-bold text-lg text-foreground">{subject.name}</h3>
-                                        </div>
+                                        <Image 
+                                            src={subject.icon} 
+                                            alt={`${subject.name} icon`} 
+                                            width={64} 
+                                            height={64} 
+                                            className="h-16 w-16 mb-2 object-contain" 
+                                        />
+                                        <h3 className="font-bold text-lg text-foreground text-center">{subject.name}</h3>
                                     </Card>
                                 </Link>
                             ))}
