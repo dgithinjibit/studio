@@ -18,7 +18,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Skeleton } from '../ui/skeleton';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { saveClass, deleteClass } from '@/lib/teacher-service';
+import { saveClass, deleteClass, getTeacherData } from '@/lib/teacher-service';
 
 const tailwindColorToHex: { [key: string]: string } = {
     'bg-blue-500': '#3b82f6',
@@ -31,16 +31,30 @@ const tailwindColorToHex: { [key: string]: string } = {
     'bg-teal-500': '#14b8a6',
 };
 
-interface TeacherDashboardProps {
-    initialTeacherData: Teacher;
-}
+const DashboardSkeleton = () => (
+    <div className="space-y-6">
+        <div className="flex items-center justify-between">
+            <div>
+                <Skeleton className="h-8 w-64 mb-2" />
+                <Skeleton className="h-4 w-80" />
+            </div>
+            <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Skeleton className="h-[350px] w-full" />
+            <Skeleton className="h-[350px] w-full" />
+            <Skeleton className="h-[350px] w-full" />
+        </div>
+    </div>
+);
 
-export function TeacherDashboard({ initialTeacherData }: TeacherDashboardProps) {
-    const [teacher, setTeacher] = useState<Teacher>(initialTeacherData);
+
+export function TeacherDashboard() {
+    const [teacher, setTeacher] = useState<Teacher | null>(null);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
-    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(initialTeacherData.classes.length > 0 ? initialTeacherData.classes[0] : null);
+    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
     const [summary, setSummary] = useState('');
     const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
@@ -48,6 +62,16 @@ export function TeacherDashboard({ initialTeacherData }: TeacherDashboardProps) 
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        const fetchInitialData = async () => {
+            const teacherData = await getTeacherData('usr_3');
+            setTeacher(teacherData);
+            if (teacherData && teacherData.classes.length > 0) {
+                setSelectedClass(teacherData.classes[0]);
+            }
+        };
+
+        fetchInitialData();
+
         const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
             setAllResources(resourcesData);
@@ -66,7 +90,17 @@ export function TeacherDashboard({ initialTeacherData }: TeacherDashboardProps) 
     }, [teacher, selectedClass]);
     
     if (!teacher) {
-        return <div>Error: Teacher data is missing.</div>;
+        return (
+             <div className="text-center p-8">
+                <h2 className="text-xl font-semibold text-destructive">Could Not Load Teacher Data</h2>
+                <p className="text-muted-foreground mt-2">
+                    Please ensure the database has been seeded by visiting the <code className="bg-muted px-2 py-1 rounded-md">/api/seed</code> endpoint in your browser.
+                </p>
+                    <p className="text-muted-foreground mt-2">
+                    If you have already seeded the data, please check your Firebase connection and security rules.
+                    </p>
+            </div>
+        );
     }
 
     const chartData = teacher.classes.map(c => ({ 
@@ -294,3 +328,4 @@ export function TeacherDashboard({ initialTeacherData }: TeacherDashboardProps) 
              )}
         </>
     );
+}

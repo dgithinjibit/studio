@@ -1,13 +1,15 @@
 
-import { getServerUser } from '@/lib/auth';
+"use client";
+
+import { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-dashboard';
 import { SchoolHeadDashboard } from '@/components/dashboards/school-head-dashboard';
-import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { redirect } from 'next/navigation';
+import { getServerUser } from '@/lib/auth';
+import type { UserRole } from '@/lib/types';
 import { getTeacherData } from '@/lib/teacher-service';
-import type { Teacher } from '@/lib/types';
-
 
 const DashboardSkeleton = () => (
     <div className="space-y-6">
@@ -26,43 +28,53 @@ const DashboardSkeleton = () => (
     </div>
 );
 
+// Dynamically import the TeacherDashboard and prevent it from rendering on the server
+const TeacherDashboard = dynamic(
+    () => import('@/components/dashboards/teacher-dashboard').then(mod => mod.TeacherDashboard),
+    { 
+        ssr: false,
+        loading: () => <DashboardSkeleton />
+    }
+);
 
-export default async function DashboardPage() {
-    const user = await getServerUser();
 
-    if (!user || !user.role) {
-       // If the role can't be determined server-side (e.g., cookie not set yet),
-       // it's safer to redirect to login. The signup flow ensures the cookie is set
-       // before a hard navigation to this page.
+export default function DashboardPage() {
+    const [role, setRole] = useState<UserRole | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const user = await getServerUser();
+                setRole(user?.role as UserRole);
+            } catch (error) {
+                console.error("Failed to fetch user role", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserRole();
+    }, []);
+
+    if (loading) {
+        return <DashboardSkeleton />;
+    }
+
+    if (!role) {
        return redirect('/login');
     }
 
-    switch (user.role) {
+    switch (role) {
         case 'teacher':
-            const teacherData = await getTeacherData('usr_3');
-            if (!teacherData) {
-                return (
-                    <div className="text-center p-8">
-                        <h2 className="text-xl font-semibold text-destructive">Could Not Load Teacher Data</h2>
-                        <p className="text-muted-foreground mt-2">
-                            Please ensure the database has been seeded by visiting the <code className="bg-muted px-2 py-1 rounded-md">/api/seed</code> endpoint in your browser.
-                        </p>
-                         <p className="text-muted-foreground mt-2">
-                            If you have already seeded the data, please check your Firebase connection and security rules.
-                         </p>
-                    </div>
-                );
-            }
-            return <TeacherDashboard initialTeacherData={teacherData} />;
+            return <TeacherDashboard />;
         case 'school_head':
             return <SchoolHeadDashboard />;
         case 'county_officer':
             return <CountyOfficerDashboard />;
         case 'student':
-            // Students should not be on this dashboard. Redirect them to their journey.
             return redirect('/student/journey');
         default:
-             // For any other roles or undefined states.
             return redirect('/login');
     }
 }
