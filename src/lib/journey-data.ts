@@ -1,5 +1,5 @@
 
-export type Step = 'start' | 'level' | 'sub-level' | 'grade' | 'subject' | 'recommended-courses';
+export type Step = 'start' | 'level' | 'sub-level' | 'grade' | 'subject';
 
 export const levels = [
     { id: 'ms', name: 'Middle School' },
@@ -48,7 +48,6 @@ const commonSubjects: Subject[] = [
     { name: 'Environmental Activities', icon: '/assets/envr.png' },
     { name: 'Indigenous Language', icon: '/assets/indig.png' },
     { name: 'Kenyan Sign Language', icon: '/assets/ksl.png' },
-    { name: 'Creative Activities', icon: '/assets/creative_act.png' },
 ];
 
 const pastoralInstruction: Subject = { name: 'Pastoral Instruction Programme', icon: '/assets/pastoral_instruction.png' };
@@ -61,3 +60,5 @@ export const subjectsMap: { [key: string]: Subject[] } = {
     g8: [...commonSubjects, pastoralInstruction],
     g9: [...commonSubjects, pastoralInstruction],
 };
+
+    
