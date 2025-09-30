@@ -59,14 +59,28 @@ export function TeacherDashboard() {
     const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchInitialData = async () => {
-            const teacherData = await getTeacherData('usr_3');
-            setTeacher(teacherData);
-            if (teacherData && teacherData.classes.length > 0) {
-                setSelectedClass(teacherData.classes[0]);
+            setLoading(true);
+            try {
+                const teacherData = await getTeacherData('usr_3');
+                if (teacherData) {
+                    setTeacher(teacherData);
+                    if (teacherData.classes.length > 0) {
+                        setSelectedClass(teacherData.classes[0]);
+                    }
+                } else {
+                    // Handle case where teacher data is not found even after seeding
+                    // This will show the specific error message.
+                    setTeacher(null); 
+                }
+            } catch (error) {
+                console.error("Error fetching teacher data on client:", error);
+                setTeacher(null);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -89,6 +103,10 @@ export function TeacherDashboard() {
         }
     }, [teacher, selectedClass]);
     
+    if (loading) {
+        return <DashboardSkeleton />;
+    }
+
     if (!teacher) {
         return (
              <div className="text-center p-8">
