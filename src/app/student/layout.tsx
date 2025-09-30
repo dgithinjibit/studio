@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function StudentLayout({ children }: { children: ReactNode }) {
   return (
-      <div className="bg-stone-100 dark:bg-background flex flex-col min-h-screen">
+      <div className="bg-muted/40 dark:bg-background flex flex-col min-h-screen">
           <main className="flex-grow">
               {children}
           </main>

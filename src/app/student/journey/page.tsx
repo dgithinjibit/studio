@@ -27,9 +27,9 @@ const ChatInterface = dynamic(() => import('../chat/chat-interface'), {
 });
 
 const ChatSkeleton = () => (
-    <div className="flex h-full w-full items-center justify-center bg-[#F5F5DC]">
-         <div className="w-full h-full flex flex-col shadow-2xl bg-white/50 border-stone-200">
-            <Skeleton className="h-32 w-full border-b border-stone-200" />
+    <div className="flex h-full w-full items-center justify-center bg-muted">
+         <div className="w-full h-full flex flex-col shadow-2xl bg-card/50 border-border">
+            <Skeleton className="h-32 w-full border-b border-border" />
             <div className="flex-1 p-6 space-y-4">
                 <Skeleton className="h-16 w-3/4" />
                 <div className="flex justify-end">
@@ -37,7 +37,7 @@ const ChatSkeleton = () => (
                 </div>
                 <Skeleton className="h-24 w-4/5" />
             </div>
-            <Skeleton className="h-20 w-full border-t border-stone-200" />
+            <Skeleton className="h-20 w-full border-t border-border" />
         </div>
     </div>
 );
@@ -175,7 +175,7 @@ function StudentJourneyContent() {
     // If tutorContext is set, render the ChatInterface instead of the journey steps.
     if (tutorContext) {
         return (
-             <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-[#F5F5DC] sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
+             <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-card sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
                 <Suspense fallback={<ChatSkeleton />}>
                     <ChatInterface 
                         subject="Teacher's Context" // Subject can be generic
@@ -195,8 +195,8 @@ function StudentJourneyContent() {
                 return (
                      <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                            <CardTitle className="text-stone-800">Choose Your Path</CardTitle>
-                            <CardDescription className="text-stone-600">How would you like to start your learning session today?</CardDescription>
+                            <CardTitle>Choose Your Path</CardTitle>
+                            <CardDescription>How would you like to start your learning session today?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid md:grid-cols-2 gap-6">
                            <Card className="p-6 flex flex-col items-center justify-center text-center">
@@ -217,7 +217,7 @@ function StudentJourneyContent() {
                                     </Button>
                                 </form>
                            </Card>
-                            <Card className="p-6 flex flex-col items-center justify-center text-center hover:bg-stone-50 transition-colors cursor-pointer" onClick={() => navigateTo('level')}>
+                            <Card className="p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigateTo('level')}>
                                 <KeyRound className="w-12 h-12 text-accent mb-4" />
                                 <h3 className="font-bold text-xl mb-2">Explore Your Subjects</h3>
                                 <p className="text-muted-foreground mb-4">Choose your grade and subject to chat with Mwalimu AI, your personal Socratic tutor.</p>
@@ -235,12 +235,12 @@ function StudentJourneyContent() {
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                          <CardHeader>
-                            <CardTitle className="text-stone-800">Choose Your Subject</CardTitle>
-                            <CardDescription className="text-stone-600">What would you like to learn about today in {gradeName}?</CardDescription>
+                            <CardTitle>Choose Your Subject</CardTitle>
+                            <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
                              <div>
-                                <h3 className="text-lg font-semibold text-stone-700 mb-4 flex items-center gap-2"><BookOpen/> Core Subjects</h3>
+                                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2"><BookOpen/> Core Subjects</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {subjects.map((subject, index) => (
                                         <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
@@ -259,7 +259,7 @@ function StudentJourneyContent() {
                                 </div>
                             </div>
                              <div>
-                                <h3 className="text-lg font-semibold text-stone-700 mb-4 flex items-center gap-2"><Award/> Recommended Courses</h3>
+                                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2"><Award/> Recommended Courses</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 {recommendedSubjects.map((subject) => (
                                         <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
@@ -287,14 +287,14 @@ function StudentJourneyContent() {
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                            <CardTitle className="text-stone-800">Pick Your Grade</CardTitle>
-                            <CardDescription className="text-stone-600">Almost there! Which grade are you in?</CardDescription>
+                            <CardTitle>Pick Your Grade</CardTitle>
+                            <CardDescription>Almost there! Which grade are you in?</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             {grades.map((grade, index) => (
                                 <Button 
                                     key={grade.id} 
-                                    className={`h-20 text-lg text-white font-bold text-shadow-sm shadow-lg transform transition-transform hover:scale-105 focus:scale-105 bg-blue-500`}
+                                    className={`h-20 text-lg font-bold text-shadow-sm shadow-lg transform transition-transform hover:scale-105 focus:scale-105 bg-blue-500 hover:bg-blue-600 text-white`}
                                     onClick={() => handleGradeSelect(grade.id)}
                                 >
                                     {grade.name}
@@ -308,14 +308,14 @@ function StudentJourneyContent() {
                 return (
                      <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                             <CardTitle className="text-stone-800">Narrow It Down</CardTitle>
-                             <CardDescription className="text-stone-600">Let's get more specific.</CardDescription>
+                             <CardTitle>Narrow It Down</CardTitle>
+                             <CardDescription>Let's get more specific.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {subLevels.map((sub, index) => (
                                 <Button 
                                     key={sub.id} 
-                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus:scale-105 bg-green-500`}
+                                    className={`w-full justify-between h-14 text-lg font-bold shadow-md transform transition-transform hover:scale-105 focus:scale-105 bg-green-500 hover:bg-green-600 text-white`}
                                     onClick={() => handleSubLevelSelect(sub.id)}
                                 >
                                     {sub.name}
@@ -330,14 +330,14 @@ function StudentJourneyContent() {
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
-                            <CardTitle className="text-stone-800">Choose Your Education Level</CardTitle>
-                            <CardDescription className="text-stone-600">Where are you in your learning journey?</CardDescription>
+                            <CardTitle>Choose Your Education Level</CardTitle>
+                            <CardDescription>Where are you in your learning journey?</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {levels.map((level, index) => (
                                 <Button 
                                     key={level.id} 
-                                    className={`w-full justify-between h-14 text-lg text-white font-bold shadow-md transform transition-transform hover:scale-105 focus-scale-105 bg-teal-500`}
+                                    className={`w-full justify-between h-14 text-lg font-bold shadow-md transform transition-transform hover:scale-105 focus-scale-105 bg-teal-500 hover:bg-teal-600 text-white`}
                                     onClick={() => handleLevelSelect(level.id)}
                                 >
                                     {level.name}
@@ -351,7 +351,7 @@ function StudentJourneyContent() {
     };
     
     return (
-        <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-[#F5F5DC] sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
+        <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-card sm:rounded-2xl shadow-2xl ring-1 ring-border">
              <StudentHeader showBackButton={currentStep !== 'start'} onBack={handleGoBack} />
             <main className="flex-grow overflow-y-auto p-6 flex items-center">
                 {renderContent()}

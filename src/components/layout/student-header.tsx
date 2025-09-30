@@ -46,16 +46,16 @@ export function StudentHeader({ showBackButton, onBack, showVideoCallButton = fa
 
   return (
     <>
-        <div className="relative flex items-center justify-center py-4 text-stone-800">
+        <div className="relative flex items-center justify-center py-4 text-foreground">
             {showBackButton && (
-                <Button variant="ghost" size="icon" onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 text-stone-600 hover:text-stone-800 hover:bg-stone-100">
+                <Button variant="ghost" size="icon" onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-muted">
                     <ArrowLeft />
                     <span className="sr-only">Back</span>
                 </Button>
             )}
             <div className="text-center">
                 <h1 className="font-headline text-4xl font-bold">Karibu! Welcome!</h1>
-                <p className="text-stone-600 text-lg mt-2">
+                <p className="text-muted-foreground text-lg mt-2">
                     I’m Mwalimu AI, your friendly Socratic Mentor.
                 </p>
             </div>
@@ -70,7 +70,7 @@ export function StudentHeader({ showBackButton, onBack, showVideoCallButton = fa
                     <DropdownMenuTrigger asChild>
                          <Button
                             variant="outline"
-                            className="flex items-center gap-2 rounded-full h-12 px-4 bg-white/80 border-stone-300 text-stone-700 hover:bg-white hover:border-stone-400 hover:text-stone-800"
+                            className="flex items-center gap-2 rounded-full h-12 px-4 bg-background/80 border-border text-foreground hover:bg-muted hover:border-border/80"
                           >
                             <Avatar className="h-8 w-8">
                                <AvatarImage src={studentAvatar || undefined} alt="Profile Picture" />

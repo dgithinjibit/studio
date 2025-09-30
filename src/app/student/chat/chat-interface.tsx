@@ -117,8 +117,8 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     };
 
     return (
-        <div className="flex h-full w-full items-center justify-center bg-background">
-            <Card className="w-full h-full flex flex-col shadow-2xl bg-card/50 border-border">
+        <div className="flex h-full w-full items-center justify-center bg-transparent">
+            <Card className="w-full h-full flex flex-col shadow-none bg-transparent border-none">
                 <CardHeader className='border-b border-border'>
                      <StudentHeader 
                         showBackButton={!!onBack} 
@@ -144,7 +144,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                             ))}
                              {loading && messages.length === 0 && (
                                 <div className="flex justify-start">
-                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted/80 flex items-center text-muted-foreground/80">
+                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center text-muted-foreground">
                                         <Loader2 className="h-5 w-5 animate-spin" />
                                         <span className="ml-2 text-sm">AI Tutor is thinking...</span>
                                     </div>
@@ -152,8 +152,8 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                             )}
                              {loading && messages.length > 0 && (
                                 <div className="flex justify-start">
-                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted/80 flex items-center">
-                                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/80" />
+                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
+                                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                                     </div>
                                 </div>
                             )}
