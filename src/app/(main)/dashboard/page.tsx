@@ -5,6 +5,9 @@ import { SchoolHeadDashboard } from '@/components/dashboards/school-head-dashboa
 import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { redirect } from 'next/navigation';
+import { getTeacherData } from '@/lib/teacher-service';
+import type { Teacher } from '@/lib/types';
+
 
 const DashboardSkeleton = () => (
     <div className="space-y-6">
@@ -36,7 +39,21 @@ export default async function DashboardPage() {
 
     switch (user.role) {
         case 'teacher':
-            return <TeacherDashboard />;
+            const teacherData = await getTeacherData('usr_3');
+            if (!teacherData) {
+                return (
+                    <div className="text-center p-8">
+                        <h2 className="text-xl font-semibold text-destructive">Could Not Load Teacher Data</h2>
+                        <p className="text-muted-foreground mt-2">
+                            Please ensure the database has been seeded by visiting the <code className="bg-muted px-2 py-1 rounded-md">/api/seed</code> endpoint in your browser.
+                        </p>
+                         <p className="text-muted-foreground mt-2">
+                            If you have already seeded the data, please check your Firebase connection and security rules.
+                         </p>
+                    </div>
+                );
+            }
+            return <TeacherDashboard initialTeacherData={teacherData} />;
         case 'school_head':
             return <SchoolHeadDashboard />;
         case 'county_officer':

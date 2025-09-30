@@ -16,9 +16,9 @@ import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Skeleton } from '../ui/skeleton';
-import { collection, onSnapshot, doc, getDoc, setDoc, updateDoc, arrayRemove } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { getTeacherData, saveClass, deleteClass } from '@/lib/teacher-service';
+import { saveClass, deleteClass } from '@/lib/teacher-service';
 
 const tailwindColorToHex: { [key: string]: string } = {
     'bg-blue-500': '#3b82f6',
@@ -31,65 +31,23 @@ const tailwindColorToHex: { [key: string]: string } = {
     'bg-teal-500': '#14b8a6',
 };
 
-const DashboardSkeleton = () => (
-    <div className="space-y-6">
-        <div className="flex items-center justify-between">
-            <div>
-                <Skeleton className="h-8 w-64 mb-2" />
-                <Skeleton className="h-4 w-80" />
-            </div>
-            <Skeleton className="h-10 w-32" />
-        </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-                <Skeleton className="h-[350px] w-full" />
-            </div>
-            <div className="lg:col-span-1">
-                <Skeleton className="h-[350px] w-full" />
-            </div>
-        </div>
-    </div>
-);
+interface TeacherDashboardProps {
+    initialTeacherData: Teacher;
+}
 
-export function TeacherDashboard() {
-    const [teacher, setTeacher] = useState<Teacher | null>(null);
+export function TeacherDashboard({ initialTeacherData }: TeacherDashboardProps) {
+    const [teacher, setTeacher] = useState<Teacher>(initialTeacherData);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
-    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
+    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(initialTeacherData.classes.length > 0 ? initialTeacherData.classes[0] : null);
     const [summary, setSummary] = useState('');
     const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const fetchTeacherData = async () => {
-            setLoading(true);
-            try {
-                // We always fetch data for the mock teacher ID 'usr_3'
-                const teacherRef = doc(db, 'teachers', 'usr_3');
-                const teacherSnap = await getDoc(teacherRef);
-
-                if (teacherSnap.exists()) {
-                    const data = teacherSnap.data() as Teacher;
-                    setTeacher(data);
-                    if (!selectedClass && data.classes.length > 0) {
-                        setSelectedClass(data.classes[0]);
-                    }
-                } else {
-                     toast({ variant: "destructive", title: "Could Not Load Teacher Data", description: "Please ensure data has been seeded by visiting /api/seed in your browser.", duration: 10000 });
-                }
-            } catch (error) {
-                console.error("Failed to fetch teacher data:", error);
-                toast({ variant: "destructive", title: "Error", description: "Could not fetch teacher data from the database." });
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTeacherData();
-
         const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
             setAllResources(resourcesData);
@@ -101,15 +59,14 @@ export function TeacherDashboard() {
         return () => unsubscribe();
     }, [toast]);
 
-
     useEffect(() => {
         if (selectedClass && teacher && !teacher.classes.some(c => c.id === selectedClass.id)) {
             setSelectedClass(teacher.classes.length > 0 ? teacher.classes[0] : null);
         }
     }, [teacher, selectedClass]);
     
-    if (loading || !teacher) {
-        return <DashboardSkeleton />;
+    if (!teacher) {
+        return <div>Error: Teacher data is missing.</div>;
     }
 
     const chartData = teacher.classes.map(c => ({ 
@@ -337,6 +294,3 @@ export function TeacherDashboard() {
              )}
         </>
     );
-
-    
-

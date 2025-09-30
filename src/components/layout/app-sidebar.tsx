@@ -39,7 +39,7 @@ export function AppSidebar() {
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab" },
     { href: "/dashboard/reports", icon: Library, label: "My Library" },
     { href: "/dashboard/curriculum", icon: Database, label: "Curriculum" },
-    { href: "/dashboard/creative-arts", icon: Palette, label: "Creative Arts" },
+    { href: "/dashboard/creative-arts", icon: Palette, label: "Advanced Module" },
   ];
   
   const schoolHeadNavItems = [
