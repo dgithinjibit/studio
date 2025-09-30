@@ -218,8 +218,8 @@ function StudentJourneyContent() {
                                 </form>
                            </Card>
                             <Card className="p-6 flex flex-col items-center justify-center text-center hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigateTo('level')}>
-                                <KeyRound className="w-12 h-12 text-accent mb-4" />
-                                <h3 className="font-bold text-xl mb-2">Explore Your Subjects</h3>
+                                <BrainCircuit className="w-12 h-12 text-accent mb-4" />
+                                <h3 className="font-bold text-xl mb-2">Explore on Your Own</h3>
                                 <p className="text-muted-foreground mb-4">Choose your grade and subject to chat with Mwalimu AI, your personal Socratic tutor.</p>
                                 <Button className="w-full">
                                     Start Exploring
@@ -244,15 +244,16 @@ function StudentJourneyContent() {
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {subjects.map((subject, index) => (
                                         <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
-                                            <Card className="group overflow-hidden rounded-lg cursor-pointer flex flex-col justify-center items-center p-4 transition-all hover:shadow-lg bg-card h-40 text-center">
+                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg h-40">
                                                 <Image 
                                                     src={subject.icon} 
                                                     alt={`${subject.name} icon`} 
-                                                    width={60} 
-                                                    height={60} 
-                                                    className="h-14 w-14 mb-2 object-contain" 
+                                                    fill
+                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                                                 />
-                                                <h3 className="font-bold text-md text-foreground">{subject.name}</h3>
+                                                 <div className="absolute inset-0 bg-black/50 flex items-end p-4">
+                                                    <h3 className="font-bold text-lg text-white">{subject.name}</h3>
+                                                </div>
                                             </Card>
                                         </Link>
                                     ))}
@@ -263,17 +264,16 @@ function StudentJourneyContent() {
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 {recommendedSubjects.map((subject) => (
                                         <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
-                                            <Card 
-                                                className="group overflow-hidden rounded-lg cursor-pointer flex flex-col justify-center items-center p-4 transition-all hover:shadow-lg bg-card h-48 md:h-56"
-                                            >
+                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg h-48 md:h-56">
                                                 <Image 
                                                     src={subject.icon} 
                                                     alt={`${subject.name} icon`} 
-                                                    width={80} 
-                                                    height={80} 
-                                                    className="h-20 w-20 md:h-24 md:w-24 mb-4 object-contain" 
+                                                    fill
+                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                                                 />
-                                                <h3 className="font-bold text-lg md:text-xl text-foreground text-center">{subject.name}</h3>
+                                                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4">
+                                                    <h3 className="font-bold text-2xl text-white text-center">{subject.name}</h3>
+                                                </div>
                                             </Card>
                                         </Link>
                                     ))}
@@ -315,7 +315,7 @@ function StudentJourneyContent() {
                             {subLevels.map((sub, index) => (
                                 <Button 
                                     key={sub.id} 
-                                    className={`w-full justify-between h-14 text-lg font-bold shadow-md transform transition-transform hover:scale-105 focus:scale-105 bg-green-500 hover:bg-green-600 text-white`}
+                                    className={`w-full justify-between h-14 text-lg font-bold shadow-md transform transition-transform hover:scale-105 focus-scale-105 bg-green-500 hover:bg-green-600 text-white`}
                                     onClick={() => handleSubLevelSelect(sub.id)}
                                 >
                                     {sub.name}
@@ -369,3 +369,4 @@ export default function StudentJourneyPage() {
 }
 
     
+
