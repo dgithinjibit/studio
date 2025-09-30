@@ -15,10 +15,9 @@ import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary'
 import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Skeleton } from '../ui/skeleton';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { saveClass, deleteClass, getTeacherData } from '@/lib/teacher-service';
+import { saveClass, deleteClass } from '@/lib/teacher-service';
 
 const tailwindColorToHex: { [key: string]: string } = {
     'bg-blue-500': '#3b82f6',
@@ -30,24 +29,6 @@ const tailwindColorToHex: { [key: string]: string } = {
     'bg-pink-500': '#ec4899',
     'bg-teal-500': '#14b8a6',
 };
-
-const DashboardSkeleton = () => (
-    <div className="space-y-6">
-        <div className="flex items-center justify-between">
-            <div>
-                <Skeleton className="h-8 w-64 mb-2" />
-                <Skeleton className="h-4 w-80" />
-            </div>
-            <Skeleton className="h-10 w-32" />
-        </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Skeleton className="h-[350px] w-full" />
-            <Skeleton className="h-[350px] w-full" />
-            <Skeleton className="h-[350px] w-full" />
-        </div>
-    </div>
-);
-
 
 export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: Teacher | null }) {
     const [teacher, setTeacher] = useState<Teacher | null>(initialTeacherData);
@@ -65,7 +46,7 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
         // Set initial data from server component props
         if (initialTeacherData) {
             setTeacher(initialTeacherData);
-            if (initialTeacherData.classes.length > 0) {
+            if (initialTeacherData.classes.length > 0 && !selectedClass) {
                 setSelectedClass(initialTeacherData.classes[0]);
             }
         }
@@ -79,12 +60,15 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
         });
 
         return () => unsubscribe();
-    }, [initialTeacherData, toast]);
+    }, [initialTeacherData, toast, selectedClass]);
     
     // This effect ensures if a class is deleted, the selectedClass state is updated.
     useEffect(() => {
-        if (selectedClass && teacher && !teacher.classes.some(c => c.id === selectedClass.id)) {
-            setSelectedClass(teacher.classes.length > 0 ? teacher.classes[0] : null);
+        if (teacher) {
+             const currentSelectedClassExists = teacher.classes.some(c => c.id === selectedClass?.id);
+             if (!currentSelectedClassExists) {
+                 setSelectedClass(teacher.classes.length > 0 ? teacher.classes[0] : null);
+             }
         }
     }, [teacher, selectedClass]);
     
@@ -117,8 +101,20 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
         if (!teacher) return;
         setLoading(true);
         try {
-            const updatedTeacher = await saveClass(teacher.id, { ...classDetails, id: classId || '' });
-            setTeacher(updatedTeacher); // Update local state with the returned fresh data
+            // Optimistically update UI
+            let updatedClasses: ClassInfo[];
+            if (classId) {
+                updatedClasses = teacher.classes.map(c => c.id === classId ? { ...c, ...classDetails } : c);
+            } else {
+                const newClass = { ...classDetails, id: `class_${Date.now()}`, performance: Math.floor(70 + Math.random() * 15) };
+                updatedClasses = [...teacher.classes, newClass];
+            }
+            setTeacher({ ...teacher, classes: updatedClasses });
+
+            // Persist to DB
+            const updatedTeacherFromDB = await saveClass(teacher.id, { ...classDetails, id: classId || '' });
+            setTeacher(updatedTeacherFromDB); // Sync with DB state
+
             setEditingClass(null);
             setAddClassDialogOpen(false);
             toast({
@@ -127,6 +123,7 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
             });
         } catch (error) {
             console.error("Error saving class:", error);
+            setTeacher(initialTeacherData); // Revert on error
             toast({ variant: "destructive", title: "Error", description: "Could not save the class." });
         } finally {
             setLoading(false);
@@ -136,9 +133,13 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
     const handleDeleteClass = async (classId: string) => {
         if (!teacher) return;
         setLoading(true);
+
+        const originalClasses = teacher.classes;
+        // Optimistic UI update
+        setTeacher({ ...teacher, classes: teacher.classes.filter(c => c.id !== classId) });
+
         try {
-            const updatedTeacher = await deleteClass(teacher.id, classId);
-            setTeacher(updatedTeacher); // Update local state
+            await deleteClass(teacher.id, classId);
             toast({
                 variant: "destructive",
                 title: "Class Deleted",
@@ -146,6 +147,7 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
             });
         } catch (error) {
             console.error("Error deleting class:", error);
+            setTeacher({ ...teacher, classes: originalClasses }); // Revert on error
             toast({ variant: "destructive", title: "Error", description: "Could not delete the class." });
         } finally {
             setLoading(false);
