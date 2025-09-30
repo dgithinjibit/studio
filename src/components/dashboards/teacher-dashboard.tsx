@@ -49,8 +49,8 @@ const DashboardSkeleton = () => (
 );
 
 
-export function TeacherDashboard() {
-    const [teacher, setTeacher] = useState<Teacher | null>(null);
+export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: Teacher | null }) {
+    const [teacher, setTeacher] = useState<Teacher | null>(initialTeacherData);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
@@ -59,32 +59,16 @@ export function TeacherDashboard() {
     const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false); // Used for mutation operations like save/delete
 
     useEffect(() => {
-        const fetchInitialData = async () => {
-            setLoading(true);
-            try {
-                const teacherData = await getTeacherData('usr_3');
-                if (teacherData) {
-                    setTeacher(teacherData);
-                    if (teacherData.classes.length > 0) {
-                        setSelectedClass(teacherData.classes[0]);
-                    }
-                } else {
-                    // Handle case where teacher data is not found even after seeding
-                    // This will show the specific error message.
-                    setTeacher(null); 
-                }
-            } catch (error) {
-                console.error("Error fetching teacher data on client:", error);
-                setTeacher(null);
-            } finally {
-                setLoading(false);
+        // Set initial data from server component props
+        if (initialTeacherData) {
+            setTeacher(initialTeacherData);
+            if (initialTeacherData.classes.length > 0) {
+                setSelectedClass(initialTeacherData.classes[0]);
             }
-        };
-
-        fetchInitialData();
+        }
 
         const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
@@ -95,18 +79,15 @@ export function TeacherDashboard() {
         });
 
         return () => unsubscribe();
-    }, [toast]);
-
+    }, [initialTeacherData, toast]);
+    
+    // This effect ensures if a class is deleted, the selectedClass state is updated.
     useEffect(() => {
         if (selectedClass && teacher && !teacher.classes.some(c => c.id === selectedClass.id)) {
             setSelectedClass(teacher.classes.length > 0 ? teacher.classes[0] : null);
         }
     }, [teacher, selectedClass]);
     
-    if (loading) {
-        return <DashboardSkeleton />;
-    }
-
     if (!teacher) {
         return (
              <div className="text-center p-8">
@@ -137,7 +118,7 @@ export function TeacherDashboard() {
         setLoading(true);
         try {
             const updatedTeacher = await saveClass(teacher.id, { ...classDetails, id: classId || '' });
-            setTeacher(updatedTeacher);
+            setTeacher(updatedTeacher); // Update local state with the returned fresh data
             setEditingClass(null);
             setAddClassDialogOpen(false);
             toast({
@@ -157,7 +138,7 @@ export function TeacherDashboard() {
         setLoading(true);
         try {
             const updatedTeacher = await deleteClass(teacher.id, classId);
-            setTeacher(updatedTeacher);
+            setTeacher(updatedTeacher); // Update local state
             toast({
                 variant: "destructive",
                 title: "Class Deleted",
