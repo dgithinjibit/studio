@@ -31,25 +31,28 @@ export const saveClass = async (teacherId: string, classInfo: Omit<ClassInfo, 'p
     }
 
     const teacherData = teacherSnap.data() as Teacher;
-    let updatedClasses: ClassInfo[];
+    const existingClass = teacherData.classes.find(c => c.id === classInfo.id);
 
-    if (classInfo.id) { // This is an update
-        updatedClasses = teacherData.classes.map(c => 
-            c.id === classInfo.id ? { ...c, ...classInfo } : c
-        );
+    if (existingClass) { // This is an update
+        const updatedClass = { ...existingClass, ...classInfo };
+        const updatedClasses = teacherData.classes.map(c => c.id === classInfo.id ? updatedClass : c);
+        await updateDoc(teacherRef, { classes: updatedClasses });
     } else { // This is a new class
         const newClass: ClassInfo = {
             ...classInfo,
             id: `class_${Date.now()}`,
             performance: Math.floor(70 + Math.random() * 15), // Assign random performance
         };
-        updatedClasses = [...teacherData.classes, newClass];
+        await updateDoc(teacherRef, {
+            classes: arrayUnion(newClass)
+        });
     }
-    
-    const updatedTeacherData: Teacher = { ...teacherData, classes: updatedClasses };
-    await setDoc(teacherRef, updatedTeacherData);
-    return updatedTeacherData;
+
+    // Return the latest data from the DB
+    const updatedSnap = await getDoc(teacherRef);
+    return updatedSnap.data() as Teacher;
 };
+
 
 // Function to delete a class
 export const deleteClass = async (teacherId: string, classId: string): Promise<Teacher> => {
@@ -71,9 +74,9 @@ export const deleteClass = async (teacherId: string, classId: string): Promise<T
         classes: arrayRemove(classToDelete)
     });
 
-    // Return the updated state
-    return {
-        ...teacherData,
-        classes: teacherData.classes.filter(c => c.id !== classId)
-    };
+    // Return the updated state from the DB
+    const updatedSnap = await getDoc(teacherRef);
+    return updatedSnap.data() as Teacher;
 };
+
+    

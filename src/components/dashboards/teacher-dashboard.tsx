@@ -15,9 +15,9 @@ import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary'
 import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { saveClass, deleteClass } from '@/lib/teacher-service';
+import { saveClass, deleteClass, getTeacherData } from '@/lib/teacher-service';
 
 const tailwindColorToHex: { [key: string]: string } = {
     'bg-blue-500': '#3b82f6',
@@ -40,18 +40,37 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
     const [isSummaryLoading, setIsSummaryLoading] = useState(false);
     const { toast } = useToast();
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
-    const [loading, setLoading] = useState(false); // Used for mutation operations like save/delete
+    const [isMutating, setIsMutating] = useState(false);
 
     useEffect(() => {
-        // Set initial data from server component props
-        if (initialTeacherData) {
-            setTeacher(initialTeacherData);
-            if (initialTeacherData.classes.length > 0 && !selectedClass) {
-                setSelectedClass(initialTeacherData.classes[0]);
-            }
-        }
+        if (!initialTeacherData?.id) return;
 
-        const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
+        // Firestore real-time listener for teacher data
+        const unsubTeacher = onSnapshot(doc(db, "teachers", initialTeacherData.id), (doc) => {
+            if (doc.exists()) {
+                const newTeacherData = doc.data() as Teacher;
+                setTeacher(newTeacherData);
+
+                // Update selectedClass if it was deleted or if none is selected
+                if (selectedClass) {
+                    const selectedClassExists = newTeacherData.classes.some(c => c.id === selectedClass.id);
+                    if (!selectedClassExists) {
+                        setSelectedClass(newTeacherData.classes.length > 0 ? newTeacherData.classes[0] : null);
+                    }
+                } else if (newTeacherData.classes.length > 0) {
+                     setSelectedClass(newTeacherData.classes[0]);
+                }
+
+            } else {
+                setTeacher(null);
+            }
+        }, (error) => {
+            console.error("Failed to subscribe to teacher data:", error);
+            toast({ variant: "destructive", title: "Real-time Error", description: "Could not sync teacher data." });
+        });
+
+        // Firestore real-time listener for resources
+        const unsubResources = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
             setAllResources(resourcesData);
         }, (error) => {
@@ -59,18 +78,11 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
             toast({ variant: "destructive", title: "Error", description: "Could not connect to resource library." });
         });
 
-        return () => unsubscribe();
-    }, [initialTeacherData, toast, selectedClass]);
-    
-    // This effect ensures if a class is deleted, the selectedClass state is updated.
-    useEffect(() => {
-        if (teacher) {
-             const currentSelectedClassExists = teacher.classes.some(c => c.id === selectedClass?.id);
-             if (!currentSelectedClassExists) {
-                 setSelectedClass(teacher.classes.length > 0 ? teacher.classes[0] : null);
-             }
-        }
-    }, [teacher, selectedClass]);
+        return () => {
+            unsubTeacher();
+            unsubResources();
+        };
+    }, [initialTeacherData?.id, toast, selectedClass]);
     
     if (!teacher) {
         return (
@@ -99,22 +111,11 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
 
     const handleSaveClass = async (classDetails: { name: string; color: string; students: Student[] }, classId?: string) => {
         if (!teacher) return;
-        setLoading(true);
+        setIsMutating(true);
         try {
-            // Optimistically update UI
-            let updatedClasses: ClassInfo[];
-            if (classId) {
-                updatedClasses = teacher.classes.map(c => c.id === classId ? { ...c, ...classDetails } : c);
-            } else {
-                const newClass = { ...classDetails, id: `class_${Date.now()}`, performance: Math.floor(70 + Math.random() * 15) };
-                updatedClasses = [...teacher.classes, newClass];
-            }
-            setTeacher({ ...teacher, classes: updatedClasses });
-
-            // Persist to DB
-            const updatedTeacherFromDB = await saveClass(teacher.id, { ...classDetails, id: classId || '' });
-            setTeacher(updatedTeacherFromDB); // Sync with DB state
-
+            // The onSnapshot listener will handle the UI update automatically.
+            await saveClass(teacher.id, { ...classDetails, id: classId || '' });
+            
             setEditingClass(null);
             setAddClassDialogOpen(false);
             toast({
@@ -123,22 +124,17 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
             });
         } catch (error) {
             console.error("Error saving class:", error);
-            setTeacher(initialTeacherData); // Revert on error
             toast({ variant: "destructive", title: "Error", description: "Could not save the class." });
         } finally {
-            setLoading(false);
+            setIsMutating(false);
         }
     };
     
     const handleDeleteClass = async (classId: string) => {
         if (!teacher) return;
-        setLoading(true);
-
-        const originalClasses = teacher.classes;
-        // Optimistic UI update
-        setTeacher({ ...teacher, classes: teacher.classes.filter(c => c.id !== classId) });
-
+        setIsMutating(true);
         try {
+            // The onSnapshot listener will handle the UI update automatically.
             await deleteClass(teacher.id, classId);
             toast({
                 variant: "destructive",
@@ -147,10 +143,9 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
             });
         } catch (error) {
             console.error("Error deleting class:", error);
-            setTeacher({ ...teacher, classes: originalClasses }); // Revert on error
             toast({ variant: "destructive", title: "Error", description: "Could not delete the class." });
         } finally {
-            setLoading(false);
+            setIsMutating(false);
         }
     };
 
@@ -273,7 +268,7 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
                                     </div>
                                      <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
+                                            <Button variant="ghost" size="icon" disabled={isMutating}>
                                                 <MoreHorizontal className="w-5 h-5" />
                                             </Button>
                                         </DropdownMenuTrigger>
@@ -330,3 +325,5 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
         </>
     );
 }
+
+    
