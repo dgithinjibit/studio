@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -161,3 +162,5 @@ export function AddClassDialog({ open, onOpenChange, onSaveClass, initialData }:
     </Dialog>
   );
 }
+
+    

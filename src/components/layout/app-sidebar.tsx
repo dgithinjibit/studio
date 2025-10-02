@@ -1,4 +1,5 @@
 
+
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -39,7 +40,7 @@ export function AppSidebar() {
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab" },
     { href: "/dashboard/reports", icon: Library, label: "My Library" },
     { href: "/dashboard/curriculum", icon: Database, label: "Curriculum" },
-    { href: "/dashboard/creative-arts", icon: Palette, label: "Advanced Module" },
+    { href: "/dashboard/creative-arts", icon: Palette, label: "Creative Arts" },
   ];
   
   const schoolHeadNavItems = [
@@ -116,3 +117,5 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
+    

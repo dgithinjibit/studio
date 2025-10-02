@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useCallback, useEffect, Suspense } from 'react';
@@ -136,13 +137,15 @@ function StudentJourneyContent() {
             if (!querySnapshot.empty) {
                 const doc = querySnapshot.docs[0];
                 const tutorContextResource = doc.data() as TeacherResource;
+                
+                if (!tutorContextResource.url) {
+                     throw new Error('Resource URL is missing.');
+                }
 
                 // Download the context content from the URL specified in Firestore
-                const response = await fetch(tutorContextResource.url);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch context file from storage.');
-                }
-                const contextText = await response.text();
+                const storageRef = ref(storage, tutorContextResource.url);
+                const bytes = await getBytes(storageRef);
+                const contextText = new TextDecoder().decode(bytes);
                 
                 toast({
                     title: "Teacher's Room Found!",
@@ -239,7 +242,7 @@ function StudentJourneyContent() {
                             <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
-                             <div>
+                            <div>
                                 <h3 className="text-xl font-semibold mb-4">Core Subjects</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                     {coreSubjects.map((subject) => (
@@ -374,6 +377,8 @@ export default function StudentJourneyPage() {
 
     
 
+
+    
 
     
 
