@@ -230,7 +230,8 @@ function StudentJourneyContent() {
                     </Card>
                 );
             case 'subject':
-                 const subjects = selectedGrade ? (subjectsMap[selectedGrade] || []) : [];
+                 const coreSubjects = selectedGrade ? (subjectsMap[selectedGrade] || []) : [];
+                 const allSubjects = [...recommendedSubjects, ...coreSubjects];
                  const gradeName = selectedGrade ? `Grade ${selectedGrade.replace('g', '')}` : '';
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
@@ -238,46 +239,32 @@ function StudentJourneyContent() {
                             <CardTitle>Choose Your Subject</CardTitle>
                             <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-8">
-                             <div>
-                                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2"><BookOpen/> Core Subjects</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {subjects.map((subject, index) => (
-                                        <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
-                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg h-40">
-                                                <Image 
-                                                    src={subject.icon} 
-                                                    alt={`${subject.name} icon`} 
-                                                    fill
-                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                                />
-                                                 <div className="absolute inset-0 bg-black/50 flex items-end p-4">
-                                                    <h3 className="font-bold text-lg text-white">{subject.name}</h3>
-                                                </div>
-                                            </Card>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                             <div>
-                                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2"><Award/> Recommended Courses</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {recommendedSubjects.map((subject) => (
-                                        <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
-                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg h-48 md:h-56">
-                                                <Image 
-                                                    src={subject.icon} 
-                                                    alt={`${subject.name} icon`} 
-                                                    fill
-                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                                />
-                                                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4">
-                                                    <h3 className="font-bold text-2xl text-white text-center">{subject.name}</h3>
-                                                </div>
-                                            </Card>
-                                        </Link>
-                                    ))}
-                                </div>
+                        <CardContent>
+                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {allSubjects.map((subject) => (
+                                    <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
+                                        <Card className={cn(
+                                            "group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg",
+                                            recommendedSubjects.some(rs => rs.name === subject.name) ? "h-48 md:h-56" : "h-40"
+                                        )}>
+                                            <Image 
+                                                src={subject.icon} 
+                                                alt={`${subject.name} icon`} 
+                                                fill
+                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                                <div className={cn(
+                                                    "absolute inset-0 flex items-end p-4",
+                                                    recommendedSubjects.some(rs => rs.name === subject.name) ? "bg-black/60 justify-center items-center" : "bg-black/50"
+                                                )}>
+                                                <h3 className={cn(
+                                                    "font-bold text-white",
+                                                    recommendedSubjects.some(rs => rs.name === subject.name) ? "text-2xl text-center" : "text-lg"
+                                                )}>{subject.name}</h3>
+                                            </div>
+                                        </Card>
+                                    </Link>
+                                ))}
                             </div>
                         </CardContent>
                     </Card>
