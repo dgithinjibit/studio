@@ -34,7 +34,7 @@ const generateSchemeOfWorkFlow = ai.defineFlow(
     // Determine which prompt to use based on the subject
     const isKiswahili = input.subject.toLowerCase().includes('kiswahili');
 
-    const kiswahiliPrompt = `You are an expert curriculum developer in Kenya, creating a CBC-compliant Scheme of Work.
+    const kiswahiliPrompt = `You are an expert curriculum developer in Kenya, creating a CBE-compliant Scheme of Work.
 
 Your task is to generate a scheme of work for a specific sub-strand, based on the provided curriculum data. The entire output must be a single, well-formatted Markdown table.
 
@@ -55,7 +55,7 @@ The final output MUST follow this exact Markdown table structure. Do NOT add any
 | **{{{strand}}}** | **{{{subStrand}}}** (Vipindi {{{lessonsPerWeek}}}) | - [Extract and list ALL the learning outcomes from the curriculum details here.] | - [Extract and list ALL the suggested learning experiences from the curriculum details here.] | - [Extract and list ALL the key inquiry questions from the curriculum details here.] |
 `;
 
-    const englishPrompt = `You are an expert Kenyan CBC curriculum developer. Your task is to generate a comprehensive, single-row Scheme of Work in a Markdown table format.
+    const englishPrompt = `You are an expert Kenyan CBE curriculum developer. Your task is to generate a comprehensive, single-row Scheme of Work in a Markdown table format.
 
 **CONTEXT FROM CURRICULUM DOCUMENT (Your ONLY Source of Truth):**
 You MUST use the following curriculum details to populate the table. Do not add any information not present in this context.

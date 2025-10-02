@@ -3,8 +3,11 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen, Bot, School } from "lucide-react";
 import Link from "next/link";
+import { SyncSentaLogo } from '@/components/icons';
+import { Card, CardContent } from '@/components/ui/card';
+
 
 export default function HomePage() {
   const router = useRouter();
@@ -31,7 +34,7 @@ export default function HomePage() {
                     The Future of Kenyan Education, Powered by AI
                 </p>
                 <p className="max-w-xl text-muted-foreground text-lg">
-                    Your AI partner for CBC-aligned teaching resources, personalized student learning, and powerful school management tools.
+                    Your AI partner for CBE-aligned teaching resources, personalized student learning, and powerful school management tools.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button onClick={() => router.push('/signup')} size="lg" className="w-full sm:w-auto">

@@ -39,7 +39,7 @@ const prompt = ai.definePrompt({
     name: 'generateLessonPlanPrompt',
     input: {schema: GenerateLessonPlanInputSchema},
     output: {schema: GenerateLessonPlanOutputSchema},
-    prompt: `You are an expert Kenyan CBC curriculum developer, tasked with creating a functional and detailed lesson plan document.
+    prompt: `You are an expert Kenyan CBE curriculum developer, tasked with creating a functional and detailed lesson plan document.
 
     {{#if schemeOfWorkContext}}
     ---
