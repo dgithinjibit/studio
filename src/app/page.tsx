@@ -27,10 +27,7 @@ export default function HomePage() {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="absolute top-0 left-0 right-0 p-4">
         <div className="container mx-auto flex justify-between items-center">
-            <div className="flex items-center gap-2">
-                <SyncSentaLogo className="w-8 h-8 text-primary" />
-                <h1 className="font-headline text-xl font-bold text-foreground">SyncSenta</h1>
-            </div>
+            <h1 className="font-headline text-xl font-bold text-foreground">SyncSenta</h1>
              <Button variant="ghost" asChild>
                 <Link href="/login">
                   Sign In
@@ -98,4 +95,3 @@ export default function HomePage() {
     </div>
   );
 }
-
