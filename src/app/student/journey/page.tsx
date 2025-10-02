@@ -231,7 +231,6 @@ function StudentJourneyContent() {
                 );
             case 'subject':
                  const coreSubjects = selectedGrade ? (subjectsMap[selectedGrade] || []) : [];
-                 const allSubjects = [...recommendedSubjects, ...coreSubjects];
                  const gradeName = selectedGrade ? `Grade ${selectedGrade.replace('g', '')}` : '';
                 return (
                     <Card className="w-full bg-transparent border-none shadow-none">
@@ -239,32 +238,46 @@ function StudentJourneyContent() {
                             <CardTitle>Choose Your Subject</CardTitle>
                             <CardDescription>What would you like to learn about today in {gradeName}?</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {allSubjects.map((subject) => (
-                                    <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
-                                        <Card className={cn(
-                                            "group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg",
-                                            recommendedSubjects.some(rs => rs.name === subject.name) ? "h-48 md:h-56" : "h-40"
-                                        )}>
-                                            <Image 
-                                                src={subject.icon} 
-                                                alt={`${subject.name} icon`} 
-                                                fill
-                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                            />
-                                                <div className={cn(
-                                                    "absolute inset-0 flex items-end p-4",
-                                                    recommendedSubjects.some(rs => rs.name === subject.name) ? "bg-black/60 justify-center items-center" : "bg-black/50"
-                                                )}>
-                                                <h3 className={cn(
-                                                    "font-bold text-white",
-                                                    recommendedSubjects.some(rs => rs.name === subject.name) ? "text-2xl text-center" : "text-lg"
-                                                )}>{subject.name}</h3>
-                                            </div>
-                                        </Card>
-                                    </Link>
-                                ))}
+                        <CardContent className="space-y-8">
+                             <div>
+                                <h3 className="text-xl font-semibold mb-4">Recommended Courses for You</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                     {recommendedSubjects.map((subject) => (
+                                        <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
+                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg h-48 md:h-56">
+                                                <Image 
+                                                    src={subject.icon} 
+                                                    alt={`${subject.name} icon`} 
+                                                    fill
+                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center p-4 bg-black/60">
+                                                    <h3 className="font-bold text-white text-2xl text-center">{subject.name}</h3>
+                                                </div>
+                                            </Card>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-semibold mb-4">Core Subjects</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                    {coreSubjects.map((subject) => (
+                                        <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
+                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg h-40">
+                                                <Image 
+                                                    src={subject.icon} 
+                                                    alt={`${subject.name} icon`} 
+                                                    fill
+                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                                <div className="absolute inset-0 flex items-end p-4 bg-black/50">
+                                                    <h3 className="font-bold text-white text-lg">{subject.name}</h3>
+                                                </div>
+                                            </Card>
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -357,6 +370,9 @@ export default function StudentJourneyPage() {
 
     
 
+
+
+    
 
 
     
