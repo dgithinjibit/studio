@@ -31,5 +31,6 @@ export const MwalimuAiTutorOutputSchema = z.object({
   response: z
     .string()
     .describe("Mwalimu AI's Socratic response to the student."),
+  audioResponse: z.string().optional().describe("The text-to-speech audio of the response as a data URI.")
 });
 export type MwalimuAiTutorOutput = z.infer<typeof MwalimuAiTutorOutputSchema>;

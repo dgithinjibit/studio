@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 type Message = {
     role: 'user' | 'model';
     content: string;
+    audio?: string;
 };
 
 interface ChatInterfaceProps {
@@ -35,6 +36,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     const [tutorMode, setTutorMode] = useState<'compass' | 'mwalimu'>('mwalimu');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const [studentFirstName, setStudentFirstName] = useState('Student');
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
      useEffect(() => {
         const name = localStorage.getItem('studentName');
@@ -50,12 +52,14 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                 let result;
                 if (teacherContext) {
                     setTutorMode('compass');
-                    result = await classroomCompass({ teacherContext: teacherContext, history: [] });
+                    // Classroom Compass does not have TTS yet.
+                    const compassResult = await classroomCompass({ teacherContext: teacherContext, history: [] });
+                    result = {response: compassResult.response, audioResponse: undefined};
                 } else {
                     setTutorMode('mwalimu');
                     result = await mwalimuAiTutor({ grade, subject, history: [] });
                 }
-                setMessages([{ role: 'model', content: result.response }]);
+                setMessages([{ role: 'model', content: result.response, audio: result.audioResponse }]);
             } catch (error) {
                 console.error("Error getting initial message:", error);
                 setMessages([{ role: 'model', content: "Hello! I'm having a little trouble connecting. Please try again in a moment." }]);
@@ -73,6 +77,14 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                 behavior: 'smooth',
             });
         }
+        
+        // Auto-play audio for the last message if it's from the model
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage && lastMessage.role === 'model' && lastMessage.audio && audioRef.current) {
+            audioRef.current.src = lastMessage.audio;
+            audioRef.current.play().catch(e => console.error("Audio autoplay failed:", e));
+        }
+
     }, [messages]);
 
     const handleJoinVideoCall = () => {
@@ -95,10 +107,11 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         try {
             let result;
             if (tutorMode === 'compass' && teacherContext) {
-                 result = await classroomCompass({
+                 const compassResult = await classroomCompass({
                     teacherContext,
                     history: newMessages, // Pass the full, updated history
                 });
+                result = {response: compassResult.response, audioResponse: undefined};
             } else {
                  result = await mwalimuAiTutor({
                     grade,
@@ -107,7 +120,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                     history: newMessages // Pass the full, updated history
                 });
             }
-            setMessages([...newMessages, { role: 'model', content: result.response }]);
+            setMessages([...newMessages, { role: 'model', content: result.response, audio: result.audioResponse }]);
         } catch (error) {
             console.error("Error calling AI tutor:", error);
             setMessages([...newMessages, { role: 'model', content: "I'm sorry, I encountered an error. Could you please rephrase your question?" }]);
@@ -178,6 +191,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                     </form>
                 </CardFooter>
             </Card>
+            <audio ref={audioRef} className="hidden" />
         </div>
     );
 }
