@@ -19,11 +19,41 @@ import { signupUser } from '@/lib/auth';
 function SignupFormComponent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { toast } = useToast();
     const role = searchParams.get('role') as UserRole | null;
+    const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
     const [termsAccepted, setTermsAccepted] = useState(false);
-    const loading = isPending;
+
+    // This client-side function is used to set localStorage before the server action runs.
+    const handleSubmit = async (formData: FormData) => {
+        if (!role || !termsAccepted) return;
+
+        const fullName = formData.get('fullName') as string;
+        const email = formData.get('email') as string;
+
+        // Set localStorage on the client before calling the server action
+        localStorage.setItem('userName', fullName);
+        localStorage.setItem('userEmail', email);
+        if (role === 'student') {
+            localStorage.setItem('studentName', fullName);
+        }
+        
+        startTransition(async () => {
+            try {
+                await signupUser(role, formData);
+                toast({
+                  title: 'Signup Successful!',
+                  description: 'Redirecting you now...',
+                });
+            } catch (error) {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Signup Failed',
+                    description: 'An unexpected error occurred. Please try again.',
+                });
+            }
+        });
+    };
 
     const getTitle = () => {
         switch (role) {
@@ -35,26 +65,6 @@ function SignupFormComponent() {
         }
     };
     
-    // The Server Action will handle redirection.
-    const signupAction = async (formData: FormData) => {
-        if (!role || !termsAccepted) return;
-
-        const fullName = formData.get('fullName') as string;
-        const email = formData.get('email') as string;
-
-        localStorage.setItem('userName', fullName);
-        localStorage.setItem('userEmail', email);
-        if (role === 'student') {
-            localStorage.setItem('studentName', fullName);
-        }
-        
-        startTransition(async () => {
-            // The `signupUser` action redirects, so we don't need a `try/catch` here.
-            // An error during the server action will be handled by Next.js's error boundary.
-            await signupUser(role, formData);
-        });
-    };
-
     if (!role) {
         return (
              <Card className="w-full max-w-lg">
@@ -88,7 +98,7 @@ function SignupFormComponent() {
                         <CardDescription>Join SyncSenta to revolutionize your learning and teaching.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form action={signupAction} className="space-y-4">
+                        <form action={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="fullName">Full Name</Label>
                                 <Input id="fullName" name="fullName" placeholder="Asha Juma" required />
@@ -136,9 +146,9 @@ function SignupFormComponent() {
                                 </Label>
                             </div>
                             
-                            <Button type="submit" className="w-full" disabled={loading || !termsAccepted}>
-                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {loading ? 'Creating Account...' : 'Create Account'}
+                            <Button type="submit" className="w-full" disabled={isPending || !termsAccepted}>
+                                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isPending ? 'Creating Account...' : 'Create Account'}
                             </Button>
                         </form>
                     </CardContent>
