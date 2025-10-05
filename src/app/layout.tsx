@@ -19,6 +19,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script>
+          {`
+            // Prevent MetaMask console errors during development
+            if (typeof window !== "undefined") {
+              Object.defineProperty(window, 'ethereum', {
+                get() { return undefined },
+                set(_) { console.warn("MetaMask wallet injection blocked.") },
+              });
+            }
+          `}
+        </script>
         <script src='https://meet.jit.si/external_api.js' async></script>
         <link rel="icon" href="/logo.svg" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
