@@ -52,6 +52,7 @@ async function toWav(
 
 
 async function generateTts(text: string): Promise<string | undefined> {
+  try {
     const { media } = await ai.generate({
       model: googleAI.model('gemini-2.5-flash-preview-tts'),
       config: {
@@ -72,6 +73,11 @@ async function generateTts(text: string): Promise<string | undefined> {
       'base64'
     );
     return 'data:audio/wav;base64,' + (await toWav(audioBuffer));
+  } catch (error) {
+    console.warn("TTS generation failed:", error);
+    // Return undefined if TTS fails, allowing the flow to continue without audio.
+    return undefined;
+  }
 }
 
 
