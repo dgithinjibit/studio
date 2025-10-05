@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
 import { classroomCompass } from '@/ai/flows/classroom-compass-flow';
-import { Loader2, Send, Video } from 'lucide-react';
+import { Loader2, Send, Video, Mic } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import { useRouter } from 'next/navigation';
 
@@ -37,6 +37,8 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const [studentFirstName, setStudentFirstName] = useState('Student');
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef<any | null>(null);
 
      useEffect(() => {
         const name = localStorage.getItem('studentName');
@@ -44,6 +46,52 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
             setStudentFirstName(name.split(' ')[0]);
         }
     }, []);
+
+    useEffect(() => {
+        // Initialize SpeechRecognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = true;
+            recognitionRef.current.interimResults = true;
+
+            recognitionRef.current.onresult = (event: any) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                setInput(input + finalTranscript + interimTranscript);
+            };
+
+            recognitionRef.current.onerror = (event: any) => {
+                 if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                    console.error("Speech recognition error", event.error);
+                }
+                setIsListening(false);
+            };
+            
+            recognitionRef.current.onend = () => {
+                setIsListening(false);
+            };
+
+        }
+    }, [input]);
+
+    const handleToggleListening = () => {
+        if (isListening) {
+            recognitionRef.current?.stop();
+            setIsListening(false);
+        } else {
+            recognitionRef.current?.start();
+            setIsListening(true);
+        }
+    };
+
 
     useEffect(() => {
         const getInitialMessage = async () => {
@@ -184,6 +232,10 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                             onChange={(e) => setInput(e.target.value)}
                             disabled={loading}
                         />
+                         <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleToggleListening} disabled={loading}>
+                            <Mic className="h-4 w-4" />
+                            <span className="sr-only">Toggle Microphone</span>
+                        </Button>
                         <Button type="submit" size="icon" disabled={loading || !input.trim()} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                             <Send className="h-4 w-4" />
                             <span className="sr-only">Send</span>
@@ -195,3 +247,5 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         </div>
     );
 }
+
+    
