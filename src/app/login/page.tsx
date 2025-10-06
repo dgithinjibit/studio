@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -10,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
-import { SyncSentaLogo } from '@/components/icons';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -33,8 +31,10 @@ export default function LoginPage() {
             <main className="flex-grow flex items-center justify-center">
                 <Card className="w-full max-w-sm">
                     <CardHeader className="text-center">
-                         <SyncSentaLogo className="w-12 h-12 mx-auto text-primary" />
-                        <CardTitle className="font-headline text-2xl">Welcome Back to SyncSenta</CardTitle>
+                        <h1 className="font-headline text-5xl font-extrabold tracking-tighter text-primary">
+                            SyncSenta
+                        </h1>
+                        <CardTitle className="font-headline text-2xl pt-4">Welcome Back</CardTitle>
                         <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
                     </CardHeader>
                     <CardContent>
