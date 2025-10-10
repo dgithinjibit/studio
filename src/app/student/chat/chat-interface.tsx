@@ -116,7 +116,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         const getInitialMessage = async () => {
             setLoading(true);
             try {
-                const initialHistory: Message[] = [{ role: 'user', content: 'Habari! Please introduce yourself and greet me.' }];
+                const initialHistory: Message[] = [];
                 let result;
                 if (teacherContext) {
                     setTutorMode('compass');
@@ -124,7 +124,12 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                     result = { response: compassResult.response, audioResponse: undefined };
                 } else {
                     setTutorMode('mwalimu');
-                    result = await mwalimuAiTutor({ grade, subject, history: initialHistory });
+                    result = await mwalimuAiTutor({ 
+                        grade, 
+                        subject, 
+                        history: initialHistory,
+                        currentMessage: `Hello! Please introduce yourself and greet me as a ${subject} tutor for ${gradeName}.`
+                    });
                 }
                 processAndSetMessage('model', result);
             } catch (error) {
@@ -135,7 +140,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
             }
         };
         getInitialMessage();
-    }, [grade, subject, teacherContext]);
+    }, [grade, subject, teacherContext, gradeName]);
     
     useEffect(() => {
         if (scrollAreaRef.current) {
@@ -145,11 +150,13 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
             });
         }
         
-        // Auto-play audio for the last message if it's from the model
         const lastMessage = messages[messages.length - 1];
         if (lastMessage && lastMessage.role === 'model' && lastMessage.audio && audioRef.current) {
-            audioRef.current.src = lastMessage.audio;
-            audioRef.current.play().catch(e => console.error("Audio autoplay failed:", e));
+             // Only play if the src is different, preventing interruption of the same audio
+            if (audioRef.current.src !== lastMessage.audio) {
+                audioRef.current.src = lastMessage.audio;
+                audioRef.current.play().catch(e => console.error("Audio autoplay failed:", e));
+            }
         }
 
     }, [messages]);
