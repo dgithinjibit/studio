@@ -234,33 +234,33 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
-    // The history is now passed directly from the UI, no modification needed.
+    
     const flowInput: MwalimuAiTutorInput = { ...input };
     
     // Dynamic context loading
     if (flowInput.subject === 'AI') {
-    flowInput.teacherContext = `AI Curriculum:\n${aiCurriculum}`;
+        flowInput.teacherContext = `AI Curriculum:\n${aiCurriculum}`;
     }
     else if (flowInput.subject === 'Blockchain') {
-    flowInput.teacherContext = `Blockchain Curriculum:\n${blockchainCurriculum}`;
+        flowInput.teacherContext = `Blockchain Curriculum:\n${blockchainCurriculum}`;
     }
     else if (flowInput.subject === 'Indigenous Language' && input.currentMessage) {
-    const categories = Object.keys(kikuyuDictionary) as Array<keyof typeof kikuyuDictionary>;
-    let foundCategory: keyof typeof kikuyuDictionary | null = null;
-    
-    for (const category of categories) {
-        if (input.currentMessage.toLowerCase().includes(category.replace(/_/g, ' '))) {
-        foundCategory = category;
-        break;
+        const categories = Object.keys(kikuyuDictionary) as Array<keyof typeof kikuyuDictionary>;
+        let foundCategory: keyof typeof kikuyuDictionary | null = null;
+        
+        for (const category of categories) {
+            if (input.currentMessage.toLowerCase().includes(category.replace(/_/g, ' '))) {
+            foundCategory = category;
+            break;
+            }
         }
-    }
 
-    if (foundCategory) {
-        const categoryData = kikuyuDictionary[foundCategory];
-        flowInput.teacherContext = `The user is asking about the '${foundCategory}' category. Here is the relevant vocabulary:\n${JSON.stringify(categoryData, null, 2)}`;
-    } else {
-        flowInput.teacherContext = `The user has not asked for a specific category. Let them know what categories are available to learn from: ${categories.map(c => c.replace(/_/g, ' ')).join(', ')}. Do not list any words yet.`;
-    }
+        if (foundCategory) {
+            const categoryData = kikuyuDictionary[foundCategory];
+            flowInput.teacherContext = `The user is asking about the '${foundCategory}' category. Here is the relevant vocabulary:\n${JSON.stringify(categoryData, null, 2)}`;
+        } else {
+            flowInput.teacherContext = `The user has not asked for a specific category. Let them know what categories are available to learn from: ${categories.map(c => c.replace(/_/g, ' ')).join(', ')}. Do not list any words yet.`;
+        }
     } else {
         // Dynamically load the curriculum data from Firestore
         const gradeName = `Grade ${input.grade.replace('g', '')}`;
