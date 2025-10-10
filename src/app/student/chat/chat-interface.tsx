@@ -39,6 +39,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any | null>(null);
+    const [choices, setChoices] = useState<string[]>([]);
 
      useEffect(() => {
         const name = localStorage.getItem('studentName');
@@ -46,6 +47,24 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
             setStudentFirstName(name.split(' ')[0]);
         }
     }, []);
+
+    const parseResponse = (text: string) => {
+        const choiceRegex = /\[CHOICE: (.*?)\]/g;
+        const newChoices = [];
+        let match;
+        while ((match = choiceRegex.exec(text)) !== null) {
+            newChoices.push(match[1]);
+        }
+
+        const cleanText = text.replace(choiceRegex, '').trim();
+        setChoices(newChoices);
+        return cleanText;
+    };
+
+    const processAndSetMessage = (role: 'model', response: { response: string, audioResponse?: string }) => {
+        const cleanText = parseResponse(response.response);
+        setMessages(prev => [...prev, { role, content: cleanText, audio: response.audioResponse }]);
+    }
 
     useEffect(() => {
         // Initialize SpeechRecognition
@@ -107,7 +126,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                     setTutorMode('mwalimu');
                     result = await mwalimuAiTutor({ grade, subject, history: [] });
                 }
-                setMessages([{ role: 'model', content: result.response, audio: result.audioResponse }]);
+                 processAndSetMessage('model', result);
             } catch (error) {
                 console.error("Error getting initial message:", error);
                 setMessages([{ role: 'model', content: "Hello! I'm having a little trouble connecting. Please try again in a moment." }]);
@@ -140,17 +159,23 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
             router.push(`/dashboard/learning-lab/${roomId}/meet`);
         }
     };
+    
+    const handleChoiceClick = (choice: string) => {
+        handleSubmit(undefined, choice);
+    }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!input.trim() || loading) return;
+    const handleSubmit = async (e?: React.FormEvent, choice?: string) => {
+        e?.preventDefault();
+        const currentMessage = choice || input;
+        if (!currentMessage.trim() || loading) return;
 
-        const userMessage: Message = { role: 'user', content: input };
+        const userMessage: Message = { role: 'user', content: currentMessage };
         const newMessages = [...messages, userMessage];
         setMessages(newMessages); // Show user message immediately
         const currentInput = input;
         setInput('');
         setLoading(true);
+        setChoices([]); // Clear choices after user makes one
 
         try {
             let result;
@@ -168,7 +193,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                     history: newMessages // Pass the full, updated history
                 });
             }
-            setMessages([...newMessages, { role: 'model', content: result.response, audio: result.audioResponse }]);
+            processAndSetMessage('model', result);
         } catch (error) {
             console.error("Error calling AI tutor:", error);
             setMessages([...newMessages, { role: 'model', content: "I'm sorry, I encountered an error. Could you please rephrase your question?" }]);
@@ -203,18 +228,26 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                                     </div>
                                 </div>
                             ))}
-                             {loading && messages.length === 0 && (
-                                <div className="flex justify-start">
-                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center text-muted-foreground">
-                                        <Loader2 className="h-5 w-5 animate-spin" />
-                                        <span className="ml-2 text-sm">AI Tutor is thinking...</span>
-                                    </div>
-                                </div>
-                            )}
-                             {loading && messages.length > 0 && (
+                            {loading && (
                                 <div className="flex justify-start">
                                     <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
                                         <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                    </div>
+                                </div>
+                            )}
+                             {choices.length > 0 && !loading && (
+                                <div className="flex justify-start">
+                                    <div className="flex flex-col items-start gap-2">
+                                        {choices.map((choice, index) => (
+                                            <Button 
+                                                key={index}
+                                                variant="outline"
+                                                className="bg-background"
+                                                onClick={() => handleChoiceClick(choice)}
+                                            >
+                                                {choice}
+                                            </Button>
+                                        ))}
                                     </div>
                                 </div>
                             )}
@@ -230,13 +263,13 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                             autoComplete="off"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            disabled={loading}
+                            disabled={loading || choices.length > 0}
                         />
                          <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleToggleListening} disabled={loading}>
                             <Mic className="h-4 w-4" />
                             <span className="sr-only">Toggle Microphone</span>
                         </Button>
-                        <Button type="submit" size="icon" disabled={loading || !input.trim()} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <Button type="submit" size="icon" disabled={loading || !input.trim() || choices.length > 0} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                             <Send className="h-4 w-4" />
                             <span className="sr-only">Send</span>
                         </Button>
@@ -247,5 +280,3 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         </div>
     );
 }
-
-    

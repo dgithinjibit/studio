@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2, Award, BookOpen } from 'lucide-react';
+import { ArrowRight, BrainCircuit, KeyRound, Link as LinkIcon, Loader2, Award, BookOpen, CheckCircle } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -42,6 +42,54 @@ const ChatSkeleton = () => (
         </div>
     </div>
 );
+
+const journeySteps: { id: Step; name: string }[] = [
+    { id: 'level', name: 'Level' },
+    { id: 'sub-level', name: 'Sub-Level' },
+    { id: 'grade', name: 'Grade' },
+    { id: 'subject', name: 'Subject' },
+];
+
+const JourneyProgressBar = ({ currentStep }: { currentStep: Step }) => {
+    const currentIndex = journeySteps.findIndex(step => step.id === currentStep);
+
+    // Don't show the bar on the initial start page
+    if (currentStep === 'start' || currentIndex === -1) {
+        return null;
+    }
+
+    return (
+        <div className="w-full px-6 py-3">
+            <div className="flex items-center">
+                {journeySteps.map((step, index) => (
+                    <React.Fragment key={step.id}>
+                        <div className="flex flex-col items-center">
+                            <div
+                                className={cn(
+                                    "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
+                                    index < currentIndex && "bg-green-500 text-white",
+                                    index === currentIndex && "bg-primary text-primary-foreground scale-110 ring-4 ring-primary/30",
+                                    index > currentIndex && "bg-muted border-2"
+                                )}
+                            >
+                                {index < currentIndex ? <CheckCircle className="w-5 h-5" /> : index + 1}
+                            </div>
+                            <p className={cn("text-xs mt-2 text-muted-foreground", index <= currentIndex && "font-semibold text-foreground")}>
+                                {step.name}
+                            </p>
+                        </div>
+                        {index < journeySteps.length - 1 && (
+                            <div className={cn(
+                                "flex-1 h-1 transition-colors duration-500 -mt-6",
+                                index < currentIndex ? "bg-green-500" : "bg-muted"
+                            )} />
+                        )}
+                    </React.Fragment>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 
 function StudentJourneyContent() {
@@ -356,6 +404,7 @@ function StudentJourneyContent() {
     return (
         <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-card sm:rounded-2xl shadow-2xl ring-1 ring-border">
              <StudentHeader showBackButton={currentStep !== 'start'} onBack={handleGoBack} />
+             {currentStep !== 'start' && <JourneyProgressBar currentStep={currentStep} />}
             <main className="flex-grow overflow-y-auto p-6 flex items-center">
                 {renderContent()}
             </main>
@@ -370,16 +419,3 @@ export default function StudentJourneyPage() {
         </Suspense>
     )
 }
-
-    
-
-
-
-    
-
-
-    
-
-    
-
-    
