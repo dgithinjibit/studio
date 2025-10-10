@@ -25,11 +25,8 @@ interface GenerateFamilyEmailDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-const N8N_WEBHOOK_URL = process.env.NEXT_PUBLIC_N8N_EMAIL_WEBHOOK_URL || "https://n8n.dantedone.dev/webhook/send-email"; // Replace with your actual n8n webhook URL
-
 export function GenerateFamilyEmailDialog({ open, onOpenChange }: GenerateFamilyEmailDialogProps) {
   const [loading, setLoading] = useState(false);
-  const [sending, setSending] = useState(false);
   const [generatedEmail, setGeneratedEmail] = useState({ subject: "", body: "" });
   const [formData, setFormData] = useState<GenerateFamilyEmailInput>({
     parentName: "",
@@ -46,44 +43,6 @@ export function GenerateFamilyEmailDialog({ open, onOpenChange }: GenerateFamily
             description: "The full email has been copied.",
         });
     });
-  };
-
-  const handleSend = async () => {
-    if (!generatedEmail.body) return;
-    setSending(true);
-
-    try {
-        const response = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                to: 'parent@example.com', // In a real app, you'd get this from a student record
-                subject: generatedEmail.subject,
-                html: generatedEmail.body.replace(/\n/g, '<br>'), // Basic conversion to HTML
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        toast({
-          title: "Email Sent via Workflow!",
-          description: "Your message has been handed off to the n8n workflow for delivery.",
-        });
-        onOpenChange(false);
-    } catch (error) {
-        console.error("Error triggering n8n workflow:", error);
-        toast({
-            variant: "destructive",
-            title: "Workflow Error",
-            description: "Could not trigger the n8n workflow. Please check the webhook URL and your n8n setup."
-        });
-    } finally {
-        setSending(false);
-    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -114,7 +73,6 @@ export function GenerateFamilyEmailDialog({ open, onOpenChange }: GenerateFamily
 
   const resetState = () => {
     setLoading(false);
-    setSending(false);
     setGeneratedEmail({ subject: "", body: "" });
     setFormData({ parentName: "", studentName: "", topic: "" });
   };
@@ -132,7 +90,7 @@ export function GenerateFamilyEmailDialog({ open, onOpenChange }: GenerateFamily
             <Mail /> Email to Family
           </DialogTitle>
           <DialogDescription>
-            Generate a professional email to send to a student's family, then send it via an automated workflow.
+            Generate a professional email to send to a student's family.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-h-[70vh] overflow-y-auto">
@@ -164,10 +122,6 @@ export function GenerateFamilyEmailDialog({ open, onOpenChange }: GenerateFamily
                          <div className="flex items-center gap-2">
                             <Button variant="ghost" size="sm" onClick={handleCopy}>
                                 <Copy className="h-4 w-4 mr-2" /> Copy
-                            </Button>
-                             <Button onClick={handleSend} disabled={sending || loading}>
-                                {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                                Send via n8n
                             </Button>
                         </div>
                     )}
