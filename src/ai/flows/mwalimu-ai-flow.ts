@@ -172,7 +172,7 @@ To improve a student's well-being and help them succeed, you can use the followi
 - **Instructions:** Confirm that they have clear instructions for the assignment and know where to find them.
 - **Supplies:** Check that they have all the necessary supplies or devices before they start.
 
-**Address Emotional Barriers:** A major hurdle for students can be the fear of doing the work incorrectly. It is crucial to help the student understand that it is always better to start the work, even imperfectly, than to never begin at all. Helping them identify the very first, most simple step can make the task feel less daunting and help overcome this initial block.
+**Address Emotional Barriers:** A major hurdle for students can be the fear of doing the work incorrectly. It is crucial to help the student understand that it is always better to start the work, even if imperfectly, than to never begin at all. Helping them identify the very first, most simple step can make the task feel less daunting and help overcome this initial block.
 
 **Your Knowledge Source:**
 Base your Socratic questions and answers on the "Context from Teacher's Materials" if it's available. If the context is empty, state that the teacher has not provided specific materials for this topic and you can discuss it generally.
@@ -234,84 +234,44 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
-    let responseText: string;
-    // Handle initial greeting separately to ensure a good first experience.
-    if (!input.history || input.history.length === 0) {
-        const gradeName = `Grade ${input.grade.replace('g', '')}`;
-        
-        if (input.subject === 'Indigenous Language') {
-            responseText = "Habari! I'm your Gikuyu Literacy Buddy. You can ask me to translate words, quiz you, or teach you about categories like 'greetings', 'animals', or 'family'. What would you like to do first?";
-        }
-        else if (input.subject.toLowerCase().includes('english') && (input.grade === 'g1' || input.grade === 'g2')) {
-            responseText = "That's a great topic to explore! When we think about 'nouns', we're often talking about the 'things' around us. To get us started, what are some of the 'things' you can see in your classroom right now?";
-        }
-        else if (input.subject.toLowerCase().includes('kiswahili')) {
-            responseText = `Habari! Mimi ni Mwalimu AI, mshauri wako wa masomo. Nimefurahi kuona umechagua Kiswahili kwa ${gradeName} leo - chaguo bora sana! Ili kuanza safari yetu, ni mada gani au swali gani ungependa tujadili pamoja?`;
-        }
-        else if (input.subject === 'AI') {
-             if (['g4', 'g5', 'g6'].includes(input.grade)) {
-                responseText = `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore AI for ${gradeName}.\n\nAccording to the curriculum, a key skill is understanding algorithms. Let's start there: can you describe the 'algorithm' or steps you followed to get ready for school today?`;
-            } else {
-                responseText = `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore AI for ${gradeName}.\n\nThe curriculum mentions building a 'Community Helper Chatbot.' Before we get to that, let's think about conversations. What makes a good conversation helper? What should they know?`;
-            }
-        }
-        else if (input.subject === 'Blockchain') {
-             if (['g4', 'g5', 'g6'].includes(input.grade)) {
-                responseText = `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore Blockchain for ${gradeName}.\n\nAccording to the curriculum, a key concept is a 'digital record' or ledger. Can you think of an example of a digital record you use in your daily life, maybe at home or at school?`;
-            } else {
-                responseText = `Habari! I'm Mwalimu AI, your personal thinking partner. I see you're ready to explore Blockchain for ${gradeName}.\n\nThe curriculum talks about keeping digital information safe. How do you keep your own information private, like a secret note or a password? What makes it secure?`;
-            }
-        }
-        else if (input.subject === 'Financial Literacy') {
-             if (['g4', 'g5', 'g6'].includes(input.grade)) {
-                responseText = `Welcome! I'm your Financial Literacy Coach. Let's talk about money. If you were given 100 shillings right now, what's the first thing you would want to buy?`;
-            } else {
-                responseText = `Welcome! I'm your Financial Literacy Coach. Let's talk about money. Have you ever earned your own money? What's the best way for a student like you to start earning?`;
-            }
-        } else {
-            // Default greeting
-            responseText = `Habari! I'm Mwalimu AI, your personal thinking partner. I see we're exploring ${input.subject} for ${gradeName} today - a fantastic choice! To start our journey, what topic or question is on your mind? Let's unravel it together.`;
-        }
-    } else {
-         // The history is now passed directly from the UI, no modification needed.
-        const flowInput: MwalimuAiTutorInput = { ...input };
-        
-        // Dynamic context loading
-        if (flowInput.subject === 'AI') {
-        flowInput.teacherContext = `AI Curriculum:\n${aiCurriculum}`;
-        }
-        else if (flowInput.subject === 'Blockchain') {
-        flowInput.teacherContext = `Blockchain Curriculum:\n${blockchainCurriculum}`;
-        }
-        else if (flowInput.subject === 'Indigenous Language' && input.currentMessage) {
-        const categories = Object.keys(kikuyuDictionary) as Array<keyof typeof kikuyuDictionary>;
-        let foundCategory: keyof typeof kikuyuDictionary | null = null;
-        
-        for (const category of categories) {
-            if (input.currentMessage.toLowerCase().includes(category.replace(/_/g, ' '))) {
-            foundCategory = category;
-            break;
-            }
-        }
-
-        if (foundCategory) {
-            const categoryData = kikuyuDictionary[foundCategory];
-            flowInput.teacherContext = `The user is asking about the '${foundCategory}' category. Here is the relevant vocabulary:\n${JSON.stringify(categoryData, null, 2)}`;
-        } else {
-            flowInput.teacherContext = `The user has not asked for a specific category. Let them know what categories are available to learn from: ${categories.map(c => c.replace(/_/g, ' ')).join(', ')}. Do not list any words yet.`;
-        }
-        } else {
-            // Dynamically load the curriculum data from Firestore
-            const gradeName = `Grade ${input.grade.replace('g', '')}`;
-            const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
-
-            if (firestoreCurriculum) {
-                flowInput.teacherContext = `Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
-            }
-        }
-        const {output} = await tutorPrompt(flowInput);
-        responseText = output!.response;
+    // The history is now passed directly from the UI, no modification needed.
+    const flowInput: MwalimuAiTutorInput = { ...input };
+    
+    // Dynamic context loading
+    if (flowInput.subject === 'AI') {
+    flowInput.teacherContext = `AI Curriculum:\n${aiCurriculum}`;
     }
+    else if (flowInput.subject === 'Blockchain') {
+    flowInput.teacherContext = `Blockchain Curriculum:\n${blockchainCurriculum}`;
+    }
+    else if (flowInput.subject === 'Indigenous Language' && input.currentMessage) {
+    const categories = Object.keys(kikuyuDictionary) as Array<keyof typeof kikuyuDictionary>;
+    let foundCategory: keyof typeof kikuyuDictionary | null = null;
+    
+    for (const category of categories) {
+        if (input.currentMessage.toLowerCase().includes(category.replace(/_/g, ' '))) {
+        foundCategory = category;
+        break;
+        }
+    }
+
+    if (foundCategory) {
+        const categoryData = kikuyuDictionary[foundCategory];
+        flowInput.teacherContext = `The user is asking about the '${foundCategory}' category. Here is the relevant vocabulary:\n${JSON.stringify(categoryData, null, 2)}`;
+    } else {
+        flowInput.teacherContext = `The user has not asked for a specific category. Let them know what categories are available to learn from: ${categories.map(c => c.replace(/_/g, ' ')).join(', ')}. Do not list any words yet.`;
+    }
+    } else {
+        // Dynamically load the curriculum data from Firestore
+        const gradeName = `Grade ${input.grade.replace('g', '')}`;
+        const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
+
+        if (firestoreCurriculum) {
+            flowInput.teacherContext = `Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
+        }
+    }
+    const {output} = await tutorPrompt(flowInput);
+    const responseText = output!.response;
     
     const audioResponse = await generateTts(responseText);
 

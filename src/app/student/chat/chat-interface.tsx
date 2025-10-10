@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -116,17 +116,17 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         const getInitialMessage = async () => {
             setLoading(true);
             try {
+                const initialHistory: Message[] = [{ role: 'user', content: 'Habari! Please introduce yourself and greet me.' }];
                 let result;
                 if (teacherContext) {
                     setTutorMode('compass');
-                    // Classroom Compass does not have TTS yet.
-                    const compassResult = await classroomCompass({ teacherContext: teacherContext, history: [] });
-                    result = {response: compassResult.response, audioResponse: undefined};
+                    const compassResult = await classroomCompass({ teacherContext, history: [] });
+                    result = { response: compassResult.response, audioResponse: undefined };
                 } else {
                     setTutorMode('mwalimu');
-                    result = await mwalimuAiTutor({ grade, subject, history: [] });
+                    result = await mwalimuAiTutor({ grade, subject, history: initialHistory });
                 }
-                 processAndSetMessage('model', result);
+                processAndSetMessage('model', result);
             } catch (error) {
                 console.error("Error getting initial message:", error);
                 setMessages([{ role: 'model', content: "Hello! I'm having a little trouble connecting. Please try again in a moment." }]);
