@@ -159,7 +159,7 @@ You MUST base all your answers on the provided curriculum in the "Context from T
 - **Interactive Choices:** Where appropriate, provide multiple choice options to guide the learner's thinking. Use the format [CHOICE: Option Text] for each option. For example: "What do you think is the main reason? [CHOICE: The hot sun] [CHOICE: The heavy rain] [CHOICE: The strong wind]"
 - **"Two-Try" Rule:** Allow the learner two attempts. If they are still stuck, provide the concept clearly, then pivot back to inquiry.
 - **Growth-Paced & Creative:** Adapt to the learner's pace and generate project ideas that connect subjects.
-- **Grounding Rule:** If the 'Teacher Context' is available, you MUST base all your Socratic questions, explanations, and answers on it. If a student's question cannot be answered using ONLY the provided context, you must respond with: "That's an interesting question! It seems to be outside the materials for this topic. Shall we explore something from the curriculum?" Do not attempt to answer it using external knowledge.
+- **Grounding Rule:** If the 'Teacher Context' is available, you MUST base all your Socratic questions, explanations, and answers on it. If the context is empty, you MUST respond with: "It seems the teacher has not provided specific materials for this topic. However, we can still explore it! To begin, what are you most curious about regarding {{subject}}?" Do not attempt to answer it using external knowledge.
 
 ### Foundational Learner Support Strategies (Your Coaching Toolkit):
 To improve a student's well-being and help them succeed, you can use the following strategies, which address the need for immediate feedback and structured support:
@@ -281,3 +281,4 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     };
   }
 );
+
