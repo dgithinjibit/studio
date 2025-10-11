@@ -18,6 +18,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { collection, onSnapshot, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { saveClass, deleteClass, getTeacherData } from '@/lib/teacher-service';
+import { Skeleton } from '../ui/skeleton';
 
 const tailwindColorToHex: { [key: string]: string } = {
     'bg-blue-500': '#3b82f6',
@@ -30,8 +31,29 @@ const tailwindColorToHex: { [key: string]: string } = {
     'bg-teal-500': '#14b8a6',
 };
 
-export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: Teacher | null }) {
-    const [teacher, setTeacher] = useState<Teacher | null>(initialTeacherData);
+const DashboardSkeleton = () => (
+    <div className="space-y-6">
+        <div className="flex items-center justify-between">
+            <div>
+                <Skeleton className="h-8 w-64 mb-2" />
+                <Skeleton className="h-4 w-80" />
+            </div>
+            <Skeleton className="h-10 w-48" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+             <div className="lg:col-span-2">
+                <Skeleton className="h-[360px] w-full" />
+            </div>
+             <div className="lg:col-span-1">
+                <Skeleton className="h-[360px] w-full" />
+            </div>
+        </div>
+    </div>
+);
+
+
+export function TeacherDashboard() {
+    const [teacher, setTeacher] = useState<Teacher | null>(null);
     const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
     const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
@@ -41,17 +63,19 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
     const { toast } = useToast();
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
     const [isMutating, setIsMutating] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!initialTeacherData?.id) return;
+        // Hardcoded teacher ID for this prototype
+        const teacherId = 'usr_3';
 
         // Firestore real-time listener for teacher data
-        const unsubTeacher = onSnapshot(doc(db, "teachers", initialTeacherData.id), (doc) => {
+        const unsubTeacher = onSnapshot(doc(db, "teachers", teacherId), (doc) => {
             if (doc.exists()) {
-                const newTeacherData = doc.data() as Teacher;
+                const newTeacherData = { id: doc.id, ...doc.data() } as Teacher;
                 setTeacher(newTeacherData);
 
-                // Update selectedClass if it was deleted or if none is selected
+                 // Update selectedClass if it was deleted or if none is selected
                 if (selectedClass) {
                     const selectedClassExists = newTeacherData.classes.some(c => c.id === selectedClass.id);
                     if (!selectedClassExists) {
@@ -60,13 +84,15 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
                 } else if (newTeacherData.classes.length > 0) {
                      setSelectedClass(newTeacherData.classes[0]);
                 }
-
             } else {
+                console.error('Teacher data not found. Please seed the database.');
                 setTeacher(null);
             }
+            setIsLoading(false);
         }, (error) => {
             console.error("Failed to subscribe to teacher data:", error);
             toast({ variant: "destructive", title: "Real-time Error", description: "Could not sync teacher data." });
+            setIsLoading(false);
         });
 
         // Firestore real-time listener for resources
@@ -82,8 +108,12 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
             unsubTeacher();
             unsubResources();
         };
-    }, [initialTeacherData?.id, toast, selectedClass]);
+    }, [toast, selectedClass]);
     
+    if (isLoading) {
+        return <DashboardSkeleton />;
+    }
+
     if (!teacher) {
         return (
              <div className="text-center p-8">
@@ -113,7 +143,6 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
         if (!teacher) return;
         setIsMutating(true);
         try {
-            // The onSnapshot listener will handle the UI update automatically.
             await saveClass(teacher.id, { ...classDetails, id: classId || '' });
             
             setEditingClass(null);
@@ -134,7 +163,6 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
         if (!teacher) return;
         setIsMutating(true);
         try {
-            // The onSnapshot listener will handle the UI update automatically.
             await deleteClass(teacher.id, classId);
             toast({
                 variant: "destructive",
@@ -325,5 +353,3 @@ export function TeacherDashboard({ initialTeacherData }: { initialTeacherData: T
         </>
     );
 }
-
-    

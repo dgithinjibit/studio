@@ -1,5 +1,7 @@
 
-import { Suspense } from 'react';
+"use client";
+
+import { Suspense, useState, useEffect } from 'react';
 import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-dashboard';
 import { SchoolHeadDashboard } from '@/components/dashboards/school-head-dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -7,7 +9,6 @@ import { redirect } from 'next/navigation';
 import { getServerUser } from '@/lib/auth';
 import type { UserRole } from '@/lib/types';
 import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
-import { getTeacherData } from '@/lib/teacher-service';
 
 const DashboardSkeleton = () => (
     <div className="space-y-6">
@@ -26,19 +27,42 @@ const DashboardSkeleton = () => (
     </div>
 );
 
-export default async function DashboardPage() {
-    const user = await getServerUser();
+export default function DashboardPage() {
+    const [userRole, setUserRole] = useState<UserRole | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    if (!user?.role) {
-       return redirect('/login');
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const user = await getServerUser();
+                if (user?.role) {
+                    setUserRole(user.role);
+                } else {
+                    redirect('/login');
+                }
+            } catch (error) {
+                 console.error("Failed to fetch user", error);
+                 redirect('/login');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUser();
+    }, []);
+
+    if (loading) {
+        return <DashboardSkeleton />;
     }
 
-    switch (user.role) {
+    if (!userRole) {
+       return null; // Or a redirect, but fetching should handle it
+    }
+
+    switch (userRole) {
         case 'teacher':
-            const teacher = await getTeacherData('usr_3');
             return (
                  <Suspense fallback={<DashboardSkeleton />}>
-                    <TeacherDashboard initialTeacherData={teacher} />
+                    <TeacherDashboard />
                 </Suspense>
             );
         case 'school_head':
@@ -46,8 +70,10 @@ export default async function DashboardPage() {
         case 'county_officer':
             return <CountyOfficerDashboard />;
         case 'student':
-            return redirect('/student/journey');
+            redirect('/student/journey');
+            return null;
         default:
-            return redirect('/login');
+            redirect('/login');
+            return null;
     }
 }
