@@ -271,4 +271,3 @@ export const blockchainCurriculum = `
         <li><strong>Plan for Scalability:</strong> As the pilot proves successful, prepare for a phased national rollout. This includes securing the necessary cloud infrastructure and scaling the data ingestion and model training pipelines. This approach ensures that the system is robust, effective, and ready to meet the demands of a nationwide implementation.</li>
     </ul>
 </article>
-`;
