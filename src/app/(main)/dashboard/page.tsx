@@ -31,6 +31,8 @@ export default function DashboardPage() {
     const [userRole, setUserRole] = useState<UserRole | null>(null);
     const [loading, setLoading] = useState(true);
 
+    console.log("the role: ", userRole)
+
     useEffect(() => {
         const fetchUser = async () => {
             try {
