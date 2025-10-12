@@ -13,7 +13,8 @@ import {
   Megaphone,
   Building2,
   Package,
-  Palette
+  Palette,
+  Briefcase
 } from "lucide-react";
 import { cookies } from 'next/headers';
 import type { UserRole } from "@/lib/types";
@@ -77,6 +78,9 @@ export function AppSidebar() {
       navItems = [{ href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" }];
       break;
   }
+
+  // Add Products to all roles
+  navItems.push({ href: "/products", icon: Briefcase, label: "Products" });
 
   return (
     <Sidebar>
