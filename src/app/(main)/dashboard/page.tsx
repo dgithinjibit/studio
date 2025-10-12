@@ -62,11 +62,7 @@ export default function DashboardPage() {
 
     switch (userRole) {
         case 'teacher':
-            return (
-                 <Suspense fallback={<DashboardSkeleton />}>
-                    <TeacherDashboard />
-                </Suspense>
-            );
+            return <TeacherDashboard />;
         case 'school_head':
             return <SchoolHeadDashboard />;
         case 'county_officer':
