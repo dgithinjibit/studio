@@ -22,6 +22,8 @@ const DashboardSkeleton = () => (
 );
 
 export default function DashboardPage() {
+    // This page is now dedicated to showing the authenticated user's dashboard.
+    // The role-based switching has been removed as per the new focused design.
     return (
         <Suspense fallback={<DashboardSkeleton />}>
             <TeacherDashboard />

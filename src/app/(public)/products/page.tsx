@@ -1,5 +1,3 @@
-
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Bot, BrainCircuit, Users, TrendingUp, ShieldCheck, PenTool } from 'lucide-react';
 
 const products = [
@@ -25,23 +23,23 @@ const products = [
 
 export default function ProductsPage() {
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto py-12">
         <div className="text-center">
-            <h1 className="font-headline text-3xl font-bold">A Unified Platform for Kenyan Education</h1>
-            <p className="text-muted-foreground mt-2">One integrated system for students, teachers, and school leaders.</p>
+            <h1 className="font-headline text-3xl md:text-4xl font-bold">A Unified Platform for Kenyan Education</h1>
+            <p className="text-muted-foreground mt-2 text-lg">One integrated system for students, teachers, and school leaders.</p>
         </div>
 
-        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 pt-8">
             {products.map((product) => {
                 const Icon = product.icon;
                 return (
-                     <div key={product.title} className="flex flex-col text-center items-center">
-                        <div className="bg-primary/10 p-3 rounded-full mb-4">
-                            <Icon className="w-8 h-8 text-primary" />
+                     <div key={product.title} className="flex flex-col text-center items-center p-4">
+                        <div className="bg-primary/10 p-4 rounded-full mb-4">
+                            <Icon className="w-10 h-10 text-primary" />
                         </div>
                         <h3 className="text-xl font-semibold">{product.title}</h3>
                         <p className="text-muted-foreground mt-1 text-sm">For {product.for}</p>
-                        <p className="mt-2 text-sm max-w-xs">
+                        <p className="mt-4 text-muted-foreground max-w-xs">
                             {product.description}
                         </p>
                     </div>

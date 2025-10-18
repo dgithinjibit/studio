@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,12 +10,6 @@ export default function TermsAndConditionsPage() {
 
     return (
         <div className="container mx-auto py-12 px-4 md:px-6">
-            <div className="mb-8">
-                <Button variant="ghost" onClick={() => router.back()}>
-                    <ArrowLeft className="mr-2" />
-                    Back
-                </Button>
-            </div>
             <Card>
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl">Terms and Conditions for SyncSenta</CardTitle>
