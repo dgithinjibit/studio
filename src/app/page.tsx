@@ -3,11 +3,8 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Bot, School } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { SyncSentaLogo } from '@/components/icons';
-import { Card, CardContent } from '@/components/ui/card';
-
 
 export default function HomePage() {
   const router = useRouter();
@@ -30,16 +27,21 @@ export default function HomePage() {
                 <h1 className="font-headline text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter text-foreground">
                     SyncSenta
                 </h1>
-                <p className="max-w-2xl text-2xl md:text-3xl text-primary font-semibold">
-                    The Future of Kenyan Education, Powered by AI
+                <p className="max-w-2xl text-xl md:text-2xl text-primary font-semibold">
+                    The AI-Powered Operating System for Kenyan Education
                 </p>
-                <p className="max-w-xl text-muted-foreground text-lg">
-                    Your AI partner for CBE-aligned teaching resources, personalized student learning, and powerful school management tools.
+                <p className="max-w-xl text-muted-foreground">
+                    An integrated platform that uses curriculum-aware AI to connect students, teachers, and administrators, streamlining workflows and fostering critical thinking.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button onClick={() => router.push('/signup')} size="lg" className="w-full sm:w-auto">
-                        Get Started for Free
+                        Get Started
                         <ArrowRight className="ml-2" />
+                    </Button>
+                    <Button variant="outline" size="lg" asChild>
+                        <Link href="/products">
+                            View Products
+                        </Link>
                     </Button>
                 </div>
             </div>
