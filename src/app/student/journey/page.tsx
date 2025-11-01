@@ -190,8 +190,11 @@ function StudentJourneyContent() {
                      throw new Error('Resource URL is missing.');
                 }
 
-                // Download the context content from the URL specified in Firestore
-                const storageRef = ref(storage, tutorContextResource.url);
+                // The URL from storage is a full URL, but we need the path relative to the bucket.
+                const storageUrl = new URL(tutorContextResource.url);
+                const storagePath = decodeURIComponent(storageUrl.pathname.split('/').slice(3).join('/'));
+                const storageRef = ref(storage, storagePath);
+
                 const bytes = await getBytes(storageRef);
                 const contextText = new TextDecoder().decode(bytes);
                 

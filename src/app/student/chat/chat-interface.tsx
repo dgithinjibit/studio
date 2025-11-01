@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useRef, Fragment } from 'react';
@@ -140,7 +141,8 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
             }
         };
         getInitialMessage();
-    }, [grade, subject, teacherContext, gradeName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [grade, subject, teacherContext]);
     
     useEffect(() => {
         if (scrollAreaRef.current) {
