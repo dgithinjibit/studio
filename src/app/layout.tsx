@@ -5,6 +5,13 @@ import { Toaster } from "@/components/ui/toaster"
 import { app } from '@/lib/firebase'; // Ensure Firebase is initialized
 import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
+import { Inter } from 'next/font/google';
+import { cn } from '@/lib/utils';
+
+const fontSans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
 
 export const metadata: Metadata = {
   title: 'SyncSenta',
@@ -32,14 +39,11 @@ export default function RootLayout({
         </script>
         <script src='https://meet.jit.si/external_api.js' async></script>
         <link rel="icon" href="/logo.svg" type="image/svg+xml" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased">
+      <body className={cn("font-body antialiased", fontSans.variable)}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

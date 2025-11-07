@@ -11,8 +11,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Orbitron', 'sans-serif'],
-        headline: ['Orbitron', 'sans-serif'],
+        body: ['var(--font-sans)', 'sans-serif'],
+        headline: ['var(--font-sans)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
