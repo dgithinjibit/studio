@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { SyncSentaLogo } from '@/components/icons';
 
 export default function HomePage() {
   const router = useRouter();
@@ -23,17 +24,22 @@ export default function HomePage() {
 
       <main className="flex-grow flex items-center justify-center">
         <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center text-center space-y-6">
-                <h1 className="font-headline text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter text-foreground">
-                    SyncSenta
-                </h1>
-                <p className="max-w-2xl text-xl md:text-2xl text-primary font-semibold">
-                    The AI-Powered Operating System for Kenyan Education
-                </p>
-                <p className="max-w-xl text-muted-foreground">
-                    An integrated platform that uses curriculum-aware AI to connect students, teachers, and administrators, streamlining workflows and fostering critical thinking.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col items-center justify-center text-center space-y-8">
+                
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-card rounded-full flex items-center justify-center border-4 border-primary/20 shadow-lg">
+                    <SyncSentaLogo className="w-20 h-20 md:w-24 md:h-24 text-primary" />
+                </div>
+                
+                <div className="max-w-2xl space-y-4">
+                    <p className="text-xl md:text-2xl text-foreground font-semibold">
+                        SyncSenta is an AI-powered operating system designed to synchronize the Kenyan education ecosystem.
+                    </p>
+                    <p className="text-lg text-muted-foreground">
+                        We connect students, teachers, and administrators to streamline workflows and foster critical thinking, all grounded in the official curriculum.
+                    </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                     <Button onClick={() => router.push('/signup')} size="lg" className="w-full sm:w-auto">
                         Get Started
                         <ArrowRight className="ml-2" />

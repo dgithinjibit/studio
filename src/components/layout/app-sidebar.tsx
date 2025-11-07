@@ -31,7 +31,6 @@ export function AppSidebar() {
     { href: "/dashboard/reports", icon: Library, label: "My Library" },
     { href: "/dashboard/curriculum", icon: Database, label: "Curriculum" },
     { href: "/dashboard/creative-arts", icon: Palette, label: "Creative Arts" },
-    { href: "/products", icon: Briefcase, label: "Products" }
   ];
 
   return (
