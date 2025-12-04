@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { SyncSentaLogo } from '@/components/icons';
+import Image from 'next/image';
 
 export default function HomePage() {
   const router = useRouter();
@@ -26,8 +26,14 @@ export default function HomePage() {
         <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center text-center space-y-8">
                 
-                <div className="w-32 h-32 md:w-40 md:h-40 bg-card rounded-full flex items-center justify-center border-4 border-primary/20 shadow-lg">
-                    <SyncSentaLogo className="w-20 h-20 md:w-24 md:h-24 text-primary" />
+                <div className="w-32 h-32 md:w-40 md:h-40 flex items-center justify-center">
+                    <Image
+                      src="/assets/LOGO.png"
+                      alt="SyncSenta Logo"
+                      width={160}
+                      height={160}
+                      className="rounded-full"
+                    />
                 </div>
                 
                 <div className="max-w-2xl space-y-4">
