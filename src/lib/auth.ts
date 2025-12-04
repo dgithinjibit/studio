@@ -6,26 +6,25 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 /**
- * A Server Action to set the user's role and name in cookies and redirect.
- * This is bound directly to the signup form.
+ * A Server Action to set the user's role and name in cookies.
+ * It returns the path to redirect to upon successful signup.
  */
-export async function signupUser(role: UserRole, formData: FormData) {
+export async function signupUser(role: UserRole, formData: FormData): Promise<string> {
   const fullName = formData.get('fullName') as string;
 
   if (!role || !fullName) {
-    // Handle error case, maybe redirect back with an error message
-    return;
+    throw new Error("Role or Full Name is missing.");
   }
   
   const cookieStore = cookies();
   cookieStore.set('userRole', role, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
   cookieStore.set('userName', fullName, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
-  // Redirect after setting cookies
+  // Return the redirect path instead of calling redirect()
   if (role === 'student') {
-    redirect('/student/journey');
+    return '/student/journey';
   } else {
-    redirect('/dashboard');
+    return '/dashboard';
   }
 }
 

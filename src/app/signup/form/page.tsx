@@ -40,16 +40,17 @@ function SignupFormComponent() {
         
         startTransition(async () => {
             try {
-                await signupUser(role, formData);
+                const redirectPath = await signupUser(role, formData);
                 toast({
                   title: 'Signup Successful!',
                   description: 'Redirecting you now...',
                 });
+                router.push(redirectPath);
             } catch (error) {
                  toast({
                     variant: 'destructive',
                     title: 'Signup Failed',
-                    description: 'An unexpected error occurred. Please try again.',
+                    description: (error as Error).message || 'An unexpected error occurred. Please try again.',
                 });
             }
         });
