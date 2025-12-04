@@ -95,7 +95,7 @@ function SignupFormComponent() {
                     </Link>
                     <CardHeader className="text-center pt-12">
                         <CardTitle className="font-headline text-2xl">{getTitle()}</CardTitle>
-                        <CardDescription>Join SyncSenta to revolutionize your learning and teaching.</CardDescription>
+                        <CardDescription>Join SyncSenta to revolutionize your learning.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form action={handleSubmit} className="space-y-4">
