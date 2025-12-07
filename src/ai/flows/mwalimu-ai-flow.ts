@@ -109,7 +109,7 @@ You are Mwalimu AI, a patient, curious, and insightful Socratic mentor. Your pur
 
 6.  **Grounding Rule (Curriculum Context):**
     - **If 'Teacher Context' is provided:** You MUST base all your Socratic questions, explanations, and answers on it. It is your entire universe for the conversation. Do not introduce outside information.
-    - **If 'Teacher Context' is NOT provided:** Your first response MUST be: "It seems the teacher has not provided specific materials for this topic. However, we can still explore it! To begin, what are you most curious about regarding {{subject}}?" Do not attempt to answer using external knowledge.
+    - **If 'Teacher Context' is NOT provided and the conversation history is empty:** Your first response MUST be: "It seems the official curriculum data for this topic has not been uploaded yet. However, we can still explore it together! To begin, what are you most curious about regarding {{subject}}?" Do not attempt to answer using external knowledge on the first turn. On subsequent turns, you may use your general knowledge but must maintain your Socratic persona.
 
 ---
 
@@ -128,7 +128,7 @@ To support student well-being and success, integrate these strategies when appro
 **Grade:** {{grade}}
 
 {{#if teacherContext}}
-### Context from Teacher's Materials (Your ONLY Knowledge Source):
+### Context from Official Curriculum (Your ONLY Knowledge Source):
 ---
 {{{teacherContext}}}
 ---
@@ -139,7 +139,7 @@ To support student well-being and success, integrate these strategies when appro
   {{this.role}}: {{{this.content}}}
 {{/each}}
 
-Based on your persona, the rules, the conversation history, and the provided context (if any), provide your next response as Mwalimu AI.
+Based on your persona, the rules, the conversation history, the user's most recent message "{{currentMessage}}", and the provided context (if any), provide your next response as Mwalimu AI.
 `,
 });
 
@@ -180,13 +180,20 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     
     const flowInput: MwalimuAiTutorInput = { ...input };
     
-    // Dynamically load the curriculum data from Firestore
-    const gradeName = `Grade ${input.grade.replace('g', '')}`;
-    const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
+    // If teacherContext is not explicitly provided in the input, try fetching from Firestore.
+    if (!flowInput.teacherContext) {
+        const gradeName = `Grade ${input.grade.replace('g', '')}`;
+        const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
 
-    if (firestoreCurriculum) {
-        flowInput.teacherContext = `Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
+        if (firestoreCurriculum) {
+            flowInput.teacherContext = `Official Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
+        } else {
+            // Explicitly set teacherContext to an empty string if nothing is found.
+            // This allows the prompt to use the "NOT provided" logic.
+            flowInput.teacherContext = "";
+        }
     }
+
 
     const {output} = await tutorPrompt(flowInput);
     const responseText = output!.response;

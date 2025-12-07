@@ -142,7 +142,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         };
         getInitialMessage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [grade, subject, teacherContext]);
+    }, [grade, subject, teacherContext, gradeName]);
     
     useEffect(() => {
         if (scrollAreaRef.current) {
@@ -230,6 +230,13 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                 <CardContent className="flex-1 overflow-hidden p-0">
                     <ScrollArea className="h-full" ref={scrollAreaRef}>
                         <div className="p-6 space-y-4">
+                             {messages.length === 0 && loading && (
+                                <div className="flex justify-start">
+                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
+                                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                    </div>
+                                </div>
+                            )}
                             {messages.map((message, index) => (
                                 <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                     <div className={`max-w-[75%] p-3 rounded-lg ${message.role === 'user' ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'}`}>
@@ -237,7 +244,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                                     </div>
                                 </div>
                             ))}
-                            {loading && (
+                            {loading && messages.length > 0 && (
                                 <div className="flex justify-start">
                                     <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
                                         <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />

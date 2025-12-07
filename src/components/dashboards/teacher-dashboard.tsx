@@ -76,13 +76,8 @@ export function TeacherDashboard() {
                 setTeacher(newTeacherData);
 
                  // Update selectedClass if it was deleted or if none is selected
-                if (selectedClass) {
-                    const selectedClassExists = newTeacherData.classes.some(c => c.id === selectedClass.id);
-                    if (!selectedClassExists) {
-                        setSelectedClass(newTeacherData.classes.length > 0 ? newTeacherData.classes[0] : null);
-                    }
-                } else if (newTeacherData.classes.length > 0) {
-                     setSelectedClass(newTeacherData.classes[0]);
+                if (!selectedClass || !newTeacherData.classes.some(c => c.id === selectedClass.id)) {
+                    setSelectedClass(newTeacherData.classes.length > 0 ? newTeacherData.classes[0] : null);
                 }
             } else {
                 console.error('Teacher data not found. Please seed the database.');
@@ -108,7 +103,7 @@ export function TeacherDashboard() {
             unsubTeacher();
             unsubResources();
         };
-    }, [toast, selectedClass]);
+    }, [toast]);
     
     if (isLoading) {
         return <DashboardSkeleton />;
