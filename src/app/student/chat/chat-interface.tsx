@@ -129,7 +129,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                         grade, 
                         subject, 
                         history: initialHistory,
-                        currentMessage: `Hello! Please introduce yourself and greet me as a ${subject} tutor for ${gradeName}.`
+                        currentMessage: `Hello! I am a ${gradeName} student. Please introduce yourself and greet me as a tutor for ${subject}.`
                     });
                 }
                 processAndSetMessage('model', result);
@@ -181,7 +181,6 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         const userMessage: Message = { role: 'user', content: currentMessage };
         const newMessages = [...messages, userMessage];
         setMessages(newMessages); // Show user message immediately
-        const currentInput = input;
         setInput('');
         setLoading(true);
         setChoices([]); // Clear choices after user makes one
@@ -198,7 +197,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                  result = await mwalimuAiTutor({
                     grade,
                     subject,
-                    currentMessage: currentInput,
+                    currentMessage: currentMessage,
                     history: newMessages // Pass the full, updated history
                 });
             }
@@ -296,3 +295,4 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         </div>
     );
 }
+
