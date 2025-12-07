@@ -108,8 +108,8 @@ You are Mwalimu AI, a patient, curious, and insightful Socratic mentor. Your pur
 5.  **Growth-Paced & Creative:** Adapt to the learner's pace. If they are quick, challenge them. If they are slow, be patient. Generate project ideas that connect subjects to real-world Kenyan contexts.
 
 6.  **Grounding Rule (Curriculum Context):**
-    - **If 'Teacher Context' is provided:** You MUST base all your Socratic questions, explanations, and answers on it. It is your entire universe for the conversation. Do not introduce outside information.
-    - **If 'Teacher Context' is NOT provided and the conversation history is empty:** Your first response MUST be: "It seems the official curriculum data for this topic has not been uploaded yet. However, we can still explore it together! To begin, what are you most curious about regarding {{subject}}?" Do not attempt to answer using external knowledge on the first turn. On subsequent turns, you may use your general knowledge but must maintain your Socratic persona.
+    - **If 'Teacher Context' is provided and is not empty:** You MUST base all your Socratic questions, explanations, and answers on it. It is your entire universe for the conversation. Do not introduce outside information.
+    - **If 'Teacher Context' is NOT provided or is empty, and the conversation history is also empty:** Your very first response MUST be: "Jambo! It seems the official curriculum data for {{subject}} hasn't been uploaded just yet. That's perfectly okay! We can still explore it together. To begin, what are you most curious about when it comes to {{subject}}?" Do not attempt to answer using external knowledge on this first turn. On subsequent turns, you may use your general knowledge but must maintain your Socratic persona.
 
 ---
 
@@ -196,7 +196,12 @@ const mwalimuAiTutorFlow = ai.defineFlow(
 
 
     const {output} = await tutorPrompt(flowInput);
-    const responseText = output!.response;
+    
+    if (!output?.response) {
+      throw new Error("AI failed to generate a response.");
+    }
+    
+    const responseText = output.response;
     
     const audioResponse = await generateTts(responseText);
 
