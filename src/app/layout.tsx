@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
 import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import { MetaMaskFix } from '@/components/metamask-fix';
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -26,17 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script>
-          {`
-            // Prevent MetaMask console errors during development
-            if (typeof window !== "undefined") {
-              Object.defineProperty(window, 'ethereum', {
-                get() { return undefined },
-                set(_) { console.warn("MetaMask wallet injection blocked.") },
-              });
-            }
-          `}
-        </script>
+        <MetaMaskFix />
         <script src='https://meet.jit.si/external_api.js' async></script>
         <link rel="icon" href="/logo.svg" type="image/svg+xml" />
       </head>
