@@ -52,6 +52,8 @@ import { grade4CreativeArtsCurriculum } from '@/curriculum/grade4-creative-arts'
 import { grade4EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade4-english-language-activities';
 import { grade4IndigenousLanguageCurriculum } from '@/curriculum/grade4-indigenous-language';
 import { grade4KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade4-kiswahili-language-activities';
+import { grade4ReligiousEducationCurriculum } from '@/curriculum/grade4-religious-education';
+
 
 import { grade5CreativeArtsCurriculum } from '@/curriculum/grade5-creative-arts';
 import { grade6SocialStudiesCurriculum } from '@/curriculum/grade6-social-studies';
@@ -108,6 +110,7 @@ const localCurriculumMap: Record<string, any> = {
     'Grade 3-Mathematical Activities': grade3MathematicsActivitiesCurriculum,
     // Grade 4
     'Grade 4-Christian Religious Education': grade4CreCurriculum,
+    'Grade 4-Religious Education': grade4ReligiousEducationCurriculum,
     'Grade 4-Social Studies': grade4SocialStudiesCurriculum,
     'Grade 4-Agriculture and Nutrition': grade4AgricultureAndNutritionCurriculum,
     'Grade 4-Creative Arts': grade4CreativeArtsCurriculum,
@@ -190,28 +193,32 @@ const tutorPrompt = ai.definePrompt({
   input: {schema: MwalimuAiTutorInputSchema},
   output: {schema: MwalimuAiTutorOutputSchema},
   prompt: `
-# Persona
+### SYSTEM ROLE AND CONTEXT ###
 You are 'Mwalimu AI', an AI-powered educational tutor specialized in the Kenyan Competency-Based Curriculum (CBC) for {{grade}} students. Your persona must be warm, encouraging, and patient—like an expert primary school teacher (Mwalimu means 'teacher' in Swahili).
 
-# CORE INSTRUCTIONS:
+**Curriculum Data Status:** {{contextStatus}}
+**Knowledge Base (RAG Data):**
+{{{knowledgeBase}}}
+
+### CORE INSTRUCTIONS ###
 1.  **Socratic Method:** Do not give direct answers. Instead, guide the student with thoughtful, open-ended questions that encourage them to think critically and discover the answer themselves.
 2.  **Strict Context:** Your knowledge base is strictly limited to the provided curriculum context. If a student asks a question outside this scope, gently redirect them: "That's an interesting question, but let's keep our focus on our {{grade}} {{subject}} lesson for now!"
-3.  **Engagement Style:** Use simple, encouraging language. Break down concepts into easy-to-digest parts.
-4.  **Chat State & Continuity:** Crucially, you must treat every user input as a continuation of the same learning session. If the user input is a single word (like 'jesus'), interpret it as a topic request within the R.E. context (e.g., 'Tell me about Jesus Christ'). Never lose the thread of the conversation.
+3.  **Engagement Style:** Use simple, encouraging language. Break down concepts into easy-to-digest parts. Encourage curiosity by asking follow-up questions.
+4.  **Chat State & Continuity:** Crucially, you must treat every user input as a continuation of the same learning session. If the user input is a single word (like 'jesus'), interpret it as a topic request within the R.E. context (e.g., 'Tell me about Jesus Christ'). **Never lose the thread of the conversation.**
 
----
-## Knowledge Base (Your ONLY source of truth):
----
-{{{teacherContext}}}
-{{{aiCurriculum}}}
----
+### FAILURE HANDLING & INPUT ROBUSTNESS (RAG-Aware Guardrails) ###
+5.  **Handling Off-Topic or Missing RAG Data:**
+    * **IF** the user asks a question relevant to the subject (like 'Cleaning my body' is relevant to 'Environmental Activities') **AND** the **Curriculum Data Status is 'MISSING'**, you **MUST NOT** generate the "data hasn't been uploaded" message.
+    * Instead, answer the question briefly using your general knowledge (the base Gemini API knowledge).
+    * Immediately after your brief answer, append this mandatory disclaimer: "I've given you a general answer, but please note: The official {{grade}} {{subject}} curriculum data is currently unavailable. For full, CBC-aligned lessons, a teacher must upload the curriculum."
+6.  **Actionable Error Handling:** If you genuinely cannot process the query (e.g., it's blank or gibberish), **do not** return a generic error. Instead, assume the student needs encouragement and gently prompt them: "I'm here to help! Could you tell me a little more about what you want to learn about in {{subject}} today?"
 
 ## Conversation History:
 {{#each history}}
   {{this.role}}: {{{this.content}}}
 {{/each}}
 
-Based on your persona, the rules, the conversation history, the user's most recent message "{{currentMessage}}", and the provided Knowledge Base, synthesize your next Socratic response now.
+Based on your persona, the rules, the conversation history, the user's most recent message "{{currentMessage}}", and the provided context (if any), provide your next response as Mwalimu AI.
 `,
 });
 
@@ -250,38 +257,35 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   },
   async (input) => {
     const gradeName = `Grade ${input.grade.replace('g', '')}`;
+    let knowledgeBase: string;
+    let contextStatus: 'LOADED' | 'MISSING';
     
-    // Attempt to fetch specific curriculum data from Firestore.
+    // First, try to fetch from Firestore
     let firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
-    let finalContext = "";
 
-    // If Firestore has data, use it.
     if (firestoreCurriculum) {
-        finalContext = `Official Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
+        knowledgeBase = `Official Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
+        contextStatus = 'LOADED';
     } else {
-        // If Firestore has no data, fall back to the local curriculum map.
+        // Fallback to local map if Firestore is empty
         const localKey = `${gradeName}-${input.subject}`;
         const localData = localCurriculumMap[localKey];
         if (localData) {
-            finalContext = `Official Curriculum for ${gradeName} ${input.subject}:\n${JSON.stringify(localData, null, 2)}`;
+            knowledgeBase = `Official Curriculum for ${gradeName} ${input.subject}:\n${JSON.stringify(localData, null, 2)}`;
+            contextStatus = 'LOADED';
+        } else {
+            // If both Firestore and local map fail, set status to MISSING
+            knowledgeBase = 'NO CURRICULUM DATA AVAILABLE FOR THIS SUBJECT.';
+            contextStatus = 'MISSING';
         }
     }
     
-    // GUARD CLAUSE: If no curriculum is found in Firestore OR locally, return a helpful message.
-    if (!finalContext) {
-        const helpfulMessage = `Jambo! It seems the official curriculum data for ${input.subject} (${gradeName}) hasn't been uploaded to my knowledge base yet. You can ask me about other subjects, or a teacher can upload this curriculum in the 'Curriculum' section of their dashboard.`;
-        
-        return {
-            response: helpfulMessage,
-            audioResponse: await generateTts(helpfulMessage)
-        };
-    }
-
-    // If curriculum is found, proceed with the AI call.
+    // The flow always proceeds, passing the status to the AI.
     const flowInput = { 
         ...input, 
         aiCurriculum,
-        teacherContext: finalContext
+        knowledgeBase,
+        contextStatus
     };
 
     const {output} = await tutorPrompt(flowInput);
@@ -300,4 +304,4 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   }
 );
 
-    
+      

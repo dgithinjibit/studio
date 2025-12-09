@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Types and schemas for the Mwalimu AI tutor flow.
  */
@@ -24,6 +25,8 @@ export const MwalimuAiTutorInputSchema = z.object({
     .optional()
     .describe('The history of the conversation so far.'),
   teacherContext: z.string().optional().describe("Context from teacher's uploaded materials (RAG)."),
+  knowledgeBase: z.string().optional().describe("The full curriculum context for the AI."),
+  contextStatus: z.enum(['LOADED', 'MISSING']).optional().describe("The status of the RAG data."),
 });
 export type MwalimuAiTutorInput = z.infer<typeof MwalimuAiTutorInputSchema>;
 
@@ -34,3 +37,5 @@ export const MwalimuAiTutorOutputSchema = z.object({
   audioResponse: z.string().optional().describe("The text-to-speech audio of the response as a data URI.")
 });
 export type MwalimuAiTutorOutput = z.infer<typeof MwalimuAiTutorOutputSchema>;
+
+      
