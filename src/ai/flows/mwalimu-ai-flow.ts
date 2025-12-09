@@ -63,7 +63,7 @@ import { pp1LanguageActivitiesCurriculum } from '@/curriculum/pp1-language-activ
 import { pp1MathematicsActivitiesCurriculum } from '@/curriculum/pp1-mathematics-activities';
 
 import { pp2CreCurriculum } from '@/curriculum/pp2-cre';
-import { pp2CreativeActivitiesCurriculum } from '@/curriculum/pp2-creative-arts';
+import { pp2CreativeArtsCurriculum } from '@/curriculum/pp2-creative-arts';
 import { pp2EnvironmentalActivitiesCurriculum } from '@/curriculum/pp2-environmental-activities';
 import { pp2LanguageActivitiesCurriculum } from '@/curriculum/pp2-language-activities';
 import { pp2MathematicsActivitiesCurriculum } from '@/curriculum/pp2-mathematics-activities';
