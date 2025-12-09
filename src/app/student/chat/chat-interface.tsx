@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useRef, Fragment } from 'react';
@@ -280,3 +279,5 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         </div>
     );
 }
+
+    

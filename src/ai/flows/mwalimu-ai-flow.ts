@@ -117,6 +117,7 @@ const localCurriculumMap: Record<string, any> = {
     'Grade 4-English': grade4EnglishLanguageActivitiesCurriculum,
     'Grade 4-Indigenous Languages': grade4IndigenousLanguageCurriculum,
     'Grade 4-Kiswahili': grade4KiswahiliLanguageActivitiesCurriculum,
+    'Grade 4-Environmental Activities': grade3EnvironmentalActivitiesCurriculum, // Fallback to Grade 3
     // Grade 5
     'Grade 5-Creative Arts': grade5CreativeArtsCurriculum,
     // Grade 6
@@ -304,4 +305,4 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   }
 );
 
-      
+    
