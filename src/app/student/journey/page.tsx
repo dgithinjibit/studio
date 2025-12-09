@@ -111,9 +111,12 @@ function StudentJourneyContent() {
     const initialStepFromParams = (searchParams.get('step') as Step) || 'start';
 
     const [stepHistory, setStepHistory] = useState<Step[]>(['start']);
+    const [isMounted, setIsMounted] = useState(false); // State to prevent hydration errors
+
     const currentStep = stepHistory[stepHistory.length - 1];
 
     useEffect(() => {
+        setIsMounted(true);
         const name = localStorage.getItem('studentName');
         if (name) {
             setStudentFirstName(name.split(' ')[0]);
@@ -226,6 +229,11 @@ function StudentJourneyContent() {
         }
     }
     
+    // If not mounted yet, render a skeleton or null to avoid hydration mismatch
+    if (!isMounted) {
+        return <ChatSkeleton />;
+    }
+
     // If tutorContext is set, render the ChatInterface instead of the journey steps.
     if (tutorContext) {
         return (
