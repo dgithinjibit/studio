@@ -33,7 +33,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [tutorMode, setTutorMode] = useState<'compass' | 'mwalimu'>('mwalimu');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const [studentFirstName, setStudentFirstName] = useState('Student');
@@ -68,39 +68,41 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     }
 
     useEffect(() => {
-        // Initialize SpeechRecognition
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = true;
-            recognitionRef.current.interimResults = true;
+        // Initialize SpeechRecognition only on the client
+        if (typeof window !== 'undefined') {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognitionRef.current = new SpeechRecognition();
+                recognitionRef.current.continuous = true;
+                recognitionRef.current.interimResults = true;
 
-            recognitionRef.current.onresult = (event: any) => {
-                let interimTranscript = '';
-                let finalTranscript = '';
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
+                recognitionRef.current.onresult = (event: any) => {
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
                     }
-                }
-                setInput(input + finalTranscript + interimTranscript);
-            };
+                    setInput(input + finalTranscript + interimTranscript);
+                };
 
-            recognitionRef.current.onerror = (event: any) => {
-                 if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                    console.error("Speech recognition error", event.error);
-                }
-                setIsListening(false);
-            };
-            
-            recognitionRef.current.onend = () => {
-                setIsListening(false);
-            };
-
+                recognitionRef.current.onerror = (event: any) => {
+                    if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                        console.error("Speech recognition error", event.error);
+                    }
+                    setIsListening(false);
+                };
+                
+                recognitionRef.current.onend = () => {
+                    setIsListening(false);
+                };
+            }
         }
     }, [input]);
+
 
     const handleToggleListening = () => {
         if (isListening) {
@@ -114,36 +116,21 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
 
 
     useEffect(() => {
-        const getInitialMessage = async () => {
-            setLoading(true);
-            try {
-                let result;
-                if (teacherContext) {
-                    setTutorMode('compass');
-                    // For compass, the initial greeting is handled differently.
-                    const compassResult = await classroomCompass({ teacherContext, history: [] });
-                    result = { response: compassResult.response, audioResponse: undefined };
-                } else {
-                    setTutorMode('mwalimu');
-                    // For mwalimu, we make a call with empty history to get the initial greeting.
-                    result = await mwalimuAiTutor({
-                        grade,
-                        subject,
-                        history: [], // Send empty history
-                        currentMessage: "" // And an empty current message
-                    });
-                }
-                processAndSetMessage('model', result);
-            } catch (error) {
-                console.error("Error getting initial message:", error);
-                setMessages([{ role: 'model', content: "Hello! I'm having a little trouble connecting. Please try again in a moment." }]);
-            } finally {
-                setLoading(false);
+        // This effect now only sets the initial greeting in the UI, without calling the AI.
+        const getInitialMessage = () => {
+            let initialMessage: Message;
+            if (teacherContext) {
+                setTutorMode('compass');
+                initialMessage = { role: 'model', content: "Welcome, Explorer! Your teacher has charted a learning journey just for your class. What expedition shall we embark on today?" };
+            } else {
+                setTutorMode('mwalimu');
+                initialMessage = { role: 'model', content: `Jambo! I am Mwalimu AI. We can explore ${subject} for ${gradeName} together. What are you most curious about?` };
             }
+            setMessages([initialMessage]);
         };
         getInitialMessage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [grade, subject, teacherContext]);
+    }, [grade, subject, teacherContext, gradeName]);
     
     useEffect(() => {
         if (scrollAreaRef.current) {
@@ -188,12 +175,12 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
 
         try {
             let result;
-            const historyForAI = messages.map(({ role, content }) => ({ role, content }));
+            const historyForAI = newMessages.map(({ role, content }) => ({ role, content }));
 
             if (tutorMode === 'compass' && teacherContext) {
                  const compassResult = await classroomCompass({
                     teacherContext,
-                    history: [...historyForAI, userMessage],
+                    history: historyForAI,
                 });
                 result = {response: compassResult.response, audioResponse: undefined};
             } else {
