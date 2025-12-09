@@ -194,32 +194,28 @@ const tutorPrompt = ai.definePrompt({
   input: {schema: MwalimuAiTutorInputSchema},
   output: {schema: MwalimuAiTutorOutputSchema},
   prompt: `
-### SYSTEM ROLE AND CONTEXT ###
+# Persona
 You are 'Mwalimu AI', an AI-powered educational tutor specialized in the Kenyan Competency-Based Curriculum (CBC) for {{grade}} students. Your persona must be warm, encouraging, and patient—like an expert primary school teacher (Mwalimu means 'teacher' in Swahili).
 
-**Curriculum Data Status:** {{contextStatus}}
-**Knowledge Base (RAG Data):**
-{{{knowledgeBase}}}
-
-### CORE INSTRUCTIONS ###
+# CORE INSTRUCTIONS:
 1.  **Socratic Method:** Do not give direct answers. Instead, guide the student with thoughtful, open-ended questions that encourage them to think critically and discover the answer themselves.
-2.  **Strict Context:** Your knowledge base is strictly limited to the provided curriculum context. If a student asks a question outside this scope, gently redirect them: "That's an interesting question, but let's keep our focus on our {{grade}} {{subject}} lesson for now!"
+2.  **Strict Context:** Your knowledge base is strictly limited to the provided curriculum context in the KNOWLEDGE_BASE section. If the user asks about something completely outside this scope, gently redirect them: "That's a very interesting question! For now, let's focus on our {{grade}} {{subject}} lesson to make sure we cover everything your teacher has planned."
 3.  **Engagement Style:** Use simple, encouraging language. Break down concepts into easy-to-digest parts. Encourage curiosity by asking follow-up questions.
-4.  **Chat State & Continuity:** Crucially, you must treat every user input as a continuation of the same learning session. If the user input is a single word (like 'jesus'), interpret it as a topic request within the R.E. context (e.g., 'Tell me about Jesus Christ'). **Never lose the thread of the conversation.**
+4.  **Chat State & Continuity:** Treat every user input as a continuation of the same learning session. If the user input is a single word (like 'jesus'), interpret it as a topic request within the R.E. context (e.g., 'Tell me about Jesus Christ'). Never lose the thread of the conversation.
+5.  **Handling Missing Data:** If the KNOWLEDGE_BASE section explicitly states that NO CURRICULUM DATA IS AVAILABLE, and the user asks a question relevant to the subject, you MUST NOT generate a generic error. Instead, answer the question briefly using your general knowledge, and then immediately append this mandatory disclaimer: "I've given you a general answer, but please note: The official {{grade}} {{subject}} curriculum data is currently unavailable. For full, CBC-aligned lessons, a teacher must upload the curriculum."
 
-### FAILURE HANDLING & INPUT ROBUSTNESS (RAG-Aware Guardrails) ###
-5.  **Handling Off-Topic or Missing RAG Data:**
-    * **IF** the user asks a question relevant to the subject (like 'Cleaning my body' is relevant to 'Environmental Activities') **AND** the **Curriculum Data Status is 'MISSING'**, you **MUST NOT** generate the "data hasn't been uploaded" message.
-    * Instead, answer the question briefly using your general knowledge (the base Gemini API knowledge).
-    * Immediately after your brief answer, append this mandatory disclaimer: "I've given you a general answer, but please note: The official {{grade}} {{subject}} curriculum data is currently unavailable. For full, CBC-aligned lessons, a teacher must upload the curriculum."
-6.  **Actionable Error Handling:** If you genuinely cannot process the query (e.g., it's blank or gibberish), **do not** return a generic error. Instead, assume the student needs encouragement and gently prompt them: "I'm here to help! Could you tell me a little more about what you want to learn about in {{subject}} today?"
+---
+## KNOWLEDGE_BASE (Your ONLY source of truth for this subject):
+---
+{{{knowledgeBase}}}
+---
 
 ## Conversation History:
 {{#each history}}
   {{this.role}}: {{{this.content}}}
 {{/each}}
 
-Based on your persona, the rules, the conversation history, the user's most recent message "{{currentMessage}}", and the provided context (if any), provide your next response as Mwalimu AI.
+Based on your persona, the rules, the conversation history, the user's most recent message "{{currentMessage}}", and the provided KNOWLEDGE_BASE, provide your next Socratic response as Mwalimu AI.
 `,
 });
 
@@ -238,8 +234,6 @@ const getCurriculumFromFirestore = async (grade: string, subject: string): Promi
         if (!querySnapshot.empty) {
             const doc = querySnapshot.docs[0];
             const data = doc.data();
-            // The 'content' field should hold the structured curriculum data.
-            // We'll stringify it to pass it as context.
             return JSON.stringify(data.content, null, 2);
         }
         return null;
@@ -259,25 +253,21 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   async (input) => {
     const gradeName = `Grade ${input.grade.replace('g', '')}`;
     let knowledgeBase: string;
-    let contextStatus: 'LOADED' | 'MISSING';
     
     // First, try to fetch from Firestore
     let firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
 
     if (firestoreCurriculum) {
         knowledgeBase = `Official Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
-        contextStatus = 'LOADED';
     } else {
         // Fallback to local map if Firestore is empty
         const localKey = `${gradeName}-${input.subject}`;
         const localData = localCurriculumMap[localKey];
         if (localData) {
             knowledgeBase = `Official Curriculum for ${gradeName} ${input.subject}:\n${JSON.stringify(localData, null, 2)}`;
-            contextStatus = 'LOADED';
         } else {
-            // If both Firestore and local map fail, set status to MISSING
-            knowledgeBase = 'NO CURRICULUM DATA AVAILABLE FOR THIS SUBJECT.';
-            contextStatus = 'MISSING';
+            // If both Firestore and local map fail, set the knowledge base to the explicit "MISSING" message.
+            knowledgeBase = `NO CURRICULUM DATA AVAILABLE FOR THIS SUBJECT.`;
         }
     }
     
@@ -286,7 +276,6 @@ const mwalimuAiTutorFlow = ai.defineFlow(
         ...input, 
         aiCurriculum,
         knowledgeBase,
-        contextStatus
     };
 
     const {output} = await tutorPrompt(flowInput);
@@ -304,7 +293,5 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     };
   }
 );
-
-    
 
     
