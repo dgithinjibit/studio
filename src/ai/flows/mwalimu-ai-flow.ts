@@ -91,34 +91,27 @@ const tutorPrompt = ai.definePrompt({
   output: {schema: MwalimuAiTutorOutputSchema},
   prompt: `
 # Persona
-You are 'Mwalimu AI', an AI-powered educational tutor specialized in Religious Education (R.E.) for the Kenyan Competency-Based Curriculum (CBC) for {{grade}} students. Your persona must be warm, encouraging, and patient—like an expert primary school teacher (Mwalimu means 'teacher' in Swahili).
+You are 'Mwalimu AI', an AI-powered educational tutor specialized in the Kenyan Competency-Based Curriculum (CBC) for {{grade}} students. Your persona must be warm, encouraging, and patient—like an expert primary school teacher (Mwalimu means 'teacher' in Swahili).
 
 # CORE INSTRUCTIONS:
 1.  **Socratic Method:** Do not give direct answers. Instead, guide the student with thoughtful, open-ended questions that encourage them to think critically and discover the answer themselves.
-2.  **Strict Context:** Your knowledge base is strictly limited to the provided curriculum context. If a student asks a question outside this scope, gently redirect them: "That's an interesting question, but let's keep our focus on our Grade 4 R.E. lesson for now!"
+2.  **Strict Context:** Your knowledge base is strictly limited to the provided curriculum context. If a student asks a question outside this scope, gently redirect them: "That's an interesting question, but let's keep our focus on our {{grade}} {{subject}} lesson for now!"
 3.  **Engagement Style:** Use simple, encouraging language. Break down concepts into easy-to-digest parts.
-4.  **Chat State & Continuity:** Crucially, you must treat every user input as a continuation of the same learning session. If the user input is a single word (like 'jesus'), interpret it as a topic request within the R.E. context (e.g., 'Tell me about Jesus Christ'). **Never lose the thread of the conversation.**
-5.  **Actionable Error Handling:** If you genuinely cannot process the query (e.g., it's blank or gibberish), **do not** return a generic error. Instead, assume the student needs encouragement and gently prompt them: "I'm here to help! Could you tell me a little more about what you want to learn about in R.E. today?"
+4.  **Chat State & Continuity:** Crucially, you must treat every user input as a continuation of the same learning session. If the user input is a single word (like 'jesus'), interpret it as a topic request within the R.E. context (e.g., 'Tell me about Jesus Christ'). Never lose the thread of the conversation.
 
 ---
-## Foundational Curriculum (Your Fallback Knowledge for Pedagogy):
----
-{{{aiCurriculum}}}
----
-
-{{#if teacherContext}}
-## Teacher Context from Official Curriculum (Your Primary Knowledge Source):
+## Knowledge Base (Your ONLY source of truth):
 ---
 {{{teacherContext}}}
+{{{aiCurriculum}}}
 ---
-{{/if}}
 
 ## Conversation History:
 {{#each history}}
   {{this.role}}: {{{this.content}}}
 {{/each}}
 
-Based on your persona, the rules, the conversation history, the user's most recent message "{{currentMessage}}", and the provided context, synthesize your next Socratic response now.
+Based on your persona, the rules, the conversation history, the user's most recent message "{{currentMessage}}", and the provided Knowledge Base, synthesize your next Socratic response now.
 `,
 });
 
@@ -156,23 +149,28 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
+    const gradeName = `Grade ${input.grade.replace('g', '')}`;
     
-    // Add the general AI curriculum as a fallback.
-    const flowInput: MwalimuAiTutorInput & { aiCurriculum: string } = { ...input, aiCurriculum };
-    
-    // If teacherContext is not explicitly provided in the input, try fetching from Firestore.
-    if (!flowInput.teacherContext) {
-        const gradeName = `Grade ${input.grade.replace('g', '')}`;
-        const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
+    // Attempt to fetch specific curriculum data from Firestore.
+    const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
 
-        if (firestoreCurriculum) {
-            flowInput.teacherContext = `Official Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
-        } else {
-            // Guard Clause: Ensure teacherContext is an empty string if not found,
-            // allowing the AI to rely on its foundational curriculum.
-            flowInput.teacherContext = "";
-        }
+    // GUARD CLAUSE: If no specific curriculum is found, return a helpful message without calling the LLM.
+    // This prevents the AI from crashing when it has no context for a specific subject.
+    if (!firestoreCurriculum) {
+        const helpfulMessage = `Jambo! It seems the official curriculum data for ${input.subject} (${gradeName}) hasn't been uploaded to my knowledge base yet. You can ask me about other subjects, or a teacher can upload this curriculum in the 'Curriculum' section of their dashboard.`;
+        
+        return {
+            response: helpfulMessage,
+            audioResponse: await generateTts(helpfulMessage)
+        };
     }
+
+    // If curriculum is found, proceed with the AI call.
+    const flowInput = { 
+        ...input, 
+        aiCurriculum,
+        teacherContext: `Official Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`
+    };
 
     const {output} = await tutorPrompt(flowInput);
     
@@ -181,7 +179,6 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     }
     
     const responseText = output.response;
-    
     const audioResponse = await generateTts(responseText);
 
     return {
