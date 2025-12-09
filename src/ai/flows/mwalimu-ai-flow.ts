@@ -20,6 +20,36 @@ import { aiCurriculum } from '@/lib/ai-curriculum';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/googleai';
 
+// Import local curriculum data
+import { grade4CreCurriculum } from '@/curriculum/grade4-cre';
+import { grade4SocialStudiesCurriculum } from '@/curriculum/grade4-social-studies';
+import { grade4AgricultureAndNutritionCurriculum } from '@/curriculum/grade4-agriculture-and-nutrition';
+import { grade1CreCurriculum } from '@/curriculum/grade1-cre';
+import { grade2CreCurriculum } from '@/curriculum/grade2-cre';
+import { grade3CreCurriculum } from '@/curriculum/grade3-cre';
+import { grade4CreativeArtsCurriculum } from '@/curriculum/grade4-creative-arts';
+import { grade5CreativeArtsCurriculum } from '@/curriculum/grade5-creative-arts';
+import { grade6SocialStudiesCurriculum } from '@/curriculum/grade6-social-studies';
+import { grade1EnvironmentalActivitiesCurriculum } from '@/curriculum/grade1-environmental-activities';
+import { grade2EnvironmentalActivitiesCurriculum } from '@/curriculum/grade2-environmental-activities';
+import { grade3EnvironmentalActivitiesCurriculum } from '@/curriculum/grade3-environmental-activities';
+
+
+const localCurriculumMap: Record<string, any> = {
+    'Grade 4-Christian Religious Education': grade4CreCurriculum,
+    'Grade 4-Social Studies': grade4SocialStudiesCurriculum,
+    'Grade 4-Agriculture and Nutrition': grade4AgricultureAndNutritionCurriculum,
+    'Grade 1-Christian Religious Education': grade1CreCurriculum,
+    'Grade 2-Christian Religious Education': grade2CreCurriculum,
+    'Grade 3-Christian Religious Education': grade3CreCurriculum,
+    'Grade 4-Creative Arts': grade4CreativeArtsCurriculum,
+    'Grade 5-Creative Arts': grade5CreativeArtsCurriculum,
+    'Grade 6-Social Studies': grade6SocialStudiesCurriculum,
+    'Grade 1-Environmental Activities': grade1EnvironmentalActivitiesCurriculum,
+    'Grade 2-Environmental Activities': grade2EnvironmentalActivitiesCurriculum,
+    'Grade 3-Environmental Activities': grade3EnvironmentalActivitiesCurriculum,
+};
+
 
 async function toWav(
   pcmData: Buffer,
@@ -152,10 +182,18 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     const gradeName = `Grade ${input.grade.replace('g', '')}`;
     
     // Attempt to fetch specific curriculum data from Firestore.
-    const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
+    let firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
 
-    // GUARD CLAUSE: If no specific curriculum is found, return a helpful message without calling the LLM.
-    // This prevents the AI from crashing when it has no context for a specific subject.
+    // If Firestore has no data, fall back to the local curriculum map.
+    if (!firestoreCurriculum) {
+        const localKey = `${gradeName}-${input.subject}`;
+        const localData = localCurriculumMap[localKey];
+        if (localData) {
+            firestoreCurriculum = JSON.stringify(localData, null, 2);
+        }
+    }
+    
+    // GUARD CLAUSE: If no curriculum is found in Firestore OR locally, return a helpful message.
     if (!firestoreCurriculum) {
         const helpfulMessage = `Jambo! It seems the official curriculum data for ${input.subject} (${gradeName}) hasn't been uploaded to my knowledge base yet. You can ask me about other subjects, or a teacher can upload this curriculum in the 'Curriculum' section of their dashboard.`;
         
