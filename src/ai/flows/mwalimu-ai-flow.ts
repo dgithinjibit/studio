@@ -117,7 +117,7 @@ const localCurriculumMap: Record<string, any> = {
     'Grade 4-English': grade4EnglishLanguageActivitiesCurriculum,
     'Grade 4-Indigenous Languages': grade4IndigenousLanguageCurriculum,
     'Grade 4-Kiswahili': grade4KiswahiliLanguageActivitiesCurriculum,
-    'Grade 4-Environmental Activities': grade3EnvironmentalActivitiesCurriculum, // Fallback to Grade 3
+    'Grade 4-Environmental Activities': grade3EnvironmentalActivitiesCurriculum, 
     // Grade 5
     'Grade 5-Creative Arts': grade5CreativeArtsCurriculum,
     // Grade 6
@@ -202,7 +202,6 @@ You are 'Mwalimu AI', an AI-powered educational tutor specialized in the Kenyan 
 2.  **Strict Context:** Your knowledge base is strictly limited to the provided curriculum context in the KNOWLEDGE_BASE section. If the user asks about something completely outside this scope, gently redirect them: "That's a very interesting question! For now, let's focus on our {{grade}} {{subject}} lesson to make sure we cover everything your teacher has planned."
 3.  **Engagement Style:** Use simple, encouraging language. Break down concepts into easy-to-digest parts. Encourage curiosity by asking follow-up questions.
 4.  **Chat State & Continuity:** Treat every user input as a continuation of the same learning session. If the user input is a single word (like 'jesus'), interpret it as a topic request within the R.E. context (e.g., 'Tell me about Jesus Christ'). Never lose the thread of the conversation.
-5.  **Handling Missing Data:** If the KNOWLEDGE_BASE section explicitly states that NO CURRICULUM DATA IS AVAILABLE, and the user asks a question relevant to the subject, you MUST NOT generate a generic error. Instead, answer the question briefly using your general knowledge, and then immediately append this mandatory disclaimer: "I've given you a general answer, but please note: The official {{grade}} {{subject}} curriculum data is currently unavailable. For full, CBC-aligned lessons, a teacher must upload the curriculum."
 
 ---
 ## KNOWLEDGE_BASE (Your ONLY source of truth for this subject):
@@ -252,29 +251,39 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   },
   async (input) => {
     const gradeName = `Grade ${input.grade.replace('g', '')}`;
-    let knowledgeBase: string;
-    
-    // First, try to fetch from Firestore
-    let firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
+    let knowledgeBase = '';
 
-    if (firestoreCurriculum) {
-        knowledgeBase = `Official Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
-    } else {
-        // Fallback to local map if Firestore is empty
-        const localKey = `${gradeName}-${input.subject}`;
-        const localData = localCurriculumMap[localKey];
-        if (localData) {
-            knowledgeBase = `Official Curriculum for ${gradeName} ${input.subject}:\n${JSON.stringify(localData, null, 2)}`;
+    try {
+        // First, attempt to get data from Firestore
+        const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
+
+        if (firestoreCurriculum) {
+            knowledgeBase = firestoreCurriculum;
         } else {
-            // If both Firestore and local map fail, set the knowledge base to the explicit "MISSING" message.
-            knowledgeBase = `NO CURRICULUM DATA AVAILABLE FOR THIS SUBJECT.`;
+            // If Firestore is empty, try the local map
+            const localKey = `${gradeName}-${input.subject}`;
+            const localData = localCurriculumMap[localKey];
+
+            if (localData) {
+                knowledgeBase = JSON.stringify(localData, null, 2);
+            } else {
+                // If both fail, throw an error to be caught by the catch block
+                throw new Error(`No curriculum data found for ${gradeName} - ${input.subject}`);
+            }
         }
+    } catch (error: any) {
+        // THE SAFETY NET: If ANYTHING goes wrong, use the fallback instructions.
+        console.warn('Using fallback knowledge base due to:', error.message);
+        knowledgeBase = `
+            OFFICIAL CURRICULUM NOT FOUND. 
+            INSTRUCTION: Answer the student's question using your general knowledge about ${input.subject}. 
+            DISCLAIMER: You must mention that this is general advice and not from the official syllabus.
+        `;
     }
     
-    // The flow always proceeds, passing the status to the AI.
+    // The flow always proceeds, passing the resolved knowledgeBase to the AI.
     const flowInput = { 
         ...input, 
-        aiCurriculum,
         knowledgeBase,
     };
 
@@ -293,5 +302,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     };
   }
 );
+
+    
 
     
