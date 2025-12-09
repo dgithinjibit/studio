@@ -129,7 +129,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                         grade, 
                         subject, 
                         history: initialHistory,
-                        currentMessage: `Hello! I am a ${gradeName} student. Please introduce yourself and greet me as a tutor for ${subject}.`
+                        currentMessage: `Hello! Please introduce yourself and greet me as a ${subject} tutor for ${gradeName}.`
                     });
                 }
                 processAndSetMessage('model', result);
@@ -295,4 +295,3 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         </div>
     );
 }
-
