@@ -8,6 +8,7 @@ import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
 import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { MetaMaskFix } from '@/components/metamask-fix';
+import Script from 'next/script';
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -28,7 +29,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <MetaMaskFix />
-        <script src='https://meet.jit.si/external_api.js' async></script>
         <link rel="icon" href="/logo.svg" type="image/svg+xml" />
       </head>
       <body className={cn("font-body antialiased", fontSans.variable)}>
@@ -42,6 +42,7 @@ export default function RootLayout({
           <Toaster />
           <ThemeToggleButton />
         </ThemeProvider>
+        <Script src='https://meet.jit.si/external_api.js' async />
       </body>
     </html>
   );
