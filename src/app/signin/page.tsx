@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -9,22 +8,65 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { app } from '@/lib/firebase';
 
 export default function SignInPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        // In a real application, you would handle authentication here.
-        // For this prototype, we'll simulate a successful login and redirect.
-        toast({
-            title: "Login Successful",
-            description: "Welcome back! Redirecting you to your dashboard.",
-        });
-        router.push('/dashboard');
+        setLoading(true);
+        const auth = getAuth(app);
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            
+            toast({
+                title: "Login Successful",
+                description: "Welcome back! Redirecting you to your dashboard.",
+            });
+            
+            // This is a placeholder for setting user role in cookies, as it was in signup.
+            // In a real app, you would fetch the user's role from your database after login.
+            const role = email.includes('teacher') ? 'teacher' : email.includes('head') ? 'school_head' : 'student';
+
+            const response = await fetch('/api/set-auth-cookie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role, name: userCredential.user.displayName || email.split('@')[0] }),
+            });
+
+             if (response.ok) {
+                 if (role === 'student') {
+                    router.push('/student/journey');
+                } else {
+                    router.push('/dashboard');
+                }
+            } else {
+                throw new Error("Failed to set authentication session.");
+            }
+
+        } catch (error: any) {
+            console.error("Firebase Auth Error:", error);
+            let description = "An unexpected error occurred. Please try again.";
+             if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                description = "Invalid email or password. Please check your credentials and try again.";
+            }
+            toast({
+                variant: "destructive",
+                title: "Login Failed",
+                description,
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -39,12 +81,25 @@ export default function SignInPage() {
                         <form onSubmit={handleLogin} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" placeholder="m@example.com" required />
+                                <Input 
+                                    id="email" 
+                                    type="email" 
+                                    placeholder="m@example.com" 
+                                    required 
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
                                 <div className="relative">
-                                    <Input id="password" type={showPassword ? "text" : "password"} required />
+                                    <Input 
+                                        id="password" 
+                                        type={showPassword ? "text" : "password"} 
+                                        required 
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
@@ -54,8 +109,9 @@ export default function SignInPage() {
                                     </button>
                                 </div>
                             </div>
-                            <Button type="submit" className="w-full">
-                                Sign In
+                            <Button type="submit" className="w-full" disabled={loading}>
+                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {loading ? 'Signing In...' : 'Sign In'}
                             </Button>
                         </form>
                     </CardContent>
