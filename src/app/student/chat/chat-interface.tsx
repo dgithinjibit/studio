@@ -117,33 +117,13 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
 
     useEffect(() => {
         // This effect now only sets the initial greeting in the UI, without calling the AI.
-        const getInitialMessage = async () => {
-            setLoading(true);
-            try {
-                if (teacherContext) {
-                    setTutorMode('compass');
-                    // This now calls the AI with an empty history to get the dynamic greeting.
-                    const compassResult = await classroomCompass({ teacherContext, history: [] });
-                    processAndSetMessage('model', { response: compassResult.response, audioResponse: undefined });
-                } else {
-                    setTutorMode('mwalimu');
-                    // Call the AI with an empty history to trigger its initial greeting rule.
-                     const result = await mwalimuAiTutor({ 
-                        grade, 
-                        subject, 
-                        history: [],
-                        currentMessage: "" // Explicitly empty
-                    });
-                    processAndSetMessage('model', result);
-                }
-            } catch (error) {
-                console.error("Error getting initial message:", error);
-                setMessages([{ role: 'model', content: "Hello! I'm having a little trouble connecting. Please try again in a moment." }]);
-            } finally {
-                setLoading(false);
-            }
-        };
-        getInitialMessage();
+        if (teacherContext) {
+            setTutorMode('compass');
+            setMessages([{ role: 'model', content: "Welcome, Explorer! Your teacher has charted a learning journey just for your class. What expedition shall we embark on today?" }]);
+        } else {
+            setTutorMode('mwalimu');
+            setMessages([{ role: 'model', content: `Jambo! I am Mwalimu AI. We can explore ${subject} for ${gradeName} together. What topic are you most curious about?` }]);
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [grade, subject, teacherContext, gradeName]);
     
