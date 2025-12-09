@@ -117,19 +117,20 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         const getInitialMessage = async () => {
             setLoading(true);
             try {
-                const initialHistory: Message[] = [];
                 let result;
                 if (teacherContext) {
                     setTutorMode('compass');
+                    // For compass, the initial greeting is handled differently.
                     const compassResult = await classroomCompass({ teacherContext, history: [] });
                     result = { response: compassResult.response, audioResponse: undefined };
                 } else {
                     setTutorMode('mwalimu');
-                    result = await mwalimuAiTutor({ 
-                        grade, 
-                        subject, 
-                        history: initialHistory,
-                        currentMessage: `Hello! Please introduce yourself and greet me as a ${subject} tutor for ${gradeName}.`
+                    // For mwalimu, we make a call with empty history to get the initial greeting.
+                    result = await mwalimuAiTutor({
+                        grade,
+                        subject,
+                        history: [], // Send empty history
+                        currentMessage: "" // And an empty current message
                     });
                 }
                 processAndSetMessage('model', result);
@@ -142,7 +143,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         };
         getInitialMessage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [grade, subject, teacherContext, gradeName]);
+    }, [grade, subject, teacherContext]);
     
     useEffect(() => {
         if (scrollAreaRef.current) {
@@ -187,10 +188,12 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
 
         try {
             let result;
+            const historyForAI = messages.map(({ role, content }) => ({ role, content }));
+
             if (tutorMode === 'compass' && teacherContext) {
                  const compassResult = await classroomCompass({
                     teacherContext,
-                    history: newMessages, // Pass the full, updated history
+                    history: [...historyForAI, userMessage],
                 });
                 result = {response: compassResult.response, audioResponse: undefined};
             } else {
@@ -198,7 +201,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                     grade,
                     subject,
                     currentMessage: currentMessage,
-                    history: newMessages // Pass the full, updated history
+                    history: historyForAI
                 });
             }
             processAndSetMessage('model', result);
