@@ -15,6 +15,8 @@ import type { UserRole } from '@/lib/types';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { signupUser } from '@/lib/auth';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { app } from '@/lib/firebase';
 
 function SignupFormComponent() {
     const router = useRouter();
@@ -24,12 +26,14 @@ function SignupFormComponent() {
     const [isPending, startTransition] = useTransition();
     const [termsAccepted, setTermsAccepted] = useState(false);
 
-    // This client-side function is used to set localStorage before the server action runs.
-    const handleSubmit = async (formData: FormData) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         if (!role || !termsAccepted) return;
 
+        const formData = new FormData(event.currentTarget);
         const fullName = formData.get('fullName') as string;
         const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
 
         // Set localStorage on the client before calling the server action
         localStorage.setItem('userName', fullName);
@@ -39,18 +43,26 @@ function SignupFormComponent() {
         }
         
         startTransition(async () => {
+            const auth = getAuth(app);
             try {
+                // 1. Create user in Firebase Auth
+                await createUserWithEmailAndPassword(auth, email, password);
+
+                // 2. Call server action to set cookies and get redirect path
                 const redirectPath = await signupUser(role, formData);
+                
                 toast({
                   title: 'Signup Successful!',
                   description: 'Redirecting you now...',
                 });
                 router.push(redirectPath);
-            } catch (error) {
+
+            } catch (error: any) {
+                console.error("Firebase signup error:", error);
                  toast({
                     variant: 'destructive',
                     title: 'Signup Failed',
-                    description: (error as Error).message || 'An unexpected error occurred. Please try again.',
+                    description: error.message || 'An unexpected error occurred. Please try again.',
                 });
             }
         });
@@ -99,7 +111,7 @@ function SignupFormComponent() {
                         <CardDescription>Join SyncSenta to revolutionize your learning.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form action={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="fullName">Full Name</Label>
                                 <Input id="fullName" name="fullName" placeholder="Asha Juma" required />

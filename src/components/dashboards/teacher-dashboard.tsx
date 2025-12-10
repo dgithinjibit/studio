@@ -71,17 +71,14 @@ export function TeacherDashboard() {
         const fetchTeacherData = async () => {
             setIsLoading(true);
             try {
-                const teacherRef = doc(db, 'teachers', teacherId);
-                const teacherSnap = await getDoc(teacherRef);
-
-                if (teacherSnap.exists()) {
-                    const newTeacherData = { id: teacherSnap.id, ...teacherSnap.data() } as Teacher;
-                    setTeacher(newTeacherData);
-                    if (newTeacherData.classes.length > 0) {
-                        setSelectedClass(newTeacherData.classes[0]);
+                const teacherData = await getTeacherData(teacherId);
+                if (teacherData) {
+                    setTeacher(teacherData);
+                    if (teacherData.classes.length > 0) {
+                        setSelectedClass(teacherData.classes[0]);
                     }
                 } else {
-                    console.error('Teacher data not found. Please seed the database.');
+                     console.error('Teacher data not found. Please seed the database.');
                     setTeacher(null);
                 }
             } catch (error) {

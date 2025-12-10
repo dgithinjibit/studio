@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -11,6 +12,17 @@ import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { app } from '@/lib/firebase';
+import { cookies } from 'next/headers';
+
+
+// This is a new server action to set cookies upon login
+async function setLoginCookie(role: string, name: string) {
+    'use server';
+    const cookieStore = cookies();
+    cookieStore.set('userRole', role, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    cookieStore.set('userName', name, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+}
+
 
 export default function LoginPage() {
     const router = useRouter();
@@ -36,22 +48,23 @@ export default function LoginPage() {
             // This is a placeholder for setting user role in cookies, as it was in signup.
             // In a real app, you would fetch the user's role from your database after login.
             const role = email.includes('teacher') ? 'teacher' : email.includes('head') ? 'school_head' : 'student';
+            const name = email.split('@')[0];
             
-            // We use a server action to set the cookie
-            const response = await fetch('/api/set-auth-cookie', {
+            // Set localStorage on client
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userEmail', email);
+
+            // Set cookies on server
+            await fetch('/api/set-auth-cookie', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role, name: email.split('@')[0] }),
+                body: JSON.stringify({ role, name }),
             });
-
-            if (response.ok) {
-                 if (role === 'student') {
-                    router.push('/student/journey');
-                } else {
-                    router.push('/dashboard');
-                }
+            
+            if (role === 'student') {
+                router.push('/student/journey');
             } else {
-                throw new Error("Failed to set authentication session.");
+                router.push('/dashboard');
             }
 
         } catch (error: any) {

@@ -6,8 +6,17 @@ service cloud.firestore {
     // Allow signed-in users to read from the 'teachers' collection
     match /teachers/{teacherId} {
       allow read: if request.auth != null;
-      // You can add write rules later as needed
-      // allow write: if request.auth.uid == teacherId;
+      allow write: if request.auth.uid == teacherId;
+    }
+
+    // Allow signed-in users to read from the 'teacherResources' collection
+    match /teacherResources/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    
+     // Allow signed-in users to read from the 'curriculumData' collection
+    match /curriculumData/{docId} {
+       allow read, write: if request.auth != null;
     }
 
     // Default deny for all other collections
