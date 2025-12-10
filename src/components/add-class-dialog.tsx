@@ -162,5 +162,3 @@ export function AddClassDialog({ open, onOpenChange, onSaveClass, initialData }:
     </Dialog>
   );
 }
-
-    
