@@ -15,7 +15,7 @@ import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary'
 import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { collection, onSnapshot, doc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { saveClass, deleteClass, getTeacherData } from '@/lib/teacher-service';
 import { Skeleton } from '../ui/skeleton';
@@ -66,31 +66,32 @@ export function TeacherDashboard() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Hardcoded teacher ID for this prototype
         const teacherId = 'usr_3';
 
-        // Firestore real-time listener for teacher data
-        const unsubTeacher = onSnapshot(doc(db, "teachers", teacherId), (doc) => {
-            if (doc.exists()) {
-                const newTeacherData = { id: doc.id, ...doc.data() } as Teacher;
-                setTeacher(newTeacherData);
+        const fetchTeacherData = async () => {
+            setIsLoading(true);
+            try {
+                const teacherRef = doc(db, 'teachers', teacherId);
+                const teacherSnap = await getDoc(teacherRef);
 
-                 // Update selectedClass if it was deleted or if none is selected
-                if (!selectedClass || !newTeacherData.classes.some(c => c.id === selectedClass.id)) {
-                    setSelectedClass(newTeacherData.classes.length > 0 ? newTeacherData.classes[0] : null);
+                if (teacherSnap.exists()) {
+                    const newTeacherData = { id: teacherSnap.id, ...teacherSnap.data() } as Teacher;
+                    setTeacher(newTeacherData);
+                    if (newTeacherData.classes.length > 0) {
+                        setSelectedClass(newTeacherData.classes[0]);
+                    }
+                } else {
+                    console.error('Teacher data not found. Please seed the database.');
+                    setTeacher(null);
                 }
-            } else {
-                console.error('Teacher data not found. Please seed the database.');
-                setTeacher(null);
+            } catch (error) {
+                console.error("Failed to fetch teacher data:", error);
+                toast({ variant: "destructive", title: "Data Error", description: "Could not fetch teacher data." });
+            } finally {
+                setIsLoading(false);
             }
-            setIsLoading(false);
-        }, (error) => {
-            console.error("Failed to subscribe to teacher data:", error);
-            toast({ variant: "destructive", title: "Real-time Error", description: "Could not sync teacher data." });
-            setIsLoading(false);
-        });
+        };
 
-        // Firestore real-time listener for resources
         const unsubResources = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
             setAllResources(resourcesData);
@@ -99,8 +100,9 @@ export function TeacherDashboard() {
             toast({ variant: "destructive", title: "Error", description: "Could not connect to resource library." });
         });
 
+        fetchTeacherData();
+
         return () => {
-            unsubTeacher();
             unsubResources();
         };
     }, [toast]);
@@ -138,8 +140,8 @@ export function TeacherDashboard() {
         if (!teacher) return;
         setIsMutating(true);
         try {
-            await saveClass(teacher.id, { ...classDetails, id: classId || '' });
-            
+            const updatedTeacher = await saveClass(teacher.id, { ...classDetails, id: classId || '' });
+            setTeacher(updatedTeacher);
             setEditingClass(null);
             setAddClassDialogOpen(false);
             toast({
@@ -158,7 +160,8 @@ export function TeacherDashboard() {
         if (!teacher) return;
         setIsMutating(true);
         try {
-            await deleteClass(teacher.id, classId);
+            const updatedTeacher = await deleteClass(teacher.id, classId);
+            setTeacher(updatedTeacher);
             toast({
                 variant: "destructive",
                 title: "Class Deleted",
