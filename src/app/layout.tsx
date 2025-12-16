@@ -18,6 +18,9 @@ const fontSans = Inter({
 export const metadata: Metadata = {
   title: 'SyncSenta',
   description: 'AI-powered Kenyan education ecosystem',
+  icons: {
+    icon: '/logo.svg',
+  },
 };
 
 export default function RootLayout({
@@ -26,12 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("antialiased", fontSans.variable)}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <MetaMaskFix />
-        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
       </head>
-      <body>
+      <body className={cn("font-body antialiased", fontSans.variable)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
