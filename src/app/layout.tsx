@@ -26,12 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={cn("antialiased", fontSans.variable)}>
       <head>
         <MetaMaskFix />
         <link rel="icon" href="/logo.svg" type="image/svg+xml" />
       </head>
-      <body className={cn("font-body antialiased", fontSans.variable)}>
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
