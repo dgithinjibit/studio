@@ -11,7 +11,7 @@ export const mockUsers: User[] = [
   { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'felix.omondi@example.com', role: 'county_officer', avatar: '/avatar-placeholder.svg' },
 ];
 
-const form1Students: Student[] = [
+const grade5Students: Student[] = [
     { id: 'stud_101', name: 'Asha Juma' },
     { id: 'stud_102', name: 'Benson Kariuki' },
     { id: 'stud_103', name: 'Charity Wanjiru' },
@@ -19,15 +19,15 @@ const form1Students: Student[] = [
     { id: 'stud_105', name: 'Esther Chebet' },
 ];
 
-const form2EnglishStudents: Student[] = [
-    { id: 'stud_201', name: 'Faith Mwende' },
+const grade6Students: Student[] = [
+    { id: 'stud_201', name: 'Asha Juma' },
     { id: 'stud_202', name: 'George Kimani' },
     { id: 'stud_203', name: 'Hellen Atieno' },
     { id: 'stud_204', name: 'Isaac Njoroge' },
 ];
 
-const form2LitStudents: Student[] = [
-    { id: 'stud_301', name: 'Jane Doe' },
+const grade4Students: Student[] = [
+    { id: 'stud_301', name: 'Asha Juma' },
     { id: 'stud_302', name: 'John Smith' },
     { id: 'stud_303', name: 'Kevin Otieno' },
 ];
@@ -37,11 +37,11 @@ export const mockTeacher: Teacher = {
     id: 'usr_3',
     name: 'Okoro',
     classes: [
-        { id: 'class_1', name: 'Form 1 English', performance: 75, students: form1Students, color: 'bg-blue-500' },
-        { id: 'class_2', name: 'Form 2 English', performance: 82, students: form2EnglishStudents, color: 'bg-green-500' },
-        { id: 'class_3', name: 'Form 2 Literature', performance: 78, students: form2LitStudents, color: 'bg-orange-500' },
+        { id: 'class_1', name: 'Grade 5 English', performance: 75, students: grade5Students, color: 'bg-blue-500' },
+        { id: 'class_2', name: 'Grade 6 English', performance: 82, students: grade6Students, color: 'bg-green-500' },
+        { id: 'class_3', name: 'Grade 4 Social Studies', performance: 78, students: grade4Students, color: 'bg-orange-500' },
     ],
-    totalStudents: form1Students.length + form2EnglishStudents.length + form2LitStudents.length,
+    totalStudents: grade5Students.length + grade6Students.length + grade4Students.length,
 };
 
 

@@ -5,10 +5,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Shield, School, Building } from "lucide-react";
+import { User, Shield } from "lucide-react";
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-
 
 type Role = 'student' | 'teacher';
 
@@ -67,7 +65,7 @@ export default function SignupPage() {
                      <CardFooter className="flex flex-col gap-4 text-center">
                         <p className="text-xs text-muted-foreground">
                             Already have an account?{' '}
-                            <Link href="/signin" className="underline font-medium hover:text-primary">
+                            <Link href="/login" className="underline font-medium hover:text-primary">
                                 Sign In
                             </Link>
                         </p>
