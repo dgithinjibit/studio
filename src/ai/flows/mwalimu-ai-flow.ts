@@ -17,118 +17,12 @@ import {
 } from './mwalimu-ai-types';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, limit, addDoc } from 'firebase/firestore';
-import { aiCurriculum } from '@/lib/ai-curriculum';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/googleai';
 
 // New import for the summarization flow
 import { summarizeStudentInteractionFlow } from './summarize-student-interaction';
 import type { LearningSummary } from '@/lib/types';
-
-
-// Import local curriculum data
-import { grade1CreCurriculum } from '@/curriculum/grade1-cre';
-import { grade1CreativeActivitiesCurriculum } from '@/curriculum/grade1-creative-activities';
-import { grade1EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade1-english-language-activities';
-import { grade1EnvironmentalActivitiesCurriculum } from '@/curriculum/grade1-environmental-activities';
-import { grade1IndigenousLanguageCurriculum } from '@/curriculum/grade1-indigenous-language';
-import { grade1KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade1-kiswahili-language-activities';
-import { grade1MathematicsActivitiesCurriculum } from '@/curriculum/grade1-mathematics-activities';
-
-import { grade2CreCurriculum } from '@/curriculum/grade2-cre';
-import { grade2CreativeActivitiesCurriculum } from '@/curriculum/grade2-creative-activities';
-import { grade2EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade2-english-language-activities';
-import { grade2EnvironmentalActivitiesCurriculum } from '@/curriculum/grade2-environmental-activities';
-import { grade2IndigenousLanguageCurriculum } from '@/curriculum/grade2-indigenous-language';
-import { grade2KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade2-kiswahili-language-activities';
-import { grade2MathematicsActivitiesCurriculum } from '@/curriculum/grade2-mathematics-activities';
-
-import { grade3CreCurriculum } from '@/curriculum/grade3-cre';
-import { grade3CreativeActivitiesCurriculum } from '@/curriculum/grade3-creative-activities';
-import { grade3EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade3-english-language-activities';
-import { grade3EnvironmentalActivitiesCurriculum } from '@/curriculum/grade3-environmental-activities';
-import { grade3IndigenousLanguageCurriculum } from '@/curriculum/grade3-indigenous-language';
-import { grade3KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade3-kiswahili-language-activities';
-import { grade3MathematicsActivitiesCurriculum } from '@/curriculum/grade3-mathematics-activities';
-
-import { grade4CreCurriculum } from '@/curriculum/grade4-cre';
-import { grade4SocialStudiesCurriculum } from '@/curriculum/grade4-social-studies';
-import { grade4AgricultureAndNutritionCurriculum } from '@/curriculum/grade4-agriculture-and-nutrition';
-import { grade4CreativeArtsCurriculum } from '@/curriculum/grade4-creative-arts';
-import { grade4EnglishLanguageActivitiesCurriculum } from '@/curriculum/grade4-english-language-activities';
-import { grade4IndigenousLanguageCurriculum } from '@/curriculum/grade4-indigenous-language';
-import { grade4KiswahiliLanguageActivitiesCurriculum } from '@/curriculum/grade4-kiswahili-language-activities';
-import { grade4ReligiousEducationCurriculum } from '@/curriculum/grade4-religious-education';
-
-
-import { grade5CreativeArtsCurriculum } from '@/curriculum/grade5-creative-arts';
-import { grade6SocialStudiesCurriculum } from '@/curriculum/grade6-social-studies';
-
-import { pp1CreCurriculum } from '@/curriculum/pp1-cre';
-import { pp1CreativeArtsCurriculum } from '@/curriculum/pp1-creative-arts';
-import { pp1EnvironmentalActivitiesCurriculum } from '@/curriculum/pp1-environmental-activities';
-import { pp1LanguageActivitiesCurriculum } from '@/curriculum/pp1-language-activities';
-import { pp1MathematicsActivitiesCurriculum } from '@/curriculum/pp1-mathematics-activities';
-
-import { pp2CreCurriculum } from '@/curriculum/pp2-cre';
-import { pp2CreativeArtsCurriculum } from '@/curriculum/pp2-creative-arts';
-import { pp2EnvironmentalActivitiesCurriculum } from '@/curriculum/pp2-environmental-activities';
-import { pp2LanguageActivitiesCurriculum } from '@/curriculum/pp2-language-activities';
-import { pp2MathematicsActivitiesCurriculum } from '@/curriculum/pp2-mathematics-activities';
-
-
-const localCurriculumMap: Record<string, any> = {
-    // PP1
-    'PP1-Christian Religious Education': pp1CreCurriculum,
-    'PP1-Creative Activities': pp1CreativeArtsCurriculum,
-    'PP1-Environmental Activities': pp1EnvironmentalActivitiesCurriculum,
-    'PP1-Language Activities': pp1LanguageActivitiesCurriculum,
-    'PP1-Mathematical Activities': pp1MathematicsActivitiesCurriculum,
-    // PP2
-    'PP2-Christian Religious Education': pp2CreCurriculum,
-    'PP2-Creative Activities': pp2CreativeArtsCurriculum,
-    'PP2-Environmental Activities': pp2EnvironmentalActivitiesCurriculum,
-    'PP2-Language Activities': pp2LanguageActivitiesCurriculum,
-    'PP2-Mathematical Activities': pp2MathematicsActivitiesCurriculum,
-    // Grade 1
-    'Grade 1-Christian Religious Education': grade1CreCurriculum,
-    'Grade 1-Creative Activities': grade1CreativeActivitiesCurriculum,
-    'Grade 1-English Language Activities': grade1EnglishLanguageActivitiesCurriculum,
-    'Grade 1-Environmental Activities': grade1EnvironmentalActivitiesCurriculum,
-    'Grade 1-Indigenous Language Activities': grade1IndigenousLanguageCurriculum,
-    'Grade 1-Kiswahili Language Activities': grade1KiswahiliLanguageActivitiesCurriculum,
-    'Grade 1-Mathematical Activities': grade1MathematicsActivitiesCurriculum,
-    // Grade 2
-    'Grade 2-Christian Religious Education': grade2CreCurriculum,
-    'Grade 2-Creative Activities': grade2CreativeActivitiesCurriculum,
-    'Grade 2-English Language Activities': grade2EnglishLanguageActivitiesCurriculum,
-    'Grade 2-Environmental Activities': grade2EnvironmentalActivitiesCurriculum,
-    'Grade 2-Indigenous Language Activities': grade2IndigenousLanguageCurriculum,
-    'Grade 2-Kiswahili Language Activities': grade2KiswahiliLanguageActivitiesCurriculum,
-    'Grade 2-Mathematical Activities': grade2MathematicsActivitiesCurriculum,
-    // Grade 3
-    'Grade 3-Christian Religious Education': grade3CreCurriculum,
-    'Grade 3-Creative Activities': grade3CreativeActivitiesCurriculum,
-    'Grade 3-English Language Activities': grade3EnglishLanguageActivitiesCurriculum,
-    'Grade 3-Environmental Activities': grade3EnvironmentalActivitiesCurriculum,
-    'Grade 3-Indigenous Language Activities': grade3IndigenousLanguageCurriculum,
-    'Grade 3-Kiswahili Language Activities': grade3KiswahiliLanguageActivitiesCurriculum,
-    'Grade 3-Mathematical Activities': grade3MathematicsActivitiesCurriculum,
-    // Grade 4
-    'Grade 4-Christian Religious Education': grade4CreCurriculum,
-    'Grade 4-Religious Education': grade4ReligiousEducationCurriculum,
-    'Grade 4-Social Studies': grade4SocialStudiesCurriculum,
-    'Grade 4-Agriculture and Nutrition': grade4AgricultureAndNutritionCurriculum,
-    'Grade 4-Creative Arts': grade4CreativeArtsCurriculum,
-    'Grade 4-English': grade4EnglishLanguageActivitiesCurriculum,
-    'Grade 4-Indigenous Languages': grade4IndigenousLanguageCurriculum,
-    'Grade 4-Kiswahili': grade4KiswahiliLanguageActivitiesCurriculum,
-    'Grade 4-Environmental Activities': grade3EnvironmentalActivitiesCurriculum, 
-    // Grade 5
-    'Grade 5-Creative Arts': grade5CreativeArtsCurriculum,
-    // Grade 6
-    'Grade 6-Social Studies': grade6SocialStudiesCurriculum,
-};
 
 
 async function toWav(
@@ -253,30 +147,6 @@ Based on your persona, the rules, the conversation history, and the user's most 
 `,
 });
 
-const getCurriculumFromFirestore = async (grade: string, subject: string): Promise<string | null> => {
-    try {
-        const curriculumCollection = collection(db, "curriculumData");
-        const q = query(
-            curriculumCollection, 
-            where("grade", "==", grade), 
-            where("subject", "==", subject),
-            limit(1)
-        );
-
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-            const doc = querySnapshot.docs[0];
-            const data = doc.data();
-            return JSON.stringify(data.content, null, 2);
-        }
-        return null;
-    } catch (error) {
-        console.error("Error fetching curriculum from Firestore:", error);
-        return null;
-    }
-}
-
 
 const mwalimuAiTutorFlow = ai.defineFlow(
   {
@@ -286,8 +156,8 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   },
   async (input) => {
     // This flow now uses the self-contained tutorPrompt, which has its own persona
-    // and doesn't require the knowledgeBase to function for general English tutoring.
-    // The curriculum loading logic is kept for potential future use (e.g., as a tool).
+    // and doesn't require a knowledgeBase to function for general English tutoring.
+    // The broken curriculum loading logic has been removed to prevent errors.
     
     const {output} = await tutorPrompt(input);
     
