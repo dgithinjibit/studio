@@ -1,4 +1,5 @@
 
+
 export type UserRole = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 export type User = {
@@ -13,6 +14,7 @@ export type User = {
 export type Student = {
     id: string;
     name: string;
+    chatTokens: number;
 };
 
 export type ClassInfo = {
@@ -119,4 +121,16 @@ export type Transaction = {
     amount: number;
     category: string;
     status: string;
+}
+
+export type LearningSummary = {
+    id?: string;
+    studentId: string;
+    studentName: string;
+    teacherId: string;
+    subject: string;
+    strengths: string;
+    areasForImprovement: string;
+    chatHistory: { role: 'user' | 'model'; content: string; }[];
+    createdAt: string;
 }

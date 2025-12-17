@@ -30,3 +30,4 @@ import '@/ai/flows/ingest-curriculum.ts';
 import '@/ai/flows/ingest-curriculum-types.ts';
 import '@/ai/flows/generate-family-email.ts';
 import '@/ai/flows/generate-family-email-types.ts';
+import '@/ai/flows/summarize-student-interaction.ts';

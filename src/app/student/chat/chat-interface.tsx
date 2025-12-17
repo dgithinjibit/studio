@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useRef, Fragment } from 'react';
@@ -8,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
 import { classroomCompass } from '@/ai/flows/classroom-compass-flow';
-import { Loader2, Send, Video, Mic } from 'lucide-react';
+import { Loader2, Send, Video, Mic, Bot } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import { useRouter } from 'next/navigation';
 
@@ -40,6 +41,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any | null>(null);
     const [choices, setChoices] = useState<string[]>([]);
+    const [chatTokens, setChatTokens] = useState(100);
 
      useEffect(() => {
         const name = localStorage.getItem('studentName');
@@ -166,10 +168,13 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         setInput('');
         setLoading(true);
         setChoices([]); // Clear choices after user makes one
+        setChatTokens(prev => Math.max(0, prev - 1)); // Decrement token
 
         try {
             let result;
             const historyForAI = newMessages.map(({ role, content }) => ({ role, content }));
+            const studentName = localStorage.getItem('studentName') || 'Unknown Student';
+            const teacherId = 'usr_3'; // Hardcoded for prototype
 
             if (tutorMode === 'compass' && teacherContext) {
                  const compassResult = await classroomCompass({
@@ -181,6 +186,8 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                  result = await mwalimuAiTutor({
                     grade,
                     subject,
+                    studentName,
+                    teacherId,
                     currentMessage: currentMessage,
                     history: historyForAI
                 });
@@ -255,20 +262,26 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                 </CardContent>
                 <CardFooter className="p-4 border-t border-border">
                     <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
-                        <Input
-                            id="message"
-                            placeholder="Ask a question..."
-                            className="flex-1 bg-background border-input focus:border-primary focus:ring-primary"
-                            autoComplete="off"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            disabled={loading || choices.length > 0}
-                        />
-                         <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleToggleListening} disabled={loading}>
+                        <div className="flex-1 relative">
+                            <Input
+                                id="message"
+                                placeholder={chatTokens > 0 ? "Ask a question..." : "You are out of tokens."}
+                                className="flex-1 bg-background border-input focus:border-primary focus:ring-primary pr-20"
+                                autoComplete="off"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                disabled={loading || choices.length > 0 || chatTokens <= 0}
+                            />
+                             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-xs text-muted-foreground bg-background px-2 py-1 rounded">
+                                <Bot className="w-4 h-4" />
+                                <span>{chatTokens}</span>
+                            </div>
+                        </div>
+                         <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleToggleListening} disabled={loading || chatTokens <= 0}>
                             <Mic className="h-4 w-4" />
                             <span className="sr-only">Toggle Microphone</span>
                         </Button>
-                        <Button type="submit" size="icon" disabled={loading || !input.trim() || choices.length > 0} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <Button type="submit" size="icon" disabled={loading || !input.trim() || choices.length > 0 || chatTokens <= 0} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                             <Send className="h-4 w-4" />
                             <span className="sr-only">Send</span>
                         </Button>
@@ -279,5 +292,3 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         </div>
     );
 }
-
-    

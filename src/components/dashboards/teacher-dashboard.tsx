@@ -1,24 +1,26 @@
 
+
 "use client";
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, MoreHorizontal, Plus, Bot, Sparkles, Users, Edit, Trash2, Loader2 } from "lucide-react";
+import { BookOpen, MoreHorizontal, Plus, Bot, Sparkles, Users, Edit, Trash2, Loader2, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AddClassDialog } from '@/components/add-class-dialog';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell } from "recharts";
-import type { Teacher, ClassInfo, Student, TeacherResource } from '@/lib/types';
+import type { Teacher, ClassInfo, Student, TeacherResource, LearningSummary } from '@/lib/types';
 import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
 import { useToast } from '@/hooks/use-toast';
 import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary';
 import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, getDoc, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { saveClass, deleteClass, getTeacherData } from '@/lib/teacher-service';
 import { Skeleton } from '../ui/skeleton';
+import { formatDistanceToNow } from 'date-fns';
 
 const tailwindColorToHex: { [key: string]: string } = {
     'bg-blue-500': '#3b82f6',
@@ -64,11 +66,12 @@ export function TeacherDashboard() {
     const [allResources, setAllResources] = useState<TeacherResource[]>([]);
     const [isMutating, setIsMutating] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [learningSummaries, setLearningSummaries] = useState<LearningSummary[]>([]);
 
     useEffect(() => {
         const teacherId = 'usr_3';
 
-        const fetchTeacherData = async () => {
+        const fetchTeacherAndLearningData = async () => {
             setIsLoading(true);
             try {
                 const teacherData = await getTeacherData(teacherId);
@@ -94,13 +97,22 @@ export function TeacherDashboard() {
             setAllResources(resourcesData);
         }, (error) => {
             console.error("Failed to subscribe to resources:", error);
-            toast({ variant: "destructive", title: "Error", description: "Could not connect to resource library." });
+        });
+        
+        // Listen for new learning summaries
+        const summariesQuery = query(collection(db, "learningSummaries"), orderBy("createdAt", "desc"), limit(5));
+        const unsubSummaries = onSnapshot(summariesQuery, (snapshot) => {
+            const summariesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LearningSummary));
+            setLearningSummaries(summariesData);
+        }, (error) => {
+            console.error("Failed to subscribe to learning summaries:", error);
         });
 
-        fetchTeacherData();
+        fetchTeacherAndLearningData();
 
         return () => {
             unsubResources();
+            unsubSummaries();
         };
     }, [toast]);
     
@@ -239,7 +251,7 @@ export function TeacherDashboard() {
             )}
 
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
                             <CardTitle>Class Performance</CardTitle>
@@ -259,6 +271,29 @@ export function TeacherDashboard() {
                                 </Bar>
                             </BarChart>
                             </ChartContainer>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                         <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary"/> Student Insights</CardTitle>
+                            <CardDescription>Live feedback from Mwalimu AI based on student interactions.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {learningSummaries.length > 0 ? learningSummaries.map(s => (
+                                <div key={s.id} className="p-3 rounded-lg border bg-background/50">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <p className="font-bold">{s.studentName} - <span className="font-normal text-muted-foreground">{s.subject}</span></p>
+                                        <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(s.createdAt), { addSuffix: true })}</p>
+                                    </div>
+                                    <p className="text-sm"><strong className="text-green-500">Strengths:</strong> {s.strengths}</p>
+                                    <p className="text-sm"><strong className="text-orange-500">For Improvement:</strong> {s.areasForImprovement}</p>
+                                </div>
+                            )) : (
+                                <div className="text-center text-muted-foreground py-8">
+                                    <MessageSquare className="mx-auto h-8 w-8" />
+                                    <p className="mt-2 text-sm">No student interactions with Mwalimu AI yet.</p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

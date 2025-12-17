@@ -1,4 +1,5 @@
 
+
 'use server';
 
 /**
@@ -15,10 +16,15 @@ import {
   MwalimuAiTutorOutputSchema,
 } from './mwalimu-ai-types';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, addDoc } from 'firebase/firestore';
 import { aiCurriculum } from '@/lib/ai-curriculum';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/googleai';
+
+// New import for the summarization flow
+import { summarizeStudentInteractionFlow } from './summarize-student-interaction';
+import type { LearningSummary } from '@/lib/types';
+
 
 // Import local curriculum data
 import { grade1CreCurriculum } from '@/curriculum/grade1-cre';
@@ -254,25 +260,21 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     let knowledgeBase = '';
 
     try {
-        // First, attempt to get data from Firestore
         const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
 
         if (firestoreCurriculum) {
             knowledgeBase = firestoreCurriculum;
         } else {
-            // If Firestore is empty, try the local map
             const localKey = `${gradeName}-${input.subject}`;
             const localData = localCurriculumMap[localKey];
 
             if (localData) {
                 knowledgeBase = JSON.stringify(localData, null, 2);
             } else {
-                // If both fail, throw an error to be caught by the catch block
                 throw new Error(`No curriculum data found for ${gradeName} - ${input.subject}`);
             }
         }
     } catch (error: any) {
-        // THE SAFETY NET: If ANYTHING goes wrong, use the fallback instructions.
         console.warn('Using fallback knowledge base due to:', error.message);
         knowledgeBase = `
             OFFICIAL CURRICULUM NOT FOUND. 
@@ -281,7 +283,6 @@ const mwalimuAiTutorFlow = ai.defineFlow(
         `;
     }
     
-    // The flow always proceeds, passing the resolved knowledgeBase to the AI.
     const flowInput = { 
         ...input, 
         knowledgeBase,
@@ -291,6 +292,11 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     
     if (!output?.response) {
       throw new Error("AI failed to generate a response.");
+    }
+    
+    // Asynchronously generate teacher feedback without blocking the student's response.
+    if (input.history && input.history.length > 2) { // Only summarize after a few turns
+      summarizeAndStoreInteraction(input);
     }
     
     const responseText = output.response;
@@ -303,6 +309,31 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   }
 );
 
-    
+// New function to handle summarization and storage
+async function summarizeAndStoreInteraction(input: MwalimuAiTutorInput) {
+    try {
+        const summary = await summarizeStudentInteractionFlow({
+            studentName: input.studentName || 'Student',
+            subject: input.subject,
+            grade: input.grade,
+            chatHistory: input.history || [],
+        });
 
-    
+        const learningSummary: Omit<LearningSummary, 'id'> = {
+            studentId: 'student_placeholder_id', // In a real app, this would be the actual student ID
+            studentName: input.studentName || 'Student',
+            teacherId: input.teacherId || 'teacher_placeholder_id',
+            subject: input.subject,
+            ...summary,
+            chatHistory: input.history || [],
+            createdAt: new Date().toISOString(),
+        };
+        
+        // Save to Firestore
+        await addDoc(collection(db, "learningSummaries"), learningSummary);
+
+    } catch(error) {
+        console.error("Failed to generate or store learning summary:", error);
+        // We don't throw here because this is a background task. Failing should not affect the student's experience.
+    }
+}
