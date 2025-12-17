@@ -17,7 +17,8 @@ import {
   School,
   Wallet,
   BookUser,
-  Megaphone
+  Megaphone,
+  TrendingUp
 } from "lucide-react";
 import { usePathname } from 'next/navigation';
 import {
@@ -41,7 +42,7 @@ const teacherNavItems = [
     { href: "/dashboard/tools", icon: Bot, label: "Teacher Tools" },
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab" },
     { href: "/dashboard/reports", icon: Library, label: "My Library" },
-    { href: "/dashboard/creative-arts", icon: Palette, label: "Creative Arts" },
+    { href: "/dashboard/improvements", icon: TrendingUp, label: "Improvements" },
 ];
 
 const schoolHeadNavItems = [
