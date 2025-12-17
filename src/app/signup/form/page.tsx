@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { mockCounties } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { signupUser } from '@/lib/auth';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -25,6 +25,7 @@ function SignupFormComponent() {
     const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
     const [termsAccepted, setTermsAccepted] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -122,7 +123,16 @@ function SignupFormComponent() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" name="password" type="password" required />
+                                <div className="relative">
+                                    <Input id="password" name="password" type={showPassword ? "text" : "password"} required />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground"
+                                    >
+                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                    </button>
+                                </div>
                             </div>
                             
                             {role === 'county_officer' && (
