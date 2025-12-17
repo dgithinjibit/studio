@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, MapPin, Bell, Megaphone, Search, Send } from 'lucide-react';
-import type { SchoolResource, Communication, School } from '@/lib/types';
+import type { Communication, School } from '@/lib/types';
 import { mockSchools } from '@/lib/mock-data';
 import { generateCountySummary } from '@/ai/flows/generate-county-summary';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
