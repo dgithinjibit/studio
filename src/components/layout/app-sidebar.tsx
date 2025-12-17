@@ -82,7 +82,7 @@ export function AppSidebar() {
         case 'county_officer':
             return countyOfficerNavItems;
         default:
-            return teacherNavItems; // Default to teacher nav
+            return []; // Return an empty array if role is not determined yet
     }
   };
 
