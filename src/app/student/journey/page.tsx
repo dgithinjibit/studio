@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useCallback, useEffect, Suspense } from 'react';
@@ -237,7 +236,7 @@ function StudentJourneyContent() {
     // If tutorContext is set, render the ChatInterface instead of the journey steps.
     if (tutorContext) {
         return (
-             <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-card sm:rounded-2xl shadow-2xl ring-1 ring-black/10">
+             <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-card sm:rounded-2xl shadow-2xl ring-1 ring-border">
                 <Suspense fallback={<ChatSkeleton />}>
                     <ChatInterface 
                         subject="Teacher's Context" // Subject can be generic
