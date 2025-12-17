@@ -2,12 +2,12 @@
 import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication, TeachingStaff, NonTeachingStaff, Transaction } from './types';
 
 export const mockUsers: User[] = [
-  { id: 'usr_1', name: 'Asha Juma', email: 'student@syncsenta.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
-  { id: 'usr_2', name: 'Benson Kariuki', email: 'benson.kariuki@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
-  { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'teacher@syncsenta.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
-  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'teacher2@syncsenta.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_2' },
-  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'head@syncsenta.com', role: 'school_head', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
-  { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'county@syncsenta.com', role: 'county_officer', avatar: '/avatar-placeholder.svg' },
+  { id: 'usr_1', name: 'Asha Juma', email: 'student@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_2', name: 'Benson Kariuki', email: 'student2@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'teacher@example.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'teacher2@example.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_2' },
+  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'head@example.com', role: 'school_head', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'county@example.com', role: 'county_officer', avatar: '/avatar-placeholder.svg' },
 ];
 
 const grade5Students: Student[] = [
@@ -212,3 +212,5 @@ export const mockTransactions: Transaction[] = [
   { id: 'txn_2', date: '2024-07-28', description: 'School Bus Fuel', amount: 8000, category: 'Transport', status: 'Completed' },
   { id: 'txn_3', date: '2024-07-25', description: 'Catering Services - PTA Meeting', amount: 25000, category: 'Events', status: 'Completed' },
 ];
+
+    
