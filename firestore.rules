@@ -1,8 +1,28 @@
 
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Default deny all reads and writes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    match /users/{userId} {
+      allow read, update: if request.auth.uid == userId;
+      allow create: if request.auth != null;
+    }
+    
+    match /schools/{schoolId} {
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'school_head' && resource.data.school_head == request.auth.uid;
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'school_head' && resource.data.school_head == request.auth.uid;
+    }
+
+    match /analytics/{doc} {
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'school_head';
+    }
+
     // Teachers collection
     match /teachers/{teacherId} {
       allow read: if request.auth != null && request.auth.uid == teacherId;
@@ -24,6 +44,19 @@ service cloud.firestore {
                      (request.auth.uid == studentId || 
                       get(/databases/$(database)/documents/teachers/$(request.auth.uid)).data.role == 'teacher');
       allow write: if request.auth != null && request.auth.uid == studentId;
+    }
+
+    // Teacher Resources
+    match /teacherResources/{resourceId} {
+        allow read: if request.auth != null; // Allow any authenticated user to read
+        allow create: if request.auth != null; // Allow any authenticated user to create
+        allow delete: if request.auth != null; // More specific rules might be needed
+    }
+
+    // Learning Summaries
+    match /learningSummaries/{summaryId} {
+        allow read: if request.auth != null && get(/databases/$(database)/documents/learningSummaries/$(summaryId)).data.teacherId == request.auth.uid;
+        allow create: if request.auth != null;
     }
   }
 }

@@ -1,6 +1,6 @@
 
 
-import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication, TeachingStaff, NonTeachingStaff } from './types';
+import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication, TeachingStaff, NonTeachingStaff, Transaction } from './types';
 
 export const mockUsers: User[] = [
   { id: 'usr_1', name: 'Asha Juma', email: 'student@syncsenta.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
