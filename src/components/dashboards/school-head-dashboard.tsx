@@ -17,7 +17,7 @@ import { mockTeacher, mockSchools, initialTeachingStaff, initialNonTeachingStaff
 import { useRouter } from 'next/navigation';
 
 
-export function SchoolHeadDashboard() {
+export default function SchoolHeadDashboard() {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState('');
