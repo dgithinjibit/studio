@@ -71,26 +71,23 @@ export function TeacherDashboard() {
     useEffect(() => {
         const teacherId = 'usr_3';
 
-        const fetchTeacherAndLearningData = async () => {
-            setIsLoading(true);
-            try {
-                const teacherData = await getTeacherData(teacherId);
-                if (teacherData) {
-                    setTeacher(teacherData);
-                    if (teacherData.classes.length > 0) {
-                        setSelectedClass(teacherData.classes[0]);
-                    }
-                } else {
-                     console.error('Teacher data not found. Please seed the database.');
-                    setTeacher(null);
+        const unsubTeacher = onSnapshot(doc(db, "teachers", teacherId), (doc) => {
+            if (doc.exists()) {
+                const teacherData = doc.data() as Teacher;
+                setTeacher(teacherData);
+                if (teacherData.classes.length > 0 && !selectedClass) {
+                    setSelectedClass(teacherData.classes[0]);
                 }
-            } catch (error) {
-                console.error("Failed to fetch teacher data:", error);
-                toast({ variant: "destructive", title: "Data Error", description: "Could not fetch teacher data." });
-            } finally {
-                setIsLoading(false);
+            } else {
+                console.error('Teacher data not found. Please seed the database.');
+                setTeacher(null);
             }
-        };
+            setIsLoading(false);
+        }, (error) => {
+            console.error("Failed to subscribe to teacher data:", error);
+            toast({ variant: "destructive", title: "Data Error", description: "Could not fetch teacher data." });
+            setIsLoading(false);
+        });
 
         const unsubResources = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
             const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
@@ -108,13 +105,12 @@ export function TeacherDashboard() {
             console.error("Failed to subscribe to learning summaries:", error);
         });
 
-        fetchTeacherAndLearningData();
-
         return () => {
+            unsubTeacher();
             unsubResources();
             unsubSummaries();
         };
-    }, [toast]);
+    }, [toast, selectedClass]);
     
     if (isLoading) {
         return <DashboardSkeleton />;
@@ -149,8 +145,7 @@ export function TeacherDashboard() {
         if (!teacher) return;
         setIsMutating(true);
         try {
-            const updatedTeacher = await saveClass(teacher.id, { ...classDetails, id: classId || '' });
-            setTeacher(updatedTeacher);
+            await saveClass(teacher.id, { ...classDetails, id: classId || '' });
             setEditingClass(null);
             setAddClassDialogOpen(false);
             toast({
@@ -169,8 +164,7 @@ export function TeacherDashboard() {
         if (!teacher) return;
         setIsMutating(true);
         try {
-            const updatedTeacher = await deleteClass(teacher.id, classId);
-            setTeacher(updatedTeacher);
+            await deleteClass(teacher.id, classId);
             toast({
                 variant: "destructive",
                 title: "Class Deleted",
