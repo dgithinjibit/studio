@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Suspense, useState, useEffect } from 'react';
@@ -47,8 +48,8 @@ export default function DashboardPage() {
             case 'county_officer':
                 return <CountyOfficerDashboard />;
             default:
-                // Default to teacher dashboard or a loading state while role is being determined
-                return <TeacherDashboard />;
+                // Return a loading state or a generic view if the role is not yet determined or unrecognized.
+                return <DashboardSkeleton />;
         }
     };
     
