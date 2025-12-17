@@ -27,10 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <MetaMaskFix />
-      </head>
+      <head />
       <body className={cn("font-body antialiased", fontSans.variable)}>
+        <MetaMaskFix />
         <ClientProviders>
           {children}
         </ClientProviders>
