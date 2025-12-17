@@ -262,5 +262,3 @@ export default function SchoolStaffPage() {
         </>
     );
 }
-
-    

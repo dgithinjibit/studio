@@ -91,5 +91,3 @@ export function AddCommunicationDialog({ open, onOpenChange, onAddCommunication 
     </Dialog>
   );
 }
-
-    

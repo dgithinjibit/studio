@@ -11,13 +11,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { AddTransactionDialog } from '@/components/add-transaction-dialog';
 import type { Transaction } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-
-const mockTransactions: Transaction[] = [
-  { id: 'txn_1', date: '2024-07-30', description: 'Purchase of PP1 Textbooks', amount: 15000, category: 'Instructional Materials', status: 'Completed' },
-  { id: 'txn_2', date: '2024-07-28', description: 'School Bus Fuel', amount: 8000, category: 'Transport', status: 'Completed' },
-  { id: 'txn_3', date: '2024-07-25', description: 'Catering Services - PTA Meeting', amount: 25000, category: 'Events', status: 'Completed' },
-  { id: 'txn_4', date: '2024-07-22', description: 'Staff Salaries - July', amount: 450000, category: 'Salaries', status: 'Pending Approval' },
-];
+import { mockTransactions } from '@/lib/mock-data';
 
 
 export default function SchoolFinancePage() {
@@ -111,5 +105,3 @@ export default function SchoolFinancePage() {
         </>
     );
 }
-
-    

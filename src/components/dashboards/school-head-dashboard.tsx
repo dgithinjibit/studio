@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Users, BookOpen, BarChart3, Bell, Send, PlusCircle, ArrowRight, Wallet } from 'lucide-react';
 import type { Transaction } from '@/lib/types';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
-import { initialTeachingStaff, initialNonTeachingStaff } from '@/lib/mock-data';
+import { initialTeachingStaff, initialNonTeachingStaff, mockTransactions } from '@/lib/mock-data';
 import { useRouter } from 'next/navigation';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '../ui/table';
 import { Badge } from '../ui/badge';
@@ -28,13 +28,6 @@ const mockAnalytics = {
         { month: "Jun", attendance: 95 },
     ]
 };
-
-const mockTransactions: Transaction[] = [
-  { id: 'txn_1', date: '2024-07-30', description: 'Purchase of PP1 Textbooks', amount: 15000, category: 'Instructional Materials', status: 'Completed' },
-  { id: 'txn_2', date: '2024-07-28', description: 'School Bus Fuel', amount: 8000, category: 'Transport', status: 'Completed' },
-  { id: 'txn_3', date: '2024-07-25', description: 'Catering Services - PTA Meeting', amount: 25000, category: 'Events', status: 'Completed' },
-];
-
 
 export default function SchoolHeadDashboard() {
   const [question, setQuestion] = useState('');
@@ -238,5 +231,3 @@ export default function SchoolHeadDashboard() {
     </>
   );
 }
-
-    

@@ -1,5 +1,4 @@
 
-
 import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication, TeachingStaff, NonTeachingStaff, Transaction } from './types';
 
 export const mockUsers: User[] = [
@@ -198,10 +197,18 @@ export const initialTeachingStaff: TeachingStaff[] = [
     { id: 't-1', name: 'Ms. Chidinma Okoro', tscNo: 'TSC-12345', role: 'English/Literature', category: 'Teaching' },
     { id: 't-2', name: 'Mr. David Mwangi', tscNo: 'TSC-67890', role: 'Mathematics', category: 'Teaching' },
     { id: 't-3', name: 'Mrs. Fatuma Ali', tscNo: 'TSC-54321', role: 'Kiswahili/CRE', category: 'Teaching' },
+     { id: 't-4', name: 'Mr. John Doe', tscNo: 'TSC-11223', role: 'Science', category: 'Teaching' },
+    { id: 't-5', name: 'Ms. Jane Smith', tscNo: 'TSC-44556', role: 'Social Studies', category: 'Teaching' },
 ];
 
 export const initialNonTeachingStaff: NonTeachingStaff[] = [
     { id: 'nt-1', name: 'Mr. James Ochieng', role: 'Bursar', category: 'Non-Teaching' },
     { id: 'nt-2', name: 'Mrs. Alice Wambui', role: 'Secretary', category: 'Non-Teaching' },
     { id: 'nt-3', name: 'Mr. Peter Kamau', role: 'Groundsman', category: 'Non-Teaching' },
+];
+
+export const mockTransactions: Transaction[] = [
+  { id: 'txn_1', date: '2024-07-30', description: 'Purchase of PP1 Textbooks', amount: 15000, category: 'Instructional Materials', status: 'Completed' },
+  { id: 'txn_2', date: '2024-07-28', description: 'School Bus Fuel', amount: 8000, category: 'Transport', status: 'Completed' },
+  { id: 'txn_3', date: '2024-07-25', description: 'Catering Services - PTA Meeting', amount: 25000, category: 'Events', status: 'Completed' },
 ];

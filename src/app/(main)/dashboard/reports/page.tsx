@@ -140,5 +140,3 @@ export default function ReportsPage() {
     // Default to teacher view for teachers and any other role, or while loading
     return <TeacherResourcesView />;
 }
-
-    
