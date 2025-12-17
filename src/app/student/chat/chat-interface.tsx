@@ -70,37 +70,35 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
 
     useEffect(() => {
         // Initialize SpeechRecognition only on the client
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (SpeechRecognition) {
-                recognitionRef.current = new SpeechRecognition();
-                recognitionRef.current.continuous = true;
-                recognitionRef.current.interimResults = true;
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = true;
+            recognitionRef.current.interimResults = true;
 
-                recognitionRef.current.onresult = (event: any) => {
-                    let interimTranscript = '';
-                    let finalTranscript = '';
-                    for (let i = event.resultIndex; i < event.results.length; ++i) {
-                        if (event.results[i].isFinal) {
-                            finalTranscript += event.results[i][0].transcript;
-                        } else {
-                            interimTranscript += event.results[i][0].transcript;
-                        }
+            recognitionRef.current.onresult = (event: any) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
                     }
-                    setInput(input + finalTranscript + interimTranscript);
-                };
+                }
+                setInput(input + finalTranscript + interimTranscript);
+            };
 
-                recognitionRef.current.onerror = (event: any) => {
-                    if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                        console.error("Speech recognition error", event.error);
-                    }
-                    setIsListening(false);
-                };
-                
-                recognitionRef.current.onend = () => {
-                    setIsListening(false);
-                };
-            }
+            recognitionRef.current.onerror = (event: any) => {
+                if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                    console.error("Speech recognition error", event.error);
+                }
+                setIsListening(false);
+            };
+            
+            recognitionRef.current.onend = () => {
+                setIsListening(false);
+            };
         }
     }, [input]);
 

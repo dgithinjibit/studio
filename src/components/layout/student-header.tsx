@@ -46,20 +46,24 @@ export function StudentHeader({ showBackButton, onBack, showVideoCallButton = fa
 
   return (
     <>
-        <div className="relative flex items-center justify-center py-4 text-foreground">
-            {showBackButton && (
-                <Button variant="ghost" size="icon" onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-muted">
-                    <ArrowLeft />
-                    <span className="sr-only">Back</span>
-                </Button>
-            )}
-            <div className="text-center">
-                <h1 className="font-headline text-4xl font-bold">Karibu! Welcome!</h1>
-                <p className="text-muted-foreground text-lg mt-2">
+        <div className="relative flex items-center justify-between py-4 px-6 text-foreground">
+            <div>
+                {showBackButton && (
+                    <Button variant="ghost" size="icon" onClick={onBack} className="text-muted-foreground hover:text-foreground hover:bg-muted">
+                        <ArrowLeft />
+                        <span className="sr-only">Back</span>
+                    </Button>
+                )}
+            </div>
+            
+            <div className="absolute left-1/2 -translate-x-1/2 text-center">
+                <h1 className="font-headline text-4xl font-bold">Karibu!</h1>
+                <p className="text-muted-foreground text-lg">
                     I’m Mwalimu AI, your friendly Socratic Mentor.
                 </p>
             </div>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            
+            <div className="flex items-center gap-2">
                 {showVideoCallButton && (
                     <Button onClick={onJoinVideoCall} className="bg-green-500 hover:bg-green-600">
                         <Video className="mr-2" />

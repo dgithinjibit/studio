@@ -60,5 +60,3 @@ export const subjectsMap: { [key: string]: Subject[] } = {
     g8: [...commonSubjects, pastoralInstruction],
     g9: [...commonSubjects, pastoralInstruction],
 };
-
-    
