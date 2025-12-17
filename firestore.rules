@@ -1,27 +1,29 @@
 
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow signed-in users to read from the 'teachers' collection
+    
+    // Teachers collection
     match /teachers/{teacherId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth.uid == teacherId;
-    }
-
-    // Allow signed-in users to read from the 'teacherResources' collection
-    match /teacherResources/{docId} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null && request.auth.uid == teacherId;
+      allow write: if request.auth != null && request.auth.uid == teacherId;
     }
     
-     // Allow signed-in users to read from the 'curriculumData' collection
-    match /curriculumData/{docId} {
-       allow read, write: if request.auth != null;
+    // Classes collection
+    match /classes/{classId} {
+      allow read: if request.auth != null && 
+                     (resource.data.teacherId == request.auth.uid || 
+                      exists(/databases/$(database)/documents/students/$(request.auth.uid)));
+      allow write: if request.auth != null && resource.data.teacherId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.teacherId == request.auth.uid;
     }
-
-    // Default deny for all other collections
-    match /{document=**} {
-      allow read, write: if false;
+    
+    // Students collection
+    match /students/{studentId} {
+      allow read: if request.auth != null && 
+                     (request.auth.uid == studentId || 
+                      get(/databases/$(database)/documents/teachers/$(request.auth.uid)).data.role == 'teacher');
+      allow write: if request.auth != null && request.auth.uid == studentId;
     }
   }
 }

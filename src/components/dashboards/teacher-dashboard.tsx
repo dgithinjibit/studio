@@ -1,379 +1,314 @@
+'use client';
 
+import { useEffect, useState } from 'react';
+import { getAuth } from 'firebase/auth';
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { app } from '@/lib/firebase'; // Adjust path to your firebase config
 
-"use client";
-import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { BookOpen, MoreHorizontal, Plus, Bot, Sparkles, Users, Edit, Trash2, Loader2, MessageSquare } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AddClassDialog } from '@/components/add-class-dialog';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell } from "recharts";
-import type { Teacher, ClassInfo, Student, TeacherResource, LearningSummary } from '@/lib/types';
-import { DigitalAttendanceRegister } from '@/components/digital-attendance-register';
-import { useToast } from '@/hooks/use-toast';
-import { generateDashboardSummary } from '@/ai/flows/generate-dashboard-summary';
-import { cn } from '@/lib/utils';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { collection, onSnapshot, doc, getDoc, query, orderBy, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { saveClass, deleteClass, getTeacherData } from '@/lib/teacher-service';
-import { Skeleton } from '../ui/skeleton';
-import { formatDistanceToNow } from 'date-fns';
+interface Student {
+  id: string;
+  name: string;
+  email: string;
+  progress: number;
+  lastActive: string;
+  testsCompleted: number;
+}
 
-const tailwindColorToHex: { [key: string]: string } = {
-    'bg-blue-500': '#3b82f6',
-    'bg-green-500': '#22c55e',
-    'bg-orange-500': '#f97316',
-    'bg-purple-500': '#8b5cf6',
-    'bg-red-500': '#ef4444',
-    'bg-yellow-500': '#eab308',
-    'bg-pink-500': '#ec4899',
-    'bg-teal-500': '#14b8a6',
-};
+interface Class {
+  id: string;
+  name: string;
+  studentCount: number;
+  averageProgress: number;
+}
 
-const DashboardSkeleton = () => (
-    <div className="space-y-6">
-        <div className="flex items-center justify-between">
-            <div>
-                <Skeleton className="h-8 w-64 mb-2" />
-                <Skeleton className="h-4 w-80" />
-            </div>
-            <Skeleton className="h-10 w-48" />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-             <div className="lg:col-span-2">
-                <Skeleton className="h-[360px] w-full" />
-            </div>
-             <div className="lg:col-span-1">
-                <Skeleton className="h-[360px] w-full" />
-            </div>
-        </div>
-    </div>
-);
+interface TeacherData {
+  name: string;
+  email: string;
+  classes: Class[];
+  totalStudents: number;
+  recentStudents: Student[];
+}
 
+export default function TeacherDashboard() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [teacherData, setTeacherData] = useState<TeacherData | null>(null);
 
-export function TeacherDashboard() {
-    const [teacher, setTeacher] = useState<Teacher | null>(null);
-    const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
-    const [isAddClassDialogOpen, setAddClassDialogOpen] = useState(false);
-    const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
-    const [selectedClass, setSelectedClass] = useState<ClassInfo | null>(null);
-    const [summary, setSummary] = useState('');
-    const [isSummaryLoading, setIsSummaryLoading] = useState(false);
-    const { toast } = useToast();
-    const [allResources, setAllResources] = useState<TeacherResource[]>([]);
-    const [isMutating, setIsMutating] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [learningSummaries, setLearningSummaries] = useState<LearningSummary[]>([]);
+  useEffect(() => {
+    const fetchTeacherData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    useEffect(() => {
-        const teacherId = 'usr_3';
+        const auth = getAuth(app);
+        const currentUser = auth.currentUser;
 
-        const unsubTeacher = onSnapshot(doc(db, "teachers", teacherId), (doc) => {
-            if (doc.exists()) {
-                const teacherData = doc.data() as Teacher;
-                setTeacher(teacherData);
-                if (teacherData.classes.length > 0 && !selectedClass) {
-                    setSelectedClass(teacherData.classes[0]);
-                }
-            } else {
-                console.error('Teacher data not found. Please seed the database.');
-                setTeacher(null);
-            }
-            setIsLoading(false);
-        }, (error) => {
-            console.error("Failed to subscribe to teacher data:", error);
-            toast({ variant: "destructive", title: "Data Error", description: "Could not fetch teacher data." });
-            setIsLoading(false);
-        });
+        if (!currentUser) {
+          setError('No authenticated user found. Please log in.');
+          setLoading(false);
+          return;
+        }
 
-        const unsubResources = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
-            const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
-            setAllResources(resourcesData);
-        }, (error) => {
-            console.error("Failed to subscribe to resources:", error);
-        });
+        const db = getFirestore(app);
+
+        // Fetch teacher profile
+        const teacherDoc = await getDoc(doc(db, 'teachers', currentUser.uid));
         
-        // Listen for new learning summaries
-        const summariesQuery = query(collection(db, "learningSummaries"), orderBy("createdAt", "desc"), limit(5));
-        const unsubSummaries = onSnapshot(summariesQuery, (snapshot) => {
-            const summariesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LearningSummary));
-            setLearningSummaries(summariesData);
-        }, (error) => {
-            console.error("Failed to subscribe to learning summaries:", error);
+        if (!teacherDoc.exists()) {
+          setError('Teacher profile not found.');
+          setLoading(false);
+          return;
+        }
+
+        const teacherProfile = teacherDoc.data();
+
+        // Fetch classes taught by this teacher
+        const classesQuery = query(
+          collection(db, 'classes'),
+          where('teacherId', '==', currentUser.uid)
+        );
+        const classesSnapshot = await getDocs(classesQuery);
+
+        const classes: Class[] = [];
+        let totalStudents = 0;
+
+        for (const classDoc of classesSnapshot.docs) {
+          const classData = classDoc.data();
+          
+          // Count students in this class
+          const studentsQuery = query(
+            collection(db, 'students'),
+            where('classId', '==', classDoc.id)
+          );
+          const studentsSnapshot = await getDocs(studentsQuery);
+          
+          // Calculate average progress
+          let totalProgress = 0;
+          studentsSnapshot.docs.forEach(studentDoc => {
+            const studentData = studentDoc.data();
+            totalProgress += studentData.progress || 0;
+          });
+
+          const studentCount = studentsSnapshot.size;
+          const averageProgress = studentCount > 0 ? totalProgress / studentCount : 0;
+
+          classes.push({
+            id: classDoc.id,
+            name: classData.name || 'Unnamed Class',
+            studentCount,
+            averageProgress: Math.round(averageProgress)
+          });
+
+          totalStudents += studentCount;
+        }
+
+        // Fetch recent students (last 5 active students across all classes)
+        const allStudentsQuery = query(
+          collection(db, 'students'),
+          where('teacherId', '==', currentUser.uid)
+        );
+        const allStudentsSnapshot = await getDocs(allStudentsQuery);
+
+        const recentStudents: Student[] = allStudentsSnapshot.docs
+          .map(studentDoc => {
+            const data = studentDoc.data();
+            return {
+              id: studentDoc.id,
+              name: data.name || 'Unknown',
+              email: data.email || '',
+              progress: data.progress || 0,
+              lastActive: data.lastActive?.toDate?.()?.toLocaleDateString() || 'Never',
+              testsCompleted: data.testsCompleted || 0
+            };
+          })
+          .sort((a, b) => {
+            // Sort by last active (most recent first)
+            const dateA = new Date(a.lastActive).getTime();
+            const dateB = new Date(b.lastActive).getTime();
+            return dateB - dateA;
+          })
+          .slice(0, 5);
+
+        setTeacherData({
+          name: teacherProfile.name || currentUser.email || 'Teacher',
+          email: currentUser.email || '',
+          classes,
+          totalStudents,
+          recentStudents
         });
 
-        return () => {
-            unsubTeacher();
-            unsubResources();
-            unsubSummaries();
-        };
-    }, [toast, selectedClass]);
-    
-    if (isLoading) {
-        return <DashboardSkeleton />;
-    }
-
-    if (!teacher) {
-        return (
-             <div className="text-center p-8">
-                <h2 className="text-xl font-semibold text-destructive">Could Not Load Teacher Data</h2>
-                <p className="text-muted-foreground mt-2">
-                    Please ensure the database has been seeded by visiting the <code className="bg-muted px-2 py-1 rounded-md">/api/seed</code> endpoint in your browser.
-                </p>
-                    <p className="text-muted-foreground mt-2">
-                    If you have already seeded the data, please check your Firebase connection and security rules.
-                    </p>
-            </div>
-        );
-    }
-
-    const chartData = teacher.classes.map(c => ({ 
-        name: c.name, 
-        performance: c.performance,
-        fill: tailwindColorToHex[c.color] || '#8884d8'
-    }));
-    
-    const openAttendance = (classInfo: ClassInfo) => {
-        setSelectedClass(classInfo);
-        setAttendanceDialogOpen(true);
+      } catch (err) {
+        console.error('Error fetching teacher data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleSaveClass = async (classDetails: { name: string; color: string; students: Student[] }, classId?: string) => {
-        if (!teacher) return;
-        setIsMutating(true);
-        try {
-            await saveClass(teacher.id, { ...classDetails, id: classId || '' });
-            setEditingClass(null);
-            setAddClassDialogOpen(false);
-            toast({
-                title: classId ? "Class Updated" : "Class Added",
-                description: `"${classDetails.name}" has been successfully saved.`,
-            });
-        } catch (error) {
-            console.error("Error saving class:", error);
-            toast({ variant: "destructive", title: "Error", description: "Could not save the class." });
-        } finally {
-            setIsMutating(false);
-        }
-    };
-    
-    const handleDeleteClass = async (classId: string) => {
-        if (!teacher) return;
-        setIsMutating(true);
-        try {
-            await deleteClass(teacher.id, classId);
-            toast({
-                variant: "destructive",
-                title: "Class Deleted",
-                description: "The class has been removed from your hub.",
-            });
-        } catch (error) {
-            console.error("Error deleting class:", error);
-            toast({ variant: "destructive", title: "Error", description: "Could not delete the class." });
-        } finally {
-            setIsMutating(false);
-        }
-    };
+    fetchTeacherData();
+  }, []);
 
-    const openEditDialog = (classInfo: ClassInfo) => {
-        setEditingClass(classInfo);
-        setAddClassDialogOpen(true);
-    };
-
-    const handleGenerateSummary = async () => {
-        setIsSummaryLoading(true);
-        setSummary('');
-        const relevantResources = allResources.map(({ title, type }) => ({ title, type }));
-        const classes = teacher.classes.map(({ name }) => ({ name }));
-
-        try {
-            const result = await generateDashboardSummary({
-                classes,
-                resources: relevantResources
-            });
-            setSummary(result.summary);
-        } catch (error) {
-            console.error("Error generating dashboard summary:", error);
-            toast({
-                variant: 'destructive',
-                title: "Error Generating Summary",
-                description: "Could not load AI suggestions. Please try again later.",
-            });
-        } finally {
-            setIsSummaryLoading(false);
-        }
-    };
-
+  if (loading) {
     return (
-        <>
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
-                <div>
-                    <h1 className="font-headline text-3xl font-bold">Welcome, {teacher.name}!</h1>
-                    <p className="text-muted-foreground">Here's your dashboard to manage classes and resources.</p>
-                </div>
-                 <Button onClick={handleGenerateSummary} disabled={isSummaryLoading} className="w-full md:w-auto">
-                    {isSummaryLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Generate Dashboard Summary
-                </Button>
-            </div>
-
-            {isSummaryLoading && (
-                <Card className="mb-6">
-                    <CardContent className="p-4">
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                            <Bot className="w-5 h-5 animate-pulse" /> 
-                            <p className="text-sm">Generating AI suggestions for your dashboard...</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {summary && !isSummaryLoading && (
-                <Card className="mb-6 bg-accent/20 border-accent">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Bot className="w-6 h-6 text-accent" /> AI Teaching Assistant
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-foreground">{summary}</p>
-                    </CardContent>
-                </Card>
-            )}
-
-             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Class Performance</CardTitle>
-                            <CardDescription>An overview of recent performance across your classes.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="h-[300px] w-full">
-                        <ChartContainer config={{}} className="w-full h-full">
-                            <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
-                                <CartesianGrid vertical={false} />
-                                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
-                                <YAxis tickLine={false} axisLine={false} domain={[60, 100]} />
-                                <ChartTooltip content={<ChartTooltipContent />} />
-                                <Bar dataKey="performance" radius={8}>
-                                    {chartData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                            </ChartContainer>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary"/> Student Insights</CardTitle>
-                            <CardDescription>Live feedback from Mwalimu AI based on student interactions.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {learningSummaries.length > 0 ? learningSummaries.map(s => (
-                                <div key={s.id} className="p-3 rounded-lg border bg-background/50">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <p className="font-bold">{s.studentName} - <span className="font-normal text-muted-foreground">{s.subject}</span></p>
-                                        <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(s.createdAt), { addSuffix: true })}</p>
-                                    </div>
-                                    <p className="text-sm"><strong className="text-green-500">Strengths:</strong> {s.strengths}</p>
-                                    <p className="text-sm"><strong className="text-orange-500">For Improvement:</strong> {s.areasForImprovement}</p>
-                                </div>
-                            )) : (
-                                <div className="text-center text-muted-foreground py-8">
-                                    <MessageSquare className="mx-auto h-8 w-8" />
-                                    <p className="mt-2 text-sm">No student interactions with Mwalimu AI yet.</p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-                
-                 <div className="lg:col-span-1">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle className="flex items-center gap-2">
-                                    <BookOpen className="w-6 h-6 text-accent" /> My Hub
-                                </CardTitle>
-                                <CardDescription>View your classes and take attendance.</CardDescription>
-                            </div>
-                            <Button variant="outline" size="sm" onClick={() => { setEditingClass(null); setAddClassDialogOpen(true); }}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Class
-                            </Button>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            {teacher.classes.map(c => (
-                                <div key={c.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                                    <div className="flex items-center gap-4 cursor-pointer" onClick={() => openAttendance(c)}>
-                                        <Avatar className="h-12 w-12 border-2 border-primary/20">
-                                            <AvatarFallback className={cn("text-white font-bold", c.color)}>{c.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <p className="font-bold">{c.name}</p>
-                                            <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Users className="w-4 h-4" /> {c.students.length} students</p>
-                                        </div>
-                                    </div>
-                                     <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon" disabled={isMutating}>
-                                                <MoreHorizontal className="w-5 h-5" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuItem onClick={() => openEditDialog(c)}>
-                                                <Edit className="mr-2 h-4 w-4" />
-                                                Edit Class
-                                            </DropdownMenuItem>
-                                             <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button variant="ghost" className="w-full justify-start text-sm font-normal text-destructive hover:bg-destructive/10 hover:text-destructive px-2 py-1.5 rounded-sm relative flex cursor-default select-none items-center gap-2">
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Delete Class
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            This action cannot be undone. This will permanently delete the class "{c.name}" and all of its associated data.
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleDeleteClass(c.id)}>Delete</AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-             
-             <AddClassDialog 
-                open={isAddClassDialogOpen} 
-                onOpenChange={setAddClassDialogOpen} 
-                onSaveClass={handleSaveClass}
-                initialData={editingClass}
-             />
-
-             {selectedClass && (
-                 <DigitalAttendanceRegister 
-                    open={isAttendanceDialogOpen}
-                    onOpenChange={setAttendanceDialogOpen}
-                    classInfo={selectedClass}
-                    onClassNameUpdate={() => {}}
-                    onUpdateStudents={() => {}}
-                 />
-             )}
-        </>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+          <h3 className="text-red-800 font-semibold mb-2">Error Loading Dashboard</h3>
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!teacherData) {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome back, {teacherData.name}
+          </h1>
+          <p className="text-gray-600">{teacherData.email}</p>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="text-sm text-gray-500 mb-1">Total Classes</div>
+            <div className="text-3xl font-bold text-blue-600">
+              {teacherData.classes.length}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="text-sm text-gray-500 mb-1">Total Students</div>
+            <div className="text-3xl font-bold text-green-600">
+              {teacherData.totalStudents}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="text-sm text-gray-500 mb-1">Average Progress</div>
+            <div className="text-3xl font-bold text-purple-600">
+              {teacherData.classes.length > 0
+                ? Math.round(
+                    teacherData.classes.reduce((sum, c) => sum + c.averageProgress, 0) /
+                      teacherData.classes.length
+                  )
+                : 0}%
+            </div>
+          </div>
+        </div>
+
+        {/* Classes Section */}
+        <div className="bg-white rounded-lg shadow mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Your Classes</h2>
+          </div>
+          <div className="p-6">
+            {teacherData.classes.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>No classes yet. Create your first class to get started!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {teacherData.classes.map(classItem => (
+                  <div
+                    key={classItem.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {classItem.name}
+                    </h3>
+                    <div className="space-y-1 text-sm text-gray-600">
+                      <p>{classItem.studentCount} students</p>
+                      <div className="flex items-center">
+                        <div className="flex-1 bg-gray-200 rounded-full h-2 mr-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
+                            style={{ width: `${classItem.averageProgress}%` }}
+                          ></div>
+                        </div>
+                        <span>{classItem.averageProgress}%</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Recent Students Activity */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Recent Student Activity</h2>
+          </div>
+          <div className="p-6">
+            {teacherData.recentStudents.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>No student activity yet.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left text-sm text-gray-500 border-b">
+                      <th className="pb-3 font-medium">Student</th>
+                      <th className="pb-3 font-medium">Progress</th>
+                      <th className="pb-3 font-medium">Tests Completed</th>
+                      <th className="pb-3 font-medium">Last Active</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teacherData.recentStudents.map(student => (
+                      <tr key={student.id} className="border-b last:border-b-0">
+                        <td className="py-3">
+                          <div>
+                            <div className="font-medium text-gray-900">{student.name}</div>
+                            <div className="text-sm text-gray-500">{student.email}</div>
+                          </div>
+                        </td>
+                        <td className="py-3">
+                          <div className="flex items-center">
+                            <div className="w-20 bg-gray-200 rounded-full h-2 mr-2">
+                              <div
+                                className="bg-green-600 h-2 rounded-full"
+                                style={{ width: `${student.progress}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm text-gray-700">{student.progress}%</span>
+                          </div>
+                        </td>
+                        <td className="py-3 text-gray-700">{student.testsCompleted}</td>
+                        <td className="py-3 text-gray-700">{student.lastActive}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
