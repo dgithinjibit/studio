@@ -3,7 +3,7 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
+import TeacherDashboard from '@/components/dashboards/teacher-dashboard';
 import { SchoolHeadDashboard } from '@/components/dashboards/school-head-dashboard';
 import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-dashboard';
 import { getServerUser } from '@/lib/auth';
