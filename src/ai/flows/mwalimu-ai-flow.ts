@@ -270,17 +270,20 @@ const mwalimuAiTutorFlow = ai.defineFlow(
 
             if (localData) {
                 knowledgeBase = JSON.stringify(localData, null, 2);
-            } else {
-                throw new Error(`No curriculum data found for ${gradeName} - ${input.subject}`);
             }
         }
     } catch (error: any) {
-        console.warn('Using fallback knowledge base due to:', error.message);
-        knowledgeBase = `
-            OFFICIAL CURRICULUM NOT FOUND. 
-            INSTRUCTION: Answer the student's question using your general knowledge about ${input.subject}. 
-            DISCLAIMER: You must mention that this is general advice and not from the official syllabus.
-        `;
+        console.warn('Error loading curriculum data:', error.message);
+        // Fallback is handled below if knowledgeBase remains empty
+    }
+    
+    // If after all attempts, knowledgeBase is still empty, return a helpful error.
+    if (!knowledgeBase.trim()) {
+        const errorMessage = `I'm sorry, I don't have the curriculum materials for ${input.subject} for ${gradeName} right now. Please select another subject to explore!`;
+        return {
+            response: errorMessage,
+            audioResponse: await generateTts(errorMessage)
+        };
     }
     
     const flowInput = { 
