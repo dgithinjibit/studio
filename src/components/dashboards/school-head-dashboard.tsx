@@ -1,15 +1,15 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Users, BookOpen, BarChart3, Bell, Send, PlusCircle, ArrowRight, Wallet } from 'lucide-react';
-import type { Communication, SchoolResource, TeachingStaff, NonTeachingStaff, Transaction } from '@/lib/types';
+import type { Transaction } from '@/lib/types';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
-import { initialTeachingStaff, initialNonTeachingStaff, mockSchools } from '@/lib/mock-data';
+import { initialTeachingStaff, initialNonTeachingStaff } from '@/lib/mock-data';
 import { useRouter } from 'next/navigation';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '../ui/table';
 import { Badge } from '../ui/badge';
@@ -57,8 +57,8 @@ export default function SchoolHeadDashboard() {
             schoolData: {
                 teacherCount: mockAnalytics.totalTeachers,
                 studentCount: mockAnalytics.totalStudents,
-                averageAttendance: 93, // Mock data
-                classes: [], // Mock data
+                averageAttendance: 93, 
+                classes: [], 
                 resources: [],
             }
         });
@@ -90,7 +90,6 @@ export default function SchoolHeadDashboard() {
             </Button>
         </div>
         
-        {/* AI Operational Consultant */}
         <Card className="lg:col-span-2">
             <form onSubmit={handleAskConsultant}>
             <CardHeader>
@@ -128,7 +127,6 @@ export default function SchoolHeadDashboard() {
             </form>
         </Card>
 
-        {/* School-Wide Analytics */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -170,7 +168,6 @@ export default function SchoolHeadDashboard() {
 
 
         <div className="grid gap-6 lg:grid-cols-3">
-             {/* Staff Management */}
             <Card className="lg:col-span-2">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
@@ -210,7 +207,6 @@ export default function SchoolHeadDashboard() {
                 </CardContent>
             </Card>
             
-            {/* Financial Overview */}
             <Card>
                 <CardHeader>
                      <CardTitle className="flex items-center gap-2"><Wallet /> Financial Overview</CardTitle>
@@ -242,3 +238,5 @@ export default function SchoolHeadDashboard() {
     </>
   );
 }
+
+    
