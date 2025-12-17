@@ -12,16 +12,6 @@ import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { app } from '@/lib/firebase';
-import { cookies } from 'next/headers';
-
-
-// This is a new server action to set cookies upon login
-async function setLoginCookie(role: string, name: string) {
-    'use server';
-    const cookieStore = cookies();
-    cookieStore.set('userRole', role, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-    cookieStore.set('userName', name, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-}
 
 
 export default function LoginPage() {
@@ -54,7 +44,7 @@ export default function LoginPage() {
             localStorage.setItem('userName', name);
             localStorage.setItem('userEmail', email);
 
-            // Set cookies on server
+            // Set cookies on server by calling the API route
             await fetch('/api/set-auth-cookie', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
