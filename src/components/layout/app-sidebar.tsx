@@ -1,5 +1,7 @@
 
 
+"use client";
+
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -9,9 +11,15 @@ import {
   Library,
   Database,
   Palette,
-  Briefcase
+  Briefcase,
+  Users,
+  Building,
+  School,
+  Wallet,
+  BookUser,
+  Megaphone
 } from "lucide-react";
-
+import { usePathname } from 'next/navigation';
 import {
   Sidebar,
   SidebarHeader,
@@ -22,16 +30,62 @@ import {
   SidebarFooter,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
+import { getServerUser } from "@/lib/auth";
+import type { UserRole } from "@/lib/types";
+import { useEffect, useState } from "react";
 
-export function AppSidebar() {
-  const navItems = [
+
+const teacherNavItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/dashboard/tools", icon: Bot, label: "Teacher Tools" },
     { href: "/dashboard/learning-lab", icon: FlaskConical, label: "Learning Lab" },
     { href: "/dashboard/reports", icon: Library, label: "My Library" },
-    { href: "/dashboard/curriculum", icon: Database, label: "Curriculum" },
     { href: "/dashboard/creative-arts", icon: Palette, label: "Creative Arts" },
-  ];
+];
+
+const schoolHeadNavItems = [
+    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/dashboard/reports", icon: Megaphone, label: "Announcements" },
+    { href: "/dashboard/school-staff", icon: Users, label: "Staff" },
+    { href: "/dashboard/school-finance", icon: Wallet, label: "Finance" },
+];
+
+const countyOfficerNavItems = [
+    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/dashboard/curriculum", icon: Database, label: "Curriculum" },
+    { href: "/dashboard/schools", icon: School, label: "Schools" },
+    { href: "/dashboard/county-teachers", icon: BookUser, label: "Teachers" },
+    { href: "/dashboard/county-comms", icon: Megaphone, label: "Comms" },
+    { href: "/dashboard/county-resources", icon: Briefcase, label: "Resources" },
+];
+
+
+export function AppSidebar() {
+  const [role, setRole] = useState<UserRole | null>(null);
+
+  useEffect(() => {
+    const fetchRole = async () => {
+         const user = await getServerUser();
+         setRole(user?.role as UserRole);
+    }
+    fetchRole();
+  }, []);
+
+  const getNavItems = () => {
+    switch (role) {
+        case 'teacher':
+            return teacherNavItems;
+        case 'school_head':
+            return schoolHeadNavItems;
+        case 'county_officer':
+            return countyOfficerNavItems;
+        default:
+            return teacherNavItems; // Default to teacher nav
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
     <Sidebar>

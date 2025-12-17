@@ -3,33 +3,33 @@
 import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication, TeachingStaff, NonTeachingStaff } from './types';
 
 export const mockUsers: User[] = [
-  { id: 'usr_1', name: 'Asha Juma', email: 'asha.juma@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_1', name: 'Asha Juma', email: 'student@syncsenta.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
   { id: 'usr_2', name: 'Benson Kariuki', email: 'benson.kariuki@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
-  { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'chidinma.okoro@example.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
-  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'david.mwangi@example.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_2' },
-  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'evelyn.wanjala@example.com', role: 'school_head', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
-  { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'felix.omondi@example.com', role: 'county_officer', avatar: '/avatar-placeholder.svg' },
+  { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'teacher@syncsenta.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'teacher2@syncsenta.com', role: 'teacher', avatar: '/avatar-placeholder.svg', schoolId: 'sch_2' },
+  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'head@syncsenta.com', role: 'school_head', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
+  { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'county@syncsenta.com', role: 'county_officer', avatar: '/avatar-placeholder.svg' },
 ];
 
 const grade5Students: Student[] = [
-    { id: 'stud_101', name: 'Asha Juma' },
-    { id: 'stud_102', name: 'Benson Kariuki' },
-    { id: 'stud_103', name: 'Charity Wanjiru' },
-    { id: 'stud_104', name: 'David Omondi' },
-    { id: 'stud_105', name: 'Esther Chebet' },
+    { id: 'stud_101', name: 'Asha Juma', chatTokens: 100 },
+    { id: 'stud_102', name: 'Benson Kariuki', chatTokens: 100 },
+    { id: 'stud_103', name: 'Charity Wanjiru', chatTokens: 100 },
+    { id: 'stud_104', name: 'David Omondi', chatTokens: 100 },
+    { id: 'stud_105', name: 'Esther Chebet', chatTokens: 100 },
 ];
 
 const grade6Students: Student[] = [
-    { id: 'stud_201', name: 'Asha Juma' },
-    { id: 'stud_202', name: 'George Kimani' },
-    { id: 'stud_203', name: 'Hellen Atieno' },
-    { id: 'stud_204', name: 'Isaac Njoroge' },
+    { id: 'stud_201', name: 'Asha Juma', chatTokens: 100 },
+    { id: 'stud_202', name: 'George Kimani', chatTokens: 100 },
+    { id: 'stud_203', name: 'Hellen Atieno', chatTokens: 100 },
+    { id: 'stud_204', name: 'Isaac Njoroge', chatTokens: 100 },
 ];
 
 const grade4Students: Student[] = [
-    { id: 'stud_301', name: 'Asha Juma' },
-    { id: 'stud_302', name: 'John Smith' },
-    { id: 'stud_303', name: 'Kevin Otieno' },
+    { id: 'stud_301', name: 'Asha Juma', chatTokens: 100 },
+    { id: 'stud_302', name: 'John Smith', chatTokens: 100 },
+    { id: 'stud_303', name: 'Kevin Otieno', chatTokens: 100 },
 ];
 
 
@@ -205,5 +205,3 @@ export const initialNonTeachingStaff: NonTeachingStaff[] = [
     { id: 'nt-2', name: 'Mrs. Alice Wambui', role: 'Secretary', category: 'Non-Teaching' },
     { id: 'nt-3', name: 'Mr. Peter Kamau', role: 'Groundsman', category: 'Non-Teaching' },
 ];
-
-    

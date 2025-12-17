@@ -1,8 +1,13 @@
+
 "use client";
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
+import { SchoolHeadDashboard } from '@/components/dashboards/school-head-dashboard';
+import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-dashboard';
+import { getServerUser } from '@/lib/auth';
+import type { UserRole } from '@/lib/types';
 
 const DashboardSkeleton = () => (
     <div className="space-y-6">
@@ -22,11 +27,39 @@ const DashboardSkeleton = () => (
 );
 
 export default function DashboardPage() {
-    // This page is now dedicated to showing the authenticated user's dashboard.
-    // The role-based switching has been removed as per the new focused design.
+    const [role, setRole] = useState<UserRole | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchRole = async () => {
+             const user = await getServerUser();
+             setRole(user?.role as UserRole);
+             setLoading(false);
+        }
+        fetchRole();
+    }, []);
+
+    const renderDashboardByRole = () => {
+        switch (role) {
+            case 'teacher':
+                return <TeacherDashboard />;
+            case 'school_head':
+                return <SchoolHeadDashboard />;
+            case 'county_officer':
+                return <CountyOfficerDashboard />;
+            default:
+                // Default to teacher dashboard or a loading state
+                return <TeacherDashboard />;
+        }
+    };
+    
+    if (loading) {
+        return <DashboardSkeleton />;
+    }
+
     return (
         <Suspense fallback={<DashboardSkeleton />}>
-            <TeacherDashboard />
+            {renderDashboardByRole()}
         </Suspense>
     );
 }

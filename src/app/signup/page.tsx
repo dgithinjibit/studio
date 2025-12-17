@@ -5,14 +5,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Shield } from "lucide-react";
+import { User, Shield, UserCog, Building } from "lucide-react";
 import Link from 'next/link';
 
-type Role = 'student' | 'teacher';
+type Role = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 const roles = [
     { type: 'student' as Role, title: 'I am a Student', icon: User, description: 'Join your teacher’s learning room and start your journey.' },
     { type: 'teacher' as Role, title: 'I am a Teacher', icon: Shield, description: 'Create resources and manage your classes with AI assistance.' },
+    { type: 'school_head' as Role, title: 'I am a School Head', icon: UserCog, description: 'Oversee school operations and get strategic insights.' },
+    { type: 'county_officer' as Role, title: 'I am a County Officer', icon: Building, description: 'Monitor county-wide educational progress and manage resources.' },
 ];
 
 export default function SignupPage() {
@@ -34,12 +36,12 @@ export default function SignupPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background">
             <main className="flex-grow flex items-center justify-center p-4">
-                <Card className="w-full max-w-2xl">
+                <Card className="w-full max-w-4xl">
                     <CardHeader className="text-center">
                         <CardTitle className="font-headline text-2xl">Choose Your Role</CardTitle>
                         <CardDescription>Select the account type that best describes you.</CardDescription>
                     </CardHeader>
-                    <CardContent className="grid md:grid-cols-2 gap-4">
+                    <CardContent className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {roles.map((role) => {
                             const Icon = role.icon;
                             return (
