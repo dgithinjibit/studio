@@ -1,6 +1,3 @@
-
-'use server';
-
 /**
  * @fileOverview An AI agent to summarize a student-tutor interaction for a teacher.
  */
