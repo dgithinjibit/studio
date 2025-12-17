@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -7,14 +6,34 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Users, BookOpen, Package, Bell, Send, PlusCircle } from 'lucide-react';
-import type { TeacherResource, Communication, SchoolResource, TeachingStaff, NonTeachingStaff } from '@/lib/types';
+import { Loader2, Sparkles, Users, BookOpen, BarChart3, Bell, Send, PlusCircle, ArrowRight, Wallet } from 'lucide-react';
+import type { Communication, SchoolResource, TeachingStaff, NonTeachingStaff, Transaction } from '@/lib/types';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
-import { AddStaffDialog } from '../add-staff-dialog';
-import { AddCommunicationDialog } from '../add-communication-dialog';
-import { format } from 'date-fns';
-import { mockTeacher, mockSchools, initialTeachingStaff, initialNonTeachingStaff } from '@/lib/mock-data';
+import { initialTeachingStaff, initialNonTeachingStaff, mockSchools } from '@/lib/mock-data';
 import { useRouter } from 'next/navigation';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '../ui/table';
+import { Badge } from '../ui/badge';
+
+// Mock data that would typically be fetched from a database
+const mockAnalytics = {
+    totalStudents: 485,
+    totalTeachers: initialTeachingStaff.length + initialNonTeachingStaff.length,
+    avgPerformance: 82,
+    attendanceTrend: [
+        { month: "Jan", attendance: 95 },
+        { month: "Feb", attendance: 96 },
+        { month: "Mar", attendance: 94 },
+        { month: "Apr", attendance: 92 },
+        { month: "May", attendance: 93 },
+        { month: "Jun", attendance: 95 },
+    ]
+};
+
+const mockTransactions: Transaction[] = [
+  { id: 'txn_1', date: '2024-07-30', description: 'Purchase of PP1 Textbooks', amount: 15000, category: 'Instructional Materials', status: 'Completed' },
+  { id: 'txn_2', date: '2024-07-28', description: 'School Bus Fuel', amount: 8000, category: 'Transport', status: 'Completed' },
+  { id: 'txn_3', date: '2024-07-25', description: 'Catering Services - PTA Meeting', amount: 25000, category: 'Events', status: 'Completed' },
+];
 
 
 export default function SchoolHeadDashboard() {
@@ -22,52 +41,8 @@ export default function SchoolHeadDashboard() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState('');
   const { toast } = useToast();
-  const [schoolResources, setSchoolResources] = useState<SchoolResource[]>([]);
-  const [isAddTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
-  const [isAddCommDialogOpen, setAddCommDialogOpen] = useState(false);
-  const [teachers, setTeachers] = useState<(TeachingStaff)[]>([]);
-  const [communications, setCommunications] = useState<Communication[]>([]);
   const router = useRouter();
 
-
-   useEffect(() => {
-    // In a real app, this data would be fetched from a database like Firestore
-    const storedSchoolResources = localStorage.getItem('schoolResources');
-    if (storedSchoolResources) {
-      setSchoolResources(JSON.parse(storedSchoolResources));
-    }
-    const storedTeachers = localStorage.getItem('mockTeachingStaff');
-    if (storedTeachers) {
-        setTeachers(JSON.parse(storedTeachers));
-    } else {
-        setTeachers(initialTeachingStaff);
-    }
-    const storedComms = localStorage.getItem('mockCommunications');
-     if (storedComms) {
-        try {
-          const parsedComms = JSON.parse(storedComms);
-          if (Array.isArray(parsedComms)) {
-              setCommunications(parsedComms.map((c: any) => ({...c, date: new Date(c.date)})));
-          }
-        } catch(e) {
-          console.error("Error parsing mockCommunications", e);
-        }
-    }
-
-    const handleCommUpdate = () => {
-        const updatedComms = localStorage.getItem('mockCommunications');
-        if(updatedComms) {
-          try {
-            setCommunications(JSON.parse(updatedComms).map((c:any) => ({...c, date: new Date(c.date)})));
-          } catch(e) {
-            console.error("Error parsing mockCommunications on update", e);
-          }
-        }
-    };
-    window.addEventListener('communication-update', handleCommUpdate);
-    return () => window.removeEventListener('communication-update', handleCommUpdate);
-
-  }, []);
 
   const handleAskConsultant = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,11 +55,11 @@ export default function SchoolHeadDashboard() {
         const result = await schoolHeadConsultant({
             question,
             schoolData: {
-                teacherCount: teachers.length,
-                studentCount: 500, // Mock data
-                averageAttendance: 92, // Mock data
-                classes: mockTeacher.classes, // Using mock for now
-                resources: schoolResources.map(({resourceName, schoolName, quantity}) => ({title: resourceName, type: `Allocated to ${schoolName} (x${quantity})`})),
+                teacherCount: mockAnalytics.totalTeachers,
+                studentCount: mockAnalytics.totalStudents,
+                averageAttendance: 93, // Mock data
+                classes: [], // Mock data
+                resources: [],
             }
         });
         setResponse(result.response);
@@ -100,42 +75,6 @@ export default function SchoolHeadDashboard() {
     }
   };
 
-  const handleAddTeacher = (teacher: { name: string; role: string }) => {
-    const newTeacher: TeachingStaff = { 
-        id: `t-${Date.now()}`, 
-        name: teacher.name,
-        role: teacher.role,
-        tscNo: `TSC-${Math.floor(10000 + Math.random() * 90000)}`,
-        category: 'Teaching'
-    };
-    const updatedTeachers = [...teachers, newTeacher];
-    setTeachers(updatedTeachers);
-    localStorage.setItem('mockTeachingStaff', JSON.stringify(updatedTeachers));
-    toast({
-        title: "Teacher Added",
-        description: `${teacher.name} has been added to the staff list.`,
-    });
-  };
-  
-  const handleAddCommunication = (comm: Omit<Communication, 'id' | 'date' | 'acknowledged'>) => {
-    const schoolHeadName = localStorage.getItem('userName') || 'School Head';
-    const newComm: Communication = {
-      id: `comm_${Date.now()}`,
-      ...comm,
-      date: new Date(),
-      acknowledged: false,
-      sender: schoolHeadName,
-    };
-
-    const updatedComms = [newComm, ...communications];
-    setCommunications(updatedComms);
-    localStorage.setItem('mockCommunications', JSON.stringify(updatedComms));
-    window.dispatchEvent(new CustomEvent('communication-update'));
-    toast({
-        title: "Announcement Sent",
-        description: `Your announcement "${comm.title}" has been sent to ${comm.recipient}.`,
-    });
-  };
 
   return (
     <>
@@ -150,106 +89,152 @@ export default function SchoolHeadDashboard() {
                 New Announcement
             </Button>
         </div>
+        
+        {/* AI Operational Consultant */}
+        <Card className="lg:col-span-2">
+            <form onSubmit={handleAskConsultant}>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Sparkles className="text-accent" /> AI Operational Consultant</CardTitle>
+                <CardDescription>Ask a strategic question based on your school's data. Try: "Which class has the lowest attendance?"</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                    <div>
+                    <Textarea 
+                        id="consultant-question"
+                        placeholder="e.g., 'Which class needs the most resources for the next term?' or 'Show me performance trends for Grade 5...'"
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                    />
+                    </div>
+                {loading && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                        <Loader2 className="w-5 h-5 animate-spin" /> 
+                        <p className="text-sm">Analyzing school data...</p>
+                    </div>
+                )}
+                {response && !loading && (
+                        <div className="p-4 bg-muted/50 rounded-lg border">
+                        <h4 className="font-semibold mb-2">Consultant's Advice:</h4>
+                        <p className="text-sm text-foreground">{response}</p>
+                    </div>
+                )}
+            </CardContent>
+            <CardFooter>
+                <Button type="submit" disabled={loading || !question}>
+                    {loading ? <Loader2 className="mr-2 animate-spin"/> : <Sparkles className="mr-2" />}
+                    {loading ? "Analyzing..." : "Ask Consultant"}
+                </Button>
+            </CardFooter>
+            </form>
+        </Card>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-            <Card className="lg:col-span-2">
-                <form onSubmit={handleAskConsultant}>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Sparkles className="text-accent" /> AI Operational Consultant</CardTitle>
-                    <CardDescription>Ask a strategic question based on your school's data.</CardDescription>
+        {/* School-Wide Analytics */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent className="space-y-4">
-                     <div>
-                        <Label htmlFor="consultant-question">Your Question</Label>
-                        <Textarea 
-                            id="consultant-question"
-                            placeholder="e.g., 'Which class needs the most resources for the next term?' or 'Where should I focus my teacher training budget?'"
-                            value={question}
-                            onChange={(e) => setQuestion(e.target.value)}
-                        />
-                     </div>
-                    {loading && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                            <Loader2 className="w-5 h-5 animate-spin" /> 
-                            <p className="text-sm">Analyzing school data...</p>
-                        </div>
-                    )}
-                    {response && !loading && (
-                         <div className="p-4 bg-muted/50 rounded-lg border">
-                            <h4 className="font-semibold mb-2">Consultant's Advice:</h4>
-                            <p className="text-sm text-foreground">{response}</p>
-                        </div>
-                    )}
+                <CardContent>
+                    <div className="text-2xl font-bold">{mockAnalytics.totalStudents}</div>
                 </CardContent>
-                <CardFooter>
-                    <Button type="submit" disabled={loading || !question}>
-                        {loading ? <Loader2 className="mr-2 animate-spin"/> : <Sparkles className="mr-2" />}
-                        {loading ? "Analyzing..." : "Ask Consultant"}
-                    </Button>
-                </CardFooter>
-                </form>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Total Staff</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{mockAnalytics.totalTeachers}</div>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Avg. Performance</CardTitle>
+                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{mockAnalytics.avgPerformance}%</div>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Attendance</CardTitle>
+                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                     <div className="text-2xl font-bold">93%</div>
+                </CardContent>
             </Card>
         </div>
 
-         <div className="grid gap-6 md:grid-cols-3">
-             <Card>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+             {/* Staff Management */}
+            <Card className="lg:col-span-2">
                 <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="flex items-center gap-2"><Users /> Teachers</CardTitle>
+                    <div>
+                        <CardTitle className="flex items-center gap-2"><Users /> Staff Roster</CardTitle>
+                        <CardDescription>An overview of all staff members at the school.</CardDescription>
+                    </div>
                     <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/school-staff')}>
-                        <PlusCircle className="mr-2"/>
-                        Manage
+                        Manage All Staff <ArrowRight className="ml-2 h-4 w-4"/>
                     </Button>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                    {teachers.length > 0 ? teachers.slice(0, 4).map((teacher, i) => (
-                         <div key={i} className="text-sm p-2 bg-muted/50 rounded-md">
-                            <p className="font-medium">{teacher.name}</p>
-                            <p className="text-xs text-muted-foreground">{teacher.role}</p>
-                        </div>
-                    )) : (
-                         <p className="text-sm text-muted-foreground text-center py-4">No teachers added.</p>
-                    )}
+                <CardContent>
+                     <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Role</TableHead>
+                                <TableHead>Category</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {initialTeachingStaff.slice(0, 3).map((staff) => (
+                                <TableRow key={staff.id}>
+                                    <TableCell className="font-medium">{staff.name}</TableCell>
+                                    <TableCell>{staff.role}</TableCell>
+                                    <TableCell><Badge variant="secondary">{staff.category}</Badge></TableCell>
+                                </TableRow>
+                            ))}
+                             {initialNonTeachingStaff.slice(0, 2).map((staff) => (
+                                <TableRow key={staff.id}>
+                                    <TableCell className="font-medium">{staff.name}</TableCell>
+                                    <TableCell>{staff.role}</TableCell>
+                                    <TableCell><Badge>{staff.category}</Badge></TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </CardContent>
-                 <CardFooter>
-                    <Button variant="ghost" className="w-full" onClick={() => router.push('/dashboard/school-staff')}>View All Staff</Button>
-                </CardFooter>
-            </Card>
-
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="flex items-center gap-2"><Package /> Resources</CardTitle>
-                </CardHeader>
-                 <CardContent className="space-y-2">
-                    {schoolResources.length > 0 ? schoolResources.slice(0, 4).map(res => (
-                         <div key={res.id} className="text-sm p-2 bg-muted/50 rounded-lg">
-                            <p className="font-medium truncate">{res.resourceName} (x{res.quantity})</p>
-                            <p className="text-xs text-muted-foreground">Allocated to {res.schoolName}</p>
-                        </div>
-                    )) : (
-                         <p className="text-sm text-muted-foreground text-center py-4">No resources logged for this school.</p>
-                    )}
-                </CardContent>
-                 <CardFooter>
-                    <p className="text-xs text-muted-foreground">Resources are logged by County Officer.</p>
-                </CardFooter>
             </Card>
             
-             <Card>
+            {/* Financial Overview */}
+            <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Bell /> Communications</CardTitle>
+                     <CardTitle className="flex items-center gap-2"><Wallet /> Financial Overview</CardTitle>
+                     <CardDescription>A snapshot of the school's financial health.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                    {communications.length > 0 ? communications.slice(0, 4).map(comm => (
-                         <div key={comm.id} className="text-sm p-2 bg-muted/50 rounded-lg">
-                            <p className="font-medium truncate">{comm.title}</p>
-                            <p className="text-xs text-muted-foreground">From: {comm.sender} on {format(new Date(comm.date), 'MMM d')}</p>
-                        </div>
-                    )) : (
-                        <p className="text-sm text-muted-foreground text-center py-4">No communications received.</p>
-                    )}
+                <CardContent>
+                    <div className="p-4 rounded-lg bg-green-500/10 text-green-700 dark:text-green-300 border border-green-500/20 text-center">
+                        <p className="text-sm">Budget Status</p>
+                        <p className="text-2xl font-bold">On Track</p>
+                    </div>
+                     <div className="mt-4 space-y-2">
+                        <h4 className="font-semibold">Recent Transactions</h4>
+                        {mockTransactions.slice(0,3).map(tx => (
+                            <div key={tx.id} className="text-sm flex justify-between p-2 bg-muted/50 rounded-md">
+                                <span>{tx.description}</span>
+                                <span className="font-mono font-medium">KES {tx.amount.toLocaleString()}</span>
+                            </div>
+                        ))}
+                    </div>
                 </CardContent>
-                  <CardFooter>
-                    <Button variant="ghost" className="w-full" onClick={() => router.push('/dashboard/reports')}>View All Communications</Button>
+                <CardFooter>
+                    <Button className="w-full" variant="outline" onClick={() => router.push('/dashboard/school-finance')}>
+                        View Detailed Finance Management
+                    </Button>
                 </CardFooter>
             </Card>
         </div>
