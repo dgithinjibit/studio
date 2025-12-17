@@ -285,43 +285,11 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
-    // The new prompt is self-contained and doesn't rely on the knowledgeBase injection for its primary persona.
-    // However, keeping the curriculum loading logic can be useful if we want to add a tool for the AI to look up specific curriculum points later.
-    const gradeName = `Grade ${input.grade.replace('g', '')}`;
-    let knowledgeBase = '';
-
-    try {
-        const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
-
-        if (firestoreCurriculum) {
-            knowledgeBase = firestoreCurriculum;
-        } else {
-            const localKey = `${gradeName}-${input.subject}`;
-            const localData = localCurriculumMap[localKey];
-
-            if (localData) {
-                knowledgeBase = JSON.stringify(localData, null, 2);
-            }
-        }
-    } catch (error: any) {
-        console.warn('Error loading curriculum data:', error.message);
-    }
+    // This flow now uses the self-contained tutorPrompt, which has its own persona
+    // and doesn't require the knowledgeBase to function for general English tutoring.
+    // The curriculum loading logic is kept for potential future use (e.g., as a tool).
     
-    if (!knowledgeBase.trim()) {
-        const errorMessage = `I'm sorry, I don't have the curriculum materials for ${input.subject} for ${gradeName} right now. Please select another subject to explore!`;
-        return {
-            response: errorMessage,
-            audioResponse: await generateTts(errorMessage)
-        };
-    }
-    
-    const flowInput = { 
-        ...input, 
-        // knowledgeBase can still be passed if the prompt is adapted to use it, but it's not critical for the new persona.
-        knowledgeBase,
-    };
-
-    const {output} = await tutorPrompt(flowInput);
+    const {output} = await tutorPrompt(input);
     
     if (!output?.response) {
       throw new Error("AI failed to generate a response.");
