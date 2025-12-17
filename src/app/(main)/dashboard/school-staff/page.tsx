@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -25,6 +24,8 @@ export default function SchoolStaffPage() {
     const { toast } = useToast();
 
     useEffect(() => {
+        // In a real app, this would be a fetch call.
+        // For now, we simulate fetching from our mock service.
         const storedTeaching = localStorage.getItem('mockTeachingStaff');
         if (storedTeaching) {
             setTeachingStaff(JSON.parse(storedTeaching));
@@ -117,7 +118,7 @@ export default function SchoolStaffPage() {
             <Tabs defaultValue="teaching">
                 <div className="flex items-center justify-between mb-4">
                     <div>
-                        <h1 className="font-headline text-3xl font-bold">School Staff Management</h1>
+                        <h1 className="font-headline text-3xl font-bold">School Staff Management / Usimamizi wa Wafanyikazi</h1>
                         <p className="text-muted-foreground">Manage all teaching and non-teaching staff at your school.</p>
                     </div>
                     <TabsList>

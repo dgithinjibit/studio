@@ -1,20 +1,20 @@
-
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Users, BookOpen, BarChart3, Bell, Send, PlusCircle, ArrowRight, Wallet } from 'lucide-react';
-import type { Transaction } from '@/lib/types';
+import { Loader2, Sparkles, Users, BookOpen, BarChart3, Bell, Send, ArrowRight, Wallet } from 'lucide-react';
 import { schoolHeadConsultant } from '@/ai/flows/school-head-consultant';
 import { initialTeachingStaff, initialNonTeachingStaff, mockTransactions } from '@/lib/mock-data';
 import { useRouter } from 'next/navigation';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '../ui/table';
 import { Badge } from '../ui/badge';
+import type { TeachingStaff, NonTeachingStaff, Transaction } from '@/lib/types';
 
-// Mock data that would typically be fetched from a database
+
+// Mock data that would typically be fetched from a service/API
 const mockAnalytics = {
     totalStudents: 485,
     totalTeachers: initialTeachingStaff.length + initialNonTeachingStaff.length,
@@ -36,6 +36,10 @@ export default function SchoolHeadDashboard() {
   const { toast } = useToast();
   const router = useRouter();
 
+  // Data is now sourced from mock data, simulating a service layer
+  const teachingStaff: TeachingStaff[] = initialTeachingStaff;
+  const nonTeachingStaff: NonTeachingStaff[] = initialNonTeachingStaff;
+  const transactions: Transaction[] = mockTransactions;
 
   const handleAskConsultant = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +90,7 @@ export default function SchoolHeadDashboard() {
         <Card className="lg:col-span-2">
             <form onSubmit={handleAskConsultant}>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Sparkles className="text-accent" /> AI Operational Consultant</CardTitle>
+                <CardTitle className="flex items-center gap-2"><Sparkles className="text-accent" /> AI Operational Consultant / Mshauri wa Uendeshaji</CardTitle>
                 <CardDescription>Ask a strategic question based on your school's data. Try: "Which class has the lowest attendance?"</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -123,7 +127,7 @@ export default function SchoolHeadDashboard() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                    <CardTitle className="text-sm font-medium">Total Students / Jumla ya Wanafunzi</CardTitle>
                     <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -132,7 +136,7 @@ export default function SchoolHeadDashboard() {
             </Card>
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Total Staff</CardTitle>
+                    <CardTitle className="text-sm font-medium">Total Staff / Jumla ya Wafanyikazi</CardTitle>
                     <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -141,7 +145,7 @@ export default function SchoolHeadDashboard() {
             </Card>
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Avg. Performance</CardTitle>
+                    <CardTitle className="text-sm font-medium">Avg. Performance / Wastani wa Ufaulu</CardTitle>
                     <BarChart3 className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -150,7 +154,7 @@ export default function SchoolHeadDashboard() {
             </Card>
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Attendance</CardTitle>
+                    <CardTitle className="text-sm font-medium">Attendance / Mahudhurio</CardTitle>
                     <BarChart3 className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -164,7 +168,7 @@ export default function SchoolHeadDashboard() {
             <Card className="lg:col-span-2">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle className="flex items-center gap-2"><Users /> Staff Roster</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><Users /> Staff Roster / Orodha ya Wafanyikazi</CardTitle>
                         <CardDescription>An overview of all staff members at the school.</CardDescription>
                     </div>
                     <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/school-staff')}>
@@ -181,14 +185,14 @@ export default function SchoolHeadDashboard() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {initialTeachingStaff.slice(0, 3).map((staff) => (
+                            {teachingStaff.slice(0, 3).map((staff) => (
                                 <TableRow key={staff.id}>
                                     <TableCell className="font-medium">{staff.name}</TableCell>
                                     <TableCell>{staff.role}</TableCell>
                                     <TableCell><Badge variant="secondary">{staff.category}</Badge></TableCell>
                                 </TableRow>
                             ))}
-                             {initialNonTeachingStaff.slice(0, 2).map((staff) => (
+                             {nonTeachingStaff.slice(0, 2).map((staff) => (
                                 <TableRow key={staff.id}>
                                     <TableCell className="font-medium">{staff.name}</TableCell>
                                     <TableCell>{staff.role}</TableCell>
@@ -202,7 +206,7 @@ export default function SchoolHeadDashboard() {
             
             <Card>
                 <CardHeader>
-                     <CardTitle className="flex items-center gap-2"><Wallet /> Financial Overview</CardTitle>
+                     <CardTitle className="flex items-center gap-2"><Wallet /> Financial Overview / Muhtasari wa Fedha</CardTitle>
                      <CardDescription>A snapshot of the school's financial health.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -212,7 +216,7 @@ export default function SchoolHeadDashboard() {
                     </div>
                      <div className="mt-4 space-y-2">
                         <h4 className="font-semibold">Recent Transactions</h4>
-                        {mockTransactions.slice(0,3).map(tx => (
+                        {transactions.slice(0,3).map(tx => (
                             <div key={tx.id} className="text-sm flex justify-between p-2 bg-muted/50 rounded-md">
                                 <span>{tx.description}</span>
                                 <span className="font-mono font-medium">KES {tx.amount.toLocaleString()}</span>
