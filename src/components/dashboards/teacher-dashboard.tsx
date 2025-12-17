@@ -1,400 +1,226 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
-import { app } from '@/lib/firebase';
+import {
+  Activity,
+  ArrowRight,
+  Book,
+  Bot,
+  BrainCircuit,
+  FlaskConical,
+  GraduationCap,
+  Sparkles,
+  Users,
+} from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import type { Teacher, LearningSummary } from '@/lib/types';
 
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  progress: number;
-  lastActive: string;
-  testsCompleted: number;
-}
+// Mock data as the Firestore connection is not yet implemented
+const mockLearningSummaries: LearningSummary[] = [
+    {
+        studentId: 'stud_101',
+        studentName: 'Asha Juma',
+        teacherId: 'usr_3',
+        subject: 'Social Studies',
+        strengths: 'Asha showed strong understanding of the reasons for the migration of the Bantus. She was able to connect the push and pull factors effectively.',
+        areasForImprovement: 'She struggled to differentiate between the routes taken by the Highland and Lowland Nilotes. Could benefit from a map-based activity.',
+        chatHistory: [],
+        createdAt: new Date('2024-07-31T10:30:00Z').toISOString(),
+    },
+    {
+        studentId: 'stud_102',
+        studentName: 'Benson Kariuki',
+        teacherId: 'usr_3',
+        subject: 'Mathematics',
+        strengths: 'Benson quickly grasped the concept of adding fractions with unlike denominators. He was able to solve two practice problems correctly without guidance.',
+        areasForImprovement: 'He needs more practice with simplifying the final fraction to its lowest terms. He forgot to find the greatest common divisor.',
+        chatHistory: [],
+        createdAt: new Date('2024-07-31T09:45:00Z').toISOString(),
+    },
+    {
+        studentId: 'stud_103',
+        studentName: 'Charity Wanjiru',
+        teacherId: 'usr_3',
+        subject: 'English',
+        strengths: 'Charity has a good grasp of using descriptive adjectives. Her creative story about the market was vivid and engaging.',
+        areasForImprovement: 'She should focus on using correct punctuation, especially commas in lists and full stops at the end of sentences.',
+        chatHistory: [],
+        createdAt: new Date('2024-07-30T14:15:00Z').toISOString(),
+    }
+];
 
-interface Class {
-  id: string;
-  name: string;
-  subject?: string;
-  studentCount: number;
-  averageProgress: number;
-}
-
-interface TeacherData {
-  name: string;
-  email: string;
-  classes: Class[];
-  totalStudents: number;
-  recentStudents: Student[];
-}
+const mockTeacher: Teacher = {
+    id: 'usr_3',
+    name: 'Ms. Okoro',
+    classes: [
+        { id: 'class_1', name: 'Grade 5 English', performance: 75, students: [{id: 'stud_101', name: 'Asha Juma', chatTokens: 100}], color: 'bg-blue-500' },
+        { id: 'class_2', name: 'Grade 6 Social Studies', performance: 82, students: [], color: 'bg-green-500' },
+        { id: 'class_3', name: 'Grade 4 Mathematics', performance: 78, students: [], color: 'bg-orange-500' },
+    ],
+    totalStudents: 120, // Example total
+};
 
 export default function TeacherDashboard() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [teacherData, setTeacherData] = useState<TeacherData | null>(null);
-  const [seeding, setSeeding] = useState(false);
+  const teacherData = mockTeacher;
+  const learningSummaries = mockLearningSummaries;
 
-  const fetchTeacherData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const auth = getAuth(app);
-      const currentUser = auth.currentUser;
-
-      if (!currentUser) {
-        setError('No authenticated user found. Please log in.');
-        setLoading(false);
-        return;
-      }
-
-      const db = getFirestore(app);
-
-      // Fetch teacher profile
-      const teacherDoc = await getDoc(doc(db, 'teachers', currentUser.uid));
-      
-      if (!teacherDoc.exists()) {
-        setError('NEEDS_SEEDING');
-        setLoading(false);
-        return;
-      }
-
-      const teacherProfile = teacherDoc.data();
-
-      // Fetch classes taught by this teacher
-      const classesQuery = query(
-        collection(db, 'classes'),
-        where('teacherId', '==', currentUser.uid)
-      );
-      const classesSnapshot = await getDocs(classesQuery);
-
-      if (classesSnapshot.empty) {
-        setError('NEEDS_SEEDING');
-        setLoading(false);
-        return;
-      }
-
-      const classes: Class[] = [];
-      let totalStudents = 0;
-
-      for (const classDoc of classesSnapshot.docs) {
-        const classData = classDoc.data();
-        
-        // Count students in this class
-        const studentsQuery = query(
-          collection(db, 'students'),
-          where('classId', '==', classDoc.id)
-        );
-        const studentsSnapshot = await getDocs(studentsQuery);
-        
-        // Calculate average progress
-        let totalProgress = 0;
-        studentsSnapshot.docs.forEach(studentDoc => {
-          const studentData = studentDoc.data();
-          totalProgress += studentData.progress || 0;
-        });
-
-        const studentCount = studentsSnapshot.size;
-        const averageProgress = studentCount > 0 ? totalProgress / studentCount : 0;
-
-        classes.push({
-          id: classDoc.id,
-          name: classData.name || 'Unnamed Class',
-          subject: classData.subject,
-          studentCount,
-          averageProgress: Math.round(averageProgress)
-        });
-
-        totalStudents += studentCount;
-      }
-
-      // Fetch recent students
-      const allStudentsQuery = query(
-        collection(db, 'students'),
-        where('teacherId', '==', currentUser.uid)
-      );
-      const allStudentsSnapshot = await getDocs(allStudentsQuery);
-
-      const recentStudents: Student[] = allStudentsSnapshot.docs
-        .map(studentDoc => {
-          const data = studentDoc.data();
-          const lastActiveDate = data.lastActive?.toDate?.();
-          return {
-            id: studentDoc.id,
-            name: data.name || 'Unknown',
-            email: data.email || '',
-            progress: data.progress || 0,
-            lastActive: lastActiveDate ? lastActiveDate.toLocaleDateString() : 'Never',
-            testsCompleted: data.testsCompleted || 0
-          };
-        })
-        .sort((a, b) => {
-          const dateA = new Date(a.lastActive).getTime() || 0;
-          const dateB = new Date(b.lastActive).getTime() || 0;
-          return dateB - dateA;
-        })
-        .slice(0, 5);
-
-      setTeacherData({
-        name: teacherProfile.name || currentUser.email || 'Teacher',
-        email: currentUser.email || '',
-        classes,
-        totalStudents,
-        recentStudents
-      });
-
-    } catch (err) {
-      console.error('Error fetching teacher data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSeedDatabase = async () => {
-    setSeeding(true);
-    try {
-      const response = await fetch('/api/seed');
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        // Wait a moment for Firestore to update, then refetch
-        setTimeout(() => {
-          fetchTeacherData();
-        }, 2000);
-      } else {
-        setError(data.message || 'Failed to seed database');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to seed database');
-    } finally {
-      setSeeding(false);
-    }
-  };
-
-  useEffect(() => {
-    const auth = getAuth(app);
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        fetchTeacherData();
-      } else {
-        setLoading(false);
-        setError('No authenticated user found. Please log in.');
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error === 'NEEDS_SEEDING') {
-    return (
-      <div className="min-h-screen bg-muted/20 flex items-center justify-center p-6">
-        <div className="bg-card rounded-lg shadow-lg p-8 max-w-md text-center border">
-          <div className="mb-6">
-            <div className="mx-auto w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">Welcome, Teacher!</h3>
-            <p className="text-muted-foreground mb-6">
-              Your account is ready. Let's populate your dashboard with some sample classes and students to get you started.
-            </p>
-          </div>
-          <button
-            onClick={handleSeedDatabase}
-            disabled={seeding}
-            className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed transition-colors"
-          >
-            {seeding ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Seeding Database...
-              </span>
-            ) : (
-              'Seed Sample Data'
-            )}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-muted/20 flex items-center justify-center p-6">
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-8 max-w-md">
-          <h3 className="text-destructive font-semibold mb-2 text-lg">Error Loading Dashboard</h3>
-          <p className="text-destructive/80 mb-4">{error}</p>
-          <div className="flex gap-3">
-            <button
-              onClick={fetchTeacherData}
-              className="flex-1 bg-destructive text-destructive-foreground px-4 py-2 rounded hover:bg-destructive/90 transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!teacherData) {
-    return null; // Should be handled by loading or error states
-  }
+  const averagePerformance = teacherData.classes.length > 0
+      ? Math.round(
+          teacherData.classes.reduce((sum, c) => sum + c.performance, 0) /
+          teacherData.classes.length
+        )
+      : 0;
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Welcome back, {teacherData.name}
-            </h1>
-            <p className="text-muted-foreground">{teacherData.email}</p>
-          </div>
-          <button
-            onClick={fetchTeacherData}
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Refresh
-          </button>
+    <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+            <div>
+                <h1 className="text-2xl md:text-3xl font-bold font-headline text-foreground">
+                    Karibu, {teacherData.name}
+                </h1>
+                <p className="text-muted-foreground">Here is your teaching summary for today.</p>
+            </div>
+            <div className="flex items-center gap-2">
+                 <Button asChild>
+                    <Link href="/dashboard/learning-lab">
+                        <FlaskConical className="mr-2 h-4 w-4" /> Create Learning Lab
+                    </Link>
+                </Button>
+                <Button variant="outline" asChild>
+                    <Link href="/dashboard/tools">
+                         <Sparkles className="mr-2 h-4 w-4" /> Create Resource
+                    </Link>
+                </Button>
+            </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-card rounded-lg shadow p-6">
-            <div className="text-sm text-muted-foreground mb-1">Total Classes</div>
-            <div className="text-3xl font-bold text-primary">
-              {teacherData.classes.length}
-            </div>
-          </div>
-          <div className="bg-card rounded-lg shadow p-6">
-            <div className="text-sm text-muted-foreground mb-1">Total Students</div>
-            <div className="text-3xl font-bold text-green-500">
-              {teacherData.totalStudents}
-            </div>
-          </div>
-          <div className="bg-card rounded-lg shadow p-6">
-            <div className="text-sm text-muted-foreground mb-1">Average Progress</div>
-            <div className="text-3xl font-bold text-purple-500">
-              {teacherData.classes.length > 0
-                ? Math.round(
-                    teacherData.classes.reduce((sum, c) => sum + c.averageProgress, 0) /
-                      teacherData.classes.length
-                  )
-                : 0}%
-            </div>
-          </div>
+        {/* At-a-Glance Stats */}
+        <div className="grid gap-6 md:grid-cols-3">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{teacherData.totalStudents}</div>
+                    <p className="text-xs text-muted-foreground">Across all your classes</p>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Your Classes</CardTitle>
+                    <Book className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{teacherData.classes.length}</div>
+                    <p className="text-xs text-muted-foreground">Actively managed by you</p>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Avg. Class Performance</CardTitle>
+                    <Activity className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{averagePerformance}%</div>
+                    <p className="text-xs text-muted-foreground">Based on recent assessments</p>
+                </CardContent>
+            </Card>
         </div>
 
-        <div className="bg-card rounded-lg shadow mb-8">
-          <div className="px-6 py-4 border-b">
-            <h2 className="text-xl font-semibold text-foreground">Your Classes</h2>
-          </div>
-          <div className="p-6">
-            {teacherData.classes.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>No classes yet. Use the 'Seed Data' button to create sample classes.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {teacherData.classes.map(classItem => (
-                  <div
-                    key={classItem.id}
-                    className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                  >
-                    <h3 className="font-semibold text-foreground mb-1">
-                      {classItem.name}
-                    </h3>
-                    {classItem.subject && (
-                      <p className="text-sm text-muted-foreground mb-2">{classItem.subject}</p>
-                    )}
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <p>{classItem.studentCount} students</p>
-                      <div className="flex items-center">
-                        <div className="flex-1 bg-muted rounded-full h-2 mr-2">
-                          <div
-                            className="bg-primary h-2 rounded-full transition-all"
-                            style={{ width: `${classItem.averageProgress}%` }}
-                          ></div>
-                        </div>
-                        <span className="font-medium text-foreground">{classItem.averageProgress}%</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-card rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <h2 className="text-xl font-semibold text-foreground">Recent Student Activity</h2>
-          </div>
-          <div className="p-6">
-            {teacherData.recentStudents.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>No student activity yet.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left text-sm text-muted-foreground border-b">
-                      <th className="pb-3 font-medium">Student</th>
-                      <th className="pb-3 font-medium">Progress</th>
-                      <th className="pb-3 font-medium">Tests Completed</th>
-                      <th className="pb-3 font-medium">Last Active</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {teacherData.recentStudents.map(student => (
-                      <tr key={student.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
-                        <td className="py-3">
-                          <div>
-                            <div className="font-medium text-foreground">{student.name}</div>
-                            <div className="text-sm text-muted-foreground">{student.email}</div>
-                          </div>
-                        </td>
-                        <td className="py-3">
-                          <div className="flex items-center">
-                            <div className="w-20 bg-muted rounded-full h-2 mr-2">
-                              <div
-                                className="bg-green-500 h-2 rounded-full transition-all"
-                                style={{ width: `${student.progress}%` }}
-                              ></div>
-                            </div>
-                            <span className="text-sm text-foreground font-medium">{student.progress}%</span>
-                          </div>
-                        </td>
-                        <td className="py-3 text-foreground">{student.testsCompleted}</td>
-                        <td className="py-3 text-foreground">{student.lastActive}</td>
-                      </tr>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Class Overview */}
+            <Card className="lg:col-span-2">
+                 <CardHeader>
+                    <CardTitle>My Classes</CardTitle>
+                    <CardDescription>An overview of your current classes.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-4">
+                     {teacherData.classes.map(classItem => (
+                        <Card key={classItem.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                 <CardTitle className="text-base font-medium">{classItem.name}</CardTitle>
+                                 <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-xl font-bold">{classItem.students.length} Students</div>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <Progress value={classItem.performance} aria-label={`${classItem.performance}% performance`} />
+                                    <span className="text-xs font-semibold">{classItem.performance}%</span>
+                                </div>
+                            </CardContent>
+                             <CardFooter>
+                                <Button variant="outline" size="sm" className="w-full">
+                                    View Class <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                </CardContent>
+            </Card>
+
+            {/* Student Insights Feed */}
+            <Card className="flex flex-col">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Bot className="text-primary" /> Student Insights
+                    </CardTitle>
+                    <CardDescription>Live feedback from AI tutor sessions.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-hidden p-0">
+                    <ScrollArea className="h-[350px]">
+                        <div className="space-y-4 p-6 pt-0">
+                             {learningSummaries.map((summary, index) => (
+                                <div key={index} className="flex flex-col gap-2">
+                                     <div className="flex items-center gap-3">
+                                        <Avatar className="h-9 w-9">
+                                             <AvatarFallback>{summary.studentName.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="grid gap-0.5">
+                                            <p className="font-semibold">{summary.studentName}</p>
+                                            <div className="text-xs text-muted-foreground">
+                                                Studied <Badge variant="secondary">{summary.subject}</Badge>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="p-3 rounded-md bg-muted/50 border text-sm space-y-2">
+                                        <div>
+                                            <h4 className="font-semibold text-green-600">Strengths:</h4>
+                                            <p className="text-muted-foreground">{summary.strengths}</p>
+                                        </div>
+                                        <Separator />
+                                        <div>
+                                             <h4 className="font-semibold text-orange-600">Areas for Improvement:</h4>
+                                            <p className="text-muted-foreground">{summary.areasForImprovement}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </CardContent>
+                 <CardFooter>
+                    <Button variant="secondary" className="w-full">
+                        View All Insights
+                    </Button>
+                </CardFooter>
+            </Card>
         </div>
-      </div>
     </div>
   );
 }

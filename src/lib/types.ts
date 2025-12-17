@@ -1,5 +1,4 @@
 
-
 export type UserRole = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
 export type User = {
