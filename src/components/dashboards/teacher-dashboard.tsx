@@ -9,6 +9,7 @@ import {
   BrainCircuit,
   FlaskConical,
   GraduationCap,
+  Key,
   Sparkles,
   Users,
 } from 'lucide-react';
@@ -110,7 +111,7 @@ export default function TeacherDashboard() {
         </div>
 
         {/* At-a-Glance Stats */}
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-4">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Students</CardTitle>
@@ -139,6 +140,16 @@ export default function TeacherDashboard() {
                 <CardContent>
                     <div className="text-2xl font-bold">{averagePerformance}%</div>
                     <p className="text-xs text-muted-foreground">Based on recent assessments</p>
+                </CardContent>
+            </Card>
+            <Card className="bg-muted">
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Student Join Code</CardTitle>
+                    <Key className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-mono font-bold">QWERTY456</div>
+                    <p className="text-xs text-muted-foreground">For all Learning Labs</p>
                 </CardContent>
             </Card>
         </div>

@@ -17,12 +17,7 @@ import { collection, addDoc } from 'firebase/firestore';
 
 
 function generateJoinCode(length: number) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
+    return 'QWERTY456';
 }
 
 export default function LearningLabPage() {
@@ -136,5 +131,3 @@ export default function LearningLabPage() {
         </>
   );
 }
-
-    
