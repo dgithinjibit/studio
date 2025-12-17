@@ -3,7 +3,6 @@ import './globals.css';
 import { app } from '@/lib/firebase'; // Ensure Firebase is initialized
 import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { MetaMaskFix } from '@/components/metamask-fix';
 import Script from 'next/script';
 import { ClientProviders } from '@/components/client-providers';
 
@@ -29,7 +28,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn("font-body antialiased", fontSans.variable)}>
-        <MetaMaskFix />
         <ClientProviders>
           {children}
         </ClientProviders>
