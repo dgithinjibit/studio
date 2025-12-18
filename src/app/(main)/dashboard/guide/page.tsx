@@ -1,21 +1,34 @@
 
+"use client";
+
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { HelpCircle, Bot, FlaskConical, Share2, Eye } from 'lucide-react';
+import { HelpCircle, Bot, FlaskConical, Share2, Eye, ArrowLeft } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
 
 function TeacherGuide() {
+  const router = useRouter();
+
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3 font-headline text-3xl">
-            <HelpCircle className="w-8 h-8 text-primary" />
-            SyncSenta Guide
-          </CardTitle>
-          <CardDescription>
-            Your quick start guide to using the powerful AI tools at your fingertips. Keep it simple!
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div className="flex justify-between items-center mb-6">
+          <Card className="flex-grow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 font-headline text-3xl">
+                <HelpCircle className="w-8 h-8 text-primary" />
+                SyncSenta Guide
+              </CardTitle>
+              <CardDescription>
+                Your quick start guide to using the powerful AI tools at your fingertips. Keep it simple!
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <Button onClick={() => router.back()} variant="outline" className="ml-4">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+          </Button>
+      </div>
+
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
@@ -107,5 +120,3 @@ export default function GuidePage() {
         </div>
     );
 }
-
-    
