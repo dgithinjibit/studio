@@ -302,17 +302,18 @@ function StudentJourneyContent() {
                         <CardContent className="space-y-8">
                             <div>
                                 <h3 className="text-xl font-semibold mb-4">Core Subjects</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                     {coreSubjects.map((subject) => (
                                         <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
-                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg h-40">
+                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg aspect-[4/3]">
                                                 <Image 
                                                     src={subject.icon} 
                                                     alt={`${subject.name} icon`} 
                                                     fill
                                                     className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
                                                 />
-                                                <div className="absolute inset-0 flex items-end p-4 bg-black/50">
+                                                <div className="absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/70 to-transparent">
                                                     <h3 className="font-bold text-white text-lg">{subject.name}</h3>
                                                 </div>
                                             </Card>
@@ -322,15 +323,16 @@ function StudentJourneyContent() {
                             </div>
                             <div>
                                 <h3 className="text-xl font-semibold mb-4">Recommended Courses for You</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                      {recommendedSubjects.map((subject) => (
                                         <Link key={subject.name} href={`/student/chat/${encodeURIComponent(subject.name)}`} passHref>
-                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg h-48 md:h-56">
+                                            <Card className="group relative overflow-hidden rounded-lg cursor-pointer transition-all hover:shadow-lg aspect-[16/9]">
                                                 <Image 
                                                     src={subject.icon} 
                                                     alt={`${subject.name} icon`} 
                                                     fill
                                                     className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                                                 />
                                                 <div className="absolute inset-0 flex items-center justify-center p-4 bg-black/60">
                                                     <h3 className="font-bold text-white text-2xl text-center">{subject.name}</h3>

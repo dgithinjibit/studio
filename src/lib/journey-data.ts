@@ -41,7 +41,7 @@ export const recommendedSubjects: Subject[] = [
 const commonSubjects: Subject[] = [
     { name: 'English', icon: '/assets/english-icon.png' },
     { name: 'Kiswahili', icon: '/assets/kisw.png' },
-    { name: 'Mathematics', icon: '/assets/mathematics.png' },
+    { name: 'Mathematics', icon: '/assets/math.png' },
     { name: 'Social Studies', icon: '/assets/social.png' },
     { name: 'Creative Arts', icon: '/assets/creative_arts.png' },
     { name: 'Religious Education', icon: '/assets/cre.png' },

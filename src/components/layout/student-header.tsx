@@ -47,7 +47,7 @@ export function StudentHeader({ showBackButton, onBack, showVideoCallButton = fa
   return (
     <>
         <div className="relative flex items-center justify-between py-4 px-6 text-foreground">
-            <div>
+            <div className="z-10">
                 {showBackButton && (
                     <Button variant="ghost" size="icon" onClick={onBack} className="text-muted-foreground hover:text-foreground hover:bg-muted">
                         <ArrowLeft />
@@ -56,14 +56,14 @@ export function StudentHeader({ showBackButton, onBack, showVideoCallButton = fa
                 )}
             </div>
             
-            <div className="absolute left-1/2 -translate-x-1/2 text-center">
+            <div className="absolute inset-x-0 text-center pointer-events-none sm:block hidden">
                 <h1 className="font-headline text-4xl font-bold">Karibu!</h1>
                 <p className="text-muted-foreground text-lg">
                     I’m Mwalimu AI, your friendly Socratic Mentor.
                 </p>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 z-10">
                 {showVideoCallButton && (
                     <Button onClick={onJoinVideoCall} className="bg-green-500 hover:bg-green-600">
                         <Video className="mr-2" />
@@ -80,7 +80,7 @@ export function StudentHeader({ showBackButton, onBack, showVideoCallButton = fa
                                <AvatarImage src={studentAvatar || undefined} alt="Profile Picture" />
                                <AvatarFallback>{studentFirstName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <span>Profile</span>
+                            <span className="hidden sm:inline">Profile</span>
                           </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
