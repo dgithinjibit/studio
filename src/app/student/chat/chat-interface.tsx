@@ -12,6 +12,8 @@ import { classroomCompass } from '@/ai/flows/classroom-compass-flow';
 import { Loader2, Send, Video, Mic, Bot } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import { useRouter } from 'next/navigation';
+import { getAuth } from 'firebase/auth';
+import { app } from '@/lib/firebase';
 
 type Message = {
     role: 'user' | 'model';
@@ -42,11 +44,17 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     const recognitionRef = useRef<any | null>(null);
     const [choices, setChoices] = useState<string[]>([]);
     const [chatTokens, setChatTokens] = useState(100);
+    const [studentId, setStudentId] = useState<string | null>(null);
 
      useEffect(() => {
         const name = localStorage.getItem('studentName');
         if (name) {
             setStudentFirstName(name.split(' ')[0]);
+        }
+        const auth = getAuth(app);
+        const user = auth.currentUser;
+        if (user) {
+            setStudentId(user.uid);
         }
     }, []);
 
@@ -185,6 +193,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                     grade,
                     subject,
                     studentName,
+                    studentId,
                     teacherId,
                     currentMessage: currentMessage,
                     history: historyForAI

@@ -4,6 +4,9 @@
 import type { User, UserRole } from './types';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { app } from './firebase';
 
 /**
  * A Server Action to set the user's role and name in cookies.
@@ -11,9 +14,26 @@ import { redirect } from 'next/navigation';
  */
 export async function signupUser(role: UserRole, formData: FormData): Promise<string> {
   const fullName = formData.get('fullName') as string;
+  const email = formData.get('email') as string;
 
-  if (!role || !fullName) {
-    throw new Error("Role or Full Name is missing.");
+  if (!role || !fullName || !email) {
+    throw new Error("Role, Full Name, or Email is missing.");
+  }
+  
+  const auth = getAuth(app);
+  // This relies on the client-side to have created the user first.
+  // A more robust solution would handle user creation here.
+  const user = auth.currentUser;
+
+  if (user) {
+      const db = getFirestore(app);
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: email,
+        name: fullName,
+        role: role,
+        createdAt: new Date().toISOString(),
+      });
   }
   
   const cookieStore = cookies();
@@ -34,21 +54,25 @@ export async function signupUser(role: UserRole, formData: FormData): Promise<st
 
 export async function getServerUser(): Promise<Partial<User> | null> {
     const cookieStore = cookies();
-    const userRoleCookie = cookieStore.get('userRole');
+    // While we still use cookies for quick client-side rendering,
+    // the authoritative role should come from the database.
+    // This is a simplified example; a real app would use server-side session validation.
     const userNameCookie = cookieStore.get('userName');
     
-    const role = userRoleCookie?.value as UserRole | undefined;
-    const name = userNameCookie?.value;
-
-    if (!role || !name) {
-        // If no role or name is found in the cookies, return null.
-        // The UI will handle this by showing a loading state or redirecting.
-        // DO NOT return a default user object here.
+    // In a real app, you'd get the UID from a secure, server-only session cookie.
+    // For this prototype, we'll assume we can get it after client-side auth.
+    // This part of the logic is illustrative and not fully secure without a proper backend session.
+    const userEmailCookie = cookieStore.get('userEmail');
+    if (!userEmailCookie?.value) {
         return null;
     }
+    
+    // The name is less critical, but the role MUST be fetched securely.
+    const name = userNameCookie?.value;
 
     return {
         name,
-        role,
+        // The role is now illustrative, the real role check should happen in protected server actions/api routes
+        role: cookieStore.get('userRole')?.value as UserRole | undefined,
     };
 }

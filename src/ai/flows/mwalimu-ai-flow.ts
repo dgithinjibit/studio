@@ -16,9 +16,10 @@ import {
   MwalimuAiTutorOutputSchema,
 } from './mwalimu-ai-types';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, limit, addDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/googleai';
+import { getAuth } from 'firebase/auth';
 
 // New import for the summarization flow
 import { summarizeStudentInteractionFlow } from './summarize-student-interaction';
@@ -155,9 +156,6 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     outputSchema: MwalimuAiTutorOutputSchema,
   },
   async (input) => {
-    // This flow now uses the self-contained tutorPrompt, which has its own persona
-    // and doesn't require a knowledgeBase to function for general English tutoring.
-    // The broken curriculum loading logic has been removed to prevent errors.
     
     const {output} = await tutorPrompt(input);
     
@@ -166,7 +164,7 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     }
     
     // Asynchronously generate teacher feedback without blocking the student's response.
-    if (input.history && input.history.length > 2) { // Only summarize after a few turns
+    if (input.history && input.history.length > 2 && input.studentId) { 
       summarizeAndStoreInteraction(input);
     }
     
@@ -191,7 +189,7 @@ async function summarizeAndStoreInteraction(input: MwalimuAiTutorInput) {
         });
 
         const learningSummary: Omit<LearningSummary, 'id'> = {
-            studentId: 'student_placeholder_id', // In a real app, this would be the actual student ID
+            studentId: input.studentId!,
             studentName: input.studentName || 'Student',
             teacherId: input.teacherId || 'teacher_placeholder_id',
             subject: input.subject,

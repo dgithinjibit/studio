@@ -29,6 +29,7 @@ export const MwalimuAiTutorInputSchema = z.object({
   knowledgeBase: z.string().optional().describe("The full curriculum context for the AI."),
   contextStatus: z.enum(['LOADED', 'MISSING']).optional().describe("The status of the RAG data."),
   studentName: z.string().optional().describe("The student's name."),
+  studentId: z.string().optional().describe("The student's unique ID."),
   teacherId: z.string().optional().describe("The ID of the student's teacher."),
 });
 export type MwalimuAiTutorInput = z.infer<typeof MwalimuAiTutorInputSchema>;

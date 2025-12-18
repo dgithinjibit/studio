@@ -11,7 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2, Mail, ArrowLeft } from 'lucide-react';
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, getAdditionalUserInfo } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { app, db } from '@/lib/firebase';
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 // Simple SVG for Google Icon
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -43,14 +44,23 @@ export default function LoginPage() {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
+
+            // Fetch user role from Firestore
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+            let role = 'student'; // Default role
+            let name = user.displayName || email.split('@')[0];
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                role = userData.role;
+                name = userData.name;
+            }
             
             toast({
                 title: "Login Successful",
                 description: "Welcome back! Redirecting you to your dashboard.",
             });
-            
-            const role = email.includes('teacher') ? 'teacher' : email.includes('head') ? 'school_head' : email.includes('county') ? 'county_officer' : 'student';
-            const name = user.displayName || email.split('@')[0];
             
             localStorage.setItem('userName', name);
             localStorage.setItem('userEmail', email);
@@ -92,19 +102,39 @@ export default function LoginPage() {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
             const additionalUserInfo = getAdditionalUserInfo(result);
-
-            let role: string = 'student'; // Default role for new Google sign-ups
-            
-            // This is a simple logic for prototype. A real app would have a more robust role management system.
-            if (!additionalUserInfo?.isNewUser) {
-                // If user exists, try to infer role from email or a database record.
-                if (user.email?.includes('teacher')) role = 'teacher';
-                else if (user.email?.includes('head')) role = 'school_head';
-                else if (user.email?.includes('county')) role = 'county_officer';
-            }
-            
             const name = user.displayName || user.email!.split('@')[0];
 
+            let role: string;
+
+            if (additionalUserInfo?.isNewUser) {
+                // If it's a new user, default them to student and create a user record
+                role = 'student';
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    email: user.email,
+                    name: name,
+                    role: role,
+                    createdAt: new Date().toISOString(),
+                });
+            } else {
+                // If user exists, fetch their role from Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    role = userDoc.data().role;
+                } else {
+                    // If they exist in Auth but not Firestore for some reason, create the doc
+                    role = 'student';
+                     await setDoc(doc(db, "users", user.uid), {
+                        uid: user.uid,
+                        email: user.email,
+                        name: name,
+                        role: role,
+                        createdAt: new Date().toISOString(),
+                    });
+                }
+            }
+            
             localStorage.setItem('userName', name);
             localStorage.setItem('userEmail', user.email!);
             if (role === 'student') {

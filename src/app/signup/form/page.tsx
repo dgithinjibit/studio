@@ -16,7 +16,9 @@ import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { signupUser } from '@/lib/auth';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { app, db } from '@/lib/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+
 
 function SignupFormComponent() {
     const router = useRouter();
@@ -47,9 +49,19 @@ function SignupFormComponent() {
             const auth = getAuth(app);
             try {
                 // 1. Create user in Firebase Auth
-                await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
 
-                // 2. Call server action to set cookies and get redirect path
+                // 2. Create user document in Firestore
+                 await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    email: email,
+                    name: fullName,
+                    role: role,
+                    createdAt: new Date().toISOString(),
+                });
+
+                // 3. Call server action to set cookies and get redirect path
                 const redirectPath = await signupUser(role, formData);
                 
                 toast({
@@ -63,7 +75,9 @@ function SignupFormComponent() {
                  toast({
                     variant: 'destructive',
                     title: 'Signup Failed',
-                    description: error.message || 'An unexpected error occurred. Please try again.',
+                    description: error.code === 'auth/email-already-in-use' 
+                        ? 'This email is already registered. Please sign in.' 
+                        : (error.message || 'An unexpected error occurred. Please try again.'),
                 });
             }
         });
