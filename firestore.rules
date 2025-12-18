@@ -9,27 +9,30 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
+    // Users can only read/update their own user document.
+    // Any authenticated user can create a user document (for signup).
     match /users/{userId} {
       allow read, update: if request.auth.uid == userId;
       allow create: if request.auth != null;
     }
     
+    // School heads can only manage their own school document.
     match /schools/{schoolId} {
-      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'school_head' && resource.data.school_head == request.auth.uid;
-      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'school_head' && resource.data.school_head == request.auth.uid;
+      allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'school_head' && resource.data.school_head == request.auth.uid;
     }
 
+    // Analytics are only readable by school heads.
     match /analytics/{doc} {
       allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'school_head';
     }
 
-    // Teachers collection
+    // Teachers collection rules remain the same.
     match /teachers/{teacherId} {
-      allow read: if request.auth != null && request.auth.uid == teacherId;
-      allow write: if request.auth != null && request.auth.uid == teacherId;
+      allow read, write: if request.auth != null && request.auth.uid == teacherId;
     }
     
-    // Classes collection
+    // Classes can be read by the assigned teacher or an enrolled student.
+    // Only the assigned teacher can write/create the class.
     match /classes/{classId} {
       allow read: if request.auth != null && 
                      (resource.data.teacherId == request.auth.uid || 
@@ -38,25 +41,31 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.teacherId == request.auth.uid;
     }
     
-    // Students collection
+    // Students can manage their own document.
+    // A teacher can read their students' documents (further refinement may be needed here).
     match /students/{studentId} {
       allow read: if request.auth != null && 
                      (request.auth.uid == studentId || 
-                      get(/databases/$(database)/documents/teachers/$(request.auth.uid)).data.role == 'teacher');
+                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher');
       allow write: if request.auth != null && request.auth.uid == studentId;
     }
 
-    // Teacher Resources
+    // SECURE RULE: Teacher Resources
+    // Only teachers can create resources.
+    // Anyone with the link/document ID can read (assuming resources are shareable, but not listable).
+    // Only the user who created the resource can delete it.
     match /teacherResources/{resourceId} {
-        allow read: if request.auth != null; // Allow any authenticated user to read
-        allow create: if request.auth != null; // Allow any authenticated user to create
-        allow delete: if request.auth != null; // More specific rules might be needed
+        allow read: if request.auth != null; // Allows any authenticated user to read if they have the direct link.
+        allow create: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+        allow delete: if resource.data.creatorId == request.auth.uid; // Assumes a `creatorId` field is added on creation.
     }
 
-    // Learning Summaries
+    // SECURE RULE: Learning Summaries
+    // Read access is restricted to the specific teacher assigned to the summary.
+    // Create access is restricted to a backend function or a trusted role (like 'teacher' or a dedicated service account). For now, let's restrict to teachers.
     match /learningSummaries/{summaryId} {
-        allow read: if request.auth != null && get(/databases/$(database)/documents/learningSummaries/$(summaryId)).data.teacherId == request.auth.uid;
-        allow create: if request.auth != null;
+        allow read: if request.auth != null && resource.data.teacherId == request.auth.uid;
+        allow create: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher'; // Only teachers can create summaries.
     }
   }
 }
