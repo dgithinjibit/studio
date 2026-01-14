@@ -46,7 +46,7 @@
     "lucide-react": "^0.475.0",
     "maplibre-gl": "^4.1.2",
     "mapbox-gl": "^3.5.2",
-    "next": "14.2.5",
+    "next": "14.2.35",
     "next-themes": "0.3.0",
     "patch-package": "^8.0.0",
     "react": "18.3.1",

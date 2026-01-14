@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Shield, UserCog, Building } from "lucide-react";
+import { User, Shield, UserCog, Building, ArrowLeft } from "lucide-react";
 import Link from 'next/link';
 
 type Role = 'student' | 'teacher' | 'school_head' | 'county_officer';
@@ -36,8 +36,14 @@ export default function SignupPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background">
             <main className="flex-grow flex items-center justify-center p-4">
-                <Card className="w-full max-w-4xl">
-                    <CardHeader className="text-center">
+                <Card className="w-full max-w-4xl relative">
+                    <Link href="/" passHref>
+                        <Button variant="ghost" size="icon" className="absolute top-3 left-3">
+                            <ArrowLeft className="h-5 w-5" />
+                            <span className="sr-only">Back to Home</span>
+                        </Button>
+                    </Link>
+                    <CardHeader className="text-center pt-12">
                         <CardTitle className="font-headline text-2xl">Choose Your Role</CardTitle>
                         <CardDescription>Select the account type that best describes you.</CardDescription>
                     </CardHeader>
@@ -75,7 +81,7 @@ export default function SignupPage() {
                 </Card>
             </main>
              <footer className="p-4 text-center text-xs text-muted-foreground">
-                © 2025 dantedone. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link> | <Link href="https://forms.gle/3vQhgtJbnEaGD6xV8" target="_blank" rel="noopener noreferrer" className="hover:underline">Provide Feedback</Link>
+                © 2025 3D. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link> | <Link href="https://forms.gle/3vQhgtJbnEaGD6xV8" target="_blank" rel="noopener noreferrer" className="hover:underline">Provide Feedback</Link>
             </footer>
         </div>
     );
