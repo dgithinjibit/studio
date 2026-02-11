@@ -3,7 +3,7 @@
 
 /**
  * @fileOverview AI agent to generate a draft Scheme of Work based on official curriculum data.
- *
+ * 
  * - generateSchemeOfWork - A function that handles the scheme of work generation process.
  */
 
@@ -48,7 +48,7 @@ You MUST use the following curriculum details to populate the table.
 - **Curriculum Details:** {{{schemeOfWorkContext}}}
 
 **CRITICAL FORMATTING INSTRUCTIONS (KISWAHILI):**
-The final output MUST follow this exact Markdown table structure. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. For lists within a cell, ensure each item is on a new line and starts with a hyphen (-).
+The final output MUST be a single, well-formatted Markdown table with the following columns. Do NOT add any text or summaries outside of the table. Do NOT use any HTML tags like <br>. For lists within a cell, ensure each item is on a new line and starts with a hyphen (-).
 
 | Mada (Strand) | Mada Ndogo (Sub Strand) & Vipindi | Matokeo Maalum Yanayotarajiwa (Specific Learning Outcomes) | Shughuli za Ujifunzaji Zilizopendekezwa (Suggested Learning Experiences) | Swali Dadisi Lililopendekezwa (Key Inquiry Question(s)) |
 | :--- | :--- | :--- | :--- | :--- |

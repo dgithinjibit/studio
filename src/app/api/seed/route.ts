@@ -46,6 +46,18 @@ export async function GET() {
       teacherId = existingTeacher.docs[0].id;
     }
 
+    // Add a sample Kiswahili Scheme of Work to the library
+    const sampleResourceRef = doc(collection(db, "teacherResources"));
+    await setDoc(sampleResourceRef, {
+        title: "Gredi ya 4 Kiswahili: Matamshi Bora",
+        type: "Scheme of Work",
+        createdAt: new Date().toISOString(),
+        joinCode: "",
+        content: `| Mada (Strand) | Mada Ndogo (Sub Strand) & Vipindi | Matokeo Maalum Yanayotarajiwa (Specific Learning Outcomes) | Shughuli za Ujifunzaji Zilizopendekezwa (Suggested Learning Experiences) | Swali Dadisi Lililopendekezwa (Key Inquiry Question(s)) |
+| :--- | :--- | :--- | :--- | :--- |
+| **1.0 NYUMBANI** | **1.1.1 Matamshi Bora** (Vipindi 5) | - kutambua silabi zinazotokana na sauti p/b, t/d, k/g, ch/j katika maneno\\n- kutamka silabi zinazotokana na sauti zinazokaribiana kimatamshi\\n- kutamka vitanzandimi vinavyoundwa kwa silabi za sauti zinazokaribiana kimatamshi | - kutambua silabi za sauti lengwa (p/b, t/d, k/g, ch/j) kutokana na maneno kwenye vitabu\\n- kusikiliza silabi za sauti lengwa zikitamkwa na mwalimu au kifaa cha kidijitali\\n- kuunda vitanzandimi vyepesi vinavyotokana na vitate husika | Matamshi bora yana umuhimu gani katika mawasiliano? |`
+    });
+
     // Check if classes already exist for this teacher
     const existingClassesQuery = query(
       collection(db, 'classes'),
