@@ -11,13 +11,15 @@ import { Loader2, Save, FlaskConical } from "lucide-react";
 import type { TeacherResource } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { ShareRoomDialog } from "@/components/share-room-dialog";
-import { storage, db } from '@/lib/firebase';
+import { storage, db, app } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
 
 
-function generateJoinCode(length: number) {
-    return 'QWERTY456';
+function generateJoinCode() {
+    // Generate a reasonably unique 7-char alphanumeric code
+    return Math.random().toString(36).substring(2, 9).toUpperCase();
 }
 
 export default function LearningLabPage() {
@@ -29,12 +31,22 @@ export default function LearningLabPage() {
     const [shareCode, setShareCode] = useState("");
 
     const onResourceSaved = () => {
-        // We need to dispatch a custom event to tell the MyResources component to update
-        // because localStorage changes in the same window don't trigger the 'storage' event.
         window.dispatchEvent(new CustomEvent('resource-update'));
     }
 
     const handleSaveToRoom = async () => {
+        const auth = getAuth(app);
+        const user = auth.currentUser;
+
+        if (!user) {
+            toast({
+                variant: "destructive",
+                title: "Authentication Required",
+                description: "You must be signed in to create a Learning Lab.",
+            });
+            return;
+        }
+
         if (!context.trim()) {
             toast({
                 variant: "destructive",
@@ -47,19 +59,20 @@ export default function LearningLabPage() {
         setLoading(true);
 
         try {
-            const resourceId = generateJoinCode(7);
+            const resourceId = generateJoinCode();
             const fileName = `ai_tutor_contexts/${resourceId}.txt`;
             const storageRef = ref(storage, fileName);
 
             await uploadString(storageRef, context, 'raw');
             const downloadURL = await getDownloadURL(storageRef);
 
-            const newResource: Omit<TeacherResource, 'id'> & {joinCode: string} = {
-              title: `Study Bot - ${new Date().toLocaleString()}`,
+            const newResource: Omit<TeacherResource, 'id'> = {
+              title: `Study Bot - ${new Date().toLocaleDateString()}`,
               url: downloadURL,
               createdAt: new Date().toISOString(),
               type: 'AI Tutor Context',
               joinCode: resourceId,
+              creatorId: user.uid
             };
             
             await addDoc(collection(db, "teacherResources"), newResource);

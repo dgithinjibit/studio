@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,9 +22,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { storage, db } from '@/lib/firebase';
+import { storage, db, app } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
 
 const grades = [
     "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"
@@ -120,6 +122,14 @@ export default function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResou
   const handleSave = async () => {
     if (!generatedScheme) return;
     
+    const auth = getAuth(app);
+    const user = auth.currentUser;
+
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Auth Error', description: 'User session not found.' });
+        return;
+    }
+
     setLoading(true);
 
     try {
@@ -134,7 +144,8 @@ export default function GenerateSchemeOfWorkDialog({ open, onOpenChange, onResou
           url: downloadURL,
           createdAt: new Date().toISOString(),
           type: 'Scheme of Work',
-          joinCode: ''
+          joinCode: '',
+          creatorId: user.uid
         };
 
         await addDoc(collection(db, "teacherResources"), newResource);

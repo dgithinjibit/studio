@@ -22,9 +22,10 @@ import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Slider } from "./ui/slider";
-import { storage, db } from '@/lib/firebase';
+import { storage, db, app } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
 
 interface GenerateWorksheetDialogProps {
     open: boolean;
@@ -32,7 +33,7 @@ interface GenerateWorksheetDialogProps {
     onResourceSaved: () => void;
 }
 
-export function GenerateWorksheetDialog({ open, onOpenChange, onResourceSaved }: GenerateWorksheetDialogProps) {
+export default function GenerateWorksheetDialog({ open, onOpenChange, onResourceSaved }: GenerateWorksheetDialogProps) {
   const [loading, setLoading] = useState(false);
   const [generatedWorksheet, setGeneratedWorksheet] = useState("");
   const [currentTopic, setCurrentTopic] = useState("");
@@ -49,6 +50,15 @@ export function GenerateWorksheetDialog({ open, onOpenChange, onResourceSaved }:
 
   const handleSave = async () => {
     if (!generatedWorksheet) return;
+    
+    const auth = getAuth(app);
+    const user = auth.currentUser;
+
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Auth Error', description: 'User session not found.' });
+        return;
+    }
+
     setLoading(true);
 
     try {
@@ -62,7 +72,9 @@ export function GenerateWorksheetDialog({ open, onOpenChange, onResourceSaved }:
           title: `${currentTopic || 'Untitled Worksheet'}`,
           url: downloadURL,
           createdAt: new Date().toISOString(),
-          type: 'Worksheet'
+          type: 'Worksheet',
+          joinCode: '',
+          creatorId: user.uid
         };
         
         await addDoc(collection(db, "teacherResources"), newResource);

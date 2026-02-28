@@ -23,9 +23,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { TeacherResource } from "@/lib/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { storage, db } from '@/lib/firebase';
+import { storage, db, app } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
 
 interface GenerateRubricDialogProps {
     open: boolean;
@@ -33,7 +34,7 @@ interface GenerateRubricDialogProps {
     onResourceSaved: () => void;
 }
 
-export function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: GenerateRubricDialogProps) {
+export default function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: GenerateRubricDialogProps) {
   const [loading, setLoading] = useState(false);
   const [generatedRubric, setGeneratedRubric] = useState("");
   const [currentAssignment, setCurrentAssignment] = useState("");
@@ -51,6 +52,15 @@ export function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: Ge
 
   const handleSave = async () => {
     if (!generatedRubric) return;
+    
+    const auth = getAuth(app);
+    const user = auth.currentUser;
+
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Auth Error', description: 'User session not found.' });
+        return;
+    }
+
     setLoading(true);
     
     try {
@@ -64,7 +74,9 @@ export function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: Ge
           title: `${currentAssignment || 'Untitled Rubric'}`,
           url: downloadURL,
           createdAt: new Date().toISOString(),
-          type: 'Rubric'
+          type: 'Rubric',
+          joinCode: '',
+          creatorId: user.uid
         };
         
         await addDoc(collection(db, "teacherResources"), newResource);
@@ -171,7 +183,7 @@ export function GenerateRubricDialog({ open, onOpenChange, onResourceSaved }: Ge
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="standards">Standards</Label>
-                    <Input id="standards" name="standards" placeholder="e.g., CCSS, TEKS, Ontario, Florida" />
+                    <Input id="standards" name="standards" placeholder="e.g., KICD, CBC" />
                 </div>
                 <div className="flex items-center space-x-2">
                     <Switch id="web-search" checked={useWebSearch} onCheckedChange={setUseWebSearch} />

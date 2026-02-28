@@ -24,9 +24,10 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { storage, db } from '@/lib/firebase';
+import { storage, db, app } from '@/lib/firebase';
 import { ref, getBytes, deleteObject } from 'firebase/storage';
-import { doc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { doc, deleteDoc, collection, query, where, onSnapshot } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const GenerateLessonPlanDialog = dynamic(() => import('@/components/generate-lesson-plan-dialog'), { ssr: false });
 
@@ -39,33 +40,32 @@ export function MyResources() {
     const { toast } = useToast();
     const router = useRouter();
 
-
-    const fetchResources = () => {
-        const unsubscribe = onSnapshot(collection(db, "teacherResources"), (snapshot) => {
-            const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
-            setAllResources(resourcesData);
-        });
-        
-        const storedComms = localStorage.getItem("mockCommunications");
-        if (storedComms) {
-            setCommunications(JSON.parse(storedComms).map((c: any) => ({...c, date: new Date(c.date)})));
-        }
-
-        return () => unsubscribe();
-    };
-
     useEffect(() => {
-        const unsubscribe = fetchResources();
+        const auth = getAuth(app);
         
-        const handleResourceUpdate = () => {
-            // The onSnapshot listener will handle the update, so we don't need to do anything here
-        };
-        window.addEventListener('resource-update', handleResourceUpdate);
-        
-        return () => {
-            unsubscribe();
-            window.removeEventListener('resource-update', handleResourceUpdate);
-        };
+        const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Fetch resources for this teacher
+                const qResources = query(collection(db, "teacherResources"), where("creatorId", "==", user.uid));
+                const unsubscribeResources = onSnapshot(qResources, (snapshot) => {
+                    const resourcesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeacherResource));
+                    setAllResources(resourcesData);
+                });
+
+                // Comms are currently using localStorage for this prototype, 
+                // but real apps would fetch from Firestore too
+                const storedComms = localStorage.getItem("mockCommunications");
+                if (storedComms) {
+                    setCommunications(JSON.parse(storedComms).map((c: any) => ({...c, date: new Date(c.date)})));
+                }
+
+                return () => unsubscribeResources();
+            } else {
+                setAllResources([]);
+            }
+        });
+
+        return () => unsubscribeAuth();
     }, []);
     
     const learningLabs = allResources.filter(r => r.type === 'AI Tutor Context');
@@ -75,15 +75,17 @@ export function MyResources() {
     const handleDelete = async (resource: TeacherResource, event: React.MouseEvent) => {
         event.stopPropagation();
         try {
-            // Delete from Firestore using the document ID (resource.id)
             if (resource.id) {
                 await deleteDoc(doc(db, "teacherResources", resource.id));
             }
 
-            // Delete from Storage using the full URL if it exists
             if (resource.url) {
-                const storageRef = ref(storage, resource.url);
-                await deleteObject(storageRef);
+                try {
+                    const storageRef = ref(storage, resource.url);
+                    await deleteObject(storageRef);
+                } catch (e) {
+                    console.warn("Could not delete from storage, but document removed from Firestore", e);
+                }
             }
             
             toast({
@@ -138,7 +140,6 @@ export function MyResources() {
     };
 
     const onResourceSaved = () => {
-        // No need to manually fetch, onSnapshot will do it.
         router.push('/dashboard/reports');
     }
     

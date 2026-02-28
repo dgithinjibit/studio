@@ -52,7 +52,6 @@ const journeySteps: { id: Step; name: string }[] = [
 const JourneyProgressBar = ({ currentStep }: { currentStep: Step }) => {
     const currentIndex = journeySteps.findIndex(step => step.id === currentStep);
 
-    // Don't show the bar on the initial start page
     if (currentStep === 'start' || currentIndex === -1) {
         return null;
     }
@@ -99,29 +98,22 @@ function StudentJourneyContent() {
     const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
     const [selectedSubLevel, setSelectedSubLevel] = useState<string | null>(null);
     const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
-    const [studentFirstName, setStudentFirstName] = useState('Student');
     const [teacherCode, setTeacherCode] = useState('');
     const [isSubmittingCode, setIsSubmittingCode] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
 
-    // State for launching the AI tutor
     const [tutorContext, setTutorContext] = useState<string | null>(null);
     const [tutorRoomId, setTutorRoomId] = useState<string | null>(null);
     
-    const initialStepFromParams = (searchParams.get('step') as Step) || 'start';
-
     const [stepHistory, setStepHistory] = useState<Step[]>(['start']);
-    const [isMounted, setIsMounted] = useState(false); // State to prevent hydration errors
 
     const currentStep = stepHistory[stepHistory.length - 1];
 
     useEffect(() => {
         setIsMounted(true);
-        const name = localStorage.getItem('studentName');
-        if (name) {
-            setStudentFirstName(name.split(' ')[0]);
-        }
-        
+        const initialStepFromParams = (searchParams.get('step') as Step) || 'start';
         const grade = localStorage.getItem('studentGrade');
+        
         if (initialStepFromParams === 'subject' && grade) {
             const subLevel = Object.keys(gradesMap).find(key => gradesMap[key].some(g => g.id === grade));
             const level = subLevel ? Object.keys(subLevelsMap).find(key => subLevelsMap[key].some(sl => sl.id === subLevel)) : null;
@@ -135,7 +127,7 @@ function StudentJourneyContent() {
         } else {
              setStepHistory([initialStepFromParams]);
         }
-    }, [initialStepFromParams]);
+    }, [searchParams]);
     
     const navigateTo = (newStep: Step) => {
         setStepHistory(prev => [...prev, newStep]);
@@ -150,10 +142,8 @@ function StudentJourneyContent() {
     }, [stepHistory.length, router]);
     
      const handleCompassBack = () => {
-        // This function specifically handles returning from the Compass chat view
         setTutorContext(null);
         setTutorRoomId(null);
-        // We can go back to the start, or wherever is appropriate
         setStepHistory(['start']);
     };
 
@@ -192,7 +182,6 @@ function StudentJourneyContent() {
                      throw new Error('Resource URL is missing.');
                 }
 
-                // The URL from storage is a full URL, but we need the path relative to the bucket.
                 const storageUrl = new URL(tutorContextResource.url);
                 const storagePath = decodeURIComponent(storageUrl.pathname.split('/').slice(3).join('/'));
                 const storageRef = ref(storage, storagePath);
@@ -205,7 +194,6 @@ function StudentJourneyContent() {
                     description: "Launching the Classroom Compass. Your AI guide is ready.",
                 });
 
-                // Set state to render the chat interface directly
                 setTutorContext(contextText);
                 setTutorRoomId(tutorContextResource.joinCode);
                 
@@ -228,19 +216,17 @@ function StudentJourneyContent() {
         }
     }
     
-    // If not mounted yet, render a skeleton or null to avoid hydration mismatch
     if (!isMounted) {
         return <ChatSkeleton />;
     }
 
-    // If tutorContext is set, render the ChatInterface instead of the journey steps.
     if (tutorContext) {
         return (
              <div className="flex flex-col w-full h-screen sm:h-[90vh] max-w-5xl mx-auto overflow-hidden bg-card sm:rounded-2xl shadow-2xl ring-1 ring-border">
                 <Suspense fallback={<ChatSkeleton />}>
                     <ChatInterface 
-                        subject="Teacher's Context" // Subject can be generic
-                        grade={localStorage.getItem('studentGrade') || 'g4'} // Use stored grade
+                        subject="Teacher's Context"
+                        grade={localStorage.getItem('studentGrade') || 'g4'}
                         roomId={tutorRoomId!}
                         onBack={handleCompassBack}
                         teacherContext={tutorContext}
