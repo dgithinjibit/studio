@@ -1,44 +1,41 @@
-# SyncSenta: AI-Powered Education OS for Kenya
+# SyncSenta: AI-Powered Education OS for Kenya (Technical Handover)
 
-SyncSenta is a comprehensive digital ecosystem designed to synchronize the Kenyan education sector. It empowers students with Socratic AI tutoring, provides teachers with automated resource generation, and gives administrators data-driven strategic insights—all aligned with the official Competency-Based Curriculum (CBC).
+"You are an advanced AI Systems Architect and Lead Platform Engineer. You are taking over 'SyncSenta,' an AI-powered Educational OS for the Kenyan market. The project has reached its architectural limit in a TypeScript-only prototyping environment and now requires an evolution into a production-ready, distributed system orchestrated by Kubernetes, with a heavy-duty Python processing layer for advanced AI reasoning."
 
-## 🚀 Vision & Objectives
-To provide a unified platform where technology simplifies administrative tasks and deepens pedagogical engagement, ensuring no learner or teacher is left behind in the digital economy.
+## 1. The Context: What we built
+SyncSenta is a unified digital ecosystem for the Kenyan education sector, strictly aligned with the Competency-Based Curriculum (CBC). It serves four distinct personas:
+- **Students:** Engage with "Mwalimu AI," a Socratic tutor that uses inquiry-based learning.
+- **Teachers:** Use a resource hub to generate CBC-compliant lesson plans, "Schemers" (Schemes of Work), and "Classroom Compass" (private RAG-based study rooms).
+- **School Heads:** Access an "AI Operational Consultant" to analyze school data (attendance, performance, finance).
+- **County Officers:** Oversee school networks via interactive maps and county-level briefings.
 
-## 🛠 Core Features (Production Requirements)
-- **Curriculum PDF Storage**: Secure Cloud Storage for official PDFs with teacher-only access.
-- **Student Assignment Hub**: Private storage organized by class, accessible only by the student and their teacher.
-- **AI Report Center**: Role-based access to performance insights for teachers, school heads, and county officers.
-- **Offline Data Sync**: Client-side caching for attendance and lesson plans to handle low-bandwidth environments.
-- **Role-Based Access Control (RBAC)**: Strict Firestore security rules using authenticated user claims.
-- **Automated Processing**: Cloud Functions triggered on upload for data integrity and validation.
+## 2. Current "Nitty-Gritty" Architecture (The Baseline)
+- **Frontend:** Next.js 14 (App Router), React, Tailwind CSS, ShadCN UI.
+- **AI Logic (Node.js):** Built with Google Genkit v1.x (`src/ai/flows/*.ts`). It uses Gemini 2.0 Flash for text and Gemini 2.5 Flash Preview for Text-to-Speech (TTS). 
+- **TTS Pipeline:** The backend takes PCM audio from Gemini, converts it to WAV using the `wav` package, and streams it to the client as a data URI.
+- **Data & Auth:** Firebase is the BaaS. 
+    - **Firestore:** Uses a `users` collection as the single source of truth for roles. Strict RBAC is enforced via `firestore.rules`.
+    - **Storage:** Stores curriculum PDFs and "Learning Lab" contexts (raw .txt files).
+- **The "Schemer":** A high-value tool that generates complex CBC tables. It includes a frontend-based PDF export engine using landscape-oriented print templates.
+- **Data Seeding:** Includes a `/api/seed` route to populate a teacher's environment with classes, students, and sample Kiswahili schemes.
 
-## 🏗 System Architecture (Current Prototype)
-- **Frontend**: Next.js 14 (App Router), React, Tailwind CSS, ShadCN UI.
-- **Backend/DB**: Firebase (Firestore, Authentication, Storage).
-- **AI Engine**: Google Gemini via Genkit (TypeScript).
-- **State Management**: React Hooks & Server Actions.
+## 3. The Mission: Transition to Production
+The previous development environment lacked Python execution and system-level reasoning. You must now implement:
 
----
+### A. The Python Processing Layer
+- **Migration:** Decouple AI flows from Node.js and move them to a Python microservice (FastAPI/LangGraph).
+- **Advanced Agency:** Use Python’s ecosystem (PydanticAI, LangChain) to perform deep RAG over the curriculum PDFs and complex data analysis on school metrics that TypeScript couldn't handle.
+- **Task Queues:** Integrate Redis/RabbitMQ for long-running generation tasks.
 
-# 🛸 Handover: Production Migration & Kubernetes Plan
+### B. Kubernetes (K8s) Orchestration
+- **Containerization:** Create Dockerfiles for the Next.js frontend and Python backend.
+- **Scaling:** Implement Horizontal Pod Autoscalers (HPA) to manage the massive traffic spikes at 08:00 EAT (school start time).
+- **Isolation:** Use K8s Namespaces or Pod groups to isolate student "Learning Lab" workloads to ensure data privacy and performance stability across different schools.
+- **Secrets:** Move Firebase service accounts and API keys from `.env` to K8s Secrets or Vault.
 
-**Note to the next AI Agent:** This is a high-fidelity prototype. Your goal is to migrate this to a distributed microservices architecture.
+## 4. Operational Constraints
+- **Grounding:** The AI *must* remain grounded in the local curriculum data found in `src/curriculum/*.ts`.
+- **Persona:** Maintain the "Mwalimu" Socratic persona (guide, don't just answer).
+- **Branding:** All UI footers must maintain the "© 2025 3D" credit.
 
-### 1. Scaling with Kubernetes (K8s)
-- **Containerization**: Use Docker to containerize the Next.js frontend and new Python microservices.
-- **Orchestration**: Deploy to a K8s cluster (GKE recommended). Use **Namespaces** to isolate school workloads.
-- **Auto-scaling**: Implement **Horizontal Pod Autoscalers (HPA)** to manage morning peak loads (08:00 EAT).
-- **Ingress**: Use Nginx or Traefik for routing and SSL termination.
-
-### 2. Python processing Layer
-- Move heavy AI processing (RAG, data analysis) to a **Python FastAPI** service.
-- Implement asynchronous task handling using **Redis** or **RabbitMQ**.
-- Enable the AI to execute arbitrary Python code for advanced mathematics and data science modules.
-
-### 3. Data Integrity
-- Ensure the `users` collection remains the source of truth for RBAC.
-- Implement strict schema validation using Zod on the backend.
-
----
-© 2025 3D. All rights reserved.
+**Your first action:** Analyze the interaction between `src/app/student/chat/chat-interface.tsx` and `src/ai/flows/mwalimu-ai-flow.ts` to design the first Python-based API endpoint that will replace it.
