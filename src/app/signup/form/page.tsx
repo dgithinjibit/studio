@@ -15,10 +15,18 @@ import type { UserRole } from '@/lib/types';
 import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { signupUser } from '@/lib/auth';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { app, db } from '@/lib/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
+const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" {...props}>
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+);
 
 function SignupFormComponent() {
     const router = useRouter();
@@ -26,8 +34,51 @@ function SignupFormComponent() {
     const role = searchParams.get('role') as UserRole | null;
     const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
+    const [googleLoading, setGoogleLoading] = useState(false);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    const handleGoogleSignUp = async () => {
+        if (!role || !termsAccepted) {
+            toast({ variant: 'destructive', title: 'Terms Required', description: 'Please accept the terms before signing up.' });
+            return;
+        }
+        setGoogleLoading(true);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            const name = user.displayName || user.email!.split('@')[0];
+
+            // Save user with the selected role
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                email: user.email,
+                name: name,
+                role: role,
+                createdAt: new Date().toISOString(),
+            });
+
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userEmail', user.email!);
+            if (role === 'student') localStorage.setItem('studentName', name);
+
+            await fetch('/api/set-auth-cookie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role, name }),
+            });
+
+            toast({ title: 'Signup Successful!', description: `Welcome, ${name}!` });
+            router.push(role === 'student' ? '/student/journey' : '/dashboard');
+        } catch (error: any) {
+            toast({ variant: 'destructive', title: 'Signup Failed', description: 'Google Sign-up failed.' });
+        } finally {
+            setGoogleLoading(false);
+        }
+    };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -38,22 +89,16 @@ function SignupFormComponent() {
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
 
-        // Set localStorage on the client before calling the server action
         localStorage.setItem('userName', fullName);
         localStorage.setItem('userEmail', email);
-        if (role === 'student') {
-            localStorage.setItem('studentName', fullName);
-        }
+        if (role === 'student') localStorage.setItem('studentName', fullName);
         
         startTransition(async () => {
-            const auth = getAuth(app);
             try {
-                // 1. Create user in Firebase Auth
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await createUserWithEmailAndPassword(getAuth(app), email, password);
                 const user = userCredential.user;
 
-                // 2. Create user document in Firestore
-                 await setDoc(doc(db, "users", user.uid), {
+                await setDoc(doc(db, "users", user.uid), {
                     uid: user.uid,
                     email: email,
                     name: fullName,
@@ -61,156 +106,71 @@ function SignupFormComponent() {
                     createdAt: new Date().toISOString(),
                 });
 
-                // 3. Call server action to set cookies and get redirect path
-                const redirectPath = await signupUser(role, formData);
-                
-                toast({
-                  title: 'Signup Successful!',
-                  description: 'Redirecting you now...',
-                });
-                router.push(redirectPath);
-
+                await signupUser(role, formData);
+                toast({ title: 'Signup Successful!', description: 'Redirecting...' });
+                router.push(role === 'student' ? '/student/journey' : '/dashboard');
             } catch (error: any) {
-                console.error("Firebase signup error:", error);
-                 toast({
-                    variant: 'destructive',
-                    title: 'Signup Failed',
-                    description: error.code === 'auth/email-already-in-use' 
-                        ? 'This email is already registered. Please sign in.' 
-                        : (error.message || 'An unexpected error occurred. Please try again.'),
-                });
+                 toast({ variant: 'destructive', title: 'Signup Failed', description: error.message });
             }
         });
     };
 
-    const getTitle = () => {
-        switch (role) {
-            case 'student': return "Create Your Student Account";
-            case 'teacher': return "Create Your Teacher Account";
-            case 'school_head': return "Create Your School Head Account";
-            case 'county_officer': return "Create Your County Officer Account";
-            default: return "Create Your Account";
-        }
-    };
-    
-    if (!role) {
-        return (
-             <Card className="w-full max-w-lg">
-                <CardHeader>
-                    <CardTitle>Invalid Role</CardTitle>
-                    <CardDescription>
-                        Please go back and select a role to sign up.
-                    </CardDescription>
-                </CardHeader>
-                <CardFooter>
-                    <Button asChild className="w-full">
-                        <Link href="/signup">Back to Role Selection</Link>
-                    </Button>
-                </CardFooter>
-             </Card>
-        )
-    }
+    if (!role) return <Card className="p-8 text-center"><CardTitle>Invalid Role</CardTitle><Button asChild className="mt-4"><Link href="/signup">Back</Link></Button></Card>;
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-            <main className="flex-grow flex items-center justify-center">
+            <main className="flex-grow flex items-center justify-center p-4">
                 <Card className="w-full max-w-lg relative">
                     <Link href="/signup" passHref>
-                        <Button variant="ghost" size="icon" className="absolute top-3 left-3">
-                            <ArrowLeft className="h-5 w-5" />
-                            <span className="sr-only">Back to role selection</span>
-                        </Button>
+                        <Button variant="ghost" size="icon" className="absolute top-3 left-3"><ArrowLeft className="h-5 w-5" /></Button>
                     </Link>
                     <CardHeader className="text-center pt-12">
-                        <CardTitle className="font-headline text-2xl">{getTitle()}</CardTitle>
-                        <CardDescription>Join SyncSenta to revolutionize your learning.</CardDescription>
+                        <CardTitle className="font-headline text-2xl">Create Your {role.replace('_', ' ')} Account</CardTitle>
+                        <CardDescription>Join SyncSenta today.</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-4">
+                        <Button variant="outline" className="w-full" onClick={handleGoogleSignUp} disabled={isPending || googleLoading}>
+                            {googleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />}
+                            Sign up with Google
+                        </Button>
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                            <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or use email</span></div>
+                        </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="fullName">Full Name</Label>
-                                <Input id="fullName" name="fullName" placeholder="Asha Juma" required />
+                                <Input id="fullName" name="fullName" required />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" name="email" type="email" placeholder="m@example.com" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address." />
+                                <Input id="email" name="email" type="email" required />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
                                 <div className="relative">
                                     <Input id="password" name="password" type={showPassword ? "text" : "password"} required />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground"
-                                    >
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground">
                                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                     </button>
                                 </div>
                             </div>
-                            
-                            {role === 'county_officer' && (
-                                <div className="space-y-2">
-                                    <Label htmlFor="county">County</Label>
-                                    <Select name="county" required>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select your county" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {mockCounties.map(county => (
-                                                <SelectItem key={county.id} value={county.id}>{county.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            )}
-
                             <div className="flex items-center space-x-2">
-                                <Checkbox 
-                                    id="terms" 
-                                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-                                    checked={termsAccepted}
-                                />
-                                <Label htmlFor="terms" className="text-xs text-muted-foreground">
-                                    By creating an account, I agree to SyncSenta’s{' '}
-                                    <Link href="/terms" className="underline hover:text-primary" target="_blank">
-                                        Terms of Use
-                                    </Link>
-                                    {' '}and{' '}
-                                    <Link href="/terms" className="underline hover:text-primary" target="_blank">
-                                        Privacy Policy
-                                    </Link>.
-                                </Label>
+                                <Checkbox id="terms" onCheckedChange={(checked) => setTermsAccepted(checked as boolean)} checked={termsAccepted} />
+                                <Label htmlFor="terms" className="text-xs text-muted-foreground">Agree to <Link href="/terms" className="underline">Terms</Link></Label>
                             </div>
-                            
-                            <Button type="submit" className="w-full" disabled={isPending || !termsAccepted}>
+                            <Button type="submit" className="w-full" disabled={isPending || googleLoading || !termsAccepted}>
                                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {isPending ? 'Creating Account...' : 'Create Account'}
+                                Create Account
                             </Button>
                         </form>
                     </CardContent>
-                    <CardFooter className="flex flex-col gap-4 text-center">
-                        <p className="text-xs text-muted-foreground">
-                            Already have an account?{' '}
-                            <Link href="/login" className="underline font-medium hover:text-primary">
-                                Sign In
-                            </Link>
-                        </p>
-                    </CardFooter>
                 </Card>
             </main>
-             <footer className="p-4 text-center text-xs text-muted-foreground">
-                © 2025 3D. All rights reserved. | <Link href="/terms" className="hover:underline">Terms & Conditions</Link> | <Link href="https://forms.gle/3vQhgtJbnEaGD6xV8" target="_blank" rel="noopener noreferrer" className="hover:underline">Provide Feedback</Link>
-            </footer>
         </div>
     );
 }
 
-
 export default function SignupFormPage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <SignupFormComponent />
-        </Suspense>
-    )
+    return <Suspense fallback={<div>Loading...</div>}><SignupFormComponent /></Suspense>;
 }
