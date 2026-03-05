@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2, Mail, ArrowLeft } from 'lucide-react';
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, getAdditionalUserInfo } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { app, db } from '@/lib/firebase';
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
@@ -52,7 +51,7 @@ export default function LoginPage() {
             }
             
             localStorage.setItem('userName', name);
-            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userEmail', user.email!);
 
             await fetch('/api/set-auth-cookie', {
                 method: 'POST',
@@ -62,11 +61,7 @@ export default function LoginPage() {
             
             router.push(role === 'student' ? '/student/journey' : '/dashboard');
         } catch (error: any) {
-            toast({
-                variant: "destructive",
-                title: "Login Failed",
-                description: "Invalid email or password.",
-            });
+            toast({ variant: "destructive", title: "Login Failed", description: "Invalid email or password." });
         } finally {
             setLoading(false);
         }
@@ -89,7 +84,6 @@ export default function LoginPage() {
                 role = userDoc.data().role;
                 name = userDoc.data().name;
             } else {
-                // New user via direct login page defaults to student
                 await setDoc(doc(db, "users", user.uid), {
                     uid: user.uid,
                     email: user.email,
@@ -111,23 +105,9 @@ export default function LoginPage() {
 
             router.push(role === 'student' ? '/student/journey' : '/dashboard');
         } catch (error: any) {
-             toast({ variant: "destructive", title: "Sign-In Failed", description: "Google Sign-In was cancelled or failed." });
+             toast({ variant: "destructive", title: "Sign-In Failed", description: "Google Sign-In failed." });
         } finally {
             setGoogleLoading(false);
-        }
-    };
-
-    const handlePasswordReset = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            await sendPasswordResetEmail(getAuth(app), email);
-            toast({ title: "Reset Email Sent", description: "Check your inbox." });
-            setView('login');
-        } catch (error: any) {
-             toast({ variant: "destructive", title: "Reset Failed", description: "Account not found." });
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -174,7 +154,7 @@ export default function LoginPage() {
                                     Continue with Google
                                 </Button>
                             </CardContent>
-                            <CardFooter className="flex flex-col gap-4">
+                            <CardFooter className="flex flex-col gap-4 text-center">
                                 <p className="text-xs text-muted-foreground">No account? <Link href="/signup" className="underline font-medium">Choose a role</Link></p>
                             </CardFooter>
                         </>

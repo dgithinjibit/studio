@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -7,17 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
-import { mockCounties } from '@/lib/mock-data';
 import type { UserRole } from '@/lib/types';
 import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { signupUser } from '@/lib/auth';
 import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { app, db } from '@/lib/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" {...props}>
@@ -40,7 +37,7 @@ function SignupFormComponent() {
 
     const handleGoogleSignUp = async () => {
         if (!role || !termsAccepted) {
-            toast({ variant: 'destructive', title: 'Terms Required', description: 'Please accept the terms before signing up.' });
+            toast({ variant: 'destructive', title: 'Terms Required', description: 'Please accept the terms first.' });
             return;
         }
         setGoogleLoading(true);
@@ -52,29 +49,21 @@ function SignupFormComponent() {
             const user = result.user;
             const name = user.displayName || user.email!.split('@')[0];
 
-            // Save user with the selected role
-            await setDoc(doc(db, "users", user.uid), {
-                uid: user.uid,
-                email: user.email,
-                name: name,
-                role: role,
-                createdAt: new Date().toISOString(),
-            });
+            const signupData = new FormData();
+            signupData.append('uid', user.uid);
+            signupData.append('fullName', name);
+            signupData.append('email', user.email!);
 
+            const redirectPath = await signupUser(role, signupData);
+            
             localStorage.setItem('userName', name);
             localStorage.setItem('userEmail', user.email!);
             if (role === 'student') localStorage.setItem('studentName', name);
 
-            await fetch('/api/set-auth-cookie', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role, name }),
-            });
-
             toast({ title: 'Signup Successful!', description: `Welcome, ${name}!` });
-            router.push(role === 'student' ? '/student/journey' : '/dashboard');
+            router.push(redirectPath);
         } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Signup Failed', description: 'Google Sign-up failed.' });
+            toast({ variant: 'destructive', title: 'Signup Failed', description: 'Google signup failed.' });
         } finally {
             setGoogleLoading(false);
         }
@@ -89,26 +78,24 @@ function SignupFormComponent() {
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
 
-        localStorage.setItem('userName', fullName);
-        localStorage.setItem('userEmail', email);
-        if (role === 'student') localStorage.setItem('studentName', fullName);
-        
         startTransition(async () => {
             try {
                 const userCredential = await createUserWithEmailAndPassword(getAuth(app), email, password);
                 const user = userCredential.user;
 
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    email: email,
-                    name: fullName,
-                    role: role,
-                    createdAt: new Date().toISOString(),
-                });
+                const signupData = new FormData();
+                signupData.append('uid', user.uid);
+                signupData.append('fullName', fullName);
+                signupData.append('email', email);
 
-                await signupUser(role, formData);
+                const redirectPath = await signupUser(role, signupData);
+                
+                localStorage.setItem('userName', fullName);
+                localStorage.setItem('userEmail', email);
+                if (role === 'student') localStorage.setItem('studentName', fullName);
+
                 toast({ title: 'Signup Successful!', description: 'Redirecting...' });
-                router.push(role === 'student' ? '/student/journey' : '/dashboard');
+                router.push(redirectPath);
             } catch (error: any) {
                  toast({ variant: 'destructive', title: 'Signup Failed', description: error.message });
             }
@@ -167,6 +154,7 @@ function SignupFormComponent() {
                     </CardContent>
                 </Card>
             </main>
+            <footer className="p-4 text-center text-xs text-muted-foreground">© 2025 3D. All rights reserved.</footer>
         </div>
     );
 }

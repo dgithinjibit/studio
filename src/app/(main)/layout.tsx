@@ -1,4 +1,3 @@
-
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
