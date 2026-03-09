@@ -1,13 +1,9 @@
-
 import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication, TeachingStaff, NonTeachingStaff, Transaction, LearningSummary, TeacherResource } from './types';
 
 export const mockUsers: User[] = [
   { id: 'usr_1', name: 'Asha Juma', email: 'student@example.com', role: 'student', avatar: 'https://picsum.photos/seed/1/200', schoolId: 'sch_1' },
   { id: 'usr_2', name: 'Benson Kariuki', email: 'student2@example.com', role: 'student', avatar: 'https://picsum.photos/seed/2/200', schoolId: 'sch_1' },
   { id: 'usr_3', name: 'Ms. Chidinma Okoro', email: 'teacher@example.com', role: 'teacher', avatar: 'https://picsum.photos/seed/3/200', schoolId: 'sch_1' },
-  { id: 'usr_4', name: 'Mr. David Mwangi', email: 'teacher2@example.com', role: 'teacher', avatar: 'https://picsum.photos/seed/4/200', schoolId: 'sch_2' },
-  { id: 'usr_5', name: 'Dr. Evelyn Wanjala', email: 'head@example.com', role: 'school_head', avatar: 'https://picsum.photos/seed/5/200', schoolId: 'sch_1' },
-  { id: 'usr_6', name: 'Mr. Felix Omondi', email: 'county@example.com', role: 'county_officer', avatar: 'https://picsum.photos/seed/6/200' },
 ];
 
 const grade5Students: Student[] = [
@@ -22,7 +18,6 @@ const grade6Students: Student[] = [
     { id: 'stud_201', name: 'Faith Mutua', chatTokens: 90 },
     { id: 'stud_202', name: 'George Kimani', chatTokens: 100 },
     { id: 'stud_203', name: 'Hellen Atieno', chatTokens: 100 },
-    { id: 'stud_204', name: 'Isaac Njoroge', chatTokens: 70 },
 ];
 
 const grade4Students: Student[] = [
@@ -49,7 +44,7 @@ export const mockLearningSummaries: LearningSummary[] = [
         studentName: 'Asha Juma',
         teacherId: 'usr_3',
         subject: 'English',
-        strengths: 'Asha shows great enthusiasm for storytelling and has a strong grasp of past tense verbs. She participated actively in the group discussion about her heritage.',
+        strengths: 'Asha shows great enthusiasm for storytelling and has a strong grasp of past tense verbs. She participated actively in the group discussion.',
         areasForImprovement: 'Needs more practice with irregular plural nouns and subject-verb agreement in complex sentences.',
         chatHistory: [],
         createdAt: new Date(Date.now() - 3600000).toISOString(),
@@ -61,7 +56,7 @@ export const mockLearningSummaries: LearningSummary[] = [
         teacherId: 'usr_3',
         subject: 'Science',
         strengths: 'Benson correctly identified the parts of a plant and explained photosynthesis clearly using local examples.',
-        areasForImprovement: 'Focus on understanding the role of different soil types in agriculture and their specific water retention properties.',
+        areasForImprovement: 'Focus on understanding the role of different soil types in agriculture.',
         chatHistory: [],
         createdAt: new Date(Date.now() - 7200000).toISOString(),
     },
@@ -72,7 +67,7 @@ export const mockLearningSummaries: LearningSummary[] = [
         teacherId: 'usr_3',
         subject: 'Social Studies',
         strengths: 'Kamau has a deep understanding of county leadership roles and how local governments serve the community.',
-        areasForImprovement: 'Help Kamau connect physical features of the county to the specific economic activities that thrive there.',
+        areasForImprovement: 'Help Kamau connect physical features of the county to specific economic activities.',
         chatHistory: [],
         createdAt: new Date(Date.now() - 86400000).toISOString(),
     }
@@ -107,7 +102,6 @@ export const mockRecentResources: TeacherResource[] = [
 
 export const mockCurriculumDocs: CurriculumDoc[] = [
   { id: 'doc_1', title: 'Mathematics Grade 4 Syllabus', subject: 'Mathematics', grade: 'Grade 4', url: '#' },
-  { id: 'doc_2', title: 'English Grade 5 Syllabus', subject: 'English', grade: 'Grade 5', url: '#' },
 ];
 
 export const mockAssignments: Assignment[] = [
@@ -138,7 +132,7 @@ export const mockCommunications: Communication[] = [
     {
         id: 'comm_1',
         title: 'Urgent: Staff Meeting Tomorrow at 8 AM',
-        content: 'Please be advised that there will be a mandatory all-staff meeting in the main hall tomorrow morning to discuss the upcoming term.',
+        content: 'Please be advised that there will be a mandatory all-staff meeting in the main hall tomorrow morning.',
         recipient: 'All Staff',
         date: new Date('2024-07-29T08:00:00Z'),
         acknowledged: false,
