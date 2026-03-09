@@ -1,5 +1,5 @@
 
-import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication, TeachingStaff, NonTeachingStaff, Transaction } from './types';
+import type { User, CurriculumDoc, Assignment, Report, County, School, Teacher, Student, Communication, TeachingStaff, NonTeachingStaff, Transaction, LearningSummary } from './types';
 
 export const mockUsers: User[] = [
   { id: 'usr_1', name: 'Asha Juma', email: 'student@example.com', role: 'student', avatar: '/avatar-placeholder.svg', schoolId: 'sch_1' },
@@ -37,11 +37,36 @@ export const mockTeacher: Teacher = {
     name: 'Okoro',
     classes: [
         { id: 'class_1', name: 'Grade 5 English', performance: 75, students: grade5Students, color: 'bg-blue-500' },
-        { id: 'class_2', name: 'Grade 6 English', performance: 82, students: grade6Students, color: 'bg-green-500' },
-        { id: 'class_3', name: 'Grade 4 Social Studies', performance: 78, students: grade4Students, color: 'bg-orange-500' },
+        { id: 'class_2', name: 'Grade 6 Science', performance: 88, students: grade6Students, color: 'bg-green-500' },
+        { id: 'class_3', name: 'Grade 4 Social Studies', performance: 62, students: grade4Students, color: 'bg-orange-500' },
     ],
-    totalStudents: grade5Students.length + grade6Students.length + grade4Students.length,
+    totalStudents: 120,
 };
+
+export const mockLearningSummaries: LearningSummary[] = [
+    {
+        id: 'ls_1',
+        studentId: 'stud_101',
+        studentName: 'Asha Juma',
+        teacherId: 'usr_3',
+        subject: 'English',
+        strengths: 'Asha shows great enthusiasm for storytelling and has a strong grasp of past tense verbs.',
+        areasForImprovement: 'Needs more practice with irregular plural nouns.',
+        chatHistory: [],
+        createdAt: new Date().toISOString(),
+    },
+    {
+        id: 'ls_2',
+        studentId: 'stud_102',
+        studentName: 'Benson Kariuki',
+        teacherId: 'usr_3',
+        subject: 'Science',
+        strengths: 'Benson correctly identified the parts of a plant and explained photosynthesis clearly.',
+        areasForImprovement: 'Focus on understanding the role of different soil types in agriculture.',
+        chatHistory: [],
+        createdAt: new Date().toISOString(),
+    }
+];
 
 
 export const mockCurriculumDocs: CurriculumDoc[] = [
@@ -212,5 +237,3 @@ export const mockTransactions: Transaction[] = [
   { id: 'txn_2', date: '2024-07-28', description: 'School Bus Fuel', amount: 8000, category: 'Transport', status: 'Completed' },
   { id: 'txn_3', date: '2024-07-25', description: 'Catering Services - PTA Meeting', amount: 25000, category: 'Events', status: 'Completed' },
 ];
-
-    

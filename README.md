@@ -45,3 +45,4 @@ If you encounter `fatal: Authentication failed` or `remote: Invalid username or 
 - **Alternative:** Configure SSH keys for your development environment to bypass HTTPS token prompts entirely.
 
 **Your first action:** Analyze the interaction between `src/app/student/chat/chat-interface.tsx` and `src/ai/flows/mwalimu-ai-flow.ts` to design the first Python-based API endpoint that will replace it.
+
