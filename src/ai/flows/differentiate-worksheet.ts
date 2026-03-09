@@ -1,12 +1,10 @@
-
 'use server';
 
 /**
  * @fileOverview AI agent to differentiate a piece of text for various learning levels.
  *
  * - differentiateWorksheet - A function that handles the worksheet differentiation process.
-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
-*/
+ */
 
 import {ai} from '@/ai/genkit';
 import {
