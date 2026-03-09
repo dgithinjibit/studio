@@ -45,8 +45,8 @@ export default function TeacherDashboard() {
   const [learningSummaries, setLearningSummaries] = useState<LearningSummary[]>(mockLearningSummaries);
   const [recentResources, setRecentResources] = useState<TeacherResource[]>(mockRecentResources);
   const [teacherName, setTeacherName] = useState('Mwalimu Demo');
-  const [isLoading, setIsLoading] = useState(true);
-  const [aiSummary, setAiSummary] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false); // Default to false to show mock data immediately
+  const [aiSummary, setAiSummary] = useState<string>('Welcome back! Your classes are showing 78% average mastery. Consider creating a new resource for Grade 4 Social Studies.');
   
   const teacherData = mockTeacher;
 
@@ -63,7 +63,7 @@ export default function TeacherDashboard() {
                 classes: teacherData.classes.map(c => ({ name: c.name })),
                 resources: recentResources.map(r => ({ title: r.title, type: r.type }))
             });
-            setAiSummary(result.summary);
+            if (result.summary) setAiSummary(result.summary);
         } catch (e) {
             console.warn("Failed to generate AI summary", e);
         }
@@ -75,7 +75,7 @@ export default function TeacherDashboard() {
         if (user) {
             setTeacherName(storedName || user.displayName || 'Teacher');
             
-            // Fetch resources for this teacher
+            // Fetch real data if user is logged in
             const qResources = query(
                 collection(db, "teacherResources"), 
                 where("creatorId", "==", user.uid),
@@ -102,16 +102,12 @@ export default function TeacherDashboard() {
                     const summaries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LearningSummary));
                     setLearningSummaries(summaries);
                 }
-                setIsLoading(false);
             });
 
             return () => {
                 unsubscribeSummaries();
                 unsubscribeResources();
             };
-        } else {
-            setLearningSummaries(mockLearningSummaries);
-            setIsLoading(false);
         }
     });
 
@@ -355,8 +351,8 @@ export default function TeacherDashboard() {
                     </ScrollArea>
                 </CardContent>
                  <CardFooter className="border-t p-4 bg-muted/5">
-                    <Button variant="ghost" className="w-full text-muted-foreground hover:text-primary group">
-                        Full Activity Analytics <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    <Button variant="ghost" className="w-full text-muted-foreground hover:text-primary group" asChild>
+                        <Link href="/dashboard/reports">Full Activity Analytics <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /></Link>
                     </Button>
                 </CardFooter>
             </Card>

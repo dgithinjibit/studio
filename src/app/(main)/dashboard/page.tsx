@@ -18,10 +18,15 @@ const DashboardSkeleton = () => (
             </div>
             <Skeleton className="h-10 w-32" />
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Skeleton className="h-[350px] w-full" />
-            <Skeleton className="h-[350px] w-full" />
-            <Skeleton className="h-[350px] w-full" />
+        <div className="grid gap-6 md:grid-cols-4">
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full" />
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+            <Skeleton className="h-[400px] md:col-span-2 w-full" />
+            <Skeleton className="h-[400px] w-full" />
         </div>
     </div>
 );
@@ -32,8 +37,21 @@ export default function DashboardPage() {
 
     useEffect(() => {
         const fetchRole = async () => {
+             // 1. Try to get role from Server Action (Cookie/Auth)
              const user = await getServerUser();
-             setRole(user?.role as UserRole);
+             
+             if (user?.role) {
+                 setRole(user.role as UserRole);
+                 setLoading(false);
+                 return;
+             }
+
+             // 2. Fallback to localStorage for instant Demo Mode access
+             const localRole = localStorage.getItem('userRole') as UserRole | null;
+             if (localRole) {
+                 setRole(localRole);
+             }
+             
              setLoading(false);
         }
         fetchRole();
@@ -48,18 +66,26 @@ export default function DashboardPage() {
             case 'county_officer':
                 return <CountyOfficerDashboard />;
             default:
-                // Return a loading state or a generic view if the role is not yet determined or unrecognized.
-                return <DashboardSkeleton />;
+                // If role is still null after loading, show a message or redirect
+                return (
+                    <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+                        <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+                        <p className="text-muted-foreground mb-4">We couldn't determine your role. Please sign in again.</p>
+                        <a href="/signup" className="text-primary underline">Go to Role Selection</a>
+                    </div>
+                );
         }
     };
     
     if (loading) {
-        return <DashboardSkeleton />;
+        return <div className="p-6"><DashboardSkeleton /></div>;
     }
 
     return (
-        <Suspense fallback={<DashboardSkeleton />}>
-            {renderDashboardByRole()}
+        <Suspense fallback={<div className="p-6"><DashboardSkeleton /></div>}>
+            <div className="animate-in fade-in duration-500">
+                {renderDashboardByRole()}
+            </div>
         </Suspense>
     );
 }
