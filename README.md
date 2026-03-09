@@ -38,4 +38,10 @@ The previous development environment lacked Python execution and system-level re
 - **Persona:** Maintain the "Mwalimu" Socratic persona (guide, don't just answer).
 - **Branding:** All UI footers must maintain the "© 2025 3D" credit.
 
+## 5. Troubleshooting & Deployment
+### Git Authentication Issues
+If you encounter `fatal: Authentication failed` or `remote: Invalid username or token`, remember that GitHub **no longer supports password authentication** for Git operations. 
+- **Solution:** Generate a [Personal Access Token (PAT)](https://github.com/settings/tokens) with `repo` scopes and use it as your password when pushing to the repository.
+- **Alternative:** Configure SSH keys for your development environment to bypass HTTPS token prompts entirely.
+
 **Your first action:** Analyze the interaction between `src/app/student/chat/chat-interface.tsx` and `src/ai/flows/mwalimu-ai-flow.ts` to design the first Python-based API endpoint that will replace it.
