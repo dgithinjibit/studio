@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Shield, UserCog, Building, ArrowLeft } from "lucide-react";
+import { User, Shield, UserCog, Building, ArrowLeft, Loader2 } from "lucide-react";
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 type Role = 'student' | 'teacher' | 'school_head' | 'county_officer';
 
@@ -18,14 +19,57 @@ const roles = [
 
 export default function SignupPage() {
     const router = useRouter();
+    const { toast } = useToast();
     const [isMounted, setIsMounted] = useState(false);
+    const [loadingRole, setLoadingRole] = useState<Role | null>(null);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
-    const handleRoleSelect = (role: Role) => {
-        router.push(`/signup/form?role=${role}`);
+    const handleRoleSelect = async (role: Role) => {
+        setLoadingRole(role);
+        
+        // Default names for demo mode
+        const names = {
+            student: 'Demo Student',
+            teacher: 'Mwalimu Demo',
+            school_head: 'Headteacher Demo',
+            county_officer: 'Officer Demo'
+        };
+
+        try {
+            const response = await fetch('/api/set-auth-cookie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role, name: names[role] }),
+            });
+
+            if (response.ok) {
+                localStorage.setItem('userName', names[role]);
+                localStorage.setItem('userRole', role);
+                
+                toast({
+                    title: `Welcome, ${names[role]}`,
+                    description: "Redirecting to your dashboard...",
+                });
+
+                if (role === 'student') {
+                    router.push('/student/journey');
+                } else {
+                    router.push('/dashboard');
+                }
+            } else {
+                throw new Error("Failed to set session.");
+            }
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Could not start session. Please try again.",
+            });
+            setLoadingRole(null);
+        }
     };
 
     if (!isMounted) {
@@ -44,11 +88,12 @@ export default function SignupPage() {
                     </Link>
                     <CardHeader className="text-center pt-12">
                         <CardTitle className="font-headline text-2xl">Choose Your Role</CardTitle>
-                        <CardDescription>Select the account type that best describes you.</CardDescription>
+                        <CardDescription>Select a role to enter the SyncSenta platform immediately.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {roles.map((role) => {
                             const Icon = role.icon;
+                            const isLoading = loadingRole === role.type;
                             return (
                                 <Card key={role.type} className="flex flex-col items-center text-center p-4 hover:shadow-lg hover:border-primary transition-all">
                                     <CardHeader>
@@ -61,22 +106,19 @@ export default function SignupPage() {
                                         <p className="text-sm text-muted-foreground">{role.description}</p>
                                     </CardContent>
                                     <CardFooter>
-                                        <Button onClick={() => handleRoleSelect(role.type)} className="w-full">
-                                            Continue
+                                        <Button 
+                                            onClick={() => handleRoleSelect(role.type)} 
+                                            className="w-full"
+                                            disabled={!!loadingRole}
+                                        >
+                                            {isLoading ? <Loader2 className="animate-spin mr-2" /> : null}
+                                            Enter as {role.type.split('_').join(' ')}
                                         </Button>
                                     </CardFooter>
                                 </Card>
                             )
                         })}
                     </CardContent>
-                     <CardFooter className="flex flex-col gap-4 text-center">
-                        <p className="text-xs text-muted-foreground">
-                            Already have an account?{' '}
-                            <Link href="/login" className="underline font-medium hover:text-primary">
-                                Sign In
-                            </Link>
-                        </p>
-                    </CardFooter>
                 </Card>
             </main>
              <footer className="p-4 text-center text-xs text-muted-foreground">
