@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Suspense, useState, useEffect } from 'react';
@@ -5,8 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import TeacherDashboard from '@/components/dashboards/teacher-dashboard';
 import SchoolHeadDashboard from '@/components/dashboards/school-head-dashboard';
 import { CountyOfficerDashboard } from '@/components/dashboards/county-officer-dashboard';
+import StudentDashboard from '@/components/dashboards/student-dashboard';
 import { getServerUser } from '@/lib/auth';
 import type { UserRole } from '@/lib/types';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const DashboardSkeleton = () => (
     <div className="space-y-6 p-6">
@@ -41,7 +45,6 @@ export default function DashboardPage() {
              if (localRole) {
                  setRole(localRole);
                  setLoading(false);
-                 // We still verify with server in the background
              }
 
              // 2. Authoritative check from Server Action
@@ -56,6 +59,11 @@ export default function DashboardPage() {
         fetchRole();
     }, []);
 
+    /**
+     * Role-Checking Logic:
+     * This function maps the validated user role to its specific dashboard component.
+     * It uses an explicit switch statement to ensure NO incorrect fallbacks.
+     */
     const renderDashboardByRole = () => {
         if (!role && !loading) {
             return (
@@ -69,7 +77,15 @@ export default function DashboardPage() {
             );
         }
 
+        // Test Scenario:
+        // - 'student' -> StudentDashboard (Launchpad)
+        // - 'teacher' -> TeacherDashboard (Class management)
+        // - 'school_head' -> SchoolHeadDashboard (School analytics)
+        // - 'county_officer' -> CountyOfficerDashboard (County map)
+        // - Any other string -> Error message (No default fallback to Teacher)
         switch (role) {
+            case 'student':
+                return <StudentDashboard />;
             case 'teacher':
                 return <TeacherDashboard />;
             case 'school_head':
@@ -77,7 +93,16 @@ export default function DashboardPage() {
             case 'county_officer':
                 return <CountyOfficerDashboard />;
             default:
-                return <DashboardSkeleton />;
+                if (loading) return <DashboardSkeleton />;
+                return (
+                    <div className="flex flex-col items-center justify-center h-[40vh] text-center p-6 border-2 border-dashed rounded-xl bg-muted/20">
+                        <h2 className="text-xl font-bold text-destructive mb-2">Error: Invalid user role</h2>
+                        <p className="text-muted-foreground">The system could not identify your access level. Please contact support.</p>
+                        <Button asChild className="mt-4" variant="outline">
+                            <Link href="/signup">Reset Session</Link>
+                        </Button>
+                    </div>
+                );
         }
     };
     
@@ -93,6 +118,3 @@ export default function DashboardPage() {
         </Suspense>
     );
 }
-
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
