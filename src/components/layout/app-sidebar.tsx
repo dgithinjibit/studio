@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import Link from "next/link";
@@ -10,10 +9,8 @@ import {
   HelpCircle,
   Library,
   Database,
-  Palette,
   Briefcase,
   Users,
-  Building,
   School,
   Wallet,
   BookUser,
@@ -31,11 +28,9 @@ import {
   SidebarFooter,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { useSidebar } from "@/components/ui/sidebar";
 import { getServerUser } from "@/lib/auth";
 import type { UserRole } from "@/lib/types";
 import { useEffect, useState } from "react";
-
 
 const teacherNavItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -61,14 +56,24 @@ const countyOfficerNavItems = [
     { href: "/dashboard/county-resources", icon: Briefcase, label: "Resources" },
 ];
 
-
 export function AppSidebar() {
   const [role, setRole] = useState<UserRole | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
+    // 1. Instant fallback to localStorage for immediate UI rendering in demo mode
+    const localRole = localStorage.getItem('userRole') as UserRole | null;
+    if (localRole) {
+      setRole(localRole);
+    }
+
+    // 2. Authoritative check from Server Action
     const fetchRole = async () => {
          const user = await getServerUser();
-         setRole(user?.role as UserRole);
+         if (user?.role) {
+           setRole(user.role as UserRole);
+           localStorage.setItem('userRole', user.role);
+         }
     }
     fetchRole();
   }, []);
@@ -82,7 +87,7 @@ export function AppSidebar() {
         case 'county_officer':
             return countyOfficerNavItems;
         default:
-            return []; // Return an empty array if role is not determined yet
+            return []; // Return empty for students or loading state
     }
   };
 
@@ -90,35 +95,45 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center gap-2">
+      <SidebarHeader className="p-4">
+        <Link href="/" className="flex items-center gap-2">
           <div className="flex flex-col">
-            <h2 className="font-headline text-lg font-semibold tracking-tight">SyncSenta</h2>
+            <h2 className="font-headline text-2xl font-bold tracking-tight text-primary">SyncSenta</h2>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Educational OS</p>
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
+        <SidebarMenu className="px-2">
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton asChild tooltip={item.label}>
-                <Link href={item.href} prefetch={true}>
-                  <item.icon />
-                  <span>{item.label}</span>
+              <SidebarMenuButton 
+                asChild 
+                tooltip={item.label}
+                isActive={pathname === item.href}
+                className="transition-all duration-200"
+              >
+                <Link href={item.href}>
+                  <item.icon className={pathname === item.href ? "text-primary" : ""} />
+                  <span className={pathname === item.href ? "font-bold" : ""}>{item.label}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarSeparator />
+      <SidebarFooter className="p-2">
+        <SidebarSeparator className="mb-2" />
         <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Guide">
-                <Link href="/dashboard/guide" prefetch={true}>
-                    <HelpCircle />
-                    <span>Guide</span>
+                <SidebarMenuButton 
+                  asChild 
+                  tooltip="Guide"
+                  isActive={pathname === "/dashboard/guide"}
+                >
+                <Link href="/dashboard/guide">
+                    <HelpCircle className={pathname === "/dashboard/guide" ? "text-primary" : ""} />
+                    <span className={pathname === "/dashboard/guide" ? "font-bold" : ""}>Guide</span>
                 </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>

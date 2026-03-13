@@ -77,12 +77,11 @@ export default function DashboardPage() {
             );
         }
 
-        // Test Scenario:
-        // - 'student' -> StudentDashboard (Launchpad)
-        // - 'teacher' -> TeacherDashboard (Class management)
-        // - 'school_head' -> SchoolHeadDashboard (School analytics)
-        // - 'county_officer' -> CountyOfficerDashboard (County map)
-        // - Any other string -> Error message (No default fallback to Teacher)
+        // Routing Logic per Explicit Requirements:
+        // - 'student' -> StudentDashboard (Join Code Launchpad)
+        // - 'teacher' -> TeacherDashboard (Class/Resource Management)
+        // - 'school_head' -> SchoolHeadDashboard (School Analytics/Staff)
+        // - 'county_officer' -> CountyOfficerDashboard (County Map Oversight)
         switch (role) {
             case 'student':
                 return <StudentDashboard />;
