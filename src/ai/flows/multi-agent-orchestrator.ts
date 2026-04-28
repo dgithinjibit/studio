@@ -11,7 +11,6 @@ import { z } from 'genkit';
 import { ai } from '@/ai/genkit';
 import { kikuyuAgentConfig } from './kikuyu-agent-config';
 import { mwalimuExpertConfig } from './mwalimu-expert-config';
-import { difyAgentConfig } from './dify-agent-config';
 
 // Define agent types
 export enum AgentType {
@@ -42,6 +41,7 @@ export const OrchestratorOutputSchema = z.object({
     language: z.string(),
     confidence: z.number(),
     processingTime: z.number(),
+    difyConversationId: z.string().optional(),
   }).optional(),
 });
 
@@ -64,7 +64,9 @@ function routeToAgent(input: OrchestratorInput): AgentType {
     query.includes('quiz') ||
     query.includes('rubric') ||
     query.includes('step by step') ||
-    query.includes('how to')
+    query.includes('how to') ||
+    query.includes('magic school') ||
+    query.includes('synthesis')
   ) {
     return AgentType.DIFY_AGENT;
   }
@@ -109,6 +111,44 @@ Guidelines:
 4. Use the Socratic method for learning.`,
 });
 
+/**
+ * Call the Dify API for advanced Magic School AI / Synthesis Tutor features
+ */
+async function callDifyAgent(input: OrchestratorInput): Promise<any> {
+  const apiKey = process.env.DIFY_API_KEY;
+  const apiUrl = process.env.DIFY_API_URL || 'https://api.dify.ai/v1';
+
+  if (!apiKey) {
+    throw new Error('DIFY_API_KEY is not configured');
+  }
+
+  const response = await fetch(`${apiUrl}/chat-messages`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      inputs: {
+        user_type: input.userType,
+        subject: input.subject || 'General',
+        grade: input.grade || 'N/A',
+        language: input.preferredLanguage || 'en',
+      },
+      query: input.query,
+      response_mode: 'blocking',
+      user: input.userId,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Dify API error: ${JSON.stringify(errorData)}`);
+  }
+
+  return response.json();
+}
+
 // Main orchestrator flow
 export const multiAgentOrchestratorFlow = ai.defineFlow(
   {
@@ -148,14 +188,16 @@ export const multiAgentOrchestratorFlow = ai.defineFlow(
           },
         };
       } else {
-        // DIFY_AGENT - would call the Dify MCP server
+        // DIFY_AGENT - Call the live Dify API
+        const difyResult = await callDifyAgent(input);
         response = {
-          response: 'Dify agent processing (implementation pending)',
+          response: difyResult.answer || 'Dify agent was unable to provide an answer.',
           agentUsed: AgentType.DIFY_AGENT,
           metadata: {
             language: input.preferredLanguage || 'en',
-            confidence: 0.90,
+            confidence: 0.95,
             processingTime: Date.now() - startTime,
+            difyConversationId: difyResult.conversation_id,
           },
         };
       }
