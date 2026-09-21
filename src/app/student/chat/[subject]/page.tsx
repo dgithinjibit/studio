@@ -2,10 +2,9 @@
 "use client";
 
 import { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Step } from '@/lib/journey-data';
 
 const ChatInterface = dynamic(() => import('../chat-interface'), {
     ssr: false,

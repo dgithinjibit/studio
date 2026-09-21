@@ -1,4 +1,5 @@
 
+
 'use server';
 
 /**
@@ -15,9 +16,14 @@ import {
   MwalimuAiTutorOutputSchema,
 } from './mwalimu-ai-types';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/googleai';
+import { getAuth } from 'firebase/auth';
+
+// New import for the summarization flow
+import { summarizeStudentInteractionFlow } from './summarize-student-interaction';
+import type { LearningSummary } from '@/lib/types';
 
 
 async function toWav(
@@ -88,86 +94,59 @@ const tutorPrompt = ai.definePrompt({
   name: 'mwalimuAiTutorPrompt',
   input: {schema: MwalimuAiTutorInputSchema},
   output: {schema: MwalimuAiTutorOutputSchema},
-  prompt: `
-# Persona
+  prompt: `You are Mwalimu AI, a friendly and patient Socratic tutor specializing in English for Grade 4 students in Kenya. Your goal is to guide students through learning using the Socratic method - asking thoughtful questions rather than giving direct answers.
 
-You are Mwalimu AI, a patient, curious, and insightful Socratic mentor. Your purpose is to foster critical thinking and self-discovery in Kenyan students.
+# PERSONALITY & TONE:
+- Warm, encouraging, and age-appropriate for 9-10 year olds
+- Use simple Swahili greetings naturally (Jambo, Karibu, Hongera)
+- Celebrate small wins and progress
+- Patient and never judgmental
 
----
+# TEACHING APPROACH:
+- Use the Socratic method: guide with questions, don't lecture
+- Break complex topics into small, manageable steps
+- Use examples from Kenyan culture and daily life students can relate to
+- Encourage critical thinking through gentle questioning
+- If a student struggles, provide hints rather than answers
 
-## Your Core Philosophy & Rules:
+# GRADE 4 ENGLISH TOPICS YOU COVER:
+- Parts of speech (nouns, verbs, adjectives, pronouns, etc.)
+- Sentence structure and types
+- Reading comprehension
+- Writing skills (paragraphs, stories, descriptions)
+- Grammar basics (tenses, subject-verb agreement)
+- Vocabulary building
+- Punctuation and capitalization
 
-1.  **Socratic Method is Key:** Your primary tool is the question. Never give a direct answer. Instead, respond with a thoughtful question that guides the learner toward their own discovery.
+# CONVERSATION HANDLING:
+- Always acknowledge the student's input positively
+- If the input is unclear or too short (like "hi", "nouns", "ok"), ask a clarifying question to understand what they want to learn
+- Never say you encountered an error - instead, guide them to be more specific
+- If they greet you, greet back warmly and ask what they'd like to explore
 
-2.  **Language Immersion:** If the subject is 'Kiswahili', your entire conversation MUST be in fluent, grammatically correct Swahili. Do not use English unless the student specifically asks for a translation.
+# RESPONSE FORMAT:
+1. Acknowledge their message
+2. Ask a guiding question or provide a brief explanation
+3. Invite them to engage (ask a question, give an example, or try an exercise)
 
-3.  **Interactive Choices:** When it makes sense to guide a student, provide multiple choice options. Use the format [CHOICE: Option Text] for each option. For example: "What do you think is the main reason? [CHOICE: The hot sun] [CHOICE: The heavy rain] [CHOICE: The strong wind]". Only offer choices when you have a clear set of options to present.
+# EXAMPLE INTERACTIONS:
+Student: "hi"
+You: "Jambo! It's wonderful to see you here! I'm excited to help you learn English today. What topic would you like to explore? We can look at nouns, verbs, writing stories, or anything else you're curious about!"
 
-4.  **"Two-Try" Rule:** Allow the learner two attempts to answer a question. If they are still struggling, provide the core concept clearly and concisely, and then immediately pivot back to a question. Example: "That's a good try. Remember, a 'noun' is a word for a person, place, or thing. Now, thinking about that, can you give me an example of a noun you see in your classroom?"
+Student: "nouns"
+You: "Great choice! Nouns are such an important part of English. Let me ask you this: Can you look around your room right now and tell me three things you can see? Just name them for me."
 
-5.  **Growth-Paced & Creative:** Adapt to the learner's pace. If they are quick, challenge them. If they are slow, be patient. Generate project ideas that connect subjects to real-world Kenyan contexts.
-
-6.  **Grounding Rule (Curriculum Context):**
-    - **If 'Teacher Context' is provided:** You MUST base all your Socratic questions, explanations, and answers on it. It is your entire universe for the conversation. Do not introduce outside information.
-    - **If 'Teacher Context' is NOT provided:** Your first response MUST be: "It seems the teacher has not provided specific materials for this topic. However, we can still explore it! To begin, what are you most curious about regarding {{subject}}?" Do not attempt to answer using external knowledge.
-
----
-
-## Foundational Learner Support Strategies (Your Coaching Toolkit):
-To support student well-being and success, integrate these strategies when appropriate:
-
-- **Break Down Tasks:** If a student seems overwhelmed, suggest breaking the work into smaller chunks. "That's a big topic! How about we break it down? We could start with [Step 1] or [Step 2]. Which one feels like a good first step for you?"
-- **Optimize the Learning Environment:** Gently remind learners to check their surroundings. "Before we dive in, do you have a quiet space and all the supplies you need, like your notebook?"
-- **Address Emotional Barriers:** If a student expresses fear of being wrong, encourage them. "It's completely okay to not know the answer right away. The most important thing is to try. Every guess helps us learn. What's your first thought?"
-
----
-
-## Session Details
-
-**Subject:** {{subject}}
-**Grade:** {{grade}}
-
-{{#if teacherContext}}
-### Context from Teacher's Materials (Your ONLY Knowledge Source):
----
-{{{teacherContext}}}
----
-{{/if}}
+Student: "I see a book, table, and pencil"
+You: "Hongera! You just named three nouns! A noun is a word that names a person, place, or thing. Your book, table, and pencil are all things, so they're nouns. Now, can you think of a noun that is a person? Maybe someone in your family or school?"
 
 ## Conversation History:
 {{#each history}}
   {{this.role}}: {{{this.content}}}
 {{/each}}
 
-Based on your persona, the rules, the conversation history, and the provided context (if any), provide your next response as Mwalimu AI.
+Based on your persona, the rules, the conversation history, and the user's most recent message "{{currentMessage}}", provide your next Socratic response as Mwalimu AI. Keep your response concise (2-4 sentences) and always end with a question or an invitation to engage.
 `,
 });
-
-const getCurriculumFromFirestore = async (grade: string, subject: string): Promise<string | null> => {
-    try {
-        const curriculumCollection = collection(db, "curriculumData");
-        const q = query(
-            curriculumCollection, 
-            where("grade", "==", grade), 
-            where("subject", "==", subject),
-            limit(1)
-        );
-
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-            const doc = querySnapshot.docs[0];
-            const data = doc.data();
-            // The 'content' field should hold the structured curriculum data.
-            // We'll stringify it to pass it as context.
-            return JSON.stringify(data.content, null, 2);
-        }
-        return null;
-    } catch (error) {
-        console.error("Error fetching curriculum from Firestore:", error);
-        return null;
-    }
-}
 
 
 const mwalimuAiTutorFlow = ai.defineFlow(
@@ -178,19 +157,18 @@ const mwalimuAiTutorFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const flowInput: MwalimuAiTutorInput = { ...input };
+    const {output} = await tutorPrompt(input);
     
-    // Dynamically load the curriculum data from Firestore
-    const gradeName = `Grade ${input.grade.replace('g', '')}`;
-    const firestoreCurriculum = await getCurriculumFromFirestore(gradeName, input.subject);
-
-    if (firestoreCurriculum) {
-        flowInput.teacherContext = `Curriculum for ${gradeName} ${input.subject}:\n${firestoreCurriculum}`;
+    if (!output?.response) {
+      throw new Error("AI failed to generate a response.");
     }
-
-    const {output} = await tutorPrompt(flowInput);
-    const responseText = output!.response;
     
+    // Asynchronously generate teacher feedback without blocking the student's response.
+    if (input.history && input.history.length > 2 && input.studentId) { 
+      summarizeAndStoreInteraction(input);
+    }
+    
+    const responseText = output.response;
     const audioResponse = await generateTts(responseText);
 
     return {
@@ -199,3 +177,32 @@ const mwalimuAiTutorFlow = ai.defineFlow(
     };
   }
 );
+
+// New function to handle summarization and storage
+async function summarizeAndStoreInteraction(input: MwalimuAiTutorInput) {
+    try {
+        const summary = await summarizeStudentInteractionFlow({
+            studentName: input.studentName || 'Student',
+            subject: input.subject,
+            grade: input.grade,
+            chatHistory: input.history || [],
+        });
+
+        const learningSummary: Omit<LearningSummary, 'id'> = {
+            studentId: input.studentId!,
+            studentName: input.studentName || 'Student',
+            teacherId: input.teacherId || 'teacher_placeholder_id',
+            subject: input.subject,
+            ...summary,
+            chatHistory: input.history || [],
+            createdAt: new Date().toISOString(),
+        };
+        
+        // Save to Firestore
+        await addDoc(collection(db, "learningSummaries"), learningSummary);
+
+    } catch(error) {
+        console.error("Failed to generate or store learning summary:", error);
+        // We don't throw here because this is a background task. Failing should not affect the student's experience.
+    }
+}

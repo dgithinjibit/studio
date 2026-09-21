@@ -1,54 +1,53 @@
-
 'use server';
 
 import type { User, UserRole } from './types';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { app } from './firebase';
 
 /**
- * A Server Action to set the user's role and name in cookies.
- * It returns the path to redirect to upon successful signup.
+ * A Server Action to set the user's role and name in cookies and Firestore.
  */
 export async function signupUser(role: UserRole, formData: FormData): Promise<string> {
   const fullName = formData.get('fullName') as string;
+  const email = formData.get('email') as string;
+  const uid = formData.get('uid') as string;
 
-  if (!role || !fullName) {
-    throw new Error("Role or Full Name is missing.");
+  if (!role || !fullName || !email || !uid) {
+    throw new Error("Missing required signup information.");
   }
+  
+  const db = getFirestore(app);
+  await setDoc(doc(db, "users", uid), {
+    uid: uid,
+    email: email,
+    name: fullName,
+    role: role,
+    createdAt: new Date().toISOString(),
+  });
   
   const cookieStore = cookies();
   cookieStore.set('userRole', role, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
   cookieStore.set('userName', fullName, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+  cookieStore.set('userEmail', email, { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
-  // Return the redirect path instead of calling redirect()
-  if (role === 'student') {
-    return '/student/journey';
-  } else {
-    return '/dashboard';
-  }
+  return role === 'student' ? '/student/journey' : '/dashboard';
 }
 
-// In a real application, this would involve validating a session cookie,
-// database lookups, etc. For this prototype, we simulate it by
-// reading the role that was set in the cookie store.
-
+/**
+ * Fetches the authenticated user's details, prioritizing Firestore for the role.
+ */
 export async function getServerUser(): Promise<Partial<User> | null> {
     const cookieStore = cookies();
-    const userRoleCookie = cookieStore.get('userRole');
-    const userNameCookie = cookieStore.get('userName');
-    
-    const role = userRoleCookie?.value as UserRole | undefined;
-    const name = userNameCookie?.value;
+    const userEmail = cookieStore.get('userEmail')?.value;
+    const userRole = cookieStore.get('userRole')?.value as UserRole | undefined;
+    const userName = cookieStore.get('userName')?.value;
 
-    if (!role || !name) {
-        // If no role or name is found in the cookies, return null.
-        // The UI will handle this by showing a loading state or redirecting.
-        // DO NOT return a default user object here.
-        return null;
-    }
+    if (!userEmail) return null;
 
     return {
-        name,
-        role,
+        name: userName,
+        email: userEmail,
+        role: userRole,
     };
 }

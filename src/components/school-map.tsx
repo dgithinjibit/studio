@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-const MAPTILER_TOKEN = "oOP6aDKvl1yVX2dicS80";
+const MAPTILER_TOKEN = "AIzaSyB3PyfAfinamByQHfoVuRmQMHYg1Mzqgyc";
 
 interface SchoolMapProps {
   schools: School[];

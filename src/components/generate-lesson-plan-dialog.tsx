@@ -20,9 +20,10 @@ import { Loader2, Copy, Save, Sparkles, Send } from "lucide-react";
 import { generateLessonPlan, GenerateLessonPlanInput } from "@/ai/flows/generate-lesson-plan";
 import { improveLessonPlan } from "@/ai/flows/improve-lesson-plan";
 import type { TeacherResource } from "@/lib/types";
-import { storage, db } from '@/lib/firebase';
+import { storage, db, app } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
 
 
 interface GenerateLessonPlanDialogProps {
@@ -32,7 +33,7 @@ interface GenerateLessonPlanDialogProps {
     schemeOfWorkContext?: string;
 }
 
-export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, schemeOfWorkContext }: GenerateLessonPlanDialogProps) {
+export default function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, schemeOfWorkContext }: GenerateLessonPlanDialogProps) {
   const [loading, setLoading] = useState(false);
   const [improving, setImproving] = useState(false);
   const [generatedPlan, setGeneratedPlan] = useState("");
@@ -41,7 +42,6 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
   const { toast } = useToast();
 
   useEffect(() => {
-    // If context is passed, immediately trigger generation
     if (open && schemeOfWorkContext) {
       handleInitialSubmit(undefined, schemeOfWorkContext);
     }
@@ -59,6 +59,14 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
   const handleSave = async () => {
     if (!generatedPlan) return;
     
+    const auth = getAuth(app);
+    const user = auth.currentUser;
+
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Auth Error', description: 'User session not found.' });
+        return;
+    }
+
     setLoading(true);
     try {
         const fileName = `lesson_plans/${Date.now()}_${currentTopic.replace(/\s+/g, '_')}.md`;
@@ -72,7 +80,8 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
             url: downloadURL,
             createdAt: new Date().toISOString(),
             type: 'Lesson Plan',
-            // content: generatedPlan
+            joinCode: '',
+            creatorId: user.uid
         };
 
         await addDoc(collection(db, "teacherResources"), newPlan);
@@ -105,7 +114,6 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
     const teacherName = localStorage.getItem('userName') || 'Teacher';
 
     if (schemeContext) {
-        // This is a simplified derivation for now.
         data = {
             subject: "Social Studies",
             topic: "Language groups in Eastern Africa",
@@ -113,7 +121,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
             learningObjectives: "a) Describe the classification of communities in Eastern Africa according to language groups... e) appreciate unity of language groups in Eastern Africa.",
             schemeOfWorkContext: schemeContext,
             teacherName,
-            school: "Sure Junior School",
+            school: "Grace View Primary School",
             term: "2",
             year: new Date().getFullYear().toString(),
             roll: "Boys: 20, Girls: 20",
@@ -131,10 +139,10 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
             strand: formData.get("strand") as string,
             subStrand: formData.get("subStrand") as string,
             teacherName,
-            school: "Sure Junior School", // Example
+            school: "Grace View Primary School",
             term: "2",
             year: new Date().getFullYear().toString(),
-            roll: "Boys: 20, Girls: 20", // Example
+            roll: "Boys: 20, Girls: 20",
         };
         setCurrentTopic(data.topic);
     } else {
@@ -172,7 +180,7 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
 
     setImproving(true);
     const originalPlan = generatedPlan;
-    setGeneratedPlan(""); // Clear the plan to show streaming for the improvement
+    setGeneratedPlan("");
 
     try {
       await improveLessonPlan({
@@ -181,10 +189,10 @@ export function GenerateLessonPlanDialog({ open, onOpenChange, onResourceSaved, 
       }, (chunk) => {
           setGeneratedPlan(prev => prev + chunk);
       });
-      setImprovementRequest(""); // Clear input after submission
+      setImprovementRequest("");
     } catch (error) {
       console.error(error);
-      setGeneratedPlan(originalPlan); // Restore original plan on error
+      setGeneratedPlan(originalPlan);
       toast({
         variant: "destructive",
         title: "Error improving lesson plan",

@@ -21,9 +21,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { storage, db } from '@/lib/firebase';
+import { storage, db, app } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
 
 
 const differentiationLevels = [
@@ -42,7 +43,7 @@ type DifferentiatedContent = {
     content: string;
 };
 
-export function DifferentiateWorksheetDialog({ open, onOpenChange, onResourceSaved }: DifferentiateWorksheetDialogProps) {
+export default function DifferentiateWorksheetDialog({ open, onOpenChange, onResourceSaved }: DifferentiateWorksheetDialogProps) {
   const [loading, setLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<DifferentiatedContent[]>([]);
   const [originalContent, setOriginalContent] = useState("");
@@ -60,6 +61,15 @@ export function DifferentiateWorksheetDialog({ open, onOpenChange, onResourceSav
 
   const handleSave = async () => {
     if (generatedContent.length === 0) return;
+    
+    const auth = getAuth(app);
+    const user = auth.currentUser;
+
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Auth Error', description: 'User session not found.' });
+        return;
+    }
+
     setLoading(true);
     
     const contentToSave = [
@@ -78,7 +88,9 @@ export function DifferentiateWorksheetDialog({ open, onOpenChange, onResourceSav
           title: `Differentiated - ${currentTopic}`,
           url: downloadURL,
           createdAt: new Date().toISOString(),
-          type: 'Differentiated Worksheet'
+          type: 'Differentiated Worksheet',
+          joinCode: '',
+          creatorId: user.uid
         };
 
         await addDoc(collection(db, "teacherResources"), newResource);

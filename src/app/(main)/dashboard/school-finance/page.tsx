@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,19 +11,25 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { AddTransactionDialog } from '@/components/add-transaction-dialog';
 import type { Transaction } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-
-const mockTransactions: Transaction[] = [
-  { id: 'txn_1', date: '2024-07-30', description: 'Purchase of PP1 Textbooks', amount: 15000, category: 'Instructional Materials', status: 'Completed' },
-  { id: 'txn_2', date: '2024-07-28', description: 'School Bus Fuel', amount: 8000, category: 'Transport', status: 'Completed' },
-  { id: 'txn_3', date: '2024-07-25', description: 'Catering Services - PTA Meeting', amount: 25000, category: 'Events', status: 'Completed' },
-  { id: 'txn_4', date: '2024-07-22', description: 'Staff Salaries - July', amount: 450000, category: 'Salaries', status: 'Pending Approval' },
-];
+import { mockTransactions } from '@/lib/mock-data';
 
 
 export default function SchoolFinancePage() {
-    const [transactions, setTransactions] = useState(mockTransactions);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isAddTransactionOpen, setAddTransactionOpen] = useState(false);
     const { toast } = useToast();
+
+    useEffect(() => {
+        // In a real app, this would be a fetch call.
+        // For now, we simulate fetching from our mock service.
+        const storedTransactions = localStorage.getItem('mockTransactions');
+        if (storedTransactions) {
+            setTransactions(JSON.parse(storedTransactions));
+        } else {
+            setTransactions(mockTransactions);
+            localStorage.setItem('mockTransactions', JSON.stringify(mockTransactions));
+        }
+    }, []);
 
     const handleAddTransaction = (newTransaction: Omit<Transaction, 'id' | 'date'>) => {
         const transactionToAdd: Transaction = {
@@ -31,7 +37,9 @@ export default function SchoolFinancePage() {
             id: `txn_${Date.now()}`,
             date: new Date().toISOString().split('T')[0], // Get today's date in YYYY-MM-DD format
         };
-        setTransactions(prev => [transactionToAdd, ...prev]);
+        const updatedTransactions = [transactionToAdd, ...transactions];
+        setTransactions(updatedTransactions);
+        localStorage.setItem('mockTransactions', JSON.stringify(updatedTransactions));
         toast({
             title: "Transaction Logged",
             description: `A new transaction for KES ${newTransaction.amount.toLocaleString()} has been added.`
@@ -43,7 +51,7 @@ export default function SchoolFinancePage() {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>School Financial Management</CardTitle>
+                        <CardTitle>School Financial Management / Usimamizi wa Fedha</CardTitle>
                         <CardDescription>
                             Track all school-related income and expenditures from this hub.
                         </CardDescription>

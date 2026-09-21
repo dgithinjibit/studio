@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from '@/components/ui/label';
@@ -10,10 +10,11 @@ import { Loader2, Database, UploadCloud } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ingestCurriculum } from '@/ai/flows/ingest-curriculum';
-import { db, storage } from '@/lib/firebase';
+import { db, storage, app } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { curriculumStructure } from '@/lib/curriculum-structure';
+import { getAuth } from 'firebase/auth';
 
 export default function CurriculumIngestorPage() {
     const [loading, setLoading] = useState(false);
@@ -30,6 +31,14 @@ export default function CurriculumIngestorPage() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         
+        const auth = getAuth(app);
+        const user = auth.currentUser;
+
+        if (!user) {
+            toast({ variant: 'destructive', title: 'Auth Error', description: 'User session not found.' });
+            return;
+        }
+
         if (!selectedFiles || selectedFiles.length === 0) {
             toast({
                 variant: 'destructive',
@@ -49,8 +58,6 @@ export default function CurriculumIngestorPage() {
                 const downloadURL = await getDownloadURL(uploadSnapshot.ref);
 
                 // 2. Ingest the curriculum content.
-                // In a real app, you'd use a library like pdf-lib or a cloud service to extract text.
-                // For this prototype, we'll use a placeholder string to simulate text extraction.
                 const documentText = `
                     Strand: 1.0 OUR NEIGHBOURHOOD
                     Sub Strand: 1.1 Sorting and Grouping
@@ -76,7 +83,8 @@ export default function CurriculumIngestorPage() {
                     subject: selectedSubject,
                     createdAt: new Date().toISOString(),
                     originalFileUrl: downloadURL,
-                    content: result.parsedCurriculum || [], // Save parsed content
+                    content: result.parsedCurriculum || [],
+                    creatorId: user.uid
                 });
             }
 
@@ -243,5 +251,3 @@ export default function CurriculumIngestorPage() {
         </Card>
     )
 }
-
-    

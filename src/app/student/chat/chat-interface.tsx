@@ -9,9 +9,11 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mwalimuAiTutor } from '@/ai/flows/mwalimu-ai-flow';
 import { classroomCompass } from '@/ai/flows/classroom-compass-flow';
-import { Loader2, Send, Video, Mic } from 'lucide-react';
+import { Loader2, Send, Video, Mic, Bot } from 'lucide-react';
 import { StudentHeader } from '@/components/layout/student-header';
 import { useRouter } from 'next/navigation';
+import { getAuth } from 'firebase/auth';
+import { app } from '@/lib/firebase';
 
 type Message = {
     role: 'user' | 'model';
@@ -33,7 +35,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [tutorMode, setTutorMode] = useState<'compass' | 'mwalimu'>('mwalimu');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const [studentFirstName, setStudentFirstName] = useState('Student');
@@ -41,11 +43,18 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any | null>(null);
     const [choices, setChoices] = useState<string[]>([]);
+    const [chatTokens, setChatTokens] = useState(100);
+    const [studentId, setStudentId] = useState<string | null>(null);
 
      useEffect(() => {
         const name = localStorage.getItem('studentName');
         if (name) {
             setStudentFirstName(name.split(' ')[0]);
+        }
+        const auth = getAuth(app);
+        const user = auth.currentUser;
+        if (user) {
+            setStudentId(user.uid);
         }
     }, []);
 
@@ -68,9 +77,9 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
     }
 
     useEffect(() => {
-        // Initialize SpeechRecognition
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
+        // Initialize SpeechRecognition only on the client
+        if (typeof window !== 'undefined' && 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognitionRef.current = new SpeechRecognition();
             recognitionRef.current.continuous = true;
             recognitionRef.current.interimResults = true;
@@ -89,7 +98,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
             };
 
             recognitionRef.current.onerror = (event: any) => {
-                 if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                if (event.error !== 'no-speech' && event.error !== 'aborted') {
                     console.error("Speech recognition error", event.error);
                 }
                 setIsListening(false);
@@ -98,9 +107,9 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
             recognitionRef.current.onend = () => {
                 setIsListening(false);
             };
-
         }
     }, [input]);
+
 
     const handleToggleListening = () => {
         if (isListening) {
@@ -114,35 +123,16 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
 
 
     useEffect(() => {
-        const getInitialMessage = async () => {
-            setLoading(true);
-            try {
-                const initialHistory: Message[] = [];
-                let result;
-                if (teacherContext) {
-                    setTutorMode('compass');
-                    const compassResult = await classroomCompass({ teacherContext, history: [] });
-                    result = { response: compassResult.response, audioResponse: undefined };
-                } else {
-                    setTutorMode('mwalimu');
-                    result = await mwalimuAiTutor({ 
-                        grade, 
-                        subject, 
-                        history: initialHistory,
-                        currentMessage: `Hello! Please introduce yourself and greet me as a ${subject} tutor for ${gradeName}.`
-                    });
-                }
-                processAndSetMessage('model', result);
-            } catch (error) {
-                console.error("Error getting initial message:", error);
-                setMessages([{ role: 'model', content: "Hello! I'm having a little trouble connecting. Please try again in a moment." }]);
-            } finally {
-                setLoading(false);
-            }
-        };
-        getInitialMessage();
+        // This effect now only sets the initial greeting in the UI, without calling the AI.
+        if (teacherContext) {
+            setTutorMode('compass');
+            setMessages([{ role: 'model', content: "Welcome, Explorer! Your teacher has charted a learning journey just for your class. What expedition shall we embark on today?" }]);
+        } else {
+            setTutorMode('mwalimu');
+            setMessages([{ role: 'model', content: `Jambo! I am Mwalimu AI. We can explore ${subject} for ${gradeName} together. What topic are you most curious about?` }]);
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [grade, subject, teacherContext]);
+    }, [grade, subject, teacherContext, gradeName]);
     
     useEffect(() => {
         if (scrollAreaRef.current) {
@@ -181,25 +171,32 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
         const userMessage: Message = { role: 'user', content: currentMessage };
         const newMessages = [...messages, userMessage];
         setMessages(newMessages); // Show user message immediately
-        const currentInput = input;
         setInput('');
         setLoading(true);
         setChoices([]); // Clear choices after user makes one
+        setChatTokens(prev => Math.max(0, prev - 1)); // Decrement token
 
         try {
             let result;
+            const historyForAI = newMessages.map(({ role, content }) => ({ role, content }));
+            const studentName = localStorage.getItem('studentName') || 'Unknown Student';
+            const teacherId = 'usr_3'; // Hardcoded for prototype
+
             if (tutorMode === 'compass' && teacherContext) {
                  const compassResult = await classroomCompass({
                     teacherContext,
-                    history: newMessages, // Pass the full, updated history
+                    history: historyForAI,
                 });
                 result = {response: compassResult.response, audioResponse: undefined};
             } else {
                  result = await mwalimuAiTutor({
                     grade,
                     subject,
-                    currentMessage: currentInput,
-                    history: newMessages // Pass the full, updated history
+                    studentName,
+                    studentId,
+                    teacherId,
+                    currentMessage: currentMessage,
+                    history: historyForAI
                 });
             }
             processAndSetMessage('model', result);
@@ -230,6 +227,13 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                 <CardContent className="flex-1 overflow-hidden p-0">
                     <ScrollArea className="h-full" ref={scrollAreaRef}>
                         <div className="p-6 space-y-4">
+                             {messages.length === 0 && loading && (
+                                <div className="flex justify-start">
+                                    <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
+                                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                    </div>
+                                </div>
+                            )}
                             {messages.map((message, index) => (
                                 <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                     <div className={`max-w-[75%] p-3 rounded-lg ${message.role === 'user' ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'}`}>
@@ -237,7 +241,7 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                                     </div>
                                 </div>
                             ))}
-                            {loading && (
+                            {loading && messages.length > 0 && (
                                 <div className="flex justify-start">
                                     <div className="max-w-[75%] p-3 rounded-lg bg-muted flex items-center">
                                         <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -265,20 +269,26 @@ export default function ChatInterface({ subject, grade, onBack, teacherContext, 
                 </CardContent>
                 <CardFooter className="p-4 border-t border-border">
                     <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
-                        <Input
-                            id="message"
-                            placeholder="Ask a question..."
-                            className="flex-1 bg-background border-input focus:border-primary focus:ring-primary"
-                            autoComplete="off"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            disabled={loading || choices.length > 0}
-                        />
-                         <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleToggleListening} disabled={loading}>
+                        <div className="flex-1 relative">
+                            <Input
+                                id="message"
+                                placeholder={chatTokens > 0 ? "Ask a question..." : "You are out of tokens."}
+                                className="flex-1 bg-background border-input focus:border-primary focus:ring-primary pr-20"
+                                autoComplete="off"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                disabled={loading || choices.length > 0 || chatTokens <= 0}
+                            />
+                             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-xs text-muted-foreground bg-background px-2 py-1 rounded">
+                                <Bot className="w-4 h-4" />
+                                <span>{chatTokens}</span>
+                            </div>
+                        </div>
+                         <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleToggleListening} disabled={loading || chatTokens <= 0}>
                             <Mic className="h-4 w-4" />
                             <span className="sr-only">Toggle Microphone</span>
                         </Button>
-                        <Button type="submit" size="icon" disabled={loading || !input.trim() || choices.length > 0} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <Button type="submit" size="icon" disabled={loading || !input.trim() || choices.length > 0 || chatTokens <= 0} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                             <Send className="h-4 w-4" />
                             <span className="sr-only">Send</span>
                         </Button>

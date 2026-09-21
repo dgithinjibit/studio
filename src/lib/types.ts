@@ -13,6 +13,7 @@ export type User = {
 export type Student = {
     id: string;
     name: string;
+    chatTokens: number;
 };
 
 export type ClassInfo = {
@@ -72,11 +73,12 @@ export type School = {
 export type TeacherResource = {
   id: string;
   title: string;
-  content?: string; // Restored as optional
+  content?: string;
   url?: string;
   createdAt: string;
   type: 'Lesson Plan' | 'Scheme of Work' | 'Rubric' | 'Worksheet' | 'Differentiated Worksheet' | 'AI Tutor Context' | 'Other';
   joinCode: string;
+  creatorId: string;
 };
 
 export type Communication = {
@@ -119,4 +121,16 @@ export type Transaction = {
     amount: number;
     category: string;
     status: string;
+}
+
+export type LearningSummary = {
+    id?: string;
+    studentId: string;
+    studentName: string;
+    teacherId: string;
+    subject: string;
+    strengths: string;
+    areasForImprovement: string;
+    chatHistory: { role: 'user' | 'model'; content: string; }[];
+    createdAt: string;
 }
